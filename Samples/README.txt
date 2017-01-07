@@ -1,0 +1,2 @@
+Examples of the form "Example#_obfuscated" are examples that trigger the obfuscator.
+Examples of the form "Example#_linear" are not Frogger examples; instead they illustrate what the corresponding Frogger files are supposed to do.
