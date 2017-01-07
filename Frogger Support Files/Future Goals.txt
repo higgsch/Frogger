@@ -1,0 +1,4 @@
+v2: Add conditionals (if...else...) [which involves boolean operators], more common math operations (mod, integer division, roots, exponentiation, etc.), File I/O, random number generator.
+v3: Add user-defined functions (decide if they should be in the same file or force modulation into different files).
+v4+: Add object orientation.
+v4++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
