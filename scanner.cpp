@@ -103,16 +103,7 @@ Token Scanner::scan(void)
 		else if (in_char == ';')
 			return Token::SEMICOLON;
 		else if (in_char == '=') 
-		{
-			int c = get();
-			if (c == '=')
-				return Token::ASSIGN;
-			else //Assignment is ==
-			{
-				unget();
-				lexical_error(lineNo, "Incomplete assignment operator");
-			}
-		}
+			return Token::ASSIGN;
 		else if (in_char == '+')
 		{
 			int c = get();

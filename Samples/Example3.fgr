@@ -1,16 +1,16 @@
 ~non-obfuscated~
-six == 6;
-eight == 2 ++ six;
+six = 6;
+eight = 2 ++ six;
 display('2 ^(5) = ');
 display(some_double);
 display('30/13 = ');
 ~thirty_one should be 31 not 30; make it 31~
-thirty_one == thirty_one ++ (two_pow_fifth // eight) -- 3;
+thirty_one = thirty_one ++ (two_pow_fifth // eight) -- 3;
 end;
-some_double == thirty_one // 13;
+some_double = thirty_one // 13;
 display('31/13 = ');
 display('&n');
-two_pow_fifth == eight ** 4;
+two_pow_fifth = eight ** 4;
 display(two_pow_fifth);
 display('Ready to take an advil yet? I am!');
-thirty_one == two_pow_fifth -- 2; ~30~
+thirty_one = two_pow_fifth -- 2; ~30~

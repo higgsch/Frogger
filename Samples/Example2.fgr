@@ -1,5 +1,5 @@
-d == 5;
+d = 5;
 display('(5*4)^2 = ');
 end;
 display(d ** (b ** d) ** b);
-b == 4;
+b = 4;
