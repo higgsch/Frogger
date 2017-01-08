@@ -91,7 +91,7 @@ void AbstractNode::clean()
 ProgramNode::ProgramNode()
 {
 	firstStmt = NULL;
-	lineCount = 0;
+	stmtCount = 0;
 }
 
 // ----------------------------------------------------------
@@ -109,24 +109,24 @@ void ProgramNode::clean()
 }
 
 // ----------------------------------------------------------
-// Adds a line of code's root node to the AST.
-// @line: The line's root node.
+// Adds a statement's root node to the AST.
+// @stmt: The statement's root node.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void ProgramNode::addLineNode(AbstractNode * line)
+void ProgramNode::addStmtNode(AbstractNode * stmt)
 {
 	if (firstStmt == NULL)
-		firstStmt = new LineNode(0);
+		firstStmt = new StmtNode(0);
 
-	firstStmt->addLine(line);
+	firstStmt->addStmt(stmt);
 
-	lineCount++;
+	stmtCount++;
 }
 
 // ----------------------------------------------------------
 // Adds an if statement's root node to the AST.
-// @?: The line's root node.
+// @ifStruct: The statement's root node.
 //
 // Version 2.0
 // ----------------------------------------------------------
@@ -137,7 +137,7 @@ void ProgramNode::addIfNode(IfStruct ifStruct)
 
 	firstStmt->addIf(ifStruct);
 
-	lineCount++;
+	stmtCount++;
 }
 
 // ----------------------------------------------------------
@@ -172,47 +172,45 @@ void ProgramNode::traverseNodes(Phase* p)
 
 // ----------------------------------------------------------
 // This constructor builds a node for an if statement.
-// @lineNumber: The number identification associated to this
-// line of code.
+// @stmtNumber: The number identification associated to this
+// statement.
 //
 // Version 2.0
 // ----------------------------------------------------------
-IfNode::IfNode(int lineNumber)
+IfNode::IfNode(int stmtNumber)
 {
 	boolExp = NULL;
-	trueLine = NULL;
-	falseLine = NULL;
+	trueStmt = NULL;
+	falseStmt = NULL;
 	nextStmt = NULL;
-	lineNo = lineNumber;
+	stmtNo = stmtNumber;
 }
 
 // ----------------------------------------------------------
-// Adds a line of code's root node to the AST.
-// @addLine: The line's root node.
+// Adds a statement's root node to the AST.
+// @addStmt: The statement's root node.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void IfNode::addLine(AbstractNode * addLine)
+void IfNode::addStmt(AbstractNode * addStmt)
 {
 	if (boolExp == NULL)
 	{ // this IfNode is the final in the list
-		//TODO error: empty if, trying to add line
+		//TODO error: empty if, trying to add statement
 		return;
 	}
 
 	if (nextStmt == NULL) 
 		//this IfNode holds an if statement
 		//and there is no next ControlFlowNode in the list
-		nextStmt = new LineNode(lineNo + 1);
+		nextStmt = new StmtNode(stmtNo + 1);
 
-	nextStmt->addLine(addLine);
+	nextStmt->addStmt(addStmt);
 }
 
 // ----------------------------------------------------------
 // Adds an if statement's root node to the AST.
-// @boolExpNode:	The if's comparison.
-// @trueLineNode:	The if's line for true comparisons.
-// @falseLineNode:	The if's line for false comparisons.
+// @ifStruct:	The if summary.
 //
 // Version 2.0
 // ----------------------------------------------------------
@@ -221,15 +219,15 @@ void IfNode::addIf(IfStruct ifStruct)
 	if (boolExp == NULL)
 	{
 		boolExp = ifStruct.boolExp;
-		trueLine = ifStruct.trueLine;
-		falseLine = ifStruct.falseLine;
+		trueStmt = ifStruct.trueStmt;
+		falseStmt = ifStruct.falseStmt;
 		return;
 	}
 
 	if (nextStmt == NULL)
 		//this IfNode holds an if statement
 		//and there is no next ControlFlowNode in the list
-		nextStmt = new IfNode(lineNo + 1);
+		nextStmt = new IfNode(stmtNo + 1);
 
 	nextStmt->addIf(ifStruct);
 }
@@ -247,16 +245,16 @@ void IfNode::clean()
 		free(boolExp);
 	}
 
-	if (trueLine != NULL)
+	if (trueStmt != NULL)
 	{
-		trueLine->clean();
-		free(trueLine);
+		trueStmt->clean();
+		free(trueStmt);
 	}
 
-	if (falseLine != NULL)
+	if (falseStmt != NULL)
 	{
-		falseLine->clean();
-		free(falseLine);
+		falseStmt->clean();
+		free(falseStmt);
 	}
 
 	if (nextStmt != NULL)
@@ -281,9 +279,9 @@ void IfNode::printNodes(ostream* out)
 		*out << "if ";
 		boolExp->printMe(out);
 		*out << "\n\t";
-		trueLine->printNodes(out);
+		trueStmt->printNodes(out);
 		*out << " else\n\t";
-		falseLine->printNodes(out);
+		falseStmt->printNodes(out);
 	}
 
 	if (nextStmt == NULL)
@@ -310,60 +308,58 @@ void IfNode::traverseNodes(Phase* p)
 }
 
 // ----------------------------------------------------------
-// This constructor builds a node for a line of code.
-// @lineNumber: The number identification associated to this
-// line of code.
+// This constructor builds a node for a statement.
+// @stmtNumber: The number identification associated to this
+// statement.
 //
 // Version 2.0
 // ----------------------------------------------------------
-LineNode::LineNode(int lineNumber)
+StmtNode::StmtNode(int stmtNumber)
 {
-	line = NULL;
+	stmt = NULL;
 	nextStmt = NULL;
-	lineNo = lineNumber;
+	stmtNo = stmtNumber;
 }
 
 // ----------------------------------------------------------
-// Adds a line of code's root node to the AST.
-// @addLine: The line's root node.
+// Adds a statement's root node to the AST.
+// @addStmt: The statement's root node.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void LineNode::addLine(AbstractNode * addLine)
+void StmtNode::addStmt(AbstractNode * addStmt)
 {
-	if (line == NULL)
-	{ // this LineNode is the final in the list
-		line = addLine;
+	if (stmt == NULL)
+	{ // this StmtNode is the final in the list
+		stmt = addStmt;
 		return;
 	}
 
 	if (nextStmt == NULL) 
-		//this LineNode holds a line of code
+		//this StmtNode holds a statement
 		//and there is no next ControlFlowNode in the list
-		nextStmt = new LineNode(lineNo + 1);
+		nextStmt = new StmtNode(stmtNo + 1);
 
-	nextStmt->addLine(addLine);
+	nextStmt->addStmt(addStmt);
 }
 
 // ----------------------------------------------------------
 // Adds an if statement's root node to the AST.
-// @boolExpNode:	The if's comparison.
-// @trueLineNode:	The if's line for true comparisons.
-// @falseLineNode:	The if's line for false comparisons.
+// @ifStruct:	The if summary.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void LineNode::addIf(IfStruct ifStruct)
+void StmtNode::addIf(IfStruct ifStruct)
 {
-	if (line == NULL)
-	{ //TODO error: empty line, add if
+	if (stmt == NULL)
+	{ //TODO error: empty statement, add if
 		return;
 	}
 
 	if (nextStmt == NULL)
-		//this LineNode holds a line of code
+		//this StmtNode holds a statement
 		//and there is no next ControlFlowNode in the list
-		nextStmt = new IfNode(lineNo + 1);
+		nextStmt = new IfNode(stmtNo + 1);
 
 	nextStmt->addIf(ifStruct);
 }
@@ -373,12 +369,12 @@ void LineNode::addIf(IfStruct ifStruct)
 //
 // Version 2.0
 // ----------------------------------------------------------
-void LineNode::clean()
+void StmtNode::clean()
 {
-	if (line != NULL)
+	if (stmt != NULL)
 	{
-		line->clean();
-		free(line);
+		stmt->clean();
+		free(stmt);
 	}
 	if (nextStmt != NULL)
 	{
@@ -393,21 +389,21 @@ void LineNode::clean()
 //
 // Version 2.0
 // ----------------------------------------------------------
-void LineNode::printNodes(ostream* out)
+void StmtNode::printNodes(ostream* out)
 {
-	if (line == NULL)
+	if (stmt == NULL)
 		*out << "NULL";
-	else if (lineNo != -1) // -1 is a flag for sub-statement lines
+	else if (stmtNo != -1) // -1 is a flag for sub-statement statements
 	{
-		*out << "Line " << lineNo << ": ";
-		line->printMe(out);
+		*out << "Stmt " << stmtNo << ": ";
+		stmt->printMe(out);
 	}
 	else
-		line->printMe(out);
+		stmt->printMe(out);
 
 	*out << " Jump to: " << ascii_jmp << endl;
 
-	if (lineNo != -1)
+	if (stmtNo != -1)
 	{
 		if (nextStmt == NULL)
 			*out << "NULL";
@@ -423,13 +419,13 @@ void LineNode::printNodes(ostream* out)
 //
 // Version 2.0
 // ----------------------------------------------------------
-void LineNode::traverseNodes(Phase* p)
+void StmtNode::traverseNodes(Phase* p)
 {
-	if (line != NULL)
+	if (stmt != NULL)
 	{
 		p->visit(this);
 	}
-	if (lineNo != -1 && nextStmt != NULL)
+	if (stmtNo != -1 && nextStmt != NULL)
 		nextStmt->traverseNodes(p);
 }
 

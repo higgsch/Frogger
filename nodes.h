@@ -9,7 +9,7 @@ using namespace std;
 
 class Phase;
 class BinaryOpNode;
-class LineNode;
+class StmtNode;
 
 // identification for which binary child a node is.
 typedef enum node_sides{
@@ -28,8 +28,8 @@ typedef enum node_types{
 struct IfStruct
 {
 	BinaryOpNode * boolExp;
-	LineNode * trueLine;
-	LineNode * falseLine;
+	StmtNode * trueStmt;
+	StmtNode * falseStmt;
 };
 
 // ----------------------------------------------------------
@@ -48,7 +48,7 @@ protected:
 	node_type type; // the node category
 	string lexeme; // the string representation of the node value
 	node_side parent_side; // indicates which child (left or right)
-	int ascii_addition; // the value this node contributes to the line's ascii
+	int ascii_addition; // the value this node contributes to the Stmt's ascii
 	int parenNestCount; // the number of parens surrounding this node directly
 
 public:
@@ -184,8 +184,7 @@ class ControlFlowNode
 {
 protected: 
 	ControlFlowNode * nextStmt; // the next statement linearly
-	int lineNo; // an identifier for this statement 
-	//(not the line in source but the count of LINE from the cfg)
+	int stmtNo; // an identifier for this statement 
 
 public: 
 	// ----------------------------------------------------------
@@ -196,13 +195,13 @@ public:
 	ControlFlowNode * getNextStmt() { return nextStmt; }
 
 	// ----------------------------------------------------------
-	// This function returns this statement's line identifier.
+	// This function returns this statement's identifier.
 	//
 	// Version 2.0
 	// ----------------------------------------------------------
-	int	 getLineNo() { return lineNo; }
+	int	 getStmtNo() { return stmtNo; }
 
-	virtual void addLine(AbstractNode * line)=0;
+	virtual void addStmt(AbstractNode * Stmt)=0;
 	virtual void addIf(IfStruct ifStruct)=0;
 	virtual void clean()=0;
 	virtual void printNodes(ostream* out)=0;
@@ -210,30 +209,30 @@ public:
 };
 
 // ----------------------------------------------------------
-// This class provides a node for a line of code.
+// This class provides a node for a statement.
 //
 // Version 2.0
 // ----------------------------------------------------------
-class LineNode : public ControlFlowNode
+class StmtNode : public ControlFlowNode
 {
 private:
-	AbstractNode * line; // the AST for this line of code
-	int ascii_jmp; // the line to jump to after this line executes
+	AbstractNode * stmt; // the AST for this statement
+	int ascii_jmp; // the statement to jump to after this statement executes
 
 public:
-	LineNode(int);
+	StmtNode(int);
 
 	// ----------------------------------------------------------
-	// This function sets the line to jump to after this line 
-	// executes.
-	// @num: The lineNo to jump to.
+	// This function sets the statement to jump to after this 
+	// statement executes.
+	// @num: The stmtNo to jump to.
 	//
 	// Version 1.0
 	// ----------------------------------------------------------
 	void setJump(int num) { ascii_jmp = num; }
 
 	// ----------------------------------------------------------
-	// This function returns the line to jump to after this line
+	// This function returns the statement to jump to after this statement
 	// executes.
 	//
 	// Version 1.0
@@ -241,13 +240,13 @@ public:
 	int  getJump() { return ascii_jmp; }
 
 	// ----------------------------------------------------------
-	// This function returns the AST for this line of code.
+	// This function returns the AST for this statement.
 	//
 	// Version 1.0
 	// ----------------------------------------------------------
-	AbstractNode * getLine() { return line; }
+	AbstractNode * getStmt() { return stmt; }
 	
-	void addLine(AbstractNode * line);
+	void addStmt(AbstractNode * stmt);
 	void addIf(IfStruct ifStruct);
 	void clean();
 	void printNodes(ostream* out);
@@ -263,17 +262,17 @@ class IfNode : public ControlFlowNode
 {
 private: 
 	BinaryOpNode * boolExp; // the boolean comparison
-	LineNode * trueLine; // the line of code if boolExp is true
-	LineNode * falseLine; // the line of code if boolExp is false
+	StmtNode * trueStmt; // the statement if boolExp is true
+	StmtNode * falseStmt; // the statement if boolExp is false
 
 public: 
 	IfNode(int);
 
 	BinaryOpNode* getBoolExp() { return boolExp; }
-	LineNode* getTrueLine() { return trueLine; }
-	LineNode* getFalseLine() { return falseLine; }
+	StmtNode* getTrueStmt() { return trueStmt; }
+	StmtNode* getFalseStmt() { return falseStmt; }
 
-	void addLine(AbstractNode * line);
+	void addStmt(AbstractNode * stmt);
 	void addIf(IfStruct ifStruct);
 	void clean();
 	void printNodes(ostream* out);
@@ -289,7 +288,7 @@ class ProgramNode
 {
 private:
 	ControlFlowNode * firstStmt; // the first statement of code in this program
-	int lineCount; // the total number of lines within the program
+	int stmtCount; // the total number of statements within the program
 
 public:
 	ProgramNode();
@@ -302,13 +301,13 @@ public:
 	ControlFlowNode* getFirstStmt() { return firstStmt; }
 
 	// ----------------------------------------------------------
-	// This function returns the number of lines in this program.
+	// This function returns the number of statements in this program.
 	//
 	// Version 1.0
 	// ----------------------------------------------------------
-	int getLineCount() { return lineCount; }
+	int getStmtCount() { return stmtCount; }
 
-	void addLineNode(AbstractNode * line);
+	void addStmtNode(AbstractNode * stmt);
 	void addIfNode(IfStruct ifStruct);
 	void clean();
 	void printNodes(ostream* out);

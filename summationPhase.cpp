@@ -14,13 +14,13 @@ using namespace std;
 // ----------------------------------------------------------
 // This constructor generates a SummationPhase for the
 // given number of lines of code.
-// @numberOfLines: The total number of lines in the source.
+// @numberOfStmts: The total number of lines in the source.
 //
 // Version 1.0
 // ----------------------------------------------------------
-SummationPhase::SummationPhase(int numberOfLines)
+SummationPhase::SummationPhase(int numberOfStmts)
 {
-	numLines = numberOfLines;
+	numStmts = numberOfStmts;
 }
 
 // ----------------------------------------------------------
@@ -34,7 +34,7 @@ SummationPhase::SummationPhase(int numberOfLines)
 int SummationPhase::accumulateModLength(int augend, int addend)
 {
 	//overflow "safe" modular arithmetic
-	return (augend + (addend % numLines)) % numLines;
+	return (augend + (addend % numStmts)) % numStmts;
 }
 
 // ----------------------------------------------------------
@@ -78,10 +78,10 @@ int SummationPhase::getAsciiSumModLength(string s)
 //
 // Version 1.0
 // ----------------------------------------------------------
-void SummationPhase::visit(LineNode * n)
+void SummationPhase::visit(StmtNode * n)
 {
-	n->getLine()->accept(this);
-	n->setJump(n->getLine()->getAscii());
+	n->getStmt()->accept(this);
+	n->setJump(n->getStmt()->getAscii());
 }
 
 // ----------------------------------------------------------
@@ -92,8 +92,8 @@ void SummationPhase::visit(LineNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(IfNode * n)
 {
-	visit(n->getTrueLine());
-	visit(n->getFalseLine());
+	visit(n->getTrueStmt());
+	visit(n->getFalseStmt());
 }
 
 // ----------------------------------------------------------

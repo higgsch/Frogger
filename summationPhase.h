@@ -16,7 +16,7 @@ using namespace std;
 class SummationPhase : public Phase
 {
 private:
-	int numLines; // the total number of lines in the program
+	int numStmts; // the total number of lines in the program
 
 	int getAsciiSumModLength(string);
 	int accumulateModLength(int,int);
@@ -24,7 +24,7 @@ private:
 public:
 	SummationPhase(int);
 
-	void visit(LineNode * n);
+	void visit(StmtNode * n);
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);

@@ -26,7 +26,7 @@ class VarDecSubPhase : public Phase
 private:
 	ostream* out; // the output stream to print to
 	VarList* list; // the "symbol table"
-	int currLineTempCount; // a counter for the temporaries needed for the current line
+	int currStmtTempCount; // a counter for the temporaries needed for the current line
 	int lineTempMax; // a storage for the maximum temporaries needed in any given line
 
 	void addToList(string);
@@ -35,7 +35,7 @@ private:
 public:
 	VarDecSubPhase(ostream*);
 
-	void visit(LineNode * n);
+	void visit(StmtNode * n);
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);

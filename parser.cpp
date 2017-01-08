@@ -48,6 +48,7 @@ ProgramNode* Parser::parse()
 
 // ----------------------------------------------------------
 // This function represents production rule:
+// <prog> => <ifstmt> <stmts> $
 // <prog> => <stmt> <stmts> $
 //
 // Version 2.0
@@ -58,7 +59,7 @@ void Parser::prog()
 	if (tok.type == IF)
 		root->addIfNode(ifstmt());
 	else
-		root->addLineNode(line());
+		root->addStmtNode(stmt());
 
 	stmts();
 }
@@ -66,7 +67,7 @@ void Parser::prog()
 // ----------------------------------------------------------
 // This function represents production rules:
 // <stmts> => <ifstmt> <stmts>
-// <stmts> => <line> <stmts>
+// <stmts> => <stmt> <stmts>
 // <stmts> => [lambda]
 //
 // Version 2.0
@@ -82,14 +83,14 @@ void Parser::stmts()
 	case IF:
 		root->addIfNode(ifstmt()); stmts();
 	default:
-		root->addLineNode(line()); stmts();
+		root->addStmtNode(stmt()); stmts();
 		break;
 	}
 }
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <ifstmt> -> if ( <boolexp> ) <line> else <line>
+// <ifstmt> => if ( <boolexp> ) <stmt> else <stmt>
 //
 // Version 2.0
 // ----------------------------------------------------------
@@ -98,22 +99,22 @@ IfStruct Parser::ifstmt()
 	match(IF); match(LPAREN);
 	BinaryOpNode* toCompare = boolexp();
 	match(RPAREN);
-	AbstractNode* trueAbs = line();
+	AbstractNode* trueAbs = stmt();
 	match(ELSE);
-	AbstractNode* falseAbs = line();
+	AbstractNode* falseAbs = stmt();
 
 	IfStruct ifStruct;
 	ifStruct.boolExp = toCompare;
-	ifStruct.trueLine = new LineNode(-1);
-	ifStruct.falseLine = new LineNode(-1);
-	ifStruct.trueLine->addLine(trueAbs);
-	ifStruct.falseLine->addLine(falseAbs);
+	ifStruct.trueStmt = new StmtNode(-1);
+	ifStruct.falseStmt = new StmtNode(-1);
+	ifStruct.trueStmt->addStmt(trueAbs);
+	ifStruct.falseStmt->addStmt(falseAbs);
 	return ifStruct;
 }
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <boolexp> -> <dblval> <boolops> <dblval>
+// <boolexp> => <dblval> <boolops> <dblval>
 //
 // Version 2.0
 // ----------------------------------------------------------
@@ -128,15 +129,15 @@ BinaryOpNode* Parser::boolexp()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <line> => display ( <strval> ) ;
-// <line> => display ( <dblval> ) ;
-// <line> => end ;
-// <line> => id assign <dblval> ;
-// Returns: A pointer to the node representing this line.
+// <stmt> => display ( <strval> ) ;
+// <stmt> => display ( <dblval> ) ;
+// <stmt> => end ;
+// <stmt> => id assign <dblval> ;
+// Returns: A pointer to the node representing this stmt.
 //
 // Version 2.0
 // ----------------------------------------------------------
-AbstractNode* Parser::line()
+AbstractNode* Parser::stmt()
 {
 	Token tok = next_token();
 	switch(tok.type)
@@ -171,7 +172,7 @@ AbstractNode* Parser::line()
 			break;
 		}
 	default:
-		syntax_error("Invalid start of line - " + tok.lexeme);
+		syntax_error("Invalid start of stmt - " + tok.lexeme);
 		return NULL;
 		break;
 	}
@@ -356,8 +357,8 @@ BinaryOpNode* Parser::mulop()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <boolops> -> <boolop>
-// <boolops> -> not <boolop>
+// <boolops> => <boolop>
+// <boolops> => not <boolop>
 // Returns: A pointer to the node representing this operator.
 //
 // Version 2.0
@@ -391,11 +392,11 @@ BinaryOpNode* Parser::boolops()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <boolop> -> lt
-// <boolop> -> gt
-// <boolop> -> eq
-// <boolop> -> lte
-// <boolop> -> gte
+// <boolop> => lt
+// <boolop> => gt
+// <boolop> => eq
+// <boolop> => lte
+// <boolop> => gte
 // Returns: A pointer to the node representing this operator.
 //
 // Version 2.0

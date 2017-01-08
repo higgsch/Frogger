@@ -46,9 +46,9 @@ string StringConversionPhase::convertString(string s)
 //
 // Version 1.0
 // ----------------------------------------------------------
-void StringConversionPhase::visit(LineNode * n)
+void StringConversionPhase::visit(StmtNode * n)
 {
-	n->getLine()->accept(this);
+	n->getStmt()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -59,8 +59,8 @@ void StringConversionPhase::visit(LineNode * n)
 // ----------------------------------------------------------
 void StringConversionPhase::visit(IfNode * n)
 {
-	visit(n->getTrueLine());
-	visit(n->getFalseLine());
+	visit(n->getTrueStmt());
+	visit(n->getFalseStmt());
 }
 
 // ----------------------------------------------------------

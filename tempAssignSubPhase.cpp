@@ -30,12 +30,12 @@ TempAssignSubPhase::TempAssignSubPhase(ostream* outstream)
 //
 // Version 1.0
 // ----------------------------------------------------------
-void TempAssignSubPhase::visit(LineNode * n)
+void TempAssignSubPhase::visit(StmtNode * n)
 {
 	tempNo = 1; //restart temporary counter (1-indexed)
 
 	//emit the line's code
-	n->getLine()->accept(this);
+	n->getStmt()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -46,8 +46,8 @@ void TempAssignSubPhase::visit(LineNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(IfNode * n)
 {
-	visit(n->getTrueLine());
-	visit(n->getFalseLine());
+	visit(n->getTrueStmt());
+	visit(n->getFalseStmt());
 }
 
 // ----------------------------------------------------------

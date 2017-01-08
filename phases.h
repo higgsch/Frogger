@@ -11,7 +11,7 @@ using namespace std;
 class AbstractNode;
 class BinaryOpNode;
 class ControlFlowNode;
-class LineNode;
+class StmtNode;
 class IfNode;
 class ProgramNode;
 class RetrievalNode;
@@ -42,7 +42,7 @@ class Phase
 {
 public:
 	//virtual visit functions required by visitor pattern
-	virtual void visit(LineNode * n) = 0;
+	virtual void visit(StmtNode * n) = 0;
 	virtual void visit(IfNode * n) = 0;
 	virtual void visit(RetrievalNode * n) = 0;
 	virtual void visit(DisplayingNode * n) = 0;

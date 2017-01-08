@@ -27,7 +27,7 @@ private:
 	void stmts();
 	IfStruct ifstmt();
 	BinaryOpNode* boolexp();
-	AbstractNode* line();
+	AbstractNode* stmt();
 	AbstractNode* strval();
 	AbstractNode* dblval();
 	AbstractNode* addterm();

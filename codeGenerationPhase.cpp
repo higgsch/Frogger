@@ -43,19 +43,19 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 //
 // Version 1.1
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(LineNode * n)
+void CodeGenerationPhase::visit(StmtNode * n)
 {
 	tempNo = 1; //restart temporary counter (1-indexed)
 
-	if (n->getLineNo() != -1) 
+	if (n->getStmtNo() != -1) 
 		//emit this line's label
-		*out << "\t__LABEL_" << n->getLineNo() << ":" << endl;
+		*out << "\t__LABEL_" << n->getStmtNo() << ":" << endl;
 
 	//generate temp assignments for the line
-	n->getLine()->accept(new TempAssignSubPhase(out)); 
+	n->getStmt()->accept(new TempAssignSubPhase(out)); 
 
 	//emit the line's code
-	n->getLine()->accept(this);
+	n->getStmt()->accept(this);
 
 	//emit this line's goto statement
 	*out << "\t\tgoto __LABEL_" << n->getJump() << ";" << endl << endl;
@@ -69,13 +69,13 @@ void CodeGenerationPhase::visit(LineNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IfNode * n)
 {
-	*out << "\t__LABEL_" << n->getLineNo() << ":" << endl;
+	*out << "\t__LABEL_" << n->getStmtNo() << ":" << endl;
 	*out << "\t\tif (";
 	n->getBoolExp()->accept(this);
 	*out << ")\n\t\t{\n\t\t\t";
-	visit(n->getTrueLine());
+	visit(n->getTrueStmt());
 	*out << "\n\t\t}\n\t\telse\n\t\t{\n\t\t\t";
-	visit(n->getFalseLine());
+	visit(n->getFalseStmt());
 	*out << "\n\t\t}\n";
 }
 

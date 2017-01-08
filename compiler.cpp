@@ -32,7 +32,7 @@ void Compiler::run(string inFile, ostream * out)
 	ProgramNode * root = p.parse();
 
 	//Compute goto line values and convert strings from frogger to c++
-	root->traverseNodes(new SummationPhase(root->getLineCount()));
+	root->traverseNodes(new SummationPhase(root->getStmtCount()));
 	root->traverseNodes(new StringConversionPhase());
 
 	//Generate output code to the out stream

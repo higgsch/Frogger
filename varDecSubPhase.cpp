@@ -22,7 +22,7 @@ VarDecSubPhase::VarDecSubPhase(ostream* outstream)
 {
 	list = NULL;
 	out = outstream;
-	currLineTempCount = 0;
+	currStmtTempCount = 0;
 	lineTempMax = 0;
 }
 
@@ -86,15 +86,15 @@ bool VarDecSubPhase::isInList(string id)
 //
 // Version 1.1
 // ----------------------------------------------------------
-void VarDecSubPhase::visit(LineNode * n)
+void VarDecSubPhase::visit(StmtNode * n)
 {
-	currLineTempCount = 0;
+	currStmtTempCount = 0;
 
-	n->getLine()->accept(this);
+	n->getStmt()->accept(this);
 
 	//update the temporary counter
-	if (currLineTempCount > lineTempMax)
-		lineTempMax = currLineTempCount;
+	if (currStmtTempCount > lineTempMax)
+		lineTempMax = currStmtTempCount;
 }
 
 // ----------------------------------------------------------
@@ -106,8 +106,8 @@ void VarDecSubPhase::visit(LineNode * n)
 void VarDecSubPhase::visit(IfNode * n)
 {
 	n->getBoolExp()->accept(this);
-	visit(n->getTrueLine());
-	visit(n->getFalseLine());
+	visit(n->getTrueStmt());
+	visit(n->getFalseStmt());
 }
 
 // ----------------------------------------------------------
@@ -118,7 +118,7 @@ void VarDecSubPhase::visit(IfNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(RetrievalNode * n)
 {
-	currLineTempCount++;
+	currStmtTempCount++;
 }
 
 // ----------------------------------------------------------
