@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.1
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program represents a visitor for calculating the goto line
 // numbers.
@@ -85,6 +82,18 @@ void SummationPhase::visit(LineNode * n)
 {
 	n->getLine()->accept(this);
 	n->setJump(n->getLine()->getAscii());
+}
+
+// ----------------------------------------------------------
+// This function processes an if statement.
+// @n: The node representing the statement.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void SummationPhase::visit(IfNode * n)
+{
+	visit(n->getTrueLine());
+	visit(n->getFalseLine());
 }
 
 // ----------------------------------------------------------
@@ -262,4 +271,72 @@ void SummationPhase::visit(DivingNode * n)
 	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
 		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
 	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes a not operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void SummationPhase::visit(NotingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a less than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void SummationPhase::visit(LTingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void SummationPhase::visit(GTingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes an equivalence comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void SummationPhase::visit(EQingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a less than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void SummationPhase::visit(LTEingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void SummationPhase::visit(GTEingNode * n) 
+{
+	//No op
 }

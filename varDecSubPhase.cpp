@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.1
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
@@ -98,6 +95,19 @@ void VarDecSubPhase::visit(LineNode * n)
 	//update the temporary counter
 	if (currLineTempCount > lineTempMax)
 		lineTempMax = currLineTempCount;
+}
+
+// ----------------------------------------------------------
+// This function processes an if statement.
+// @n: The node representing the statement.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(IfNode * n)
+{
+	n->getBoolExp()->accept(this);
+	visit(n->getTrueLine());
+	visit(n->getFalseLine());
 }
 
 // ----------------------------------------------------------
@@ -236,6 +246,79 @@ void VarDecSubPhase::visit(DivingNode * n)
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);
 	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a not operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(NotingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a less than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(LTingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(GTingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an equivalence comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(EQingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a less than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(LTEingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(GTEingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
 }
 
 // ----------------------------------------------------------

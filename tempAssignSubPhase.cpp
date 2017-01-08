@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.0
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating temporary's 
 // assignment within a given line of code.
@@ -39,6 +36,18 @@ void TempAssignSubPhase::visit(LineNode * n)
 
 	//emit the line's code
 	n->getLine()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an if statement.
+// @n: The node representing the statement.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(IfNode * n)
+{
+	visit(n->getTrueLine());
+	visit(n->getFalseLine());
 }
 
 // ----------------------------------------------------------
@@ -170,4 +179,72 @@ void TempAssignSubPhase::visit(DivingNode * n)
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);
 	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a not operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(NotingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a less than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(LTingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(GTingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes an equivalence comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(EQingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a less than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(LTEingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(GTEingNode * n) 
+{
+	//No op
 }

@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.1
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program represents a visitor for converting string literals
 // from frogger syntax to c++ syntax.
@@ -52,6 +49,18 @@ string StringConversionPhase::convertString(string s)
 void StringConversionPhase::visit(LineNode * n)
 {
 	n->getLine()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an if statement.
+// @n: The node representing the statement.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void StringConversionPhase::visit(IfNode * n)
+{
+	visit(n->getTrueLine());
+	visit(n->getFalseLine());
 }
 
 // ----------------------------------------------------------
@@ -172,6 +181,74 @@ void StringConversionPhase::visit(MulingNode * n)
 // Version 1.0
 // ----------------------------------------------------------
 void StringConversionPhase::visit(DivingNode * n)
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a not operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void StringConversionPhase::visit(NotingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a less than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void StringConversionPhase::visit(LTingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void StringConversionPhase::visit(GTingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes an equivalence comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void StringConversionPhase::visit(EQingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a less than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void StringConversionPhase::visit(LTEingNode * n) 
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void StringConversionPhase::visit(GTEingNode * n) 
 {
 	//No op
 }

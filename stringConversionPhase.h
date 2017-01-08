@@ -11,7 +11,7 @@ using namespace std;
 // This class represents a visitor for converting string
 // literals from frogger syntax to c++ syntax.
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
 class StringConversionPhase : public Phase
 {
@@ -20,6 +20,7 @@ private:
 
 public:
 	void visit(LineNode * n);
+	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);
 	void visit(EndingNode * n);
@@ -31,4 +32,10 @@ public:
 	void visit(SubingNode * n);
 	void visit(MulingNode * n);
 	void visit(DivingNode * n);
+	void visit(NotingNode * n);
+	void visit(LTingNode * n);
+	void visit(GTingNode * n);
+	void visit(EQingNode * n);
+	void visit(LTEingNode * n);
+	void visit(GTEingNode * n);
 };

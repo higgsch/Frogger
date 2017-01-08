@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.2
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and provides a char 
 // stream that has been de-obfuscated per spec.
@@ -99,11 +96,12 @@ bool Obfuscator::isIdChar(char c)
 // frogger keyword.
 // @s: The string in question.
 //
-// Version 1.2
+// Version 2.0
 // ----------------------------------------------------------
 bool Obfuscator::isKeyword(string s)
 {
-	return !s.compare("display") || !s.compare("end") || !s.compare("retrieve");
+	return !s.compare("display") || !s.compare("end") || !s.compare("retrieve")
+		|| !s.compare("if") || !s.compare("else");
 }
 
 // ----------------------------------------------------------

@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.2
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and converts strings of 
 // chars to tokens.
@@ -79,7 +76,7 @@ void Scanner::checkForObfuscation(void)
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 1.2
+// Version 2.0
 // ----------------------------------------------------------
 Token Scanner::scan(void)
 {
@@ -102,8 +99,38 @@ Token Scanner::scan(void)
 			return Token::RPAREN;
 		else if (in_char == ';')
 			return Token::SEMICOLON;
-		else if (in_char == '=') 
+		else if (in_char == '=')
+		{
+			int c = get();
+			if (c == '=')
+				return Token::EQ;
+
+			//c is not part of the current token
+			unget();
 			return Token::ASSIGN;
+		}
+		else if (in_char == '!')
+			return Token::NOT;
+		else if (in_char == '<')
+		{
+			int c = get();
+			if (c == '=')
+				return Token::LTE;
+			
+			//Only < found
+			unget();
+			return Token::LT;
+		}
+		else if (in_char == '>')
+		{
+			int c = get();
+			if (c == '=')
+				return Token::GTE;
+
+			//Only > found
+			unget();
+			return Token::GT;
+		}
 		else if (in_char == '+')
 		{
 			int c = get();
@@ -181,6 +208,10 @@ Token Scanner::scan(void)
 				return Token::DISPLAY;
 			else if (token_buffer == "end")
 				return Token::END;
+			else if (token_buffer == "if")
+				return Token::IF;
+			else if (token_buffer == "else")
+				return Token::ELSE;
 			else
 				return Token(ID, token_buffer);
 		}

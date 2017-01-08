@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.2
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -50,24 +47,31 @@ ProgramNode* Parser::parse()
 }
 
 // ----------------------------------------------------------
-// This function represents production rule #1:
-// <prog> => <line> <lines> $
+// This function represents production rule:
+// <prog> => <stmt> <stmts> $
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
 void Parser::prog()
 {
-	root->addLineNode(line()); lines();
+	Token tok = next_token();
+	if (tok.type == IF)
+		root->addIfNode(ifstmt());
+	else
+		root->addLineNode(line());
+
+	stmts();
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #2 and 3:
-// <lines> => <line> <lines>
-// <lines> => [lambda]
+// This function represents production rules:
+// <stmts> => <ifstmt> <stmts>
+// <stmts> => <line> <stmts>
+// <stmts> => [lambda]
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
-void Parser::lines()
+void Parser::stmts()
 {
 	Token tok = next_token();
 	switch(tok.type)
@@ -75,20 +79,62 @@ void Parser::lines()
 	case SCANEOF:
 		//lambda
 		break;
+	case IF:
+		root->addIfNode(ifstmt()); stmts();
 	default:
-		root->addLineNode(line()); lines();
+		root->addLineNode(line()); stmts();
 		break;
 	}
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #4, 5, and 6:
-// <line> => display ( <val> ) ;
+// This function represents production rules:
+// <ifstmt> -> if ( <boolexp> ) <line> else <line>
+//
+// Version 2.0
+// ----------------------------------------------------------
+IfStruct Parser::ifstmt()
+{
+	match(IF); match(LPAREN);
+	BinaryOpNode* toCompare = boolexp();
+	match(RPAREN);
+	AbstractNode* trueAbs = line();
+	match(ELSE);
+	AbstractNode* falseAbs = line();
+
+	IfStruct ifStruct;
+	ifStruct.boolExp = toCompare;
+	ifStruct.trueLine = new LineNode(-1);
+	ifStruct.falseLine = new LineNode(-1);
+	ifStruct.trueLine->addLine(trueAbs);
+	ifStruct.falseLine->addLine(falseAbs);
+	return ifStruct;
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <boolexp> -> <dblval> <boolops> <dblval>
+//
+// Version 2.0
+// ----------------------------------------------------------
+BinaryOpNode* Parser::boolexp()
+{
+	AbstractNode* left = dblval(); 
+	BinaryOpNode* op = boolops(); 
+	AbstractNode* right = dblval();
+	op->addOps(left, right);
+	return op;
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <line> => display ( <strval> ) ;
+// <line> => display ( <dblval> ) ;
 // <line> => end ;
 // <line> => id assign <dblval> ;
 // Returns: A pointer to the node representing this line.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
 AbstractNode* Parser::line()
 {
@@ -97,8 +143,15 @@ AbstractNode* Parser::line()
 	{
 	case DISPLAY:
 		{
-			match(DISPLAY); match(LPAREN); 
-			AbstractNode* toDisplay = val(); 
+			match(DISPLAY); match(LPAREN);
+
+			Token t = next_token();
+			AbstractNode* toDisplay;
+			if (t.type == STRING)
+				toDisplay = strval();
+			else
+				toDisplay = dblval();
+
 			match(RPAREN); match(SEMICOLON);
 			return new DisplayingNode(toDisplay);
 			break;
@@ -125,36 +178,21 @@ AbstractNode* Parser::line()
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #7 and 8:
-// <val> => string
-// <val> => <dblval>
+// This function represents production rules:
+// <strval> => string
 // Returns: A pointer to the node representing this value.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
-AbstractNode* Parser::val()
+AbstractNode* Parser::strval()
 {
 	Token tok = next_token();
-	switch(tok.type)
-	{
-	case STRING:
-		match(STRING);
-		return new StringConstingNode(tok.lexeme);
-		break;
-	case DOUBLECONST:
-	case ID:
-	case LPAREN:
-		return dblval();
-		break;
-	default:
-		syntax_error("Invalid display sequence - " + tok.lexeme);
-		return NULL;
-		break;
-	}
+	match(STRING);
+	return new StringConstingNode(tok.lexeme);
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #9, 10.1, and 10.2:
+// This function represents production rules:
 // <dblval> => <addterm> <dblval.1>
 // <dblval.1> => <addop> <dblval>
 // <dblval.1> => [lambda]
@@ -186,7 +224,7 @@ AbstractNode* Parser::dblval()
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #11, 12.1, and 12.2:
+// This function represents production rules:
 // <addterm> => <multerm> <addterm.1>
 // <addterm.1> => <mulop> <addterm>
 // <addterm.1> => [lambda]
@@ -218,7 +256,7 @@ AbstractNode* Parser::addterm()
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #13, 14, 15, and 16:
+// This function represents production rules:
 // <multerm> => dbl
 // <multerm> => id
 // <multerm> => ( <dblval> )
@@ -261,7 +299,7 @@ AbstractNode* Parser::multerm()
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #17 and 18:
+// This function represents production rules:
 // <addop> => add
 // <addop> => sub
 // Returns: A pointer to the node representing this operator.
@@ -289,7 +327,7 @@ BinaryOpNode* Parser::addop()
 }
 
 // ----------------------------------------------------------
-// This function represents production rules #19 and 20:
+// This function represents production rules:
 // <mulop> => mul
 // <mulop> => div
 // Returns: A pointer to the node representing this operator.
@@ -317,12 +355,90 @@ BinaryOpNode* Parser::mulop()
 }
 
 // ----------------------------------------------------------
+// This function represents production rules:
+// <boolops> -> <boolop>
+// <boolops> -> not <boolop>
+// Returns: A pointer to the node representing this operator.
+//
+// Version 2.0
+// ----------------------------------------------------------
+BinaryOpNode* Parser::boolops()
+{
+	Token tok = next_token();
+	switch (tok.type)
+	{
+	case NOT:
+		{
+		match(NOT);
+		BinaryOpNode* not = new NotingNode();
+		not->addLeftChild(boolop());
+		return not;
+		break;
+		}
+	case LT:
+	case GT:
+	case EQ:
+	case LTE:
+	case GTE:
+		return boolop();
+		break;
+	default:
+		syntax_error("'" + tok.lexeme + "' - Invalid Boolean Operator");
+		return NULL;
+		break;
+	}
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <boolop> -> lt
+// <boolop> -> gt
+// <boolop> -> eq
+// <boolop> -> lte
+// <boolop> -> gte
+// Returns: A pointer to the node representing this operator.
+//
+// Version 2.0
+// ----------------------------------------------------------
+BinaryOpNode* Parser::boolop()
+{
+	Token tok = next_token();
+	switch (tok.type)
+	{
+	case LT:
+		match(LT);
+		return new LTingNode();
+		break;
+	case GT:
+		match(GT);
+		return new GTingNode();
+		break;
+	case EQ:
+		match(EQ);
+		return new EQingNode();
+		break;
+	case LTE:
+		match(LTE);
+		return new LTEingNode();
+		break;
+	case GTE:
+		match(GTE);
+		return new GTEingNode();
+		break;
+	default:
+		syntax_error(lookahead[0].lexeme + " - Invalid Boolean Operator");
+		return NULL;
+		break;
+	}
+}
+
+// ----------------------------------------------------------
 // This function tests if the next token matches toMatch and
 // moves to the next token on success. It displayes an error
 // on failure.
 // @toMatch: The expected token category.
 //
-// Version 1.2
+// Version 2.0
 // ----------------------------------------------------------
 void Parser::match(token_type toMatch)
 {
@@ -352,6 +468,24 @@ void Parser::match(token_type toMatch)
 		case DIV:
 			type = "//";
 			break;
+		case NOT:
+			type = "!";
+			break;
+		case LT: 
+			type = "<";
+			break;
+		case GT:
+			type = ">";
+			break;
+		case EQ:
+			type = "==";
+			break;
+		case LTE:
+			type = "<=";
+			break;
+		case GTE:
+			type = ">=";
+			break;
 		case RETRIEVE:
 			type = "retrieve";
 			break;
@@ -360,6 +494,12 @@ void Parser::match(token_type toMatch)
 			break;
 		case DISPLAY:
 			type = "display";
+			break;
+		case IF:
+			type = "if";
+			break;
+		case ELSE:
+			type = "else";
 			break;
 		case SEMICOLON:
 			type = ";";

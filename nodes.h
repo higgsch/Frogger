@@ -8,6 +8,8 @@
 using namespace std;
 
 class Phase;
+class BinaryOpNode;
+class LineNode;
 
 // identification for which binary child a node is.
 typedef enum node_sides{
@@ -16,9 +18,19 @@ typedef enum node_sides{
 
 // set of node categories
 typedef enum node_types{
-	RETRIEVING, DISPLAYING, ENDING, ASSIGNING, IDREF, STRINGCONSTING, 
-	DBLCONSTING, ADDING, SUBING, MULING, DIVING
+	RETRIEVING, DISPLAYING, ENDING,
+	ASSIGNING, IDREF, STRINGCONSTING, 
+	DBLCONSTING, ADDING, SUBING, MULING, DIVING,
+	NOTING, LTING, GTING, EQING, LTEING, GTEING
 } node_type;
+
+// structure to generate an IfNode
+struct IfStruct
+{
+	BinaryOpNode * boolExp;
+	LineNode * trueLine;
+	LineNode * falseLine;
+};
 
 // ----------------------------------------------------------
 // This class provides the base of the node inheritance for
@@ -164,18 +176,48 @@ public:
 };
 
 // ----------------------------------------------------------
+// This class provides a node for a control flow structure.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class ControlFlowNode
+{
+protected: 
+	ControlFlowNode * nextStmt; // the next statement linearly
+	int lineNo; // an identifier for this statement 
+	//(not the line in source but the count of LINE from the cfg)
+
+public: 
+	// ----------------------------------------------------------
+	// This function returns the next statement of code.
+	//
+	// Version 2.0
+	// ----------------------------------------------------------
+	ControlFlowNode * getNextStmt() { return nextStmt; }
+
+	// ----------------------------------------------------------
+	// This function returns this statement's line identifier.
+	//
+	// Version 2.0
+	// ----------------------------------------------------------
+	int	 getLineNo() { return lineNo; }
+
+	virtual void addLine(AbstractNode * line)=0;
+	virtual void addIf(IfStruct ifStruct)=0;
+	virtual void clean()=0;
+	virtual void printNodes(ostream* out)=0;
+	virtual void traverseNodes(Phase* p)=0;
+};
+
+// ----------------------------------------------------------
 // This class provides a node for a line of code.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
-class LineNode
+class LineNode : public ControlFlowNode
 {
 private:
 	AbstractNode * line; // the AST for this line of code
-	LineNode * nextLine; // the next line of code
-	int lineNo; // an identifier for this line 
-	//(not the line in source but the count of LINE from the cfg)
-
 	int ascii_jmp; // the line to jump to after this line executes
 
 public:
@@ -199,27 +241,40 @@ public:
 	int  getJump() { return ascii_jmp; }
 
 	// ----------------------------------------------------------
-	// This function returns this line's line identifier.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	int	 getLineNo() { return lineNo; }
-
-	// ----------------------------------------------------------
 	// This function returns the AST for this line of code.
 	//
 	// Version 1.0
 	// ----------------------------------------------------------
 	AbstractNode * getLine() { return line; }
+	
+	void addLine(AbstractNode * line);
+	void addIf(IfStruct ifStruct);
+	void clean();
+	void printNodes(ostream* out);
+	void traverseNodes(Phase* p);
+};
 
-	// ----------------------------------------------------------
-	// This function returns the next line of code.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	LineNode * getNextLine() { return nextLine; }
+// ----------------------------------------------------------
+// This class provides a node for an if statement.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class IfNode : public ControlFlowNode
+{
+private: 
+	BinaryOpNode * boolExp; // the boolean comparison
+	LineNode * trueLine; // the line of code if boolExp is true
+	LineNode * falseLine; // the line of code if boolExp is false
+
+public: 
+	IfNode(int);
+
+	BinaryOpNode* getBoolExp() { return boolExp; }
+	LineNode* getTrueLine() { return trueLine; }
+	LineNode* getFalseLine() { return falseLine; }
 
 	void addLine(AbstractNode * line);
+	void addIf(IfStruct ifStruct);
 	void clean();
 	void printNodes(ostream* out);
 	void traverseNodes(Phase* p);
@@ -228,23 +283,23 @@ public:
 // ----------------------------------------------------------
 // This class provides a root node for the AST.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
 class ProgramNode
 {
 private:
-	LineNode * firstLine; // the first line of code in this program
+	ControlFlowNode * firstStmt; // the first statement of code in this program
 	int lineCount; // the total number of lines within the program
 
 public:
 	ProgramNode();
 
 	// ----------------------------------------------------------
-	// This function returns the first line of code.
+	// This function returns the first statement of code.
 	//
-	// Version 1.0
+	// Version 2.0
 	// ----------------------------------------------------------
-	LineNode* getFirstLine() { return firstLine; }
+	ControlFlowNode* getFirstStmt() { return firstStmt; }
 
 	// ----------------------------------------------------------
 	// This function returns the number of lines in this program.
@@ -254,6 +309,7 @@ public:
 	int getLineCount() { return lineCount; }
 
 	void addLineNode(AbstractNode * line);
+	void addIfNode(IfStruct ifStruct);
 	void clean();
 	void printNodes(ostream* out);
 	void traverseNodes(Phase* p);
@@ -409,6 +465,90 @@ class DivingNode : public BinaryOpNode
 {
 public:
 	DivingNode();
+	void printMe(ostream*);
+	void accept(Phase*);
+};
+
+// ----------------------------------------------------------
+// This class provides a node representation for a boolean not
+// operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class NotingNode : public BinaryOpNode
+{
+public:
+	NotingNode();
+	void printMe(ostream*);
+	void accept(Phase*);
+};
+
+// ----------------------------------------------------------
+// This class provides a node representation for a less than
+// comparison.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class LTingNode : public BinaryOpNode
+{
+public:
+	LTingNode();
+	void printMe(ostream*);
+	void accept(Phase*);
+};
+
+// ----------------------------------------------------------
+// This class provides a node representation for a greater 
+// than comparison.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class GTingNode : public BinaryOpNode
+{
+public:
+	GTingNode();
+	void printMe(ostream*);
+	void accept(Phase*);
+};
+
+// ----------------------------------------------------------
+// This class provides a node representation for an equivalence
+// comparison.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class EQingNode : public BinaryOpNode
+{
+public:
+	EQingNode();
+	void printMe(ostream*);
+	void accept(Phase*);
+};
+
+// ----------------------------------------------------------
+// This class provides a node representation for a less than
+// or equal comparison.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class LTEingNode : public BinaryOpNode
+{
+public:
+	LTEingNode();
+	void printMe(ostream*);
+	void accept(Phase*);
+};
+
+// ----------------------------------------------------------
+// This class provides a node representation for a greater 
+// than or equal comparison.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class GTEingNode : public BinaryOpNode
+{
+public:
+	GTEingNode();
 	void printMe(ostream*);
 	void accept(Phase*);
 };

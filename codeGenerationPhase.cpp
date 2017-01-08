@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.1
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -50,8 +47,9 @@ void CodeGenerationPhase::visit(LineNode * n)
 {
 	tempNo = 1; //restart temporary counter (1-indexed)
 
-	//emit this line's label
-	*out << "\t__LABEL_" << n->getLineNo() << ":" << endl;
+	if (n->getLineNo() != -1) 
+		//emit this line's label
+		*out << "\t__LABEL_" << n->getLineNo() << ":" << endl;
 
 	//generate temp assignments for the line
 	n->getLine()->accept(new TempAssignSubPhase(out)); 
@@ -61,6 +59,24 @@ void CodeGenerationPhase::visit(LineNode * n)
 
 	//emit this line's goto statement
 	*out << "\t\tgoto __LABEL_" << n->getJump() << ";" << endl << endl;
+}
+
+// ----------------------------------------------------------
+// This function processes an if statement.
+// @n: The node representing the statement.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(IfNode * n)
+{
+	*out << "\t__LABEL_" << n->getLineNo() << ":" << endl;
+	*out << "\t\tif (";
+	n->getBoolExp()->accept(this);
+	*out << ")\n\t\t{\n\t\t\t";
+	visit(n->getTrueLine());
+	*out << "\n\t\t}\n\t\telse\n\t\t{\n\t\t\t";
+	visit(n->getFalseLine());
+	*out << "\n\t\t}\n";
 }
 
 // ----------------------------------------------------------
@@ -239,4 +255,84 @@ void CodeGenerationPhase::visit(DivingNode * n)
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
+}
+
+// ----------------------------------------------------------
+// This function processes a not operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(NotingNode * n) 
+{
+	*out << "!( ";
+	n->getLeftChild()->accept(this);
+	*out << " )";
+}
+
+// ----------------------------------------------------------
+// This function processes a less than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(LTingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	*out << " < ";
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(GTingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	*out << " > ";
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an equivalence comparison operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(EQingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	*out << " == ";
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a less than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(LTEingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	*out << " <= ";
+	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a greater than or equal comparison 
+// operation.
+// @n: The node representing the operation.
+//
+// Version 2.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(GTEingNode * n) 
+{
+	n->getLeftChild()->accept(this);
+	*out << " >= ";
+	n->getRightChild()->accept(this);
 }

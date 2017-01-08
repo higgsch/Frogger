@@ -10,9 +10,11 @@ using namespace std;
 
 // set of fgr token categories
 typedef enum token_types {
-	NOTOK = -1, ASSIGN, ADD, SUB, MUL, DIV, STRING,
-	ID, DOUBLECONST, RETRIEVE, END, DISPLAY, SEMICOLON, 
-	LPAREN, RPAREN, SCANEOF
+	NOTOK = -1, ASSIGN, ADD, SUB, MUL, DIV, NOT, LT, GT, EQ, LTE, GTE, 
+	STRING,	ID, DOUBLECONST, 
+	RETRIEVE, END, DISPLAY, IF, ELSE, 
+	SEMICOLON, LPAREN, RPAREN, 
+	SCANEOF
 } token_type;
 
 // ----------------------------------------------------------
@@ -20,7 +22,7 @@ typedef enum token_types {
 // constructors for ease of use and static "constants" for 
 // compact use. 
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
 class Token
 { //Glorified Struct with public members and static placeholders
@@ -39,9 +41,17 @@ public:
 	static Token SUB;
 	static Token MUL;
 	static Token DIV;
+	static Token NOT;
+	static Token LT;
+	static Token GT;
+	static Token EQ;
+	static Token LTE;
+	static Token GTE;
 	static Token RETRIEVE;
 	static Token END;
 	static Token DISPLAY;
+	static Token IF;
+	static Token ELSE;
 	static Token SEMICOLON;
 	static Token LPAREN;
 	static Token RPAREN;

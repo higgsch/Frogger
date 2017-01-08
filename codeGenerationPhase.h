@@ -11,7 +11,7 @@ using namespace std;
 // This class represents a visitor for generating output code
 // that reflects the current AST.
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
 class CodeGenerationPhase : public Phase
 {
@@ -23,6 +23,7 @@ public:
 	CodeGenerationPhase(ostream* outstream, ProgramNode* root);
 
 	void visit(LineNode * n);
+	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);
 	void visit(EndingNode * n);
@@ -34,4 +35,10 @@ public:
 	void visit(SubingNode * n);
 	void visit(MulingNode * n);
 	void visit(DivingNode * n);
+	void visit(NotingNode * n);
+	void visit(LTingNode * n);
+	void visit(GTingNode * n);
+	void visit(EQingNode * n);
+	void visit(LTEingNode * n);
+	void visit(GTEingNode * n);
 };

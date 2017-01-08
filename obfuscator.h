@@ -13,7 +13,7 @@ using namespace std;
 // This class reads through a .fgr file and provides a char 
 // stream that has been de-obfuscated per spec.
 //
-// Version 1.2
+// Version 2.0
 // ----------------------------------------------------------
 class Obfuscator
 {
