@@ -1,0 +1,10 @@
+# Compiled Object files
+*.o
+
+# Executables
+*.exe
+
+# Misc
+*.ilk
+*.pdb
+~$*.docx
