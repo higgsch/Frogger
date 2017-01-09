@@ -6,9 +6,9 @@
 // that reflects the current AST.
 // -----------------------------------------------------------------
 #include "codeGenerationPhase.h"
-#include "varDecSubPhase.h"
-#include "tempAssignSubPhase.h"
-#include "nodes.h"
+#include "SubPhases\varDecSubPhase.h"
+#include "SubPhases\tempAssignSubPhase.h"
+#include "..\Parsing\nodes.h"
 #include <iostream>
 #include <sstream>
 using namespace std;

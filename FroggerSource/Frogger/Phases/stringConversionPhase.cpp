@@ -6,7 +6,7 @@
 // from frogger syntax to c++ syntax.
 // -----------------------------------------------------------------
 #include "stringConversionPhase.h"
-#include "nodes.h"
+#include "..\Parsing\nodes.h"
 #include <iostream>
 #include <sstream>
 using namespace std;

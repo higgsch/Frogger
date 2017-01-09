@@ -4,8 +4,8 @@
 #pragma once
 
 #include <string>
-#include "scanner.h"
-#include "token.h"
+#include "..\Scanning\scanner.h"
+#include "..\Scanning\token.h"
 #include "nodes.h"
 using namespace std;
 

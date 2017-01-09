@@ -6,7 +6,7 @@
 // numbers.
 // -----------------------------------------------------------------
 #include "summationPhase.h"
-#include "nodes.h"
+#include "..\Parsing\nodes.h"
 #include <iostream>
 #include <sstream>
 using namespace std;

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include "obfuscator.h"
+#include "..\Obfuscation\obfuscator.h"
 using namespace std;
 
 class Token;

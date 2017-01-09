@@ -4,7 +4,7 @@
 #pragma once
 
 #include <string>
-#include "parser.h"
+#include "..\Parsing\parser.h"
 using namespace std;
 
 class ProgramNode;

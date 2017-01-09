@@ -5,7 +5,7 @@
 // This program provides node representations for the AST.
 // -----------------------------------------------------------------
 #include "nodes.h"
-#include "phases.h"
+#include "..\Phases\phases.h"
 using namespace std;
 
 // ----------------------------------------------------------

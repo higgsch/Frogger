@@ -5,11 +5,11 @@
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
 #include "compiler.h"
-#include "summationPhase.h"
-#include "stringConversionPhase.h"
-#include "codeGenerationPhase.h"
+#include "..\Phases\summationPhase.h"
+#include "..\Phases\stringConversionPhase.h"
+#include "..\Phases\codeGenerationPhase.h"
 #include "parser.h"
-#include "nodes.h"
+#include "..\Parsing\nodes.h"
 using namespace std;
 
 // ----------------------------------------------------------
