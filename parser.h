@@ -34,7 +34,6 @@ private:
 	AbstractNode* multerm();
 	BinaryOpNode* addop();
 	BinaryOpNode* mulop();
-	BinaryOpNode* boolops();
 	BinaryOpNode* boolop();
 
 	void match(token_type);

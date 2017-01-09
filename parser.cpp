@@ -82,6 +82,7 @@ void Parser::stmts()
 		break;
 	case IF:
 		root->addIfNode(ifstmt()); stmts();
+		break;
 	default:
 		root->addStmtNode(stmt()); stmts();
 		break;
@@ -114,17 +115,36 @@ IfStruct Parser::ifstmt()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <boolexp> => <dblval> <boolops> <dblval>
+// <boolexp> => <dblval> <boolop> <dblval>
+// <boolexp> => <dblval> not <boolop> <dblval>
 //
 // Version 2.0
 // ----------------------------------------------------------
 BinaryOpNode* Parser::boolexp()
 {
 	AbstractNode* left = dblval(); 
-	BinaryOpNode* op = boolops(); 
+
+	Token tok = next_token();
+	BinaryOpNode* not = NULL;
+	if (tok.type == NOT)
+	{
+		match(NOT); 
+		not = new NotingNode();
+	}
+
+	BinaryOpNode* op = boolop(); 
 	AbstractNode* right = dblval();
 	op->addOps(left, right);
-	return op;
+
+	if (not == NULL)
+	{
+		return op;
+	}
+	else
+	{
+		not->addLeftChild(op);
+		return not;
+	}
 }
 
 // ----------------------------------------------------------
@@ -350,41 +370,6 @@ BinaryOpNode* Parser::mulop()
 		break;
 	default:
 		syntax_error("Expected '**' or '//' - Found " + tok.lexeme);
-		return NULL;
-		break;
-	}
-}
-
-// ----------------------------------------------------------
-// This function represents production rules:
-// <boolops> => <boolop>
-// <boolops> => not <boolop>
-// Returns: A pointer to the node representing this operator.
-//
-// Version 2.0
-// ----------------------------------------------------------
-BinaryOpNode* Parser::boolops()
-{
-	Token tok = next_token();
-	switch (tok.type)
-	{
-	case NOT:
-		{
-		match(NOT);
-		BinaryOpNode* not = new NotingNode();
-		not->addLeftChild(boolop());
-		return not;
-		break;
-		}
-	case LT:
-	case GT:
-	case EQ:
-	case LTE:
-	case GTE:
-		return boolop();
-		break;
-	default:
-		syntax_error("'" + tok.lexeme + "' - Invalid Boolean Operator");
 		return NULL;
 		break;
 	}
