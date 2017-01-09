@@ -47,15 +47,14 @@ void TempAssignSubPhase::visit(StmtNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(IfNode * n)
 {
-	visit(n->getTrueStmt());
-	visit(n->getFalseStmt());
+	n->getBoolExp()->accept(this);
 }
 
 // ----------------------------------------------------------
 // This function processes a retrieve statement.
 // @n: The node representing the retrieve statement.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(RetrievalNode * n)
 {
@@ -66,11 +65,11 @@ void TempAssignSubPhase::visit(RetrievalNode * n)
 // This function processes a display statement.
 // @n: The node representing the display statement.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(DisplayingNode * n)
 {
-	//No op
+	n->getLeftChild()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -190,7 +189,7 @@ void TempAssignSubPhase::visit(DivingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(NotingNode * n) 
 {
-	//No op
+	n->getLeftChild()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -201,7 +200,8 @@ void TempAssignSubPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(LTingNode * n) 
 {
-	//No op
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -212,7 +212,8 @@ void TempAssignSubPhase::visit(LTingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(GTingNode * n) 
 {
-	//No op
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -223,7 +224,8 @@ void TempAssignSubPhase::visit(GTingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(EQingNode * n) 
 {
-	//No op
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -235,7 +237,8 @@ void TempAssignSubPhase::visit(EQingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(LTEingNode * n) 
 {
-	//No op
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -247,5 +250,6 @@ void TempAssignSubPhase::visit(LTEingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(GTEingNode * n) 
 {
-	//No op
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
 }

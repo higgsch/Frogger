@@ -84,6 +84,9 @@ void CodeGenerationPhase::visit(IfNode * n)
 {
 	*out << indent() << "__LABEL_" << n->getStmtNo() << ":" << endl;
 	indentDepth++;
+
+	n->getBoolExp()->accept(new TempAssignSubPhase(out, indentDepth));
+
 	*out << indent() << "if (";
 	n->getBoolExp()->accept(this);
 	*out << ")\n" << indent() << "{\n";

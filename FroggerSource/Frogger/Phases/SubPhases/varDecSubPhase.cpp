@@ -16,7 +16,7 @@ using namespace std;
 // given output stream.
 // @outstream: The output stream to print to.
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
 VarDecSubPhase::VarDecSubPhase(ostream* outstream, int tabCount)
 {
@@ -106,7 +106,13 @@ void VarDecSubPhase::visit(StmtNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(IfNode * n)
 {
+	currStmtTempCount = 0;
+
 	n->getBoolExp()->accept(this);
+
+	if (currStmtTempCount > lineTempMax)
+		lineTempMax = currStmtTempCount;
+
 	visit(n->getTrueStmt());
 	visit(n->getFalseStmt());
 }
@@ -149,7 +155,7 @@ void VarDecSubPhase::visit(EndingNode * n)
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(IdRefNode * n)
 {
@@ -325,7 +331,7 @@ void VarDecSubPhase::visit(GTEingNode * n)
 // ----------------------------------------------------------
 // This function adds declarations for the temporaries.
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
 void VarDecSubPhase::addTemporaries()
 {
