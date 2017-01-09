@@ -19,19 +19,21 @@ using namespace std;
 // @outstream: The output stream to print to.
 // @root: The root node for the AST.
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
 CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 {
 	out = outstream;
 	tempNo = 1; //temporaries are 1-indexed
+	indentDepth = 0;
 
 	//emit the "header" code
 	*out << "#include <string>\n#include <iostream>\nusing namespace std;\n\n";
 	*out << "int main(int argc, char* argv[])\n{\n";
+	indentDepth++;
 
 	//emit the variable declarations
-	VarDecSubPhase * sub = new VarDecSubPhase(out);
+	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth);
 	root->traverseNodes(sub);
 	sub->addTemporaries();
 	*out << endl << endl;
@@ -41,27 +43,35 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(StmtNode * n)
 {
 	tempNo = 1; //restart temporary counter (1-indexed)
 
-	if (n->getStmtNo() != -1) 
+	bool isOwnLine = (n->getStmtNo() != -1);
+
+	if (isOwnLine) 
+	{
 		//emit this line's label
-		*out << "\t__LABEL_" << n->getStmtNo() << ":" << endl;
+		*out << indent() << "__LABEL_" << n->getStmtNo() << ":" << endl;
+		indentDepth++;
+	}
 
 	//generate temp assignments for the line
-	n->getStmt()->accept(new TempAssignSubPhase(out, (n->getStmtNo() == -1) ? 3 : 2)); 
+	n->getStmt()->accept(new TempAssignSubPhase(out, indentDepth)); 
 
 	//emit the line's code
 	n->getStmt()->accept(this);
 	
 	//emit this line's goto statement
-	if (n->getStmtNo() == -1)
-		*out << "\t\t\tgoto __LABEL_" << n->getJump() << ";" << endl;
-	else
-		*out << "\t\tgoto __LABEL_" << n->getJump() << ";" << endl << endl;
+	*out << indent() << "goto __LABEL_" << n->getJump() << ";" << endl;
+
+	if (isOwnLine)
+	{
+		*out << endl;
+		indentDepth--;
+	}
 }
 
 // ----------------------------------------------------------
@@ -72,14 +82,21 @@ void CodeGenerationPhase::visit(StmtNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IfNode * n)
 {
-	*out << "\t__LABEL_" << n->getStmtNo() << ":" << endl;
-	*out << "\t\tif (";
+	*out << indent() << "__LABEL_" << n->getStmtNo() << ":" << endl;
+	indentDepth++;
+	*out << indent() << "if (";
 	n->getBoolExp()->accept(this);
-	*out << ")\n\t\t{\n\t";
+	*out << ")\n" << indent() << "{\n";
+	indentDepth++;
 	visit(n->getTrueStmt());
-	*out << "\t\t}\n\t\telse\n\t\t{\n\t";
+	indentDepth--;
+	*out << indent() << "}\n";
+	*out << indent() << "else\n" << indent() << "{\n";
+	indentDepth++;
 	visit(n->getFalseStmt());
-	*out << "\t\t}\n" << endl;
+	indentDepth--;
+	*out << indent() << "}\n" << endl;
+	indentDepth--;
 }
 
 // ----------------------------------------------------------
@@ -101,7 +118,7 @@ void CodeGenerationPhase::visit(RetrievalNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(DisplayingNode * n)
 {
-	*out << "\t\tcout << (";
+	*out << indent() << "cout << (";
 	AbstractNode *child = n->getLeftChild();
 	child->accept(this);
 	*out << ");" << endl;
@@ -115,7 +132,7 @@ void CodeGenerationPhase::visit(DisplayingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(EndingNode * n)
 {
-	*out << "\t\texit(0);" << endl;
+	*out << indent() << "exit(0);" << endl;
 }
 
 // ----------------------------------------------------------
@@ -144,7 +161,7 @@ void CodeGenerationPhase::visit(IdRefNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(AssigningNode * n)
 {
-	*out << "\t\t";
+	*out << indent();
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);
 	*out << " = (";

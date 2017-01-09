@@ -18,12 +18,13 @@ using namespace std;
 //
 // Version 1.1
 // ----------------------------------------------------------
-VarDecSubPhase::VarDecSubPhase(ostream* outstream)
+VarDecSubPhase::VarDecSubPhase(ostream* outstream, int tabCount)
 {
 	list = NULL;
 	out = outstream;
 	currStmtTempCount = 0;
 	lineTempMax = 0;
+	indentDepth = tabCount;
 }
 
 // ----------------------------------------------------------
@@ -157,7 +158,7 @@ void VarDecSubPhase::visit(IdRefNode * n)
 	{
 		addToList(id);
 		//emit variable declaration and initialization
-		*out << "\tdouble _" << id << " = 0;\n";
+		*out << indent() << "double _" << id << " = 0;\n";
 	}
 }
 
@@ -329,7 +330,5 @@ void VarDecSubPhase::visit(GTEingNode * n)
 void VarDecSubPhase::addTemporaries()
 {
 	for (int i = 1; i <= lineTempMax; i++)
-	{
-		*out << "\tdouble _temp_" << i << " = 0;\n";
-	}
+		*out << indent() << "double _temp_" << i << " = 0;\n";
 }

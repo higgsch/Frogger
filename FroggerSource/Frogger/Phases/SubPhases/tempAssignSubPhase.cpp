@@ -20,7 +20,7 @@ using namespace std;
 // ----------------------------------------------------------
 TempAssignSubPhase::TempAssignSubPhase(ostream* outstream, int indentCount)
 {
-	tabCount = indentCount;
+	indentDepth = indentCount;
 	out = outstream;
 	tempNo = 1; //temporaries are 1-indexed
 }
@@ -59,9 +59,7 @@ void TempAssignSubPhase::visit(IfNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(RetrievalNode * n)
 {
-	for (int i = 0; i < tabCount; i++)
-		*out << "\t";
-	*out << "cin >> _temp_" << tempNo++ << ";\n";
+	*out << indent() << "cin >> _temp_" << tempNo++ << ";\n";
 }
 
 // ----------------------------------------------------------

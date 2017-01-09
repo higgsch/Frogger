@@ -18,7 +18,7 @@ class TempAssignSubPhase : public Phase
 private:
 	ostream* out; // the output stream to print to
 	int tempNo; // the current temp number in a line
-	int tabCount; // the number of tabs of indentation
+	int indentDepth; // the number of tabs to insert
 
 public:
 	TempAssignSubPhase(ostream* outstream, int indentCount);
@@ -42,4 +42,13 @@ public:
 	void visit(EQingNode * n);
 	void visit(LTEingNode * n);
 	void visit(GTEingNode * n);
+
+	string indent()
+	{
+		string result = "";
+		for (int i = 0; i < indentDepth; i++)
+			result = result + "\t";
+
+		return result;
+	}
 };

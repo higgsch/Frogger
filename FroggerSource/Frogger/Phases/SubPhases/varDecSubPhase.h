@@ -28,12 +28,13 @@ private:
 	VarList* list; // the "symbol table"
 	int currStmtTempCount; // a counter for the temporaries needed for the current line
 	int lineTempMax; // a storage for the maximum temporaries needed in any given line
+	int indentDepth; // the number of tabs to insert
 
 	void addToList(string);
 	bool isInList(string);
 
 public:
-	VarDecSubPhase(ostream*);
+	VarDecSubPhase(ostream*, int tabCount);
 
 	void visit(StmtNode * n);
 	void visit(IfNode * n);
@@ -56,4 +57,12 @@ public:
 	void visit(GTEingNode * n);
 
 	void addTemporaries();
+	string indent()
+	{
+		string result = "";
+		for (int i = 0; i < indentDepth; i++)
+			result = result + "\t";
+
+		return result;
+	}
 };
