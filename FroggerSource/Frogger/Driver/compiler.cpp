@@ -8,7 +8,7 @@
 #include "..\Phases\summationPhase.h"
 #include "..\Phases\stringConversionPhase.h"
 #include "..\Phases\codeGenerationPhase.h"
-#include "parser.h"
+#include "..\Parsing\parser.h"
 #include "..\Parsing\nodes.h"
 using namespace std;
 
