@@ -91,7 +91,7 @@ void Parser::stmts()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <ifstmt> => if ( <boolexp> ) <stmt> else <stmt>
+// <ifstmt> => if ( <boolexp> ) then <stmt> else <stmt>
 //
 // Version 2.0
 // ----------------------------------------------------------
@@ -99,7 +99,7 @@ IfStruct Parser::ifstmt()
 {
 	match(IF); match(LPAREN);
 	BinaryOpNode* toCompare = boolexp();
-	match(RPAREN);
+	match(RPAREN); match(THEN);
 	AbstractNode* trueAbs = stmt();
 	match(ELSE);
 	AbstractNode* falseAbs = stmt();
@@ -483,6 +483,9 @@ void Parser::match(token_type toMatch)
 			break;
 		case IF:
 			type = "if";
+			break;
+		case THEN:
+			type = "then";
 			break;
 		case ELSE:
 			type = "else";

@@ -12,7 +12,7 @@ using namespace std;
 typedef enum token_types {
 	NOTOK = -1, ASSIGN, ADD, SUB, MUL, DIV, NOT, LT, GT, EQ, LTE, GTE, 
 	STRING,	ID, DOUBLECONST, 
-	RETRIEVE, END, DISPLAY, IF, ELSE, 
+	RETRIEVE, END, DISPLAY, IF, THEN, ELSE, 
 	SEMICOLON, LPAREN, RPAREN, 
 	SCANEOF
 } token_type;
@@ -51,6 +51,7 @@ public:
 	static Token END;
 	static Token DISPLAY;
 	static Token IF;
+	static Token THEN;
 	static Token ELSE;
 	static Token SEMICOLON;
 	static Token LPAREN;

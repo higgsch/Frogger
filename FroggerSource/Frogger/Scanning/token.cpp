@@ -36,6 +36,7 @@ Token Token::RETRIEVE	= Token(token_types::RETRIEVE, "retrieve");
 Token Token::END		= Token(token_types::END, "end");
 Token Token::DISPLAY	= Token(token_types::DISPLAY, "display");
 Token Token::IF			= Token(token_types::IF, "if");
+Token Token::THEN		= Token(token_types::THEN, "then");
 Token Token::ELSE		= Token(token_types::ELSE, "else");
 Token Token::SEMICOLON	= Token(token_types::SEMICOLON, ";");
 Token Token::LPAREN		= Token(token_types::LPAREN, "(");

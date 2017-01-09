@@ -210,6 +210,8 @@ Token Scanner::scan(void)
 				return Token::END;
 			else if (token_buffer == "if")
 				return Token::IF;
+			else if (token_buffer == "then")
+				return Token::THEN;
 			else if (token_buffer == "else")
 				return Token::ELSE;
 			else
