@@ -16,10 +16,11 @@ using namespace std;
 // given output stream.
 // @outstream: The output stream to print to.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
-TempAssignSubPhase::TempAssignSubPhase(ostream* outstream)
+TempAssignSubPhase::TempAssignSubPhase(ostream* outstream, int indentCount)
 {
+	tabCount = indentCount;
 	out = outstream;
 	tempNo = 1; //temporaries are 1-indexed
 }
@@ -58,7 +59,9 @@ void TempAssignSubPhase::visit(IfNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(RetrievalNode * n)
 {
-	*out << "\t\tcin >> _temp_" << tempNo++ << ";\n";
+	for (int i = 0; i < tabCount; i++)
+		*out << "\t";
+	*out << "cin >> _temp_" << tempNo++ << ";\n";
 }
 
 // ----------------------------------------------------------

@@ -18,9 +18,10 @@ class TempAssignSubPhase : public Phase
 private:
 	ostream* out; // the output stream to print to
 	int tempNo; // the current temp number in a line
+	int tabCount; // the number of tabs of indentation
 
 public:
-	TempAssignSubPhase(ostream* outstream);
+	TempAssignSubPhase(ostream* outstream, int indentCount);
 
 	void visit(StmtNode * n);
 	void visit(IfNode * n);

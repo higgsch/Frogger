@@ -52,13 +52,16 @@ void CodeGenerationPhase::visit(StmtNode * n)
 		*out << "\t__LABEL_" << n->getStmtNo() << ":" << endl;
 
 	//generate temp assignments for the line
-	n->getStmt()->accept(new TempAssignSubPhase(out)); 
+	n->getStmt()->accept(new TempAssignSubPhase(out, (n->getStmtNo() == -1) ? 3 : 2)); 
 
 	//emit the line's code
 	n->getStmt()->accept(this);
-
+	
 	//emit this line's goto statement
-	*out << "\t\tgoto __LABEL_" << n->getJump() << ";" << endl << endl;
+	if (n->getStmtNo() == -1)
+		*out << "\t\t\tgoto __LABEL_" << n->getJump() << ";" << endl;
+	else
+		*out << "\t\tgoto __LABEL_" << n->getJump() << ";" << endl << endl;
 }
 
 // ----------------------------------------------------------
@@ -72,11 +75,11 @@ void CodeGenerationPhase::visit(IfNode * n)
 	*out << "\t__LABEL_" << n->getStmtNo() << ":" << endl;
 	*out << "\t\tif (";
 	n->getBoolExp()->accept(this);
-	*out << ")\n\t\t{\n\t\t\t";
+	*out << ")\n\t\t{\n\t";
 	visit(n->getTrueStmt());
-	*out << "\n\t\t}\n\t\telse\n\t\t{\n\t\t\t";
+	*out << "\t\t}\n\t\telse\n\t\t{\n\t";
 	visit(n->getFalseStmt());
-	*out << "\n\t\t}\n";
+	*out << "\t\t}\n" << endl;
 }
 
 // ----------------------------------------------------------

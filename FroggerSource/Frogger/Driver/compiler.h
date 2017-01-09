@@ -13,7 +13,7 @@ class ProgramNode;
 // This class is the driver class for the compiler program.
 // It can be used to compile a .fgr source file to c++ output.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
 class Compiler
 {
@@ -22,5 +22,6 @@ private:
 	ProgramNode * root; //A pointer to the root of the AST for input source
 
 public:
+	Compiler();
 	void run(string, ostream*);
 };

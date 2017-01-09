@@ -1,9 +1,6 @@
 //                      Christopher Higgs
-//                      CS 6820 - 7:30 am
-//                      Final Project
-//                      Dr. Rague
-//                      Due: 12/10/16
-//                      Version: 1.0
+//                      FROGGER Compiler
+//                      Version: 2.0
 // -----------------------------------------------------------------
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
@@ -14,6 +11,16 @@
 #include "parser.h"
 #include "nodes.h"
 using namespace std;
+
+// ----------------------------------------------------------
+// This is the default constructor.
+//
+// Version 1.0
+// ----------------------------------------------------------
+Compiler::Compiler()
+{
+
+}
 
 // ----------------------------------------------------------
 // This function drives the compilation process.
