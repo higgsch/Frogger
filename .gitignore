@@ -1,11 +1,22 @@
 # Compiled Object files
 *.o
+*.obj
 
 # Executables
 *.exe
 
-# Misc
+# VS Files
 *.ilk
 *.pdb
+*.tlog
+*.lastbuildstate
+*.filters
+*.vcxproj
+*.sln
+*.sdf
+*.opensdf
+*.idb
+
+# MS Word
 ~$*.docx
 *.tmp
