@@ -3,8 +3,8 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "phases.h"
-#include "nodes.h"
+#include "..\phases.h"
+#include "..\..\Parsing\nodes.h"
 using namespace std;
 
 // ----------------------------------------------------------
