@@ -11,6 +11,8 @@ class Phase;
 class BinaryOpNode;
 class StmtNode;
 
+void ast_error(string);
+
 // identification for which binary child a node is.
 typedef enum node_sides{
 	LEFT, RIGHT

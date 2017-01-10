@@ -8,6 +8,15 @@
 #include "..\Phases\phases.h"
 using namespace std;
 
+void ast_error(string err_msg)
+{
+	cout << "AST ERROR: " << err_msg << endl;
+	cout << "Press Enter to Exit" << endl;
+
+	getchar();
+	exit(0);
+}
+
 // ----------------------------------------------------------
 // Default constructor initializes pointers and counters.
 //
@@ -196,7 +205,7 @@ void IfNode::addStmt(AbstractNode * addStmt)
 {
 	if (boolExp == NULL)
 	{ // this IfNode is the final in the list
-		//TODO error: empty if, trying to add statement
+		ast_error("Empty IF Node - Expected Empty STMT Node");
 		return;
 	}
 
@@ -353,6 +362,7 @@ void StmtNode::addIf(IfStruct ifStruct)
 {
 	if (stmt == NULL)
 	{ //TODO error: empty statement, add if
+		ast_error("Empty STMT Node - Expected Empty IF Node");
 		return;
 	}
 
