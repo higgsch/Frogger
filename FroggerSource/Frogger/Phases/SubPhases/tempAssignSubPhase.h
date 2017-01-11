@@ -27,11 +27,11 @@ public:
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);
-	void visit(EndingNode * n);
-	void visit(IdRefNode * n);
+	void visit(EndingNode * n){}
+	void visit(IdRefNode * n){}
 	void visit(AssigningNode * n);
-	void visit(StringConstingNode * n);
-	void visit(DoubleConstingNode * n);
+	void visit(StringConstingNode * n){}
+	void visit(DoubleConstingNode * n){}
 	void visit(AddingNode * n);
 	void visit(SubingNode * n);
 	void visit(MulingNode * n);

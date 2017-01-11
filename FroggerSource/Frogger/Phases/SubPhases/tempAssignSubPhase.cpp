@@ -73,28 +73,6 @@ void TempAssignSubPhase::visit(DisplayingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes an end statement.
-// @n: The node representing the statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(EndingNode * n)
-{
-	//No op
-}
-
-// ----------------------------------------------------------
-// This function processes a variable reference.
-// @n: The node representing the variable.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(IdRefNode * n)
-{
-	//No op
-}
-
-// ----------------------------------------------------------
 // This function processes an assignment statement.
 // @n: The node representing the statement.
 //
@@ -105,28 +83,6 @@ void TempAssignSubPhase::visit(AssigningNode * n)
 	//Ignore left as left cannot be a temporary
 	AbstractNode *right = n->getRightChild();
 	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string literal.
-// @n: The node representing the string.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(StringConstingNode * n)
-{
-	//No op
-}
-
-// ----------------------------------------------------------
-// This function processes a double literal.
-// @n: The node representing the literal.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(DoubleConstingNode * n)
-{
-	//No op
 }
 
 // ----------------------------------------------------------

@@ -147,17 +147,6 @@ void VarDecSubPhase::visit(DisplayingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes an end statement.
-// @n: The node representing the statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(EndingNode * n)
-{
-	//No op
-}
-
-// ----------------------------------------------------------
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
@@ -185,28 +174,6 @@ void VarDecSubPhase::visit(AssigningNode * n)
 	AbstractNode* left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);
 	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string literal.
-// @n: The node representing the string.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(StringConstingNode * n)
-{
-	//No op
-}
-
-// ----------------------------------------------------------
-// This function processes a double literal.
-// @n: The node representing the literal.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(DoubleConstingNode * n)
-{
-	//No op
 }
 
 // ----------------------------------------------------------

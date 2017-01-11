@@ -41,10 +41,10 @@ public:
 	void visit(IDivingNode * n);
 	void visit(RootingNode * n);
 	void visit(ExpingNode * n);
-	void visit(NotingNode * n);
-	void visit(LTingNode * n);
-	void visit(GTingNode * n);
-	void visit(EQingNode * n);
-	void visit(LTEingNode * n);
-	void visit(GTEingNode * n);
+	void visit(NotingNode * n){}
+	void visit(LTingNode * n){}
+	void visit(GTingNode * n){}
+	void visit(EQingNode * n){}
+	void visit(LTEingNode * n){}
+	void visit(GTEingNode * n){}
 };
