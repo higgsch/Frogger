@@ -5,3 +5,22 @@ if (b <= 2) then d = 0; else d = retrieve();
 if (4 >= c) then a = 1; else a = a ++ 1;
 if (5 !== 5) then display(4 ++ retrieve()); else end;
 if (a ++ b !<= c ** 5 -- (d // 4)) then display('true'); else display('false');
+
+if (a > 10) then display('Value is too large!'); else
+if (a < 0) then display('Value is too small!'); else
+if (a < 5) then
+  if (a < 2) then
+    if (a == 0) then display('a = 0');
+    else display('a = 1'); 
+  else 
+    if (a == 2) then display('a = 2');
+    else if (a == 3) then display('a = 3');
+    else if (a == 4) then display('a = 4');
+    else display ('a = 5');
+else if (a > 7) then
+  if (a < 9) then display('a = 8');
+  else if (a < 10) then display('a = 9');
+  else display('a = 10');
+else if (a == 5) then display('a = 5');
+else if (a !== 7) then display('a = 6');
+else display('a = 7'); 
