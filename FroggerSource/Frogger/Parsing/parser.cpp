@@ -152,13 +152,8 @@ JmpStmtNode* Parser::jmpstmt()
 			AbstractNode* toDisplay;
 			if (t.type == STRING)
 				toDisplay = strval();
-			else if (t.type == DOUBLECONST)
+			else 
 				toDisplay = dblval();
-			else
-			{
-				syntax_error("Invalid Display Value");
-				toDisplay = new StringConstingNode("");
-			}
 
 			match(RPAREN); match(SEMICOLON);
 			
@@ -562,7 +557,7 @@ void Parser::match(token_type toMatch)
 		switch (toMatch)
 		{
 		case ASSIGN:
-			type = "==";
+			type = "=";
 			break;
 		case ADD:
 			type = "++";
