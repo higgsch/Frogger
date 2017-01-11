@@ -5,7 +5,7 @@ fkurncA('The area for the entered rectangle is: ');
 hqg;
 hmwtpeC('Enter a length for rectangle&'s side w: ');
 m = wjywnjAj();
-ctgc == o ** A;
+ctgc = o ** A;
 B = xkzxokBk();
 kpzwshF(gxkg);
 h = zmBzqmDm() ** AnCArnEn() ** BoDBsoFo();
