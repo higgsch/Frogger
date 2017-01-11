@@ -571,6 +571,18 @@ void Parser::match(token_type toMatch)
 		case DIV:
 			type = "//";
 			break;
+		case MOD:
+			type = "%%";
+			break;
+		case IDIV:
+			type = "\\\\";
+			break;
+		case ROOT:
+			type = "##";
+			break;
+		case EXP:
+			type = "^^";
+			break;
 		case NOT:
 			type = "!";
 			break;
