@@ -63,6 +63,40 @@ public:
 };
 
 // ----------------------------------------------------------
+// This class provides a node representation for getting
+// a random number.
+//
+// Version 2.2
+// ----------------------------------------------------------
+class RandomingNode : public AbstractNode
+{
+public:
+	// ----------------------------------------------------------
+	// This constructor builds a node for a retrieve statement.
+	//
+	// Version 2.2
+	// ----------------------------------------------------------
+	RandomingNode()	{	type = RANDOMING;	}
+
+	// ----------------------------------------------------------
+	// This function prints this node to the given output stream.
+	// @out: The stream to display to.
+	//
+	// Version 2.2
+	// ----------------------------------------------------------
+	void printMe(ostream* out)	{	*out << "RANDOM";	}
+
+	// ----------------------------------------------------------
+	// This function allows double dispatch required for visitor
+	// pattern.
+	// @p: The visitor to operate on this node.
+	//
+	// Version 2.2
+	// ----------------------------------------------------------
+	void accept(Phase* p)	{	p->visit(this);	}
+};
+
+// ----------------------------------------------------------
 // This class provides a node representation for the end
 // statement.
 //

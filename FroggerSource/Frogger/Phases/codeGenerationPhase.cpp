@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.2
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -18,7 +18,7 @@ using namespace std;
 // @outstream: The output stream to print to.
 // @root: The root node for the AST.
 //
-// Version 2.0
+// Version 2.2
 // ----------------------------------------------------------
 CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 {
@@ -30,8 +30,11 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 	*out << "#include <string>\n"
 		<< "#include <iostream>\n"
 		<< "#include <math.h>\n"
+		<< "#include <stdlib.h>\n"
+		<< "#include <time.h>\n"
 		<< "using namespace std;\n\n";
-	*out << "int main(int argc, char* argv[])\n{\n";
+	*out << "int main(int argc, char* argv[])\n{\n"
+		<< "\tsrand(time(0));\n";
 	indentDepth++;
 
 	//emit the variable declarations
@@ -139,6 +142,17 @@ void CodeGenerationPhase::visit(DisplayingNode * n)
 	AbstractNode *child = n->getLeftChild();
 	child->accept(this);
 	*out << ");" << endl;
+}
+
+// ----------------------------------------------------------
+// This function processes a random statement.
+// @n: The node representing the random statement.
+//
+// Version 2.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(RandomingNode * n)
+{
+	*out << " ((double) rand() / (RAND_MAX)) ";
 }
 
 // ----------------------------------------------------------

@@ -19,7 +19,7 @@ struct VarList
 // This class represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
 //
-// Version 2.0
+// Version 2.2
 // ----------------------------------------------------------
 class VarDecSubPhase : public Phase
 {
@@ -40,6 +40,7 @@ public:
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);
+	void visit(RandomingNode * n){}
 	void visit(EndingNode * n){}
 	void visit(IdRefNode * n);
 	void visit(AssigningNode * n);

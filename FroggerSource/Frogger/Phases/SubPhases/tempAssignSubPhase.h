@@ -11,7 +11,7 @@ using namespace std;
 // This class represents a visitor for generating temporary's
 // assignments for a given line of code.
 //
-// Version 2.0
+// Version 2.2
 // ----------------------------------------------------------
 class TempAssignSubPhase : public Phase
 {
@@ -27,6 +27,7 @@ public:
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);
+	void visit(RandomingNode * n){} 
 	void visit(EndingNode * n){}
 	void visit(IdRefNode * n){}
 	void visit(AssigningNode * n);

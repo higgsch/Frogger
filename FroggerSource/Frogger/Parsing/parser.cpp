@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.2
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -361,9 +361,10 @@ AbstractNode* Parser::multerm()
 // <expterm> => id
 // <expterm> => ( <dblval> )
 // <expterm> => retrieve ( )
+// <expterm> => random ( )
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.1
+// Version 2.2
 // ----------------------------------------------------------
 AbstractNode* Parser::expterm()
 {
@@ -389,6 +390,12 @@ AbstractNode* Parser::expterm()
 		{
 			match(RETRIEVE); match(LPAREN); match(RPAREN);
 			return new RetrievalNode();
+			break;
+		}
+	case RANDOM:
+		{
+			match(RANDOM); match(LPAREN); match(RPAREN);
+			return new RandomingNode();
 			break;
 		}
 	default:

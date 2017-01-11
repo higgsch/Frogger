@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 1.1
+//                      Version: 1.0
 // -----------------------------------------------------------------
 // This program provides nodes for FROGGER commands.
 // -----------------------------------------------------------------

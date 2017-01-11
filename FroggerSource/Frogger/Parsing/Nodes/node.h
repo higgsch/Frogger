@@ -16,7 +16,7 @@ typedef enum node_sides{
 
 // set of node categories
 typedef enum node_types{
-	RETRIEVING, DISPLAYING, ENDING,
+	RETRIEVING, DISPLAYING, ENDING, RANDOMING,
 	ASSIGNING, IDREF, STRINGCONSTING, 
 	DBLCONSTING, 
 	ADDING, SUBING, MULING, DIVING, 

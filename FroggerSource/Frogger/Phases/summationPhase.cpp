@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.2
 // -----------------------------------------------------------------
 // This program represents a visitor for calculating the goto line
 // numbers.
@@ -128,6 +128,19 @@ void SummationPhase::visit(DisplayingNode * n)
 	//a display statement only adds 'display(' and ');' to the AST
 	int ascii = getAsciiSumModLength("display();");
 	ascii = accumulateModLength(ascii, child->getAscii());
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes a random statement.
+// @n: The node representing the random statement.
+//
+// Version 2.2
+// ----------------------------------------------------------
+void SummationPhase::visit(RandomingNode * n)
+{
+	//a random statement only adds 'random(' and ');' to the AST
+	int ascii = getAsciiSumModLength("random();");
 	n->setAscii(ascii);
 }
 
