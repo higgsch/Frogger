@@ -366,7 +366,7 @@ void CodeGenerationPhase::visit(RootingNode * n)
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	*out << "pow(";
 	right->accept(this);
-	*out << ", 1 / ";
+	*out << ", 1.0 / ";
 	left->accept(this);
 	*out << ")";
 	
