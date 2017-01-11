@@ -101,7 +101,7 @@ bool Obfuscator::isIdChar(char c)
 bool Obfuscator::isKeyword(string s)
 {
 	return !s.compare("display") || !s.compare("end") || !s.compare("retrieve")
-		|| !s.compare("if") || !s.compare("else");
+		|| !s.compare("if") || !s.compare("then") || !s.compare("else");
 }
 
 // ----------------------------------------------------------
