@@ -34,8 +34,10 @@ private:
 	AbstractNode* dblval();
 	AbstractNode* addterm();
 	AbstractNode* multerm();
+	AbstractNode* expterm();
 	BinaryOpNode* addop();
 	BinaryOpNode* mulop();
+	BinaryOpNode* expop();
 	BinaryOpNode* boolop();
 
 	void match(token_type);

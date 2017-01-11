@@ -311,7 +311,9 @@ AbstractNode* Parser::addterm()
 	switch (tok.type)
 	{
 	case MUL: //fall through
-	case DIV:
+	case DIV: //fall through
+	case MOD: //fall through
+	case IDIV:
 		{
 			BinaryOpNode* op = mulop();
 			AbstractNode* right = addterm();
@@ -328,15 +330,47 @@ AbstractNode* Parser::addterm()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <multerm> => dbl
-// <multerm> => id
-// <multerm> => ( <dblval> )
-// <multerm> => retrieve ( )
+// <multerm> => <expterm> <multerm.1>
+// <multerm.1> => <expop> <multerm>
+// <multerm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 1.2
+// Version 2.1
 // ----------------------------------------------------------
 AbstractNode* Parser::multerm()
+{
+	AbstractNode* left = expterm();
+
+	Token tok = next_token();
+	switch (tok.type)
+	{
+	case ROOT: //fall through
+	case EXP: 
+		{
+			BinaryOpNode* op = expop();
+			AbstractNode* right = multerm();
+			op->addOps(left, right);
+			return op;
+			break;
+		}
+	default:
+		//lambda
+		return left;
+		break;
+	}
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <expterm> => dbl
+// <expterm> => id
+// <expterm> => ( <dblval> )
+// <expterm> => retrieve ( )
+// Returns: A pointer to the node representing this term.
+//
+// Version 2.1
+// ----------------------------------------------------------
+AbstractNode* Parser::expterm()
 {
 	Token tok = next_token();
 	switch (tok.type)
@@ -401,9 +435,11 @@ BinaryOpNode* Parser::addop()
 // This function represents production rules:
 // <mulop> => mul
 // <mulop> => div
+// <mulop> => mod
+// <mulop> => idiv
 // Returns: A pointer to the node representing this operator.
 //
-// Version 1.0
+// Version 2.1
 // ----------------------------------------------------------
 BinaryOpNode* Parser::mulop()
 {
@@ -418,8 +454,44 @@ BinaryOpNode* Parser::mulop()
 		match(tok.type);
 		return new DivingNode();
 		break;
+	case MOD:
+		match(tok.type);
+		return new ModDivingNode();
+		break;
+	case IDIV:
+		match(tok.type);
+		return new IDivingNode();
+		break;
 	default:
-		syntax_error("Expected '**' or '//' - Found " + tok.lexeme);
+		syntax_error("Expected '**', '//', '%%', or '\\\\' - Found " + tok.lexeme);
+		return NULL;
+		break;
+	}
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <expop> => rt
+// <expop> => exp
+// Returns: A pointer to the node representing this operator.
+//
+// Version 2.1
+// ----------------------------------------------------------
+BinaryOpNode* Parser::expop()
+{
+	Token tok = next_token();
+	switch (tok.type)
+	{
+	case ROOT:
+		match(tok.type);
+		return new RootingNode();
+		break;
+	case EXP:
+		match(tok.type);
+		return new ExpingNode();
+		break;
+	default:
+		syntax_error("Expected '##' or '^^' - Found " + tok.lexeme);
 		return NULL;
 		break;
 	}

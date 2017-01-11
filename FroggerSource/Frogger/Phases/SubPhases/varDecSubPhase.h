@@ -49,6 +49,10 @@ public:
 	void visit(SubingNode * n);
 	void visit(MulingNode * n);
 	void visit(DivingNode * n);
+	void visit(ModDivingNode * n);
+	void visit(IDivingNode * n);
+	void visit(RootingNode * n);
+	void visit(ExpingNode * n);
 	void visit(NotingNode * n);
 	void visit(LTingNode * n);
 	void visit(GTingNode * n);

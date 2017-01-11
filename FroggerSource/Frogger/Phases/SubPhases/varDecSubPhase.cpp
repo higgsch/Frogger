@@ -262,6 +262,58 @@ void VarDecSubPhase::visit(DivingNode * n)
 }
 
 // ----------------------------------------------------------
+// This function processes a modulus division operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(ModDivingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an integer division operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(IDivingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a rootation operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(RootingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an exponentiation operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(ExpingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
 // This function processes a not operation.
 // @n: The node representing the operation.
 //

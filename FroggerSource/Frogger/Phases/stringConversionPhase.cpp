@@ -192,6 +192,50 @@ void StringConversionPhase::visit(DivingNode * n)
 }
 
 // ----------------------------------------------------------
+// This function processes a modulus division operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void StringConversionPhase::visit(ModDivingNode * n)
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes an integer division operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void StringConversionPhase::visit(IDivingNode * n)
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes a rootation operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void StringConversionPhase::visit(RootingNode * n)
+{
+	//No op
+}
+
+// ----------------------------------------------------------
+// This function processes an exponentiation operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void StringConversionPhase::visit(ExpingNode * n)
+{
+	//No op
+}
+
+// ----------------------------------------------------------
 // This function processes a not operation.
 // @n: The node representing the operation.
 //

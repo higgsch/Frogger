@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.1
 // -----------------------------------------------------------------
 // This program provides a compact interface for tokens.
 // -----------------------------------------------------------------
@@ -26,6 +26,10 @@ Token Token::ADD		= Token(token_types::ADD, "++");
 Token Token::SUB		= Token(token_types::SUB, "--");
 Token Token::MUL		= Token(token_types::MUL, "**");
 Token Token::DIV		= Token(token_types::DIV, "//");
+Token Token::MOD		= Token(token_types::MOD, "%%" );
+Token Token::IDIV		= Token(token_types::IDIV, "\\\\" );
+Token Token::ROOT		= Token(token_types::ROOT, "##" );
+Token Token::EXP		= Token(token_types::EXP, "^^" );
 Token Token::NOT		= Token(token_types::NOT, "!");
 Token Token::LT			= Token(token_types::LT, "<");
 Token Token::GT			= Token(token_types::GT, ">");

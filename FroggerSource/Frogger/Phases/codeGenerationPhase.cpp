@@ -27,7 +27,10 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 	indentDepth = 0;
 
 	//emit the "header" code
-	*out << "#include <string>\n#include <iostream>\nusing namespace std;\n\n";
+	*out << "#include <string>\n"
+		<< "#include <iostream>\n"
+		<< "#include <math.h>\n"
+		<< "using namespace std;\n\n";
 	*out << "int main(int argc, char* argv[])\n{\n";
 	indentDepth++;
 
@@ -286,6 +289,94 @@ void CodeGenerationPhase::visit(DivingNode * n)
 	left->accept(this);
 	*out << " / ";
 	right->accept(this);
+	
+	if (n->getParenNesting() > 0)
+		*out << ")";
+}
+
+// ----------------------------------------------------------
+// This function processes a modulus division operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(ModDivingNode * n)
+{
+	if (n->getParenNesting() > 0)
+		*out << "(";
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	*out << "fmod( ";
+	left->accept(this);
+	*out << ", ";
+	right->accept(this);
+	*out << " )";
+	
+	if (n->getParenNesting() > 0)
+		*out << ")";
+}
+
+// ----------------------------------------------------------
+// This function processes an integer division operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(IDivingNode * n)
+{
+	if (n->getParenNesting() > 0)
+		*out << "(";
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	*out << "((int)round(";
+	left->accept(this);
+	*out << ")) / ((int)round(";
+	right->accept(this);
+	*out << "))";
+	
+	if (n->getParenNesting() > 0)
+		*out << ")";
+}
+
+// ----------------------------------------------------------
+// This function processes a rootation operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(RootingNode * n)
+{
+	if (n->getParenNesting() > 0)
+		*out << "(";
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	*out << "pow(";
+	right->accept(this);
+	*out << ", 1 / ";
+	left->accept(this);
+	*out << ")";
+	
+	if (n->getParenNesting() > 0)
+		*out << ")";
+}
+
+// ----------------------------------------------------------
+// This function processes an exponentiation operation.
+// @n: The node representing the operation.
+//
+// Version 2.1
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(ExpingNode * n)
+{
+	if (n->getParenNesting() > 0)
+		*out << "(";
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	*out << "pow(";
+	left->accept(this);
+	*out << ", ";
+	right->accept(this);
+	*out << ")";
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";

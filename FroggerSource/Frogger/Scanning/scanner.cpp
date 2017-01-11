@@ -76,7 +76,7 @@ void Scanner::checkForObfuscation(void)
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 2.0
+// Version 2.1
 // ----------------------------------------------------------
 Token Scanner::scan(void)
 {
@@ -173,6 +173,51 @@ Token Scanner::scan(void)
 			{
 				unget();
 				lexical_error(lineNo, "Incomplete division operator");
+			}
+		}
+		
+		else if (in_char == '%')
+		{
+			int c = get();
+			if (c == '%')
+				return Token::MOD;
+			else //Modulus division is %%
+			{
+				unget();
+				lexical_error(lineNo, "Incomplete modulus division operator");
+			}
+		}
+		else if (in_char == '\\')
+		{
+			int c = get();
+			if (c == '\\')
+				return Token::IDIV;
+			else //Integer division is \\ (\\\\ in c++ string)
+			{
+				unget();
+				lexical_error(lineNo, "Incomplete integer division operator");
+			}
+		}
+		else if (in_char == '#')
+		{
+			int c = get();
+			if (c == '#')
+				return Token::ROOT;
+			else //Rootation is ##
+			{
+				unget();
+				lexical_error(lineNo, "Incomplete rootation operator");
+			}
+		}
+		else if (in_char == '^')
+		{
+			int c = get();
+			if (c == '^')
+				return Token::EXP;
+			else //Exponentiation is ^^
+			{
+				unget();
+				lexical_error(lineNo, "Incomplete exponentiation operator");
 			}
 		}
 		else if (in_char == '\'') //Strings are single quoted
