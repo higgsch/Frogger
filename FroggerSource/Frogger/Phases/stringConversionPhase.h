@@ -19,7 +19,7 @@ private:
 	string convertString(string);
 
 public:
-	void visit(StmtNode * n);
+	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);

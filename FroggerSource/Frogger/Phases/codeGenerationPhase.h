@@ -17,13 +17,13 @@ class CodeGenerationPhase : public Phase
 {
 private:
 	ostream* out; // the output stream to print to
-	int tempNo; // the current temp number in a line
+	int tempNo; // the current temporary number in a line
 	int indentDepth; // the number of tabs to insert
 
 public:
 	CodeGenerationPhase(ostream* outstream, ProgramNode* root);
 
-	void visit(StmtNode * n);
+	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);

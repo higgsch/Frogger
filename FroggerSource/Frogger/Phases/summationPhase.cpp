@@ -76,12 +76,15 @@ int SummationPhase::getAsciiSumModLength(string s)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
-void SummationPhase::visit(StmtNode * n)
+void SummationPhase::visit(JmpStmtNode * n)
 {
 	n->getStmt()->accept(this);
 	n->setJump(n->getStmt()->getAscii());
+
+	if (!n->isNested() && n->getNextStmt() != NULL)
+		n->getNextStmt()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -92,8 +95,11 @@ void SummationPhase::visit(StmtNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(IfNode * n)
 {
-	visit(n->getTrueStmt());
-	visit(n->getFalseStmt());
+	n->getTrueStmt()->accept(this);
+	n->getFalseStmt()->accept(this);
+
+	if (!n->isNested() && n->getNextStmt() != NULL)
+		n->getNextStmt()->accept(this);
 }
 
 // ----------------------------------------------------------

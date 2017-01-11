@@ -31,7 +31,7 @@ TempAssignSubPhase::TempAssignSubPhase(ostream* outstream, int indentCount)
 //
 // Version 1.0
 // ----------------------------------------------------------
-void TempAssignSubPhase::visit(StmtNode * n)
+void TempAssignSubPhase::visit(JmpStmtNode * n)
 {
 	tempNo = 1; //restart temporary counter (1-indexed)
 

@@ -48,69 +48,144 @@ ProgramNode* Parser::parse()
 
 // ----------------------------------------------------------
 // This function represents production rule:
-// <prog> => <ifstmt> <stmts> $
-// <prog> => <stmt> <stmts> $
+// <prog> => <flowstmt> <flowstmts> $
 //
 // Version 2.0
 // ----------------------------------------------------------
 void Parser::prog()
 {
-	Token tok = next_token();
-	if (tok.type == IF)
-		root->addIfNode(ifstmt());
-	else
-		root->addStmtNode(stmt());
-
-	stmts();
+	ControlFlowNode* first = flowstmt(); 
+	first->addNextStmt(flowstmts());
+	root->addFirstStmt(first);
 }
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <stmts> => <ifstmt> <stmts>
-// <stmts> => <stmt> <stmts>
-// <stmts> => [lambda]
+// <flowstmts> => <flowstmt> <flowstmts>
+// <flowstmts> => [lambda]
 //
 // Version 2.0
 // ----------------------------------------------------------
-void Parser::stmts()
+ControlFlowNode* Parser::flowstmts()
 {
 	Token tok = next_token();
 	switch(tok.type)
 	{
 	case SCANEOF:
 		//lambda
+		return NULL;
 		break;
 	case IF:
-		root->addIfNode(ifstmt()); stmts();
-		break;
 	default:
-		root->addStmtNode(stmt()); stmts();
+		ControlFlowNode* thisStmt = flowstmt(); 
+		thisStmt->addNextStmt(flowstmts());
+		return thisStmt;
 		break;
 	}
 }
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <ifstmt> => if ( <boolexp> ) then <stmt> else <stmt>
+// <flowstmt> => <ifstmt>
+// <flowstmt> => <jmpstmt>
 //
 // Version 2.0
 // ----------------------------------------------------------
-IfStruct Parser::ifstmt()
+ControlFlowNode* Parser::flowstmt()
+{
+	Token tok = next_token();
+	switch(tok.type)
+	{
+	case IF:
+		return ifstmt();
+		break;
+	default:
+		return jmpstmt();
+		break;
+	}
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <ifstmt> => if ( <boolexp> ) then <nestedflowstmt> else <nestedflowstmt>
+//
+// Version 2.0
+// ----------------------------------------------------------
+IfNode* Parser::ifstmt()
 {
 	match(IF); match(LPAREN);
 	BinaryOpNode* toCompare = boolexp();
 	match(RPAREN); match(THEN);
-	AbstractNode* trueAbs = stmt();
+	ControlFlowNode* trueStmt = nestedflowstmt();
 	match(ELSE);
-	AbstractNode* falseAbs = stmt();
+	ControlFlowNode* falseStmt = nestedflowstmt();
 
-	IfStruct ifStruct;
-	ifStruct.boolExp = toCompare;
-	ifStruct.trueStmt = new StmtNode(-1);
-	ifStruct.falseStmt = new StmtNode(-1);
-	ifStruct.trueStmt->addStmt(trueAbs);
-	ifStruct.falseStmt->addStmt(falseAbs);
-	return ifStruct;
+	IfNode* stmt = new IfNode();
+	stmt->setBoolExp(toCompare);
+	stmt->setTrueStmt(trueStmt);
+	stmt->setFalseStmt(falseStmt);
+	return stmt;
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <stmt> => display ( <strval> ) ;
+// <stmt> => display ( <dblval> ) ;
+// <stmt> => end ;
+// <stmt> => id assign <dblval> ;
+// Returns: A pointer to the node representing this stmt.
+//
+// Version 2.0
+// ----------------------------------------------------------
+JmpStmtNode* Parser::jmpstmt()
+{
+	JmpStmtNode* stmt = new JmpStmtNode();
+
+	Token tok = next_token();
+	switch(tok.type)
+	{
+	case DISPLAY:
+		{
+			match(DISPLAY); match(LPAREN);
+
+			Token t = next_token();
+			AbstractNode* toDisplay;
+			if (t.type == STRING)
+				toDisplay = strval();
+			else if (t.type == DOUBLECONST)
+				toDisplay = dblval();
+			else
+			{
+				syntax_error("Invalid Display Value");
+				toDisplay = new StringConstingNode("");
+			}
+
+			match(RPAREN); match(SEMICOLON);
+			
+			stmt->setStmt(new DisplayingNode(toDisplay));
+			break;
+		}
+	case END:
+		match(END); match(SEMICOLON);
+		stmt->setStmt(new EndingNode());
+		break;
+	case ID:
+		{
+			match(ID); 
+			IdRefNode* id = new IdRefNode(tok.lexeme);
+			match(ASSIGN); 
+			AbstractNode* toAssign = dblval(); 
+			match(SEMICOLON);
+			stmt->setStmt(new AssigningNode(id, toAssign));
+			break;
+		}
+	default:
+		syntax_error("Invalid start of stmt - " + tok.lexeme);
+		return NULL;
+		break;
+	}
+
+	return stmt;
 }
 
 // ----------------------------------------------------------
@@ -149,53 +224,28 @@ BinaryOpNode* Parser::boolexp()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <stmt> => display ( <strval> ) ;
-// <stmt> => display ( <dblval> ) ;
-// <stmt> => end ;
-// <stmt> => id assign <dblval> ;
-// Returns: A pointer to the node representing this stmt.
+// <nestedflowstmt> => <ifstmt>
+// <nestedflowstmt> => <jmpstmt>
 //
 // Version 2.0
 // ----------------------------------------------------------
-AbstractNode* Parser::stmt()
+ControlFlowNode* Parser::nestedflowstmt()
 {
+	ControlFlowNode* stmt;
+
 	Token tok = next_token();
-	switch(tok.type)
+	switch (tok.type)
 	{
-	case DISPLAY:
-		{
-			match(DISPLAY); match(LPAREN);
-
-			Token t = next_token();
-			AbstractNode* toDisplay;
-			if (t.type == STRING)
-				toDisplay = strval();
-			else
-				toDisplay = dblval();
-
-			match(RPAREN); match(SEMICOLON);
-			return new DisplayingNode(toDisplay);
-			break;
-		}
-	case END:
-		match(END); match(SEMICOLON);
-		return new EndingNode();
+	case IF:
+		stmt = ifstmt();
 		break;
-	case ID:
-		{
-			match(ID); 
-			IdRefNode* id = new IdRefNode(tok.lexeme);
-			match(ASSIGN); 
-			AbstractNode* toAssign = dblval(); 
-			match(SEMICOLON);
-			return new AssigningNode(id, toAssign);
-			break;
-		}
 	default:
-		syntax_error("Invalid start of stmt - " + tok.lexeme);
-		return NULL;
+		stmt = jmpstmt();
 		break;
 	}
+
+	stmt->setNested(true);
+	return stmt;
 }
 
 // ----------------------------------------------------------

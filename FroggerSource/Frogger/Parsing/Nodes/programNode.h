@@ -4,6 +4,7 @@
 #pragma once
 
 #include "controlFlowNode.h"
+#include "node.h"
 using namespace std;
 
 class ControlFlowNode;
@@ -15,11 +16,11 @@ class Phase;
 //
 // Version 2.0
 // ----------------------------------------------------------
-class ProgramNode
+class ProgramNode : public Node
 {
 private:
 	ControlFlowNode * firstStmt; // the first statement of code in this program
-	int stmtCount; // the total number of statements within the program
+	//int stmtCount; // the total number of statements within the program
 
 public:
 	ProgramNode();
@@ -36,10 +37,9 @@ public:
 	//
 	// Version 1.0
 	// ----------------------------------------------------------
-	int getStmtCount() { return stmtCount; }
+	/*int getStmtCount() { return stmtCount; }*/
 
-	void addStmtNode(AbstractNode * stmt);
-	void addIfNode(IfStruct ifStruct);
+	void addFirstStmt(ControlFlowNode* first);
 	void clean();
 	void printNodes(ostream* out);
 	void traverseNodes(Phase* p);

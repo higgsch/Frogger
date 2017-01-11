@@ -6,6 +6,7 @@
 #include <string>
 #include <stdio.h>
 #include <iostream>
+#include "..\..\Phases\phases.h"
 using namespace std;
 
 // identification for which binary child a node is.

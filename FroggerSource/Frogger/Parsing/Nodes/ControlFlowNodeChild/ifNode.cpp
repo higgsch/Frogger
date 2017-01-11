@@ -5,7 +5,7 @@
 // This program provides a node for an if statement.
 // -----------------------------------------------------------------
 #include "ifNode.h"
-#include "stmtNode.h"
+#include "jmpStmtNode.h"
 #include "..\AbstractNodeChild\binaryOpNode.h"
 using namespace std;
 
@@ -17,59 +17,27 @@ using namespace std;
 //
 // Version 2.0
 // ----------------------------------------------------------
-IfNode::IfNode(int stmtNumber)
+IfNode::IfNode()
 {
 	boolExp = NULL;
 	trueStmt = NULL;
 	falseStmt = NULL;
 	nextStmt = NULL;
-	stmtNo = stmtNumber;
+	stmtNo = -1;
 }
 
 // ----------------------------------------------------------
-// Adds a statement's root node to the AST.
-// @addStmt: The statement's root node.
+// Adds a stmt to the list of stmts.
+// @next:	The stmt to add.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void IfNode::addStmt(AbstractNode * addStmt)
+void IfNode::addNextStmt(ControlFlowNode* next)
 {
-	if (boolExp == NULL)
-	{ // this IfNode is the final in the list
-		ast_error("Empty IF Node - Expected Empty STMT Node");
-		return;
-	}
-
-	if (nextStmt == NULL) 
-		//this IfNode holds an if statement
-		//and there is no next ControlFlowNode in the list
-		nextStmt = new StmtNode(stmtNo + 1);
-
-	nextStmt->addStmt(addStmt);
-}
-
-// ----------------------------------------------------------
-// Adds an if statement's root node to the AST.
-// @ifStruct:	The if summary.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void IfNode::addIf(IfStruct ifStruct)
-{
-	if (boolExp == NULL)
-	{
-		boolExp = ifStruct.boolExp;
-		trueStmt = ifStruct.trueStmt;
-		falseStmt = ifStruct.falseStmt;
-		return;
-	}
-
 	if (nextStmt == NULL)
-		//this IfNode holds an if statement
-		//and there is no next ControlFlowNode in the list
-		nextStmt = new IfNode(stmtNo + 1);
-
-	nextStmt->addIf(ifStruct);
+		nextStmt = next;
+	else
+		nextStmt->addNextStmt(next);
 }
 
 // ----------------------------------------------------------
@@ -128,21 +96,4 @@ void IfNode::printNodes(ostream* out)
 		*out << "NULL";
 	else
 		nextStmt->printNodes(out);
-}
-
-// ----------------------------------------------------------
-// This function starts double dispatch required for visitor 
-// pattern.
-// @p: The visitor to run over the AST.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void IfNode::traverseNodes(Phase* p)
-{
-	if (boolExp != NULL)
-	{
-		p->visit(this);
-	}
-	if (nextStmt != NULL)
-		nextStmt->traverseNodes(p);
 }

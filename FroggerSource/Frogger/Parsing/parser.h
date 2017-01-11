@@ -24,10 +24,12 @@ private:
 	ProgramNode* root; //the root of the AST
 
 	void prog();
-	void stmts();
-	IfStruct ifstmt();
+	ControlFlowNode* flowstmts();
+	ControlFlowNode* flowstmt();
+	IfNode* ifstmt();
+	JmpStmtNode* jmpstmt();
 	BinaryOpNode* boolexp();
-	AbstractNode* stmt();
+	ControlFlowNode* nestedflowstmt();
 	AbstractNode* strval();
 	AbstractNode* dblval();
 	AbstractNode* addterm();

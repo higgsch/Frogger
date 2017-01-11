@@ -17,5 +17,5 @@
 
 #include "Nodes\controlFlowNode.h"
 #include "Nodes\ControlFlowNodeChild\ifNode.h"
-#include "Nodes\ControlFlowNodeChild\stmtNode.h"
+#include "Nodes\ControlFlowNodeChild\jmpStmtNode.h"
 using namespace std;

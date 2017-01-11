@@ -36,7 +36,7 @@ private:
 public:
 	VarDecSubPhase(ostream*, int tabCount);
 
-	void visit(StmtNode * n);
+	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);

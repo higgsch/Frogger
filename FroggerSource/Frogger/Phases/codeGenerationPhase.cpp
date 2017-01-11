@@ -8,7 +8,6 @@
 #include "codeGenerationPhase.h"
 #include "SubPhases\varDecSubPhase.h"
 #include "SubPhases\tempAssignSubPhase.h"
-#include "..\Parsing\nodes.h"
 #include <iostream>
 #include <sstream>
 using namespace std;
@@ -45,11 +44,11 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 //
 // Version 2.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(StmtNode * n)
+void CodeGenerationPhase::visit(JmpStmtNode * n)
 {
 	tempNo = 1; //restart temporary counter (1-indexed)
 
-	bool isOwnLine = (n->getStmtNo() != -1);
+	bool isOwnLine = (!n->isNested());
 
 	if (isOwnLine) 
 	{
@@ -71,6 +70,8 @@ void CodeGenerationPhase::visit(StmtNode * n)
 	{
 		*out << endl;
 		indentDepth--;
+		if (n->getNextStmt() != NULL)
+			n->getNextStmt()->accept(this);
 	}
 }
 
@@ -82,8 +83,13 @@ void CodeGenerationPhase::visit(StmtNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IfNode * n)
 {
-	*out << indent() << "__LABEL_" << n->getStmtNo() << ":" << endl;
-	indentDepth++;
+	bool isOwnLine = (!n->isNested());
+
+	if (isOwnLine)
+	{
+		*out << indent() << "__LABEL_" << n->getStmtNo() << ":" << endl;
+		indentDepth++;
+	}
 
 	n->getBoolExp()->accept(new TempAssignSubPhase(out, indentDepth));
 
@@ -91,15 +97,20 @@ void CodeGenerationPhase::visit(IfNode * n)
 	n->getBoolExp()->accept(this);
 	*out << ")\n" << indent() << "{\n";
 	indentDepth++;
-	visit(n->getTrueStmt());
+	n->getTrueStmt()->accept(this);
 	indentDepth--;
 	*out << indent() << "}\n";
 	*out << indent() << "else\n" << indent() << "{\n";
 	indentDepth++;
-	visit(n->getFalseStmt());
+	n->getFalseStmt()->accept(this);
 	indentDepth--;
 	*out << indent() << "}\n" << endl;
-	indentDepth--;
+
+	if (isOwnLine)
+		indentDepth--;
+
+	if (isOwnLine && n->getNextStmt() != NULL)
+		n->getNextStmt()->accept(this);
 }
 
 // ----------------------------------------------------------

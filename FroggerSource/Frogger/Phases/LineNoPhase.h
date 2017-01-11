@@ -1,0 +1,43 @@
+// -----------------------------------------------------------------
+// This is the header for the LineNoPhase class.
+// -----------------------------------------------------------------
+#pragma once
+
+#include "phases.h"
+#include "..\Parsing\nodes.h"
+using namespace std;
+
+// ----------------------------------------------------------
+// This class represents a visitor for setting line numbers.
+//
+// Version 2.0
+// ----------------------------------------------------------
+class LineNoPhase : public Phase
+{
+private:
+	int lineCount; // a counter for current line number
+
+public:
+	LineNoPhase() { lineCount = 0; }
+	int getLineCount() { return lineCount; }
+
+	void visit(JmpStmtNode * n);
+	void visit(IfNode * n);
+	void visit(RetrievalNode * n){}
+	void visit(DisplayingNode * n){}
+	void visit(EndingNode * n){}
+	void visit(IdRefNode * n){}
+	void visit(AssigningNode * n){}
+	void visit(StringConstingNode * n){}
+	void visit(DoubleConstingNode * n){}
+	void visit(AddingNode * n){}
+	void visit(SubingNode * n){}
+	void visit(MulingNode * n){}
+	void visit(DivingNode * n){}
+	void visit(NotingNode * n){}
+	void visit(LTingNode * n){}
+	void visit(GTingNode * n){}
+	void visit(EQingNode * n){}
+	void visit(LTEingNode * n){}
+	void visit(GTEingNode * n){}
+};

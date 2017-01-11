@@ -44,11 +44,14 @@ string StringConversionPhase::convertString(string s)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 1.0
+// Version 2.0
 // ----------------------------------------------------------
-void StringConversionPhase::visit(StmtNode * n)
+void StringConversionPhase::visit(JmpStmtNode * n)
 {
 	n->getStmt()->accept(this);
+
+	if (!n->isNested() && n->getNextStmt() != NULL)
+		n->getNextStmt()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -59,8 +62,11 @@ void StringConversionPhase::visit(StmtNode * n)
 // ----------------------------------------------------------
 void StringConversionPhase::visit(IfNode * n)
 {
-	visit(n->getTrueStmt());
-	visit(n->getFalseStmt());
+	n->getTrueStmt()->accept(this);
+	n->getFalseStmt()->accept(this);
+
+	if (!n->isNested() && n->getNextStmt() != NULL)
+		n->getNextStmt()->accept(this);
 }
 
 // ----------------------------------------------------------

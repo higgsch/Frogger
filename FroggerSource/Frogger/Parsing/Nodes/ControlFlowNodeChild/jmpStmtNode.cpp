@@ -5,7 +5,7 @@
 // This program provides a node for a statement.
 // -----------------------------------------------------------------
 #include "..\abstractNode.h"
-#include "stmtNode.h"
+#include "jmpStmtNode.h"
 #include "ifNode.h"
 using namespace std;
 
@@ -16,55 +16,25 @@ using namespace std;
 //
 // Version 2.0
 // ----------------------------------------------------------
-StmtNode::StmtNode(int stmtNumber)
+JmpStmtNode::JmpStmtNode()
 {
 	stmt = NULL;
 	nextStmt = NULL;
-	stmtNo = stmtNumber;
+	stmtNo = -1;
 }
 
 // ----------------------------------------------------------
-// Adds a statement's root node to the AST.
-// @addStmt: The statement's root node.
+// Adds a stmt to the list of statements.
+// @next:	The stmt to add.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void StmtNode::addStmt(AbstractNode * addStmt)
+void JmpStmtNode::addNextStmt(ControlFlowNode * next)
 {
-	if (stmt == NULL)
-	{ // this StmtNode is the final in the list
-		stmt = addStmt;
-		return;
-	}
-
-	if (nextStmt == NULL) 
-		//this StmtNode holds a statement
-		//and there is no next ControlFlowNode in the list
-		nextStmt = new StmtNode(stmtNo + 1);
-
-	nextStmt->addStmt(addStmt);
-}
-
-// ----------------------------------------------------------
-// Adds an if statement's root node to the AST.
-// @ifStruct:	The if summary.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void StmtNode::addIf(IfStruct ifStruct)
-{
-	if (stmt == NULL)
-	{
-		ast_error("Empty STMT Node - Expected Empty IF Node");
-		return;
-	}
-
 	if (nextStmt == NULL)
-		//this StmtNode holds a statement
-		//and there is no next ControlFlowNode in the list
-		nextStmt = new IfNode(stmtNo + 1);
-
-	nextStmt->addIf(ifStruct);
+		nextStmt = next;
+	else
+		nextStmt->addNextStmt(next);
 }
 
 // ----------------------------------------------------------
@@ -72,7 +42,7 @@ void StmtNode::addIf(IfStruct ifStruct)
 //
 // Version 2.0
 // ----------------------------------------------------------
-void StmtNode::clean()
+void JmpStmtNode::clean()
 {
 	if (stmt != NULL)
 	{
@@ -92,7 +62,7 @@ void StmtNode::clean()
 //
 // Version 2.0
 // ----------------------------------------------------------
-void StmtNode::printNodes(ostream* out)
+void JmpStmtNode::printNodes(ostream* out)
 {
 	if (stmt == NULL)
 		*out << "NULL";
@@ -113,21 +83,4 @@ void StmtNode::printNodes(ostream* out)
 		else
 			nextStmt->printNodes(out);
 	}
-}
-
-// ----------------------------------------------------------
-// This function starts double dispatch required for visitor 
-// pattern.
-// @p: The visitor to run over the AST.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void StmtNode::traverseNodes(Phase* p)
-{
-	if (stmt != NULL)
-	{
-		p->visit(this);
-	}
-	if (stmtNo != -1 && nextStmt != NULL)
-		nextStmt->traverseNodes(p);
 }

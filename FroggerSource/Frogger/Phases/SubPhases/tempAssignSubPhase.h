@@ -23,7 +23,7 @@ private:
 public:
 	TempAssignSubPhase(ostream* outstream, int indentCount);
 
-	void visit(StmtNode * n);
+	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
 	void visit(RetrievalNode * n);
 	void visit(DisplayingNode * n);

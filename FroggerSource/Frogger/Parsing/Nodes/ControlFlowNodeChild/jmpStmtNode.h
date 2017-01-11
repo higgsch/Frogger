@@ -12,14 +12,14 @@ using namespace std;
 //
 // Version 2.0
 // ----------------------------------------------------------
-class StmtNode : public ControlFlowNode
+class JmpStmtNode : public ControlFlowNode
 {
 private:
 	AbstractNode * stmt; // the AST for this statement
 	int ascii_jmp; // the statement to jump to after this statement executes
 
 public:
-	StmtNode(int);
+	JmpStmtNode();
 
 	// ----------------------------------------------------------
 	// This function sets the statement to jump to after this 
@@ -44,10 +44,17 @@ public:
 	// Version 1.0
 	// ----------------------------------------------------------
 	AbstractNode * getStmt() { return stmt; }
-	
-	void addStmt(AbstractNode * stmt);
-	void addIf(IfStruct ifStruct);
+
+	// ----------------------------------------------------------
+	// This function sets the contents for this node.
+	//
+	// Version 2.0
+	// ----------------------------------------------------------
+	void setStmt(AbstractNode* contents) { stmt = contents; }
+
+	void accept(Phase* p) { p->visit(this); }
+
+	void addNextStmt(ControlFlowNode* next);
 	void clean();
 	void printNodes(ostream* out);
-	void traverseNodes(Phase* p);
 };

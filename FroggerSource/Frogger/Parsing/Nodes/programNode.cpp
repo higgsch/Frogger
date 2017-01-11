@@ -7,7 +7,7 @@
 #include "programNode.h"
 #include "controlFlowNode.h"
 #include "ControlFlowNodeChild\ifNode.h"
-#include "ControlFlowNodeChild\stmtNode.h"
+#include "ControlFlowNodeChild\jmpStmtNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -18,7 +18,7 @@ using namespace std;
 ProgramNode::ProgramNode()
 {
 	firstStmt = NULL;
-	stmtCount = 0;
+	/*stmtCount = 0;*/
 }
 
 // ----------------------------------------------------------
@@ -36,35 +36,17 @@ void ProgramNode::clean()
 }
 
 // ----------------------------------------------------------
-// Adds a statement's root node to the AST.
-// @stmt: The statement's root node.
+// Adds a first statement to the root node.
+// @first: The first statement.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void ProgramNode::addStmtNode(AbstractNode * stmt)
+void ProgramNode::addFirstStmt(ControlFlowNode* first)
 {
 	if (firstStmt == NULL)
-		firstStmt = new StmtNode(0);
-
-	firstStmt->addStmt(stmt);
-
-	stmtCount++;
-}
-
-// ----------------------------------------------------------
-// Adds an if statement's root node to the AST.
-// @ifStruct: The statement's root node.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void ProgramNode::addIfNode(IfStruct ifStruct)
-{
-	if (firstStmt == NULL)
-		firstStmt = new IfNode(0);
-
-	firstStmt->addIf(ifStruct);
-
-	stmtCount++;
+		firstStmt = first;
+	else
+		ast_error("ProgramNode's root already exists");
 }
 
 // ----------------------------------------------------------
@@ -94,5 +76,5 @@ void ProgramNode::printNodes(ostream* out)
 void ProgramNode::traverseNodes(Phase* p)
 {
 	if (firstStmt != NULL)
-		firstStmt->traverseNodes(p);
+		firstStmt->accept(p);
 }

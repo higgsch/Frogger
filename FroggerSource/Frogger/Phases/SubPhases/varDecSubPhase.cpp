@@ -85,9 +85,9 @@ bool VarDecSubPhase::isInList(string id)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 1.1
+// Version 2.0
 // ----------------------------------------------------------
-void VarDecSubPhase::visit(StmtNode * n)
+void VarDecSubPhase::visit(JmpStmtNode * n)
 {
 	currStmtTempCount = 0;
 
@@ -96,6 +96,9 @@ void VarDecSubPhase::visit(StmtNode * n)
 	//update the temporary counter
 	if (currStmtTempCount > lineTempMax)
 		lineTempMax = currStmtTempCount;
+
+	if (!n->isNested() && n->getNextStmt() != NULL)
+		n->getNextStmt()->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -113,8 +116,11 @@ void VarDecSubPhase::visit(IfNode * n)
 	if (currStmtTempCount > lineTempMax)
 		lineTempMax = currStmtTempCount;
 
-	visit(n->getTrueStmt());
-	visit(n->getFalseStmt());
+	n->getTrueStmt()->accept(this);
+	n->getFalseStmt()->accept(this);
+
+	if (!n->isNested() && n->getNextStmt() != NULL)
+		n->getNextStmt()->accept(this);
 }
 
 // ----------------------------------------------------------

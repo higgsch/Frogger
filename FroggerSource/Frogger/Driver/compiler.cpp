@@ -5,6 +5,7 @@
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
 #include "compiler.h"
+#include "..\Phases\LineNoPhase.h"
 #include "..\Phases\summationPhase.h"
 #include "..\Phases\stringConversionPhase.h"
 #include "..\Phases\codeGenerationPhase.h"
@@ -38,8 +39,11 @@ void Compiler::run(string inFile, ostream * out)
 	//Initiate the compilation process
 	ProgramNode * root = p.parse();
 
+	LineNoPhase* lineP = new LineNoPhase();
+	root->traverseNodes(lineP);
+
 	//Compute goto line values and convert strings from frogger to c++
-	root->traverseNodes(new SummationPhase(root->getStmtCount()));
+	root->traverseNodes(new SummationPhase(lineP->getLineCount()));
 	root->traverseNodes(new StringConversionPhase());
 
 	//Generate output code to the out stream

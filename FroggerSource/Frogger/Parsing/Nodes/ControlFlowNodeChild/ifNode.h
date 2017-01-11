@@ -4,7 +4,6 @@
 #pragma once
 
 #include "..\controlFlowNode.h"
-//#include "stmtNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -16,19 +15,22 @@ class IfNode : public ControlFlowNode
 {
 private: 
 	BinaryOpNode * boolExp; // the boolean comparison
-	StmtNode * trueStmt; // the statement if boolExp is true
-	StmtNode * falseStmt; // the statement if boolExp is false
+	ControlFlowNode * trueStmt; // the statement if boolExp is true
+	ControlFlowNode * falseStmt; // the statement if boolExp is false
 
 public: 
-	IfNode(int);
+	IfNode();
 
 	BinaryOpNode* getBoolExp() { return boolExp; }
-	StmtNode* getTrueStmt() { return trueStmt; }
-	StmtNode* getFalseStmt() { return falseStmt; }
+	ControlFlowNode* getTrueStmt() { return trueStmt; }
+	ControlFlowNode* getFalseStmt() { return falseStmt; }
+	void setBoolExp(BinaryOpNode* boolExpression) { boolExp = boolExpression; }
+	void setTrueStmt(ControlFlowNode* tStmt) { trueStmt = tStmt; }
+	void setFalseStmt(ControlFlowNode* fStmt) { falseStmt = fStmt; }
 
-	void addStmt(AbstractNode * stmt);
-	void addIf(IfStruct ifStruct);
+	void accept(Phase* p) { p->visit(this); }
+
+	void addNextStmt(ControlFlowNode * next);
 	void clean();
 	void printNodes(ostream* out);
-	void traverseNodes(Phase* p);
 };
