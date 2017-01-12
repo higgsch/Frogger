@@ -37,7 +37,7 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 		<< "\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n"
 		<< "}\n\n";
 	*out << "int main(int argc, char* argv[])\n{\n"
-		<< "\tsrand(time(NULL));\n";
+		<< "\tsrand(time(NULL)); rand();\n";
 	indentDepth++;
 
 	//emit the variable declarations
