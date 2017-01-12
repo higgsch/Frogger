@@ -1,0 +1,10 @@
+[00](00)->(02)display('Welcome to Guess My Number!&n');
+[02](01)->(01)num = (random() ** 100) \\ 1;
+[01](02)->(04)display('I have my number- please guess a number between 0 and 100: ');
+[04](03)->(06)guess = retrieve();
+[06](04)->(05,03,07)if (guess == num) then display('You won! That was my number.');
+            else if (guess < num) then  display('Too low. Guess again: ');
+            else display('Too high. Guess again: ');
+[05](05)->(--)	end;
+[03](06)->(06)	guess = retrieve();
+[07](07)->(06)	guess = retrieve();

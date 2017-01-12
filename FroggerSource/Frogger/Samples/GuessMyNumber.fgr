@@ -1,0 +1,10 @@
+display('Welcome to Guess My Number!&n');
+display('I have my number- please guess a number between 0 and 100: ');
+num = (random() ** 100) \\ 1;
+	guess = retrieve();
+guess = retrieve();
+	end;
+if (guess == num) then display('Congrats! You won! That was my number.');
+    else if (guess < num) then  display('Too low. Guess again: ');
+    else display('I&'m sorry, Too high. Guess again: ');
+	guess = retrieve();
