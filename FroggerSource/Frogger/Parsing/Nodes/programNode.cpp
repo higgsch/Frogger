@@ -5,9 +5,6 @@
 // This program provides a root node for the AST.
 // -----------------------------------------------------------------
 #include "programNode.h"
-#include "controlFlowNode.h"
-#include "ControlFlowNodeChild\ifNode.h"
-#include "ControlFlowNodeChild\jmpStmtNode.h"
 using namespace std;
 
 // ----------------------------------------------------------

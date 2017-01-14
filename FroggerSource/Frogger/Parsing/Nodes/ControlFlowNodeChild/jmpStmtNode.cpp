@@ -4,9 +4,7 @@
 // -----------------------------------------------------------------
 // This program provides a node for a statement.
 // -----------------------------------------------------------------
-#include "..\abstractNode.h"
 #include "jmpStmtNode.h"
-#include "ifNode.h"
 using namespace std;
 
 // ----------------------------------------------------------

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "..\abstractNode.h"
+#include "idRefNode.h"
 using namespace std;
 
 class IdRefNode;

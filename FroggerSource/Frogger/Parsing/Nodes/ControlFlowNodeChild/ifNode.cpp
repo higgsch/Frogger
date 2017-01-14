@@ -5,8 +5,6 @@
 // This program provides a node for an if statement.
 // -----------------------------------------------------------------
 #include "ifNode.h"
-#include "jmpStmtNode.h"
-#include "..\AbstractNodeChild\binaryOpNode.h"
 using namespace std;
 
 

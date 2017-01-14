@@ -9,8 +9,6 @@
 #include "SubPhases\includesSubPhase.h"
 #include "SubPhases\varDecSubPhase.h"
 #include "SubPhases\tempAssignSubPhase.h"
-#include <iostream>
-#include <sstream>
 using namespace std;
 
 // ----------------------------------------------------------

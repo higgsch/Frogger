@@ -5,7 +5,6 @@
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
 #include "includesSubPhase.h"
-#include <iostream>;
 using namespace std;
 
 // ----------------------------------------------------------

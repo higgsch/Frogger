@@ -4,6 +4,7 @@
 #pragma once
 
 #include "..\controlFlowNode.h"
+#include "..\AbstractNodeChild\binaryOpNode.h"
 using namespace std;
 
 // ----------------------------------------------------------

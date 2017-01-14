@@ -6,9 +6,6 @@
 // assignment within a given line of code.
 // -----------------------------------------------------------------
 #include "tempAssignSubPhase.h"
-#include "..\..\Parsing\nodes.h"
-#include <iostream>
-#include <sstream>
 using namespace std;
 
 // ----------------------------------------------------------

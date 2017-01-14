@@ -4,7 +4,7 @@
 #pragma once
 
 #include "..\controlFlowNode.h"
-//#include "ifNode.h"
+#include "..\abstractNode.h"
 using namespace std;
 
 // ----------------------------------------------------------

@@ -6,7 +6,6 @@
 // assignment operation.
 // -----------------------------------------------------------------
 #include "assigningNode.h"
-#include "idRefNode.h"
 using namespace std;
 
 // ----------------------------------------------------------

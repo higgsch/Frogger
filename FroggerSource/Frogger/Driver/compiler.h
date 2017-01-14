@@ -4,6 +4,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 #include "..\Parsing\parser.h"
 using namespace std;
 

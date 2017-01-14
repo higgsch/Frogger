@@ -6,9 +6,6 @@
 // declarations as a subphase of the CodeGenerationPhase.
 // -----------------------------------------------------------------
 #include "varDecSubPhase.h"
-#include "..\..\Parsing\nodes.h"
-#include <iostream>
-#include <sstream>
 using namespace std;
 
 // ----------------------------------------------------------
