@@ -6,6 +6,7 @@
 // that reflects the current AST.
 // -----------------------------------------------------------------
 #include "codeGenerationPhase.h"
+#include "SubPhases\includesSubPhase.h"
 #include "SubPhases\varDecSubPhase.h"
 #include "SubPhases\tempAssignSubPhase.h"
 #include <iostream>
@@ -26,18 +27,21 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 	tempNo = 1; //temporaries are 1-indexed
 	indentDepth = 0;
 
-	//emit the "header" code
-	*out << "#include <string>\n"
-		<< "#include <iostream>\n"
-		<< "#include <math.h>\n"
-		<< "#include <stdlib.h>\n"
-		<< "#include <time.h>\n"
-		<< "using namespace std;\n\n";
-	*out << "double round(double num) {\n"
-		<< "\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n"
-		<< "}\n\n";
-	*out << "int main(int argc, char* argv[])\n{\n"
-		<< "\tsrand(time(NULL)); rand();\n";
+	//emit the include statements code
+	IncludesSubPhase* iSub = new IncludesSubPhase(out);
+	root->traverseNodes(iSub);
+	*out << "using namespace std;\n\n";
+
+	if (iSub->needsRoundFunction())
+		*out << "double round(double num) {\n"
+			<< "\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n"
+			<< "}\n\n";
+
+	*out << "int main(int argc, char* argv[])\n{\n";
+
+	if (iSub->hasRandomNode())
+		*out << "\tsrand(time(NULL)); rand();\n";
+
 	indentDepth++;
 
 	//emit the variable declarations
