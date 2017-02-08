@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.2
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program represents a visitor for calculating the goto line
 // numbers.
@@ -167,18 +167,36 @@ void SummationPhase::visit(IdRefNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes an assignment statement.
+// This function processes a double assignment statement.
 // @n: The node representing the statement.
 //
-// Version 1.0
+// Version 2.3
 // ----------------------------------------------------------
-void SummationPhase::visit(AssigningNode * n)
+void SummationPhase::visit(AssigningDoubleNode * n)
 {
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);
 	right->accept(this);
-	//Assignment adds '==' and ';' to the AST.
-	int ascii = getAsciiSumModLength("==;");
+	//Assignment adds '=D=' and ';' to the AST.
+	int ascii = getAsciiSumModLength("=D=;");
+	ascii = accumulateModLength(ascii, left->getAscii());
+	ascii = accumulateModLength(ascii, right->getAscii());
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes a string assignment statement.
+// @n: The node representing the statement.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void SummationPhase::visit(AssigningStringNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+	//Assignment adds '=D=' and ';' to the AST.
+	int ascii = getAsciiSumModLength("=S=;");
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	n->setAscii(ascii);
@@ -361,6 +379,66 @@ void SummationPhase::visit(ExpingNode * n)
 	left->accept(this);
 	right->accept(this);
 	int ascii = getAsciiSumModLength("^^");
+	ascii = accumulateModLength(ascii, left->getAscii());
+	ascii = accumulateModLength(ascii, right->getAscii());
+	
+	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
+		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes a string concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void SummationPhase::visit(StringConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+	int ascii = getAsciiSumModLength("+S+");
+	ascii = accumulateModLength(ascii, left->getAscii());
+	ascii = accumulateModLength(ascii, right->getAscii());
+	
+	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
+		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes a double concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void SummationPhase::visit(DoubleConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+	int ascii = getAsciiSumModLength("+D+");
+	ascii = accumulateModLength(ascii, left->getAscii());
+	ascii = accumulateModLength(ascii, right->getAscii());
+	
+	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
+		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes an ascii concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void SummationPhase::visit(AsciiConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+	int ascii = getAsciiSumModLength("+A+");
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	

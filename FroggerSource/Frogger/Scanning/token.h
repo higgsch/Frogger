@@ -11,7 +11,8 @@ using namespace std;
 // set of fgr token categories
 typedef enum token_types {
 	NOTOK = -1, 
-	ASSIGN, ADD, SUB, MUL, DIV, MOD, IDIV, ROOT, EXP,
+	ASSIGND, ADD, SUB, MUL, DIV, MOD, IDIV, ROOT, EXP,
+	ASSIGNS, CONCATS, CONCATD, CONCATA,
 	NOT, LT, GT, EQ, LTE, GTE, 
 	STRING,	ID, DOUBLECONST, 
 	RETRIEVE, END, DISPLAY, RANDOM,
@@ -25,7 +26,7 @@ typedef enum token_types {
 // constructors for ease of use and static "constants" for 
 // compact use. 
 //
-// Version 2.2
+// Version 2.3
 // ----------------------------------------------------------
 class Token
 { //Glorified Struct with public members and static placeholders
@@ -39,7 +40,7 @@ public:
 	//static "constants" used for simplified processing of language
 	//static tokens
 	static Token NOTOK;
-	static Token ASSIGN;
+	static Token ASSIGND;
 	static Token ADD;
 	static Token SUB;
 	static Token MUL;
@@ -48,6 +49,10 @@ public:
 	static Token IDIV;
 	static Token ROOT;
 	static Token EXP;
+	static Token ASSIGNS;
+	static Token CONCATS;
+	static Token CONCATD; 
+	static Token CONCATA;
 	static Token NOT;
 	static Token LT;
 	static Token GT;

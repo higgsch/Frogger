@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.2
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program provides a compact interface for tokens.
 // -----------------------------------------------------------------
@@ -21,15 +21,19 @@ Token::Token(token_type aType, string aLexeme)
 //static "constants" used for simplified processing of language
 //static tokens
 Token Token::NOTOK		= Token(token_types::NOTOK, "<None>");
-Token Token::ASSIGN		= Token(token_types::ASSIGN, "==");
+Token Token::ASSIGND	= Token(token_types::ASSIGND, "=D=");
 Token Token::ADD		= Token(token_types::ADD, "++");
 Token Token::SUB		= Token(token_types::SUB, "--");
 Token Token::MUL		= Token(token_types::MUL, "**");
 Token Token::DIV		= Token(token_types::DIV, "//");
-Token Token::MOD		= Token(token_types::MOD, "%%" );
-Token Token::IDIV		= Token(token_types::IDIV, "\\\\" );
-Token Token::ROOT		= Token(token_types::ROOT, "##" );
-Token Token::EXP		= Token(token_types::EXP, "^^" );
+Token Token::MOD		= Token(token_types::MOD, "%%");
+Token Token::IDIV		= Token(token_types::IDIV, "\\\\");
+Token Token::ROOT		= Token(token_types::ROOT, "##");
+Token Token::EXP		= Token(token_types::EXP, "^^");
+Token Token::ASSIGNS	= Token(token_types::ASSIGNS, "=S=");
+Token Token::CONCATS	= Token(token_types::CONCATS, "+S+");
+Token Token::CONCATD	= Token(token_types::CONCATD, "+D+");
+Token Token::CONCATA	= Token(token_types::CONCATA, "+A+");
 Token Token::NOT		= Token(token_types::NOT, "!");
 Token Token::LT			= Token(token_types::LT, "<");
 Token Token::GT			= Token(token_types::GT, ">");

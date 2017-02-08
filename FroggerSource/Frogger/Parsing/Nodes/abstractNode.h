@@ -8,12 +8,19 @@ using namespace std;
 
 class Phase;
 
+//Set of node data types
+enum DataType
+{
+	DT_DOUBLE,DT_STRING,
+	DT_NOT_DEFINED
+};
+
 // ----------------------------------------------------------
 // This class provides the base of the node inheritance for
 // the AST intermediate representation. Supports the visitor
 // pattern for a Phase.
 //
-// Version 2.0
+// Version 2.3
 // ----------------------------------------------------------
 class AbstractNode : public Node
 {
@@ -21,6 +28,7 @@ protected:
 	AbstractNode * parent; // this node's parent
 	AbstractNode * leftChild; // this node's left child
 	AbstractNode * rightChild; // this node's right child
+	DataType dataType; // the node's data type
 	node_type type; // the node category
 	string lexeme; // the string representation of the node value
 	node_side parent_side; // indicates which child (left or right)
@@ -75,6 +83,9 @@ public:
 	// Version 1.0
 	// ----------------------------------------------------------
 	AbstractNode * getRightChild()		{	return rightChild;		}
+
+	DataType getDataType() { return dataType; }
+	void setDataType(DataType i_dataType) { dataType = i_dataType; }
 
 	// ----------------------------------------------------------
 	// This function returns this node's category.

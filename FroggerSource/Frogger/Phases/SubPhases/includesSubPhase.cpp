@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.2
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -112,13 +112,27 @@ void IncludesSubPhase::visit(RandomingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes the include for an assignment 
+// This function processes the include for a double assignment 
 // statement.
 // @n: The node representing the statement.
 //
 // Version 2.2
 // ----------------------------------------------------------
-void IncludesSubPhase::visit(AssigningNode * n)
+void IncludesSubPhase::visit(AssigningDoubleNode * n)
+{
+	n->getLeftChild()->accept(this);
+	n->getRightChild()->accept(this);
+}
+
+
+// ----------------------------------------------------------
+// This function processes the include for a string assignment 
+// statement.
+// @n: The node representing the statement.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void IncludesSubPhase::visit(AssigningStringNode * n)
 {
 	n->getLeftChild()->accept(this);
 	n->getRightChild()->accept(this);
@@ -263,6 +277,65 @@ void IncludesSubPhase::visit(ExpingNode * n)
 
 	n->getLeftChild()->accept(this);
 	n->getRightChild()->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a string concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void IncludesSubPhase::visit(StringConcatingNode * n)
+{
+	if (!isStringImported)
+	{
+		*out << "#include <string>\n";
+		isStringImported = true;
+	}
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a double concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void IncludesSubPhase::visit(DoubleConcatingNode * n)
+{
+	if (!isStringImported)
+	{
+		*out << "#include <string>\n";
+		isStringImported = true;
+	}
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an ascii concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void IncludesSubPhase::visit(AsciiConcatingNode * n)
+{
+	if (!isStringImported)
+	{
+		*out << "#include <string>\n";
+		isStringImported = true;
+	}
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+
+	needsRoundFunct = true;
 }
 
 // ----------------------------------------------------------

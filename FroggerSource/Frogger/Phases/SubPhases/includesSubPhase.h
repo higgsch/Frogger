@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for generating import
 // statements as a subphase of the CodeGenerationPhase.
 //
-// Version 2.2
+// Version 2.3
 // ----------------------------------------------------------
 class IncludesSubPhase : public Phase
 {
@@ -37,7 +37,8 @@ public:
 	void visit(RandomingNode * n);
 	void visit(EndingNode * n){}
 	void visit(IdRefNode * n){}
-	void visit(AssigningNode * n);
+	void visit(AssigningDoubleNode * n);
+	void visit(AssigningStringNode * n);
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n){}
 	void visit(AddingNode * n);
@@ -49,6 +50,9 @@ public:
 	void visit(RootingNode * n);
 	void visit(ExpingNode * n);
 	void visit(NotingNode * n);
+	void visit(StringConcatingNode * n);
+	void visit(DoubleConcatingNode * n);
+	void visit(AsciiConcatingNode * n);
 	void visit(LTingNode * n);
 	void visit(GTingNode * n);
 	void visit(EQingNode * n);

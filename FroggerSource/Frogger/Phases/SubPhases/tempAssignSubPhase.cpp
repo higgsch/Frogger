@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program represents a visitor for generating temporary's 
 // assignment within a given line of code.
@@ -70,12 +70,25 @@ void TempAssignSubPhase::visit(DisplayingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes an assignment statement.
+// This function processes a double assignment statement.
 // @n: The node representing the statement.
 //
 // Version 1.0
 // ----------------------------------------------------------
-void TempAssignSubPhase::visit(AssigningNode * n)
+void TempAssignSubPhase::visit(AssigningDoubleNode * n)
+{
+	//Ignore left as left cannot be a temporary
+	AbstractNode *right = n->getRightChild();
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a string assignment statement.
+// @n: The node representing the statement.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(AssigningStringNode * n)
 {
 	//Ignore left as left cannot be a temporary
 	AbstractNode *right = n->getRightChild();
@@ -180,6 +193,45 @@ void TempAssignSubPhase::visit(RootingNode * n)
 // Version 2.1
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(ExpingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a string concatenation operation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(StringConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a double concatenation operation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(DoubleConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an ascii concatenation operation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(AsciiConcatingNode * n)
 {
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);

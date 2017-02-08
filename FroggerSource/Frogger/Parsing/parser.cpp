@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.2
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -132,10 +132,11 @@ IfNode* Parser::ifstmt()
 // <stmt> => display ( <strval> ) ;
 // <stmt> => display ( <dblval> ) ;
 // <stmt> => end ;
-// <stmt> => id assign <dblval> ;
+// <stmt> => id assignD <dblval> ;
+// <stmt> => id assignS <strval> ;
 // Returns: A pointer to the node representing this stmt.
 //
-// Version 2.0
+// Version 2.3
 // ----------------------------------------------------------
 JmpStmtNode* Parser::jmpstmt()
 {
@@ -168,10 +169,26 @@ JmpStmtNode* Parser::jmpstmt()
 		{
 			match(ID); 
 			IdRefNode* id = new IdRefNode(tok.lexeme);
-			match(ASSIGN); 
-			AbstractNode* toAssign = dblval(); 
-			match(SEMICOLON);
-			stmt->setStmt(new AssigningNode(id, toAssign));
+			
+			AbstractNode* toAssign; 
+			Token assignTok = next_token();
+			if (assignTok.type == ASSIGND)
+			{
+				match(ASSIGND); 
+				toAssign = dblval();
+				match(SEMICOLON);
+				stmt->setStmt(new AssigningDoubleNode(id, toAssign));
+			}
+			else if (assignTok.type == ASSIGNS)
+			{
+				match(ASSIGNS);
+				toAssign = strval();
+				match(SEMICOLON);
+				stmt->setStmt(new AssigningStringNode(id, toAssign));
+			}
+			else
+				syntax_error("Expected Assignment stmt");
+
 			break;
 		}
 	default:
@@ -245,16 +262,84 @@ ControlFlowNode* Parser::nestedflowstmt()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <strval> => string
+// <strval> => string <strval.1>
+// <strval> => id <strval.1>
+// <strval.1> => concatS string <strval.1>
+// <strval.1> => concatS id <strval.1>
+// <strval.1> => concatD <dblval> <strval.1>
+// <strval.1> => concatA <dblval> <strval.1>
+// <strval.1> => [lambda]
 // Returns: A pointer to the node representing this value.
 //
-// Version 2.0
+// Version 2.3
 // ----------------------------------------------------------
 AbstractNode* Parser::strval()
 {
+	AbstractNode * strRoot = NULL;
+
 	Token tok = next_token();
-	match(STRING);
-	return new StringConstingNode(tok.lexeme);
+	AbstractNode * strLeft;
+	if (tok.type == STRING)
+	{
+		match(STRING);
+		strLeft = new StringConstingNode(tok.lexeme);
+	}
+	else //tok.type == ID
+	{
+		match(ID);
+		strLeft = new IdRefNode(tok.lexeme);
+	}
+
+	do
+	{
+		Token concatTok = next_token();
+		if (concatTok.type == CONCATS)
+		{
+			match(CONCATS);
+			StringConcatingNode * strConCat = new StringConcatingNode();
+			strConCat->addLeftChild(strLeft);
+			
+			Token strTok = next_token();
+			if (strTok.type == STRING)
+			{
+				match(STRING);
+				strConCat->addRightChild(new StringConstingNode(strTok.lexeme));
+			}
+			else // strTok.type == ID
+			{
+				match(ID);
+				strConCat->addRightChild(new IdRefNode(strTok.lexeme));
+			}
+			
+			strLeft = strConCat;
+		}
+		else if (concatTok.type == CONCATD)
+		{
+			match(CONCATD);
+			AbstractNode * dblNode = dblval();
+			DoubleConcatingNode * dblConcat = new DoubleConcatingNode();
+			dblConcat->addLeftChild(strLeft);
+			dblConcat->addRightChild(dblNode);
+			
+			strLeft = dblConcat;
+		}
+		else if (concatTok.type == CONCATA)
+		{
+			match(CONCATA);
+			AbstractNode * dblNode = dblval();
+			AsciiConcatingNode * asiConcat = new AsciiConcatingNode();
+			asiConcat->addLeftChild(strLeft);
+			asiConcat->addRightChild(dblNode);
+			
+			strLeft = asiConcat;
+		}
+		else //lambda
+		{
+			strRoot = strLeft;
+		}
+	} while (strRoot == NULL);
+
+	return strRoot;
 }
 
 // ----------------------------------------------------------
@@ -548,7 +633,7 @@ BinaryOpNode* Parser::boolop()
 // on failure.
 // @toMatch: The expected token category.
 //
-// Version 2.0
+// Version 2.3
 // ----------------------------------------------------------
 void Parser::match(token_type toMatch)
 {
@@ -563,8 +648,11 @@ void Parser::match(token_type toMatch)
 		string type;
 		switch (toMatch)
 		{
-		case ASSIGN:
-			type = "=";
+		case ASSIGND:
+			type = "=D=";
+			break;
+		case ASSIGNS:
+			type = "=S=";
 			break;
 		case ADD:
 			type = "++";
@@ -589,6 +677,15 @@ void Parser::match(token_type toMatch)
 			break;
 		case EXP:
 			type = "^^";
+			break;
+		case CONCATS:
+			type = "+S+";
+			break;
+		case CONCATD:
+			type = "+D+";
+			break;
+		case CONCATA:
+			type = "+A+";
 			break;
 		case NOT:
 			type = "!";

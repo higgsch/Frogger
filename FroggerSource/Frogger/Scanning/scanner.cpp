@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.2
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and converts strings of 
 // chars to tokens.
@@ -76,7 +76,7 @@ void Scanner::checkForObfuscation(void)
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 2.2
+// Version 2.3
 // ----------------------------------------------------------
 Token Scanner::scan(void)
 {
@@ -104,10 +104,24 @@ Token Scanner::scan(void)
 			int c = get();
 			if (c == '=')
 				return Token::EQ;
+			else if (!(c == 'd' || c == 's'))
+			{
+				unget();
+				lexical_error(lineNo, "Incomplete assignment operator");
+			}
 
-			//c is not part of the current token
-			unget();
-			return Token::ASSIGN;
+			int nextC = get();
+			if (nextC == '=')
+			{
+				if (c == 'd')
+					return Token::ASSIGND;
+				else if (c == 's')
+					return Token::ASSIGNS;
+			}
+			
+			
+			unget(); unget();
+			lexical_error(lineNo, "Incomplete assignment operator");
 		}
 		else if (in_char == '!')
 			return Token::NOT;
@@ -136,10 +150,26 @@ Token Scanner::scan(void)
 			int c = get();
 			if (c == '+')
 				return Token::ADD;
-			else //Addition is ++
+			else if ( !(c == 's' || c == 'd' || c == 'a'))
 			{
 				unget();
-				lexical_error(lineNo, "Incomplete addition operator");
+				lexical_error(lineNo, "Incomplete addition or concatenation operator");
+			}
+			
+			int nextC = get();
+			if (nextC == '+')
+			{
+				if (c == 's')
+					return Token::CONCATS;
+				else if (c == 'd')
+					return Token::CONCATD;
+				else if (c == 'a')
+					return Token::CONCATA;
+			}
+			else
+			{
+				unget(); unget();
+				lexical_error(lineNo, "Incomplete concatenation operator");
 			}
 		}
 		else if (in_char == '-')

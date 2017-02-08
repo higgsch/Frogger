@@ -1,28 +1,29 @@
 // -----------------------------------------------------------------
-// This is the header for the CodeGeneratingPhase class.
+// This is the header for the DataTypingPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
-#include <iostream>
 #include "phases.h"
 #include "..\Parsing\nodes.h"
+#include "symbolTable.h"
 using namespace std;
 
 // ----------------------------------------------------------
-// This class represents a visitor for generating output code
-// that reflects the current AST.
+// This class represents a visitor for checking data types
 //
 // Version 2.3
 // ----------------------------------------------------------
-class CodeGenerationPhase : public Phase
+class DataTypingPhase : public Phase
 {
 private:
-	ostream* out; // the output stream to print to
-	int tempNo; // the current temporary number in a line
-	int indentDepth; // the number of tabs to insert
+	SymbolTable * symbols;
+	void checkAndSetDataType(AbstractNode * node, DataType type);
+	void dataType_error(string);
 
 public:
-	CodeGenerationPhase(ostream* outstream, ProgramNode* root);
+	DataTypingPhase() { symbols = new SymbolTable(); }
+
+	SymbolTable * getSymbolTable();
 
 	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
@@ -52,13 +53,4 @@ public:
 	void visit(EQingNode * n);
 	void visit(LTEingNode * n);
 	void visit(GTEingNode * n);
-
-	string indent()
-	{
-		string result = "";
-		for (int i = 0; i < indentDepth; i++)
-			result = result + "\t";
-
-		return result;
-	}
 };

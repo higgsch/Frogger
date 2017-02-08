@@ -14,7 +14,7 @@ class ProgramNode;
 // This class is the driver class for the compiler program.
 // It can be used to compile a .fgr source file to c++ output.
 //
-// Version 2.0
+// Version 2.3
 // ----------------------------------------------------------
 class Compiler
 {

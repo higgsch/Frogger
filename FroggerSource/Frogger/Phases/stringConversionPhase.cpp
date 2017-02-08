@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program represents a visitor for converting string literals
 // from frogger syntax to c++ syntax.
@@ -79,6 +79,19 @@ void StringConversionPhase::visit(DisplayingNode * n)
 }
 
 // ----------------------------------------------------------
+// This function processes a string assignment statement.
+// @n: The node representing the statement.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void StringConversionPhase::visit(AssigningStringNode * n)
+{
+	//Don't need to visit leftChild because leftChild is an id
+	AbstractNode *right = n->getRightChild();
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
 // This function processes a string literal.
 // @n: The node representing the string.
 //
@@ -87,4 +100,43 @@ void StringConversionPhase::visit(DisplayingNode * n)
 void StringConversionPhase::visit(StringConstingNode * n)
 {
 	n->setLexeme(convertString(n->getLexeme()));
+}
+
+// ----------------------------------------------------------
+// This function processes a string concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void StringConversionPhase::visit(StringConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a double concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void StringConversionPhase::visit(DoubleConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an ascii concatenation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void StringConversionPhase::visit(AsciiConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
 }

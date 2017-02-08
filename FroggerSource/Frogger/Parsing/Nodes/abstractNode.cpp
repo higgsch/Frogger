@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program provides the base of the node inheritance for
 // the AST intermediate representation. Supports the visitor
@@ -13,7 +13,7 @@ using namespace std;
 // ----------------------------------------------------------
 // Default constructor initializes pointers and counters.
 //
-// Version 1.0
+// Version 2.3
 // ----------------------------------------------------------
 AbstractNode::AbstractNode()
 {
@@ -21,6 +21,7 @@ AbstractNode::AbstractNode()
 	leftChild = NULL;
 	rightChild = NULL;
 	parenNestCount = 0;
+	dataType = DT_NOT_DEFINED;
 }
 
 // ----------------------------------------------------------

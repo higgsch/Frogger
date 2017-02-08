@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
@@ -147,26 +147,46 @@ void VarDecSubPhase::visit(DisplayingNode * n)
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
-// Version 2.0
+// Version 2.3
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(IdRefNode * n)
 {
 	string id = n->getLexeme();
+	DataType type = n->getDataType();
+
 	if (!isInList(id))
 	{
 		addToList(id);
 		//emit variable declaration and initialization
-		*out << indent() << "double _" << id << " = 0;\n";
+		if (type == DT_DOUBLE)
+			*out << indent() << "double _" << id << " = 0;\n";
+		else if (type == DT_STRING)
+			*out << indent() << "string _" << id << " = \"\";\n";
+		else
+			*out << indent() << "Not_Defined _" << id << " = NULL;\n";
 	}
 }
 
 // ----------------------------------------------------------
-// This function processes an assignment statement.
+// This function processes a double assignment statement.
 // @n: The node representing the statement.
 //
 // Version 1.0
 // ----------------------------------------------------------
-void VarDecSubPhase::visit(AssigningNode * n)
+void VarDecSubPhase::visit(AssigningDoubleNode * n)
+{
+	AbstractNode* left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a string assignment statement.
+// @n: The node representing the statement.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(AssigningStringNode * n)
 {
 	AbstractNode* left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);
@@ -271,6 +291,45 @@ void VarDecSubPhase::visit(RootingNode * n)
 // Version 2.1
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(ExpingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a string concatenation operation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(StringConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a double concatenation operation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(DoubleConcatingNode * n)
+{
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	left->accept(this);
+	right->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an ascii concatenation operation.
+// @n: The node representing the operation.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(AsciiConcatingNode * n)
 {
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	left->accept(this);

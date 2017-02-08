@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 2.3
 // -----------------------------------------------------------------
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
@@ -8,6 +8,7 @@
 #include "..\Phases\LineNoPhase.h"
 #include "..\Phases\summationPhase.h"
 #include "..\Phases\stringConversionPhase.h"
+#include "..\Phases\dataTypingPhase.h"
 #include "..\Phases\codeGenerationPhase.h"
 #include "..\Parsing\nodes.h"
 using namespace std;
@@ -27,7 +28,7 @@ Compiler::Compiler()
 // @inFile: The .fgr file to open (from project directory).
 // @out: The output stream that output source is sent to.
 //
-// Version 1.0
+// Version 2.3
 // ----------------------------------------------------------
 void Compiler::run(string inFile, ostream * out)
 {
@@ -46,6 +47,7 @@ void Compiler::run(string inFile, ostream * out)
 	root->traverseNodes(new StringConversionPhase());
 
 	//Generate output code to the out stream
+	root->traverseNodes(new DataTypingPhase());
 	root->traverseNodes(new CodeGenerationPhase(out, root));
 	*out << "\n}" << endl; //close the c++ main function
 
