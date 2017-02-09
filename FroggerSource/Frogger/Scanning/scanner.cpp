@@ -40,6 +40,9 @@ Scanner::~Scanner(void)
 void Scanner::open(string filename)
 {
 	source.open(filename);
+	char first = source.peek();
+	if (first == EOF)
+		cout << "\nEmpty Input File\n\n";
 }
 
 // ----------------------------------------------------------
