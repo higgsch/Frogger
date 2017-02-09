@@ -80,6 +80,11 @@ public:
 	void setStmtNo(int num) { stmtNo = num; }
 
 	virtual void accept(Phase*)=0;
+	void visitNextStmt(Phase* p) 
+	{ 
+		if (!isNested() && nextStmt != NULL) 
+			nextStmt->accept(p); 
+	}
 
 	virtual void addNextStmt(ControlFlowNode* next)=0;
 	virtual void clean()=0;

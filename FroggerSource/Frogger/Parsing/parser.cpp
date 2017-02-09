@@ -129,12 +129,10 @@ IfNode* Parser::ifstmt()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <stmt> => display ( <strval> ) ;
-// <stmt> => display ( <dblval> ) ;
-// <stmt> => end ;
-// <stmt> => id assignD <dblval> ;
-// <stmt> => id assignS <strval> ;
-// Returns: A pointer to the node representing this stmt.
+// <jmpstmt> => display ( <expr> ) ;
+// <jmpstmt> => end ;
+// <jmpstmt> => id assign <expr> ;
+// Returns: A pointer to the node representing this jmpstmt.
 //
 // Version 2.3
 // ----------------------------------------------------------
@@ -149,13 +147,8 @@ JmpStmtNode* Parser::jmpstmt()
 		{
 			match(DISPLAY); match(LPAREN);
 
-			Token t = next_token();
-			AbstractNode* toDisplay;
-			if (t.type == STRING)
-				toDisplay = strval();
-			else 
-				toDisplay = dblval();
-
+			AbstractNode* toDisplay = expr();
+			
 			match(RPAREN); match(SEMICOLON);
 			
 			stmt->setStmt(new DisplayingNode(toDisplay));
@@ -169,26 +162,12 @@ JmpStmtNode* Parser::jmpstmt()
 		{
 			match(ID); 
 			IdRefNode* id = new IdRefNode(tok.lexeme);
+			match(ASSIGN);
 			
-			AbstractNode* toAssign; 
-			Token assignTok = next_token();
-			if (assignTok.type == ASSIGND)
-			{
-				match(ASSIGND); 
-				toAssign = dblval();
-				match(SEMICOLON);
-				stmt->setStmt(new AssigningDoubleNode(id, toAssign));
-			}
-			else if (assignTok.type == ASSIGNS)
-			{
-				match(ASSIGNS);
-				toAssign = strval();
-				match(SEMICOLON);
-				stmt->setStmt(new AssigningStringNode(id, toAssign));
-			}
-			else
-				syntax_error("Expected Assignment stmt");
+			AbstractNode* toAssign = expr();
+			match(SEMICOLON);
 
+			stmt->setStmt(new AssigningNode(id, toAssign));
 			break;
 		}
 	default:
@@ -202,14 +181,14 @@ JmpStmtNode* Parser::jmpstmt()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <boolexp> => <dblval> <boolop> <dblval>
-// <boolexp> => <dblval> not <boolop> <dblval>
+// <boolexp> => <expr> <boolop> <expr>
+// <boolexp> => <expr> not <boolop> <expr>
 //
 // Version 2.0
 // ----------------------------------------------------------
 BinaryOpNode* Parser::boolexp()
 {
-	AbstractNode* left = dblval(); 
+	AbstractNode* left = expr(); 
 
 	Token tok = next_token();
 	BinaryOpNode* not = NULL;
@@ -220,7 +199,7 @@ BinaryOpNode* Parser::boolexp()
 	}
 
 	BinaryOpNode* op = boolop(); 
-	AbstractNode* right = dblval();
+	AbstractNode* right = expr();
 	op->addOps(left, right);
 
 	if (not == NULL)
@@ -262,96 +241,14 @@ ControlFlowNode* Parser::nestedflowstmt()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <strval> => string <strval.1>
-// <strval> => id <strval.1>
-// <strval.1> => concatS string <strval.1>
-// <strval.1> => concatS id <strval.1>
-// <strval.1> => concatD <dblval> <strval.1>
-// <strval.1> => concatA <dblval> <strval.1>
-// <strval.1> => [lambda]
-// Returns: A pointer to the node representing this value.
-//
-// Version 2.3
-// ----------------------------------------------------------
-AbstractNode* Parser::strval()
-{
-	AbstractNode * strRoot = NULL;
-
-	Token tok = next_token();
-	AbstractNode * strLeft;
-	if (tok.type == STRING)
-	{
-		match(STRING);
-		strLeft = new StringConstingNode(tok.lexeme);
-	}
-	else //tok.type == ID
-	{
-		match(ID);
-		strLeft = new IdRefNode(tok.lexeme);
-	}
-
-	do
-	{
-		Token concatTok = next_token();
-		if (concatTok.type == CONCATS)
-		{
-			match(CONCATS);
-			StringConcatingNode * strConCat = new StringConcatingNode();
-			strConCat->addLeftChild(strLeft);
-			
-			Token strTok = next_token();
-			if (strTok.type == STRING)
-			{
-				match(STRING);
-				strConCat->addRightChild(new StringConstingNode(strTok.lexeme));
-			}
-			else // strTok.type == ID
-			{
-				match(ID);
-				strConCat->addRightChild(new IdRefNode(strTok.lexeme));
-			}
-			
-			strLeft = strConCat;
-		}
-		else if (concatTok.type == CONCATD)
-		{
-			match(CONCATD);
-			AbstractNode * dblNode = dblval();
-			DoubleConcatingNode * dblConcat = new DoubleConcatingNode();
-			dblConcat->addLeftChild(strLeft);
-			dblConcat->addRightChild(dblNode);
-			
-			strLeft = dblConcat;
-		}
-		else if (concatTok.type == CONCATA)
-		{
-			match(CONCATA);
-			AbstractNode * dblNode = dblval();
-			AsciiConcatingNode * asiConcat = new AsciiConcatingNode();
-			asiConcat->addLeftChild(strLeft);
-			asiConcat->addRightChild(dblNode);
-			
-			strLeft = asiConcat;
-		}
-		else //lambda
-		{
-			strRoot = strLeft;
-		}
-	} while (strRoot == NULL);
-
-	return strRoot;
-}
-
-// ----------------------------------------------------------
-// This function represents production rules:
-// <dblval> => <addterm> <dblval.1>
-// <dblval.1> => <addop> <dblval>
-// <dblval.1> => [lambda]
+// <expr> => <addterm> <expr.1>
+// <expr.1> => <addop> <expr>
+// <expr.1> => [lambda]
 // Returns: A pointer to the node representing this value.
 //
 // Version 1.0
 // ----------------------------------------------------------
-AbstractNode* Parser::dblval()
+AbstractNode* Parser::expr()
 {
 	AbstractNode* left = addterm();
 
@@ -362,7 +259,7 @@ AbstractNode* Parser::dblval()
 	case SUB:
 		{
 			BinaryOpNode* op = addop();
-			AbstractNode* right = dblval();
+			AbstractNode* right = expr();
 			op->addOps(left, right);
 			return op;
 			break;
@@ -464,9 +361,13 @@ AbstractNode* Parser::expterm()
 		match(tok.type);
 		return new IdRefNode(tok.lexeme);
 		break;
+	case STRING:
+		match(tok.type);
+		return new StringConstingNode(tok.lexeme);
+		break;
 	case LPAREN:
 		{
-			match(LPAREN); AbstractNode* val = dblval(); match(RPAREN);
+			match(LPAREN); AbstractNode* val = expr(); match(RPAREN);
 			val->addParenNesting();
 			return val;
 			break;
@@ -648,11 +549,8 @@ void Parser::match(token_type toMatch)
 		string type;
 		switch (toMatch)
 		{
-		case ASSIGND:
-			type = "=D=";
-			break;
-		case ASSIGNS:
-			type = "=S=";
+		case ASSIGN:
+			type = "=";
 			break;
 		case ADD:
 			type = "++";
@@ -677,15 +575,6 @@ void Parser::match(token_type toMatch)
 			break;
 		case EXP:
 			type = "^^";
-			break;
-		case CONCATS:
-			type = "+S+";
-			break;
-		case CONCATD:
-			type = "+D+";
-			break;
-		case CONCATA:
-			type = "+A+";
 			break;
 		case NOT:
 			type = "!";

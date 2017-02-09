@@ -77,11 +77,10 @@ int SummationPhase::getAsciiSumModLength(string s)
 // ----------------------------------------------------------
 void SummationPhase::visit(JmpStmtNode * n)
 {
-	n->getStmt()->accept(this);
+	n->visitThisStmt(this);
 	n->setJump(n->getStmt()->getAscii());
 
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitNextStmt(this);
 }
 
 // ----------------------------------------------------------
@@ -92,11 +91,7 @@ void SummationPhase::visit(JmpStmtNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(IfNode * n)
 {
-	n->getTrueStmt()->accept(this);
-	n->getFalseStmt()->accept(this);
-
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -167,36 +162,18 @@ void SummationPhase::visit(IdRefNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a double assignment statement.
+// This function processes a assignment statement.
 // @n: The node representing the statement.
 //
 // Version 2.3
 // ----------------------------------------------------------
-void SummationPhase::visit(AssigningDoubleNode * n)
+void SummationPhase::visit(AssigningNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-	//Assignment adds '=D=' and ';' to the AST.
-	int ascii = getAsciiSumModLength("=D=;");
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	n->setAscii(ascii);
-}
+	n->visitAllChildren(this);
 
-// ----------------------------------------------------------
-// This function processes a string assignment statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void SummationPhase::visit(AssigningStringNode * n)
-{
+	//Assignment adds '=' and ';' to the AST.
+	int ascii = getAsciiSumModLength("=;");
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-	//Assignment adds '=D=' and ';' to the AST.
-	int ascii = getAsciiSumModLength("=S=;");
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	n->setAscii(ascii);
@@ -235,10 +212,10 @@ void SummationPhase::visit(DoubleConstingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(AddingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("++");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -255,10 +232,10 @@ void SummationPhase::visit(AddingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(SubingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("--");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -275,10 +252,10 @@ void SummationPhase::visit(SubingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(MulingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("**");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -295,10 +272,10 @@ void SummationPhase::visit(MulingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(DivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("//");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -315,10 +292,10 @@ void SummationPhase::visit(DivingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(ModDivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("%%");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -335,10 +312,10 @@ void SummationPhase::visit(ModDivingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(IDivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("\\\\");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -355,10 +332,10 @@ void SummationPhase::visit(IDivingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(RootingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("##");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -375,70 +352,10 @@ void SummationPhase::visit(RootingNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(ExpingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+
 	int ascii = getAsciiSumModLength("^^");
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a string concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void SummationPhase::visit(StringConcatingNode * n)
-{
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-	int ascii = getAsciiSumModLength("+S+");
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a double concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void SummationPhase::visit(DoubleConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-	int ascii = getAsciiSumModLength("+D+");
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes an ascii concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void SummationPhase::visit(AsciiConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-	int ascii = getAsciiSumModLength("+A+");
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	

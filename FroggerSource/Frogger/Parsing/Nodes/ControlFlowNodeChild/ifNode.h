@@ -30,6 +30,32 @@ public:
 	void setFalseStmt(ControlFlowNode* fStmt) { falseStmt = fStmt; }
 
 	void accept(Phase* p) { p->visit(this); }
+	void visitBoolExp(Phase* p)
+	{
+		if (boolExp != NULL)
+			boolExp->accept(p);
+	}
+	void visitTrueStmt(Phase* p)
+	{
+		if (trueStmt != NULL)
+			trueStmt->accept(p);
+	}
+	void visitFalseStmt(Phase* p)
+	{
+		if (falseStmt != NULL)
+			falseStmt->accept(p);
+	}
+	void visitThisStmt(Phase* p)
+	{
+		visitBoolExp(p);
+		visitTrueStmt(p);
+		visitFalseStmt(p);
+	}
+	void visitAllChildren(Phase* p)
+	{
+		visitThisStmt(p);
+		visitNextStmt(p);
+	}
 
 	void addNextStmt(ControlFlowNode * next);
 	void clean();

@@ -145,6 +145,26 @@ public:
 
 	void clean();
 
+	void visitLeftChild(Phase* p)
+	{
+		AbstractNode *left = getLeftChild();
+		if (left != NULL)
+			left->accept(p);
+	}
+
+	void visitRightChild(Phase* p)
+	{
+		AbstractNode *right = getRightChild();
+		if (right != NULL)
+			right->accept(p);
+	}
+
+	void visitAllChildren(Phase* p)
+	{
+		visitLeftChild(p);
+		visitRightChild(p);
+	}
+
 	//virtual functions
 	virtual void accept(Phase*)=0;
 	virtual void printMe(ostream*)=0;

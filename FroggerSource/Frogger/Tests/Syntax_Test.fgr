@@ -1,89 +1,89 @@
 ~Variables~
- a_Dbl =d= 0.0;
- a_Str =s= '';
+ a_Dbl = 0.0;
+ a_Str = '';
 
 ~Built in Commands~
- dbl =d= retrieve();
+ dbl = retrieve();
  display('Hello');
  display(5.5);
  display(dbl);
- dbl =d= random();
+ dbl = random();
  end;
 
  ~with operators~
- display('Hello' +s+ ' World');
+ display('Hello' ++ ' World');
  display(5.5 ++ 2.5);
 
 ~Arithmetic Operations~
- dbl =d= 5.9;
- dbl =d= 2.5^^6.2;
- dbl =d= 3##8;
- dbl =d= 12.2**1.5;
- dbl =d= 1//2;
- dbl =d= 1\\2;
- dbl =d= 5.3%%9.7;
- dbl =d= 1.0++2.0;
- dbl =d= 0.0--5.7; ~-5.7~
+ dbl = 5.9;
+ dbl = 2.5^^6.2;
+ dbl = 3##8;
+ dbl = 12.2**1.5;
+ dbl = 1//2;
+ dbl = 1\\2;
+ dbl = 5.3%%9.7;
+ dbl = 1.0++2.0;
+ dbl = 0.0--5.7; ~-5.7~
  
  ~with variables~
-  dbl =d= a_Dbl;
+  dbl = a_Dbl;
  
-  dbl =d= a_Dbl^^6.2;
-  dbl =d= 2.5^^a_Dbl;
-  dbl =d= a_Dbl^^a_Dbl;
+  dbl = a_Dbl^^6.2;
+  dbl = 2.5^^a_Dbl;
+  dbl = a_Dbl^^a_Dbl;
  
-  dbl =d= a_Dbl##8;
-  dbl =d= 3##a_Dbl;
-  dbl =d= a_Dbl##a_Dbl;
+  dbl = a_Dbl##8;
+  dbl = 3##a_Dbl;
+  dbl = a_Dbl##a_Dbl;
  
-  dbl =d= a_Dbl**1.5;
-  dbl =d= 12.2**a_Dbl;
-  dbl =d= a_Dbl**a_Dbl;
+  dbl = a_Dbl**1.5;
+  dbl = 12.2**a_Dbl;
+  dbl = a_Dbl**a_Dbl;
  
-  dbl =d= a_Dbl//2;
-  dbl =d= 1//a_Dbl;
-  dbl =d= a_Dbl//a_Dbl;
+  dbl = a_Dbl//2;
+  dbl = 1//a_Dbl;
+  dbl = a_Dbl//a_Dbl;
  
-  dbl =d= a_Dbl\\2;
-  dbl =d= 1\\a_Dbl;
-  dbl =d= a_Dbl\\a_Dbl;
+  dbl = a_Dbl\\2;
+  dbl = 1\\a_Dbl;
+  dbl = a_Dbl\\a_Dbl;
  
-  dbl =d= a_Dbl%%9.7;
-  dbl =d= 5.3%%a_Dbl;
-  dbl =d= a_Dbl%%a_Dbl;
+  dbl = a_Dbl%%9.7;
+  dbl = 5.3%%a_Dbl;
+  dbl = a_Dbl%%a_Dbl;
  
-  dbl =d= a_Dbl++2.0;
-  dbl =d= 1.0++a_Dbl;
-  dbl =d= a_Dbl++a_Dbl;
+  dbl = a_Dbl++2.0;
+  dbl = 1.0++a_Dbl;
+  dbl = a_Dbl++a_Dbl;
  
-  dbl =d= a_Dbl--5.7;
-  dbl =d= 0.0--a_Dbl;
-  dbl =d= a_Dbl--a_Dbl;
+  dbl = a_Dbl--5.7;
+  dbl = 0.0--a_Dbl;
+  dbl = a_Dbl--a_Dbl;
  
 ~String Operations~
- str =s= 'Hello';
- str =s= 'Hello ' +s+ 'World';
- str =s= 'Number_' +d+ 123; ~Number_123~
- str =s= 'Letter_' +a+ 65; ~Letter_A~
+ str = 'Hello';
+ str = 'Hello ' ++ 'World';
+ ~str = 'Number_' ++ 123;~ ~Number_123~
+ ~str = 'Letter_' ++ 65;~ ~Letter_A~
 
  ~with variables~
-  str =s= a_Str;
+  str = a_Str;
 
-  str =s= a_Str +s+ 'World';
-  str =s= 'Hello ' +s+ a_Str;
-  str =s= a_Str +s+ a_Str;
+  str = a_Str ++ 'World';
+  str = 'Hello ' ++ a_Str;
+  str = a_Str ++ a_Str;
 
-  str =s= a_Str +d+ 123;
-  str =s= 'Number_' +d+ a_Dbl;
-  str =s= a_Str +d+ a_Dbl;
+  ~str = a_Str ++ 123;
+  str = 'Number_' ++ a_Dbl;
+  str = a_Str ++ a_Dbl;
 
-  str =s= a_Str +a+ 65;
-  str =s= 'Letter_' +a+ a_Dbl;
-  str =s= a_Str +a+ a_Dbl;
+  str = a_Str ++ 65;
+  str = 'Letter_' ++ a_Dbl;
+  str = a_Str ++ a_Dbl;~
 
  ~nested operations~
-  str =s= 't' +d+ a_Dbl ++ 2 +a+ 64 ++ 1;
-  str =s= 't' +d+ (a_Dbl ++ 2) +a+ (64 ++ 1);
+  ~str = 't' ++ a_Dbl ++ 2 ++ 64 ++ 1;~
+  ~str = 't' ++ (a_Dbl ++ 2) ++ (64 ++ 1);~
 
 ~Boolean Operations~
  if (5 < 2) then end; else end;
@@ -121,8 +121,7 @@
   if (a_Dbl >= a_Dbl) then end; else end;
 
 ~Strings~
- str =s= 'This!&t&& that?&nThat&'s something else';
+ str = 'This!&t&& that?&nThat&'s something else';
 
 ~Multi-line
  Comments~
-

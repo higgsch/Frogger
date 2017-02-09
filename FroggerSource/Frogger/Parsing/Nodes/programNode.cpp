@@ -70,7 +70,7 @@ void ProgramNode::printNodes(ostream* out)
 //
 // Version 2.0
 // ----------------------------------------------------------
-void ProgramNode::traverseNodes(Phase* p)
+void ProgramNode::visitAllChildren(Phase* p)
 {
 	if (firstStmt != NULL)
 		firstStmt->accept(p);

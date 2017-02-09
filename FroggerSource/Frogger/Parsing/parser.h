@@ -30,8 +30,7 @@ private:
 	JmpStmtNode* jmpstmt();
 	BinaryOpNode* boolexp();
 	ControlFlowNode* nestedflowstmt();
-	AbstractNode* strval();
-	AbstractNode* dblval();
+	AbstractNode* expr();
 	AbstractNode* addterm();
 	AbstractNode* multerm();
 	AbstractNode* expterm();

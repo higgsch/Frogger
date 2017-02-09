@@ -42,5 +42,7 @@ public:
 	void addFirstStmt(ControlFlowNode* first);
 	void clean();
 	void printNodes(ostream* out);
-	void traverseNodes(Phase* p);
+	void visitAllChildren(Phase* p);
+
+	void accept(Phase* p) { p->visit(this); }
 };

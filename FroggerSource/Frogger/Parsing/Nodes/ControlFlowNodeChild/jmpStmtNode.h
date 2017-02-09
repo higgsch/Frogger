@@ -53,6 +53,16 @@ public:
 	void setStmt(AbstractNode* contents) { stmt = contents; }
 
 	void accept(Phase* p) { p->visit(this); }
+	void visitThisStmt(Phase* p)
+	{
+		if (stmt != NULL)
+			stmt->accept(p);
+	}
+	void visitAllChildren(Phase* p) 
+	{
+		visitThisStmt(p);
+		visitNextStmt(p);
+	}
 
 	void addNextStmt(ControlFlowNode* next);
 	void clean();

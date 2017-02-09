@@ -16,12 +16,11 @@ typedef enum node_sides{
 // set of node categories
 typedef enum node_types{
 	RETRIEVING, DISPLAYING, ENDING, RANDOMING,
-	ASSIGNINGDOUBLE, ASSIGNINGSTRING,
+	ASSIGNING, 
 	IDREF, STRINGCONSTING, 
 	DBLCONSTING, 
 	ADDING, SUBING, MULING, DIVING, 
 	MODDIVING, IDIVING, ROOTING, EXPING,
-	STRINGCONCATING, DOUBLECONCATING, ASCIICONCATING,
 	NOTING, LTING, GTING, EQING, LTEING, GTEING
 } node_type;
 
@@ -48,4 +47,7 @@ protected:
 		getchar();
 		exit(0);
 	}
+
+public:
+	virtual void visitAllChildren(Phase* p) =0;
 };

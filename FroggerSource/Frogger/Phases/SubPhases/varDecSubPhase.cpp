@@ -88,14 +88,13 @@ void VarDecSubPhase::visit(JmpStmtNode * n)
 {
 	currStmtTempCount = 0;
 
-	n->getStmt()->accept(this);
+	n->visitThisStmt(this);
 
 	//update the temporary counter
 	if (currStmtTempCount > lineTempMax)
 		lineTempMax = currStmtTempCount;
 
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitNextStmt(this);
 }
 
 // ----------------------------------------------------------
@@ -108,16 +107,15 @@ void VarDecSubPhase::visit(IfNode * n)
 {
 	currStmtTempCount = 0;
 
-	n->getBoolExp()->accept(this);
+	n->visitBoolExp(this);
 
 	if (currStmtTempCount > lineTempMax)
 		lineTempMax = currStmtTempCount;
 
-	n->getTrueStmt()->accept(this);
-	n->getFalseStmt()->accept(this);
-
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitTrueStmt(this);
+	n->visitFalseStmt(this);
+	
+	n->visitNextStmt(this);
 }
 
 // ----------------------------------------------------------
@@ -139,8 +137,7 @@ void VarDecSubPhase::visit(RetrievalNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(DisplayingNode * n)
 {
-	AbstractNode *child = n->getLeftChild();
-	child->accept(this);
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -168,29 +165,14 @@ void VarDecSubPhase::visit(IdRefNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a double assignment statement.
+// This function processes an assignment statement.
 // @n: The node representing the statement.
 //
 // Version 1.0
 // ----------------------------------------------------------
-void VarDecSubPhase::visit(AssigningDoubleNode * n)
+void VarDecSubPhase::visit(AssigningNode * n)
 {
-	AbstractNode* left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string assignment statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(AssigningStringNode * n)
-{
-	AbstractNode* left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -201,9 +183,7 @@ void VarDecSubPhase::visit(AssigningStringNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(AddingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -214,9 +194,7 @@ void VarDecSubPhase::visit(AddingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(SubingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -227,9 +205,7 @@ void VarDecSubPhase::visit(SubingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(MulingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -240,9 +216,7 @@ void VarDecSubPhase::visit(MulingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(DivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -253,9 +227,7 @@ void VarDecSubPhase::visit(DivingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(ModDivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -266,9 +238,7 @@ void VarDecSubPhase::visit(ModDivingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(IDivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -279,9 +249,7 @@ void VarDecSubPhase::visit(IDivingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(RootingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -292,48 +260,7 @@ void VarDecSubPhase::visit(RootingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(ExpingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(StringConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a double concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(DoubleConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an ascii concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(AsciiConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -344,7 +271,7 @@ void VarDecSubPhase::visit(AsciiConcatingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(NotingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -355,8 +282,7 @@ void VarDecSubPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(LTingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -367,8 +293,7 @@ void VarDecSubPhase::visit(LTingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(GTingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -379,8 +304,7 @@ void VarDecSubPhase::visit(GTingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(EQingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -392,8 +316,7 @@ void VarDecSubPhase::visit(EQingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(LTEingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -405,8 +328,7 @@ void VarDecSubPhase::visit(LTEingNode * n)
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(GTEingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------

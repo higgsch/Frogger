@@ -36,10 +36,7 @@ IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(JmpStmtNode * n)		
 {
-	n->getStmt()->accept(this);
-
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -50,12 +47,7 @@ void IncludesSubPhase::visit(JmpStmtNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(IfNode * n)			
 {
-	n->getBoolExp()->accept(this);
-	n->getTrueStmt()->accept(this);
-	n->getFalseStmt()->accept(this);
-
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -86,6 +78,8 @@ void IncludesSubPhase::visit(DisplayingNode * n)
 		*out << "#include <iostream>\n";
 		isIOStreamImported = true;
 	}
+
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -112,30 +106,15 @@ void IncludesSubPhase::visit(RandomingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes the include for a double assignment 
+// This function processes the include for an assignment 
 // statement.
 // @n: The node representing the statement.
 //
 // Version 2.2
 // ----------------------------------------------------------
-void IncludesSubPhase::visit(AssigningDoubleNode * n)
+void IncludesSubPhase::visit(AssigningNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
-}
-
-
-// ----------------------------------------------------------
-// This function processes the include for a string assignment 
-// statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(AssigningStringNode * n)
-{
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -161,8 +140,14 @@ void IncludesSubPhase::visit(StringConstingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(AddingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	//include string for concatenation
+	if (!isStringImported)
+	{
+		*out << "#include <string>\n";
+		isStringImported = true;
+	}
+	
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -173,8 +158,7 @@ void IncludesSubPhase::visit(AddingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(SubingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -185,8 +169,7 @@ void IncludesSubPhase::visit(SubingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(MulingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -197,8 +180,7 @@ void IncludesSubPhase::visit(MulingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(DivingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -215,9 +197,8 @@ void IncludesSubPhase::visit(ModDivingNode * n)
 		*out << "#include <math.h>\n";
 		isMathImported = true;
 	}
-
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -234,9 +215,8 @@ void IncludesSubPhase::visit(IDivingNode * n)
 		*out << "#include <math.h>\n";
 		isMathImported = true;
 	}
-
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	
+	n->visitAllChildren(this);
 
 	needsRoundFunct = true;
 }
@@ -255,9 +235,8 @@ void IncludesSubPhase::visit(RootingNode * n)
 		*out << "#include <math.h>\n";
 		isMathImported = true;
 	}
-
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -274,68 +253,8 @@ void IncludesSubPhase::visit(ExpingNode * n)
 		*out << "#include <math.h>\n";
 		isMathImported = true;
 	}
-
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(StringConcatingNode * n)
-{
-	if (!isStringImported)
-	{
-		*out << "#include <string>\n";
-		isStringImported = true;
-	}
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a double concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(DoubleConcatingNode * n)
-{
-	if (!isStringImported)
-	{
-		*out << "#include <string>\n";
-		isStringImported = true;
-	}
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an ascii concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(AsciiConcatingNode * n)
-{
-	if (!isStringImported)
-	{
-		*out << "#include <string>\n";
-		isStringImported = true;
-	}
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-
-	needsRoundFunct = true;
+	
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -346,7 +265,7 @@ void IncludesSubPhase::visit(AsciiConcatingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(NotingNode * n)
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -358,8 +277,7 @@ void IncludesSubPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(LTingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -371,8 +289,7 @@ void IncludesSubPhase::visit(LTingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(GTingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -384,8 +301,7 @@ void IncludesSubPhase::visit(GTingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(EQingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -397,8 +313,7 @@ void IncludesSubPhase::visit(EQingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(LTEingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -410,6 +325,5 @@ void IncludesSubPhase::visit(LTEingNode * n)
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(GTEingNode * n)
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }

@@ -20,8 +20,7 @@ void LineNoPhase::visit(JmpStmtNode * n)
 	
 	n->setStmtNo(lineCount++);
 
-	if (n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitNextStmt(this);
 }
 
 // ----------------------------------------------------------
@@ -37,6 +36,5 @@ void LineNoPhase::visit(IfNode * n)
 	
 	n->setStmtNo(lineCount++);
 
-	if (n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitNextStmt(this);
 }

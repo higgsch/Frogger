@@ -8,6 +8,7 @@
 using namespace std;
 
 //forward declarations
+class ProgramNode;
 class AbstractNode;
 class BinaryOpNode;
 class ControlFlowNode;
@@ -19,8 +20,7 @@ class DisplayingNode;
 class RandomingNode;
 class EndingNode;
 class IdRefNode;
-class AssigningDoubleNode;
-class AssigningStringNode;
+class AssigningNode;
 class StringConstingNode;
 class DoubleConstingNode;
 class AddingNode;
@@ -31,9 +31,6 @@ class ModDivingNode;
 class IDivingNode;
 class RootingNode;
 class ExpingNode;
-class StringConcatingNode;
-class DoubleConcatingNode;
-class AsciiConcatingNode;
 class NotingNode;
 class LTingNode;
 class GTingNode;
@@ -51,6 +48,7 @@ class Phase
 {
 public:
 	//virtual visit functions required by visitor pattern
+	virtual void visit(ProgramNode * n) = 0;
 	virtual void visit(JmpStmtNode * n) = 0;
 	virtual void visit(IfNode * n) = 0;
 	virtual void visit(RetrievalNode * n) = 0;
@@ -58,8 +56,7 @@ public:
 	virtual void visit(RandomingNode * n) = 0;
 	virtual void visit(EndingNode * n) = 0;
 	virtual void visit(IdRefNode * n) = 0;
-	virtual void visit(AssigningDoubleNode * n) = 0;
-	virtual void visit(AssigningStringNode * n) = 0;
+	virtual void visit(AssigningNode * n) = 0;
 	virtual void visit(StringConstingNode * n) = 0;
 	virtual void visit(DoubleConstingNode * n) = 0;
 	virtual void visit(AddingNode * n) = 0;
@@ -70,9 +67,6 @@ public:
 	virtual void visit(IDivingNode * n) = 0;
 	virtual void visit(RootingNode * n) = 0;
 	virtual void visit(ExpingNode * n) = 0;
-	virtual void visit(StringConcatingNode * n) = 0;
-	virtual void visit(DoubleConcatingNode * n) = 0;
-	virtual void visit(AsciiConcatingNode * n) = 0;
 	virtual void visit(NotingNode * n) = 0;
 	virtual void visit(LTingNode * n) = 0;
 	virtual void visit(GTingNode * n) = 0;

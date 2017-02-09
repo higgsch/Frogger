@@ -8,6 +8,24 @@
 using namespace std;
 
 // ----------------------------------------------------------
+// This function starts the phase on the program root node.
+// @n: The node representing the program.
+//
+// Version 2.3
+// ----------------------------------------------------------
+void DataTypingPhase::visit(ProgramNode * n)
+{
+	do
+	{
+		changeMadeThisRound = false;
+		n->visitAllChildren(this);
+	} while (changeMadeThisRound == true);
+
+	setUnknownTypeNodesToDefault = true;
+	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
 // This function processes a line of code.
 // @n: The node representing the line.
 //
@@ -15,14 +33,7 @@ using namespace std;
 // ----------------------------------------------------------
 void DataTypingPhase::visit(JmpStmtNode * n)
 {
-	n->getStmt()->accept(this);
-	
-	bool isOwnLine = (!n->isNested());
-	if (isOwnLine)
-	{
-		if (n->getNextStmt() != NULL)
-			n->getNextStmt()->accept(this);
-	}
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -33,13 +44,7 @@ void DataTypingPhase::visit(JmpStmtNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(IfNode * n)
 {
-	n->getBoolExp()->accept(this);
-	n->getTrueStmt()->accept(this);
-	n->getFalseStmt()->accept(this);
-
-	bool isOwnLine = (!n->isNested());
-	if (isOwnLine && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -50,7 +55,7 @@ void DataTypingPhase::visit(IfNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(RetrievalNode * n)
 {
-	checkAndSetDataType(n, DT_DOUBLE);
+	checkAndSetNodeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -61,8 +66,7 @@ void DataTypingPhase::visit(RetrievalNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(DisplayingNode * n)
 {
-	AbstractNode *child = n->getLeftChild();
-	child->accept(this);
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -73,7 +77,7 @@ void DataTypingPhase::visit(DisplayingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(RandomingNode * n)
 {
-	checkAndSetDataType(n, DT_DOUBLE);
+	checkAndSetNodeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -99,7 +103,12 @@ void DataTypingPhase::visit(IdRefNode * n)
 	DataType type = n->getDataType();
 
 	if (type = DT_NOT_DEFINED)
+	{
+		if (setUnknownTypeNodesToDefault)
+			symbols->addSymbol(id, DT_DOUBLE);
+
 		return;
+	}
 	
 	if (!symbols->symbolDefined(id))
 		symbols->addSymbol(id,type);
@@ -111,39 +120,15 @@ void DataTypingPhase::visit(IdRefNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a double assignment statement.
+// This function processes an assignment statement.
 // @n: The node representing the statement.
 //
 // Version 2.3
 // ----------------------------------------------------------
-void DataTypingPhase::visit(AssigningDoubleNode * n)
+void DataTypingPhase::visit(AssigningNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string assignment statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(AssigningStringNode * n)
-{
-	DataType type = DT_STRING;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	unifyTreeDataType(n);
 }
 
 // ----------------------------------------------------------
@@ -154,7 +139,7 @@ void DataTypingPhase::visit(AssigningStringNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(StringConstingNode * n)
 {
-	checkAndSetDataType(n, DT_STRING);
+	checkAndSetNodeDataType(n, DT_STRING);
 }
 
 // ----------------------------------------------------------
@@ -165,7 +150,7 @@ void DataTypingPhase::visit(StringConstingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(DoubleConstingNode * n)
 {
-	checkAndSetDataType(n, DT_DOUBLE);
+	checkAndSetNodeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -176,14 +161,8 @@ void DataTypingPhase::visit(DoubleConstingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(AddingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	unifyTreeDataType(n);
 }
 
 // ----------------------------------------------------------
@@ -194,14 +173,8 @@ void DataTypingPhase::visit(AddingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(SubingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -212,14 +185,8 @@ void DataTypingPhase::visit(SubingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(MulingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -230,14 +197,8 @@ void DataTypingPhase::visit(MulingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(DivingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -248,14 +209,8 @@ void DataTypingPhase::visit(DivingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(ModDivingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -266,14 +221,8 @@ void DataTypingPhase::visit(ModDivingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(IDivingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -284,14 +233,8 @@ void DataTypingPhase::visit(IDivingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(RootingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -302,66 +245,8 @@ void DataTypingPhase::visit(RootingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(ExpingNode * n)
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an addition operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(StringConcatingNode * n)
-{
-	DataType type = DT_STRING;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an addition operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(DoubleConcatingNode * n)
-{
-	checkAndSetDataType(n, DT_STRING);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, DT_STRING);
-	checkAndSetDataType(right, DT_DOUBLE);
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an addition operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(AsciiConcatingNode * n)
-{
-	checkAndSetDataType(n, DT_STRING);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, DT_STRING);
-	checkAndSetDataType(right, DT_DOUBLE);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -372,7 +257,7 @@ void DataTypingPhase::visit(AsciiConcatingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(NotingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -383,14 +268,8 @@ void DataTypingPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(LTingNode * n) 
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -401,14 +280,8 @@ void DataTypingPhase::visit(LTingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(GTingNode * n) 
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -419,14 +292,8 @@ void DataTypingPhase::visit(GTingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(EQingNode * n) 
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -438,14 +305,8 @@ void DataTypingPhase::visit(EQingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(LTEingNode * n) 
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -457,14 +318,8 @@ void DataTypingPhase::visit(LTEingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(GTEingNode * n) 
 {
-	DataType type = DT_DOUBLE;
-	checkAndSetDataType(n, type);
-
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	checkAndSetDataType(left, type);
-	checkAndSetDataType(right, type);
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -473,15 +328,77 @@ void DataTypingPhase::visit(GTEingNode * n)
 // 
 // Version 2.3
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetDataType(AbstractNode * node, DataType type)
+void DataTypingPhase::checkAndSetNodeDataType(AbstractNode * node, DataType type)
 {
 	if (node->getDataType() == type || type == DT_NOT_DEFINED)
 		return;
 
 	if (node->getDataType() == DT_NOT_DEFINED)
+	{
 		node->setDataType(type);
+		changeMadeThisRound = true;
+	}
 	else
 		dataType_error("Data Type Conflict");
+}
+
+// ----------------------------------------------------------
+// This function safely sets the dataType of a node and all 
+// children. It throws a dataType error if there is a dataType 
+// conflict.
+// 
+// Version 2.3
+// ----------------------------------------------------------
+void DataTypingPhase::checkAndSetTreeDataType(AbstractNode * node, DataType type)
+{
+	if (type == DT_NOT_DEFINED)
+		return;
+
+	checkAndSetNodeDataType(node, type);
+
+	AbstractNode *left = node->getLeftChild();
+	checkAndSetNodeDataType(left, type);
+
+	AbstractNode *right = node->getRightChild();
+	checkAndSetNodeDataType(right, type);
+}
+
+// ----------------------------------------------------------
+// This function safely sets the dataType of a node and all 
+// children based on the node and children's dataType. It 
+// throws a dataType error if there is a dataType conflict.
+// 
+// Version 2.3
+// ----------------------------------------------------------
+void DataTypingPhase::unifyTreeDataType(AbstractNode * node)
+{
+	DataType type = node->getDataType();
+	if (type != DT_NOT_DEFINED)
+	{
+		checkAndSetTreeDataType(node, type);
+		return;
+	}
+
+	AbstractNode *left = node->getLeftChild();
+	type = left->getDataType();
+	if (type != DT_NOT_DEFINED)
+	{
+		checkAndSetTreeDataType(node, type);
+		return;
+	}
+
+	AbstractNode *right = node->getRightChild();
+	type = right->getDataType();
+	if (type != DT_NOT_DEFINED)
+	{
+		checkAndSetTreeDataType(node, type);
+		return;
+	}
+
+	//All nodes are DT_NOT_DEFINED
+	if (setUnknownTypeNodesToDefault)
+		checkAndSetTreeDataType(node, DT_DOUBLE);
+
 }
 
 // ----------------------------------------------------------

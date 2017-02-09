@@ -40,15 +40,15 @@ void Compiler::run(string inFile, ostream * out)
 	ProgramNode * root = p.parse();
 
 	LineNoPhase* lineP = new LineNoPhase();
-	root->traverseNodes(lineP);
+	root->accept(lineP);
 
 	//Compute goto line values and convert strings from frogger to c++
-	root->traverseNodes(new SummationPhase(lineP->getLineCount()));
-	root->traverseNodes(new StringConversionPhase());
+	root->accept(new SummationPhase(lineP->getLineCount()));
+	root->accept(new StringConversionPhase());
 
 	//Generate output code to the out stream
-	root->traverseNodes(new DataTypingPhase());
-	root->traverseNodes(new CodeGenerationPhase(out, root));
+	root->accept(new DataTypingPhase());
+	root->accept(new CodeGenerationPhase(out));
 	*out << "\n}" << endl; //close the c++ main function
 
 	//Test the AST

@@ -104,24 +104,11 @@ Token Scanner::scan(void)
 			int c = get();
 			if (c == '=')
 				return Token::EQ;
-			else if (!(c == 'd' || c == 's'))
+			else 
 			{
 				unget();
-				lexical_error(lineNo, "Incomplete assignment operator");
+				return Token::ASSIGN;
 			}
-
-			int nextC = get();
-			if (nextC == '=')
-			{
-				if (c == 'd')
-					return Token::ASSIGND;
-				else if (c == 's')
-					return Token::ASSIGNS;
-			}
-			
-			
-			unget(); unget();
-			lexical_error(lineNo, "Incomplete assignment operator");
 		}
 		else if (in_char == '!')
 			return Token::NOT;
@@ -150,26 +137,10 @@ Token Scanner::scan(void)
 			int c = get();
 			if (c == '+')
 				return Token::ADD;
-			else if ( !(c == 's' || c == 'd' || c == 'a'))
+			else 
 			{
 				unget();
 				lexical_error(lineNo, "Incomplete addition or concatenation operator");
-			}
-			
-			int nextC = get();
-			if (nextC == '+')
-			{
-				if (c == 's')
-					return Token::CONCATS;
-				else if (c == 'd')
-					return Token::CONCATD;
-				else if (c == 'a')
-					return Token::CONCATA;
-			}
-			else
-			{
-				unget(); unget();
-				lexical_error(lineNo, "Incomplete concatenation operator");
 			}
 		}
 		else if (in_char == '-')

@@ -19,16 +19,22 @@ using namespace std;
 //
 // Version 2.2
 // ----------------------------------------------------------
-CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
+CodeGenerationPhase::CodeGenerationPhase(ostream* outstream)
 {
 	out = outstream;
 	tempNo = 1; //temporaries are 1-indexed
 	indentDepth = 0;
+}
 
+void CodeGenerationPhase::visit(ProgramNode * n)
+{
 	//emit the include statements code
 	IncludesSubPhase* iSub = new IncludesSubPhase(out);
-	root->traverseNodes(iSub);
+	n->accept(iSub);
 	*out << "using namespace std;\n\n";
+
+	if (iSub->needsString())
+		*out << "const string emptyString = \"\";\n\n";
 
 	if (iSub->needsRoundFunction())
 		*out << "double round(double num) {\n"
@@ -44,9 +50,11 @@ CodeGenerationPhase::CodeGenerationPhase(ostream* outstream, ProgramNode* root)
 
 	//emit the variable declarations
 	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth);
-	root->traverseNodes(sub);
+	n->accept(sub);
 	sub->addTemporaries();
 	*out << endl << endl;
+
+	 n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -69,10 +77,10 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 	}
 
 	//generate temp assignments for the line
-	n->getStmt()->accept(new TempAssignSubPhase(out, indentDepth)); 
+	n->visitThisStmt(new TempAssignSubPhase(out, indentDepth));
 
 	//emit the line's code
-	n->getStmt()->accept(this);
+	n->visitThisStmt(this);
 	
 	//emit this line's goto statement
 	*out << indent() << "goto __LABEL_" << n->getJump() << ";" << endl;
@@ -81,8 +89,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 	{
 		*out << endl;
 		indentDepth--;
-		if (n->getNextStmt() != NULL)
-			n->getNextStmt()->accept(this);
+		n->visitNextStmt(this);
 	}
 }
 
@@ -102,26 +109,25 @@ void CodeGenerationPhase::visit(IfNode * n)
 		indentDepth++;
 	}
 
-	n->getBoolExp()->accept(new TempAssignSubPhase(out, indentDepth));
+	n->visitBoolExp(new TempAssignSubPhase(out, indentDepth));
 
 	*out << indent() << "if (";
-	n->getBoolExp()->accept(this);
+	n->visitBoolExp(this);
 	*out << ")\n" << indent() << "{\n";
 	indentDepth++;
-	n->getTrueStmt()->accept(this);
+	n->visitTrueStmt(this);
 	indentDepth--;
 	*out << indent() << "}\n";
 	*out << indent() << "else\n" << indent() << "{\n";
 	indentDepth++;
-	n->getFalseStmt()->accept(this);
+	n->visitFalseStmt(this);
 	indentDepth--;
 	*out << indent() << "}\n" << endl;
 
 	if (isOwnLine)
 		indentDepth--;
 
-	if (isOwnLine && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitNextStmt(this);
 }
 
 // ----------------------------------------------------------
@@ -144,8 +150,7 @@ void CodeGenerationPhase::visit(RetrievalNode * n)
 void CodeGenerationPhase::visit(DisplayingNode * n)
 {
 	*out << indent() << "cout << (";
-	AbstractNode *child = n->getLeftChild();
-	child->accept(this);
+	n->visitLeftChild(this);
 	*out << ");" << endl;
 }
 
@@ -190,35 +195,18 @@ void CodeGenerationPhase::visit(IdRefNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a double assignment statement.
+// This function processes an assignment statement.
 // @n: The node representing the statement.
 //
 // Version 1.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(AssigningDoubleNode * n)
+void CodeGenerationPhase::visit(AssigningNode * n)
 {
 	*out << indent();
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << " = (";
-	right->accept(this);
+	n->visitRightChild(this);
 	*out << ");" << endl;
-}
-
-// ----------------------------------------------------------
-// This function processes a string assignment statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(AssigningStringNode * n)
-{
-	*out << indent();
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	*out << " = ";
-	right->accept(this);
-	*out << ";" << endl;
 }
 
 // ----------------------------------------------------------
@@ -260,10 +248,12 @@ void CodeGenerationPhase::visit(AddingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
+	if (n->getDataType() == DT_STRING)
+		*out << "emptyString + ";
+
+	n->visitLeftChild(this);
 	*out << " + ";
-	right->accept(this);
+	n->visitRightChild(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -280,10 +270,9 @@ void CodeGenerationPhase::visit(SubingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << " - ";
-	right->accept(this);
+	n->visitRightChild(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -300,10 +289,9 @@ void CodeGenerationPhase::visit(MulingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << " * ";
-	right->accept(this);
+	n->visitRightChild(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -320,10 +308,9 @@ void CodeGenerationPhase::visit(DivingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << " / ";
-	right->accept(this);
+	n->visitRightChild(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -340,11 +327,10 @@ void CodeGenerationPhase::visit(ModDivingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	*out << "fmod( ";
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << ", ";
-	right->accept(this);
+	n->visitRightChild(this);
 	*out << " )";
 	
 	if (n->getParenNesting() > 0)
@@ -362,11 +348,10 @@ void CodeGenerationPhase::visit(IDivingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	*out << "((int)round(";
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << ")) / ((int)round(";
-	right->accept(this);
+	n->visitRightChild(this);
 	*out << "))";
 	
 	if (n->getParenNesting() > 0)
@@ -384,11 +369,10 @@ void CodeGenerationPhase::visit(RootingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	*out << "pow(";
-	right->accept(this);
+	n->visitRightChild(this);
 	*out << ", 1.0 / ";
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << ")";
 	
 	if (n->getParenNesting() > 0)
@@ -406,60 +390,43 @@ void CodeGenerationPhase::visit(ExpingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	*out << "pow(";
-	left->accept(this);
+	n->visitLeftChild(this);
 	*out << ", ";
-	right->accept(this);
+	n->visitRightChild(this);
 	*out << ")";
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
 }
 
-// ----------------------------------------------------------
-// This function processes a string concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(StringConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	*out << " + ";
-	right->accept(this);
-}
+//// ----------------------------------------------------------
+//// This function processes a double concatenation operation.
+//// @n: The node representing the operation.
+////
+//// Version 2.3
+//// ----------------------------------------------------------
+//void CodeGenerationPhase::visit(DoubleConcatingNode * n)
+//{
+//	n->visitLeftChild(this);
+//	*out << " + to_string(";
+//	n->visitRightChild(this);
+//	*out << ")";
+//}
 
-// ----------------------------------------------------------
-// This function processes a double concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(DoubleConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	*out << " + to_string(";
-	right->accept(this);
-	*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes an ascii concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(AsciiConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	*out << " + (char)(";
-	right->accept(this);
-	*out << ")";
-}
+//// ----------------------------------------------------------
+//// This function processes an ascii concatenation operation.
+//// @n: The node representing the operation.
+////
+//// Version 2.3
+//// ----------------------------------------------------------
+//void CodeGenerationPhase::visit(AsciiConcatingNode * n)
+//{
+//	n->visitLeftChild(this);
+//	*out << " + (char)(";
+//	n->visitRightChild(this);
+//	*out << ")";
+//}
 
 // ----------------------------------------------------------
 // This function processes a not operation.
@@ -470,7 +437,7 @@ void CodeGenerationPhase::visit(AsciiConcatingNode * n)
 void CodeGenerationPhase::visit(NotingNode * n) 
 {
 	*out << "!( ";
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 	*out << " )";
 }
 
@@ -482,9 +449,9 @@ void CodeGenerationPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(LTingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 	*out << " < ";
-	n->getRightChild()->accept(this);
+	n->visitRightChild(this);
 }
 
 // ----------------------------------------------------------
@@ -495,9 +462,9 @@ void CodeGenerationPhase::visit(LTingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(GTingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 	*out << " > ";
-	n->getRightChild()->accept(this);
+	n->visitRightChild(this);
 }
 
 // ----------------------------------------------------------
@@ -508,9 +475,9 @@ void CodeGenerationPhase::visit(GTingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(EQingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 	*out << " == ";
-	n->getRightChild()->accept(this);
+	n->visitRightChild(this);
 }
 
 // ----------------------------------------------------------
@@ -522,9 +489,9 @@ void CodeGenerationPhase::visit(EQingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(LTEingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 	*out << " <= ";
-	n->getRightChild()->accept(this);
+	n->visitRightChild(this);
 }
 
 // ----------------------------------------------------------
@@ -536,7 +503,7 @@ void CodeGenerationPhase::visit(LTEingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(GTEingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 	*out << " >= ";
-	n->getRightChild()->accept(this);
+	n->visitRightChild(this);
 }

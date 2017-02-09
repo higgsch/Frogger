@@ -5,7 +5,7 @@
 // This program provides a node representation for the 
 // assignment operation.
 // -----------------------------------------------------------------
-#include "assigningNodes.h"
+#include "assigningNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -15,9 +15,9 @@ using namespace std;
 //
 // Version 2.3
 // ----------------------------------------------------------
-AssigningDoubleNode::AssigningDoubleNode(IdRefNode* id, AbstractNode* toAssign)
+AssigningNode::AssigningNode(IdRefNode* id, AbstractNode* toAssign)
 {
-	type = ASSIGNINGDOUBLE;
+	type = ASSIGNING;
 	addLeftChild(id);
 	addRightChild(toAssign);
 }
@@ -28,34 +28,7 @@ AssigningDoubleNode::AssigningDoubleNode(IdRefNode* id, AbstractNode* toAssign)
 //
 // Version 1.0
 // ----------------------------------------------------------
-void AssigningDoubleNode::printMe(ostream* out)
-{
-	leftChild->printMe(out);
-	*out << " = ";
-	rightChild->printMe(out);
-}
-
-// ----------------------------------------------------------
-// This constructor builds a node for a string assignment.
-// @id: A node representing the variable to assign to.
-// @toAssign: A node representing what to assign to the var.
-//
-// Version 2.3
-// ----------------------------------------------------------
-AssigningStringNode::AssigningStringNode(IdRefNode* id, AbstractNode* toAssign)
-{
-	type = ASSIGNINGSTRING;
-	addLeftChild(id);
-	addRightChild(toAssign);
-}
-
-// ----------------------------------------------------------
-// This function prints this node to the given output stream.
-// @out: The stream to display to.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void AssigningStringNode::printMe(ostream* out)
+void AssigningNode::printMe(ostream* out)
 {
 	leftChild->printMe(out);
 	*out << " = ";

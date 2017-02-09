@@ -45,10 +45,7 @@ string StringConversionPhase::convertString(string s)
 // ----------------------------------------------------------
 void StringConversionPhase::visit(JmpStmtNode * n)
 {
-	n->getStmt()->accept(this);
-
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -59,11 +56,9 @@ void StringConversionPhase::visit(JmpStmtNode * n)
 // ----------------------------------------------------------
 void StringConversionPhase::visit(IfNode * n)
 {
-	n->getTrueStmt()->accept(this);
-	n->getFalseStmt()->accept(this);
-
-	if (!n->isNested() && n->getNextStmt() != NULL)
-		n->getNextStmt()->accept(this);
+	n->visitTrueStmt(this);
+	n->visitFalseStmt(this);
+	n->visitNextStmt(this);
 }
 
 // ----------------------------------------------------------
@@ -79,16 +74,15 @@ void StringConversionPhase::visit(DisplayingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a string assignment statement.
+// This function processes an assignment statement.
 // @n: The node representing the statement.
 //
 // Version 2.3
 // ----------------------------------------------------------
-void StringConversionPhase::visit(AssigningStringNode * n)
+void StringConversionPhase::visit(AssigningNode * n)
 {
 	//Don't need to visit leftChild because leftChild is an id
-	AbstractNode *right = n->getRightChild();
-	right->accept(this);
+	n->visitRightChild(this);
 }
 
 // ----------------------------------------------------------
@@ -103,40 +97,12 @@ void StringConversionPhase::visit(StringConstingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a string concatenation.
+// This function processes an addition operation.
 // @n: The node representing the operation.
 //
 // Version 2.3
 // ----------------------------------------------------------
-void StringConversionPhase::visit(StringConcatingNode * n)
+void StringConversionPhase::visit(AddingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a double concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void StringConversionPhase::visit(DoubleConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an ascii concatenation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void StringConversionPhase::visit(AsciiConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }

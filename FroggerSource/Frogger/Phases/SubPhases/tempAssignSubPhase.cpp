@@ -33,7 +33,7 @@ void TempAssignSubPhase::visit(JmpStmtNode * n)
 	tempNo = 1; //restart temporary counter (1-indexed)
 
 	//emit the line's code
-	n->getStmt()->accept(this);
+	n->visitThisStmt(this);
 }
 
 // ----------------------------------------------------------
@@ -44,7 +44,7 @@ void TempAssignSubPhase::visit(JmpStmtNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(IfNode * n)
 {
-	n->getBoolExp()->accept(this);
+	n->visitBoolExp(this);
 }
 
 // ----------------------------------------------------------
@@ -66,33 +66,19 @@ void TempAssignSubPhase::visit(RetrievalNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(DisplayingNode * n)
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
-// This function processes a double assignment statement.
+// This function processes an assignment statement.
 // @n: The node representing the statement.
 //
 // Version 1.0
 // ----------------------------------------------------------
-void TempAssignSubPhase::visit(AssigningDoubleNode * n)
+void TempAssignSubPhase::visit(AssigningNode * n)
 {
 	//Ignore left as left cannot be a temporary
-	AbstractNode *right = n->getRightChild();
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string assignment statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(AssigningStringNode * n)
-{
-	//Ignore left as left cannot be a temporary
-	AbstractNode *right = n->getRightChild();
-	right->accept(this);
+	n->visitRightChild(this);
 }
 
 // ----------------------------------------------------------
@@ -103,9 +89,7 @@ void TempAssignSubPhase::visit(AssigningStringNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(AddingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -116,9 +100,7 @@ void TempAssignSubPhase::visit(AddingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(SubingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -129,9 +111,7 @@ void TempAssignSubPhase::visit(SubingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(MulingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -142,9 +122,7 @@ void TempAssignSubPhase::visit(MulingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(DivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -155,9 +133,7 @@ void TempAssignSubPhase::visit(DivingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(ModDivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -168,9 +144,7 @@ void TempAssignSubPhase::visit(ModDivingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(IDivingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -181,9 +155,7 @@ void TempAssignSubPhase::visit(IDivingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(RootingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -194,48 +166,7 @@ void TempAssignSubPhase::visit(RootingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(ExpingNode * n)
 {
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a string concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(StringConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a double concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(DoubleConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an ascii concatenation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(AsciiConcatingNode * n)
-{
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	left->accept(this);
-	right->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -246,7 +177,7 @@ void TempAssignSubPhase::visit(AsciiConcatingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(NotingNode * n) 
 {
-	n->getLeftChild()->accept(this);
+	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -257,8 +188,7 @@ void TempAssignSubPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(LTingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -269,8 +199,7 @@ void TempAssignSubPhase::visit(LTingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(GTingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -281,8 +210,7 @@ void TempAssignSubPhase::visit(GTingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(EQingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -294,8 +222,7 @@ void TempAssignSubPhase::visit(EQingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(LTEingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -307,6 +234,5 @@ void TempAssignSubPhase::visit(LTEingNode * n)
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(GTEingNode * n) 
 {
-	n->getLeftChild()->accept(this);
-	n->getRightChild()->accept(this);
+	n->visitAllChildren(this);
 }
