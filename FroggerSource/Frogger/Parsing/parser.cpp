@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.4
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -339,16 +339,64 @@ AbstractNode* Parser::multerm()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <expterm> => dbl
-// <expterm> => id
-// <expterm> => ( <dblval> )
-// <expterm> => retrieve ( )
-// <expterm> => random ( )
+// <expterm> => <primary> <expterm.1>
+// <expterm.1> => : <functname> ( <arglist> ) <expterm.1>
+// <expterm.1> => : <functname> ( ) <expterm.1>
+// <expterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.2
+// Version 2.4
 // ----------------------------------------------------------
 AbstractNode* Parser::expterm()
+{
+	AbstractNode * root = NULL;
+	AbstractNode * prim = primary();
+	AbstractNode * curr = prim;
+
+	do
+	{
+		Token tok = next_token();
+		if (tok.type == COLON)
+		{
+			match(COLON);
+			string functionName = functname();
+			FunctionCallNode * funct = new FunctionCallNode(functionName);
+			match(LPAREN);
+
+			Token firstArg = next_token();
+
+			if (firstArg.type != RPAREN)
+			{
+				funct->addRightChild(arglist(0,funct->getFunct()));
+			}
+
+			match(RPAREN);
+
+			funct->addLeftChild(curr);
+			curr = funct;
+		}
+		else
+		{
+			root = curr;
+		}
+	} while (root == NULL);
+
+	return root;
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <primary> => dbl
+// <primary> => id
+// <primary> => string
+// <primary> => ( <expr> )
+// <primary> => retrieve ( )
+// <primary> => random ( )
+// Returns: A pointer to the node representing this term.
+//
+// Version 2.4
+// ----------------------------------------------------------
+AbstractNode* Parser::primary()
 {
 	Token tok = next_token();
 	switch (tok.type)
@@ -389,6 +437,50 @@ AbstractNode* Parser::expterm()
 		return NULL;
 		break;
 	}
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <functname> => id
+// Returns: A pointer to the node representing this term.
+//
+// Version 2.4
+// ----------------------------------------------------------
+string Parser::functname()
+{
+	Token tok = next_token();
+	match(ID); 
+	return tok.lexeme;
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <arglist> => <expr> , <arglist>
+// <arglist> => <expr>
+// Returns: A pointer to the node representing this term.
+//
+// Version 2.4
+// ----------------------------------------------------------
+AbstractNode* Parser::arglist(int argNo, Function* funct)
+{
+	AbstractNode * firstArg = expr();
+	AbstractNode * nextArg = NULL;
+
+	ArgListNode * list = new ArgListNode();
+	list->setFunct(funct);
+	list->addLeftChild(firstArg);
+	list->setArgNo(argNo);
+	funct->addArg(DT_NOT_DEFINED);
+	argNo++;
+
+	if (next_token().type == COMMA)
+	{
+		match(COMMA);
+		nextArg = arglist(argNo, funct);
+	}
+
+	list->addRightChild(nextArg);
+	return list;
 }
 
 // ----------------------------------------------------------

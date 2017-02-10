@@ -79,7 +79,7 @@ void Scanner::checkForObfuscation(void)
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 2.3
+// Version 2.4
 // ----------------------------------------------------------
 Token Scanner::scan(void)
 {
@@ -100,6 +100,10 @@ Token Scanner::scan(void)
 			return Token::LPAREN;
 		else if (in_char == ')')
 			return Token::RPAREN;
+		else if (in_char == ',')
+			return Token::COMMA;
+		else if (in_char == ':')
+			return Token::COLON;
 		else if (in_char == ';')
 			return Token::SEMICOLON;
 		else if (in_char == '=')

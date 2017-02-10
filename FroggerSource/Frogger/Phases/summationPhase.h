@@ -11,7 +11,7 @@ using namespace std;
 // This class represents a visitor for calculating goto line
 // numbers.
 //
-// Version 2.3
+// Version 2.4
 // ----------------------------------------------------------
 class SummationPhase : public Phase
 {
@@ -33,6 +33,8 @@ public:
 	void visit(EndingNode * n);
 	void visit(IdRefNode * n);
 	void visit(AssigningNode * n);
+	void visit(FunctionCallNode * n);
+	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n);
 	void visit(AddingNode * n);

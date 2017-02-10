@@ -16,7 +16,7 @@ class Token;
 // This class reads through a .fgr file and converts strings
 // of chars to tokens.
 //
-// Version 2.3
+// Version 2.4
 // ----------------------------------------------------------
 class Scanner
 {

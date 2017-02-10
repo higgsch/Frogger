@@ -176,6 +176,28 @@ void VarDecSubPhase::visit(AssigningNode * n)
 }
 
 // ----------------------------------------------------------
+// This function processes a function call.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(FunctionCallNode * n)
+{
+	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an element in an argument list.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(ArgListNode * n)
+{
+	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
 // This function processes an addition operation.
 // @n: The node representing the operation.
 //

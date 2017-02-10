@@ -6,22 +6,25 @@
 #include "phases.h"
 #include "..\Parsing\nodes.h"
 #include "symbolTable.h"
+#include "functionTable.h"
 using namespace std;
 
 // ----------------------------------------------------------
 // This class represents a visitor for checking data types
 //
-// Version 2.3
+// Version 2.4
 // ----------------------------------------------------------
 class DataTypingPhase : public Phase
 {
 private:
 	SymbolTable * symbols;
+	FunctionTable * functions;
 	bool changeMadeThisRound;
 	bool setUnknownTypeNodesToDefault;
 
 	void checkAndSetNodeDataType(AbstractNode * node, DataType type);
 	void checkAndSetTreeDataType(AbstractNode * node, DataType type);
+	void checkAndSetArgDataType(Function * funct, int argNo, DataType type);
 	void unifyTreeDataType(AbstractNode * node);
 	void dataType_error(string);
 
@@ -29,11 +32,13 @@ public:
 	DataTypingPhase() 
 	{ 
 		symbols = new SymbolTable(); 
+		functions = new FunctionTable();
 		changeMadeThisRound = false; 
 		setUnknownTypeNodesToDefault = false;
 	}
 
 	SymbolTable * getSymbolTable();
+	FunctionTable * getFunctionTable();
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);
@@ -44,6 +49,8 @@ public:
 	void visit(EndingNode * n);
 	void visit(IdRefNode * n);
 	void visit(AssigningNode * n);
+	void visit(FunctionCallNode * n);
+	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n);
 	void visit(AddingNode * n);

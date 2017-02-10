@@ -86,6 +86,19 @@ public:
 
 	DataType getDataType() { return dataType; }
 	void setDataType(DataType i_dataType) { dataType = i_dataType; }
+	bool isTyped() { return dataType != DT_NOT_DEFINED; }
+	bool isTreeTyped() 
+	{
+		AbstractNode *left, *right;
+		left = getLeftChild();
+		right = getRightChild();
+
+		if (left != NULL && !left->isTreeTyped())
+			return false;
+		if (right != NULL && !right->isTreeTyped())
+			return false;
+		return isTyped();
+	}
 
 	// ----------------------------------------------------------
 	// This function returns this node's category.

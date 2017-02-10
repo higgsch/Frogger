@@ -14,6 +14,12 @@
  display('Hello' ++ ' World');
  display(5.5 ++ 2.5);
 
+~Built in Functions~
+ str = dbl:toString();
+ str = dbl:toAscii();
+ dbl = str:parseDouble();
+ dbl = str:asciiAt(dbl);
+
 ~Arithmetic Operations~
  dbl = 5.9;
  dbl = 2.5^^6.2;

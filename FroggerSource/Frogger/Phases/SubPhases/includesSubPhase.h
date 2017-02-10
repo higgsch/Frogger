@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for generating import
 // statements as a subphase of the CodeGenerationPhase.
 //
-// Version 2.3
+// Version 2.4
 // ----------------------------------------------------------
 class IncludesSubPhase : public Phase
 {
@@ -26,6 +26,8 @@ private:
 
 	bool hasRndNode; // flag for seeding
 	bool needsRoundFunct; // flag for round() creation
+	bool needsStringToDouble; // flag for stringToDouble() creation
+	bool needsStringToAscii; // flag for stringToAscii() creation
 
 public:
 	IncludesSubPhase(ostream*);
@@ -39,6 +41,8 @@ public:
 	void visit(EndingNode * n){}
 	void visit(IdRefNode * n){}
 	void visit(AssigningNode * n);
+	void visit(FunctionCallNode * n);
+	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n){}
 	void visit(AddingNode * n);
@@ -59,4 +63,6 @@ public:
 	bool hasRandomNode(){ return hasRndNode; }
 	bool needsRoundFunction(){ return needsRoundFunct; }
 	bool needsString(){ return isStringImported; }
+	bool needsStringToDoubleFunction() { return needsStringToDouble; }
+	bool needsStringToAsciiFunction() { return needsStringToAscii; }
 };

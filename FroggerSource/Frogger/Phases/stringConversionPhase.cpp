@@ -86,6 +86,28 @@ void StringConversionPhase::visit(AssigningNode * n)
 }
 
 // ----------------------------------------------------------
+// This function processes a function call.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void StringConversionPhase::visit(FunctionCallNode * n)
+{
+	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
+// This function processes an element in an argument list.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void StringConversionPhase::visit(ArgListNode * n)
+{
+	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
 // This function processes a string literal.
 // @n: The node representing the string.
 //

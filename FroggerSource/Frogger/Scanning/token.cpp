@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.4
 // -----------------------------------------------------------------
 // This program provides a compact interface for tokens.
 // -----------------------------------------------------------------
@@ -43,6 +43,8 @@ Token Token::RANDOM		= Token(token_types::RANDOM, "random");
 Token Token::IF			= Token(token_types::IF, "if");
 Token Token::THEN		= Token(token_types::THEN, "then");
 Token Token::ELSE		= Token(token_types::ELSE, "else");
+Token Token::COMMA		= Token(token_types::COMMA, ",");
+Token Token::COLON		= Token(token_types::COLON, ":");
 Token Token::SEMICOLON	= Token(token_types::SEMICOLON, ";");
 Token Token::LPAREN		= Token(token_types::LPAREN, "(");
 Token Token::RPAREN		= Token(token_types::RPAREN, ")");

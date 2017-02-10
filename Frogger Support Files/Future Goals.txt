@@ -3,17 +3,15 @@ v1.1 & 1.2: Added retrieve() command and obfuscator.
 v2.0: Added conditional statements.
 v2.1: Added modulus and integer division, rootation, and exponentiation.
 v2.2: Added random() functionality.
-v2.3: Add string assignment and concatenation, variable typing dbl vs string
+v2.3: Added string assignment and concatenation, variable typing dbl vs string
+v2.4: Added string indexing (<string>:asciiAt(dbl)), string parsing (<string>:parseDouble()),
+	double conversions (<double>:toString(), <double>:toAscii())
 
-v2.4: Add string indexing (<string>:int), string parsing (<string>:readD()), char casting
-v2.5: Consolidate S/D/A functions (retrieveS, retrieveD, retrieveA)
+v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble)
 v??: Refactor with clean code.
 v3: Add File I/O.
 v4: Add user-defined functions (decide if they should be in the same file or force modulation into different files).
 v5+: Add object orientation.
 v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
-dbl:toString()
-dbl:toAscii()
-str:asciiAt(dbl)
-str:parseDouble()
+refactor phases: SummationPhase::getChildrenAsciiSum(AbstractNode * n), calc with addition (Abs n, string add), &c.

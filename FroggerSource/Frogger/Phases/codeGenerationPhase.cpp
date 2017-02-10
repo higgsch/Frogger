@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.4
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -39,6 +39,20 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 	if (iSub->needsRoundFunction())
 		*out << "double round(double num) {\n"
 			<< "\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n"
+			<< "}\n\n";
+
+	if (iSub->needsStringToDoubleFunction())
+		*out << "double stringToDouble(string s) {\n"
+			<< "\tif (isdigit(s[0]) || s[0] == '-')\n"
+			<< "\t\treturn stod(s, NULL);\n"
+			<< "\treturn 0;\n"
+			<< "}\n\n";
+
+	if (iSub->needsStringToAsciiFunction())
+		*out << "double stringToAscii(string s, int loc) {\n"
+			<< "\tif (loc < 0 || loc >= s.length())\n"
+			<< "\t\treturn 0;\n"
+			<< "\treturn s.at(loc);\n"
 			<< "}\n\n";
 
 	*out << "int main(int argc, char* argv[])\n{\n";
@@ -207,6 +221,82 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 	*out << " = (";
 	n->visitRightChild(this);
 	*out << ");" << endl;
+}
+
+// ----------------------------------------------------------
+// This function processes a function call.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(FunctionCallNode * n)
+{
+	Function* funct = n->getFunct();
+	if (funct->isUserFunction())
+	{
+		*out << "(";
+		n->visitLeftChild(this);
+		*out << ")." << funct->name << "(";
+
+		if (n->getRightChild() != NULL)
+			n->visitRightChild(this);
+
+		*out << ")";
+	}
+	else
+	{
+		string name = funct->name;
+
+		if (name == "toString")
+		{
+			*out << "to_string(";
+			n->visitLeftChild(this);
+			*out << ")";
+			//<double>:toString() takes no arguments
+		}
+		else if (name == "toAscii")
+		{
+			*out << "(char) (";
+			n->visitLeftChild(this);
+			*out << ")";
+			//<double>:toAscii() takes no arguments
+		}
+		else if (name == "parseDouble")
+		{
+			*out << "stringToDouble(";
+			n->visitLeftChild(this);
+			*out << ")";
+			//<string>:parseDouble() takes no arguments
+		}
+		else if (name == "asciiAt")
+		{
+			*out << "stringToAscii(";
+			n->visitLeftChild(this);
+			*out << ", ";
+			n->visitRightChild(this);
+			*out << ")";
+			//<string>:asciiAt(<double>) takes an argument
+		}
+		else
+			this->semantic_error("Unrecognized function: " + name);
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes an element in an argument list.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(ArgListNode * n)
+{
+	n->visitLeftChild(this);
+	
+	if (n->getRightChild() != NULL)
+	{
+		*out << ", ";
+		n->visitRightChild(this);
+	}
 }
 
 // ----------------------------------------------------------
@@ -399,34 +489,6 @@ void CodeGenerationPhase::visit(ExpingNode * n)
 	if (n->getParenNesting() > 0)
 		*out << ")";
 }
-
-//// ----------------------------------------------------------
-//// This function processes a double concatenation operation.
-//// @n: The node representing the operation.
-////
-//// Version 2.3
-//// ----------------------------------------------------------
-//void CodeGenerationPhase::visit(DoubleConcatingNode * n)
-//{
-//	n->visitLeftChild(this);
-//	*out << " + to_string(";
-//	n->visitRightChild(this);
-//	*out << ")";
-//}
-
-//// ----------------------------------------------------------
-//// This function processes an ascii concatenation operation.
-//// @n: The node representing the operation.
-////
-//// Version 2.3
-//// ----------------------------------------------------------
-//void CodeGenerationPhase::visit(AsciiConcatingNode * n)
-//{
-//	n->visitLeftChild(this);
-//	*out << " + (char)(";
-//	n->visitRightChild(this);
-//	*out << ")";
-//}
 
 // ----------------------------------------------------------
 // This function processes a not operation.

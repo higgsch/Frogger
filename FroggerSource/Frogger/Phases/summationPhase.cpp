@@ -180,6 +180,45 @@ void SummationPhase::visit(AssigningNode * n)
 }
 
 // ----------------------------------------------------------
+// This function processes a function call.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void SummationPhase::visit(FunctionCallNode * n)
+{
+	n->visitAllChildren(this);
+
+	//Function call adds function name, '(', and ')' to the AST.
+	int ascii = getAsciiSumModLength(n->getLexeme() + "()");
+
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	ascii = accumulateModLength(ascii, left->getAscii());
+	if (right != NULL)
+		ascii = accumulateModLength(ascii, right->getAscii());
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes an element in an argument list.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void SummationPhase::visit(ArgListNode * n)
+{
+	n->visitAllChildren(this);
+
+	//Argument list element adds "," to the AST.
+	int ascii = getAsciiSumModLength(",");
+	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	ascii = accumulateModLength(ascii, left->getAscii());
+	if (right != NULL)
+		ascii = accumulateModLength(ascii, right->getAscii());
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
 // This function processes a string literal.
 // @n: The node representing the string.
 //

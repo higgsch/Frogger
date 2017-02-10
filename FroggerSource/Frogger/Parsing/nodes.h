@@ -9,6 +9,7 @@
 #include "Nodes\AbstractNodeChild\commandNodes.h"
 #include "Nodes\AbstractNodeChild\constingNodes.h"
 #include "Nodes\AbstractNodeChild\idRefNode.h"
+#include "Nodes\AbstractNodeChild\functionCallNodes.h"
 
 #include "Nodes\AbstractNodeChild\BinaryOpNodeChild\logicNodes.h"
 #include "Nodes\AbstractNodeChild\BinaryOpNodeChild\arithmeticNodes.h"

@@ -66,6 +66,7 @@ void DataTypingPhase::visit(RetrievalNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(DisplayingNode * n)
 {
+	AbstractNode * left = n->getLeftChild();
 	n->visitLeftChild(this);
 }
 
@@ -127,8 +128,66 @@ void DataTypingPhase::visit(IdRefNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(AssigningNode * n)
 {
+	AbstractNode * right = n->getRightChild();
 	n->visitAllChildren(this);
 	unifyTreeDataType(n);
+}
+
+// ----------------------------------------------------------
+// This function processes a function call.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void DataTypingPhase::visit(FunctionCallNode * n)
+{
+	DataType oldNodeType = n->getDataType();
+
+	if (oldNodeType != DT_NOT_DEFINED)
+		checkAndSetNodeDataType(n, oldNodeType);
+
+	DataType oldFunctType = n->getFunct()->returnType;
+	if (oldFunctType != DT_NOT_DEFINED)
+		checkAndSetNodeDataType(n, oldFunctType);
+	else if (oldNodeType != DT_NOT_DEFINED)
+		n->getFunct()->returnType = oldNodeType;
+
+	n->visitAllChildren(this);
+
+	Function * funct = n->getFunct();
+	if (!functions->matchExists(funct))
+		dataType_error("Function call does not match signature: " + funct->name);
+	else if (functions->getNumberOfMatches(funct) == 1)
+	{
+		n->setFunct(functions->getFirstMatch(funct));
+		this->checkAndSetNodeDataType(n, funct->returnType);
+		n->visitAllChildren(this);
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes an element in an argument list.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void DataTypingPhase::visit(ArgListNode * n)
+{
+	int argNo = n->getArgNo();
+	DataType oldArgType = n->getFunct()->getDataTypeOfArgNumber(argNo);
+	if (oldArgType != DT_NOT_DEFINED)
+		checkAndSetNodeDataType(n->getLeftChild(),oldArgType);
+
+	n->visitAllChildren(this);
+	
+	DataType argType = n->getLeftChild()->getDataType();
+	if (argType != DT_NOT_DEFINED)
+	{
+		checkAndSetNodeDataType(n, argType);
+		Function * funct = n->getFunct();
+		int argNo = n->getArgNo();
+		checkAndSetArgDataType(funct,argNo,argType);
+	}
 }
 
 // ----------------------------------------------------------
@@ -361,6 +420,28 @@ void DataTypingPhase::checkAndSetTreeDataType(AbstractNode * node, DataType type
 
 	AbstractNode *right = node->getRightChild();
 	checkAndSetNodeDataType(right, type);
+}
+
+// ----------------------------------------------------------
+// This function safely sets the dataType of an argument. 
+// It throws a dataType error if there is a dataType 
+// conflict.
+// 
+// Version 2.4
+// ----------------------------------------------------------
+void DataTypingPhase::checkAndSetArgDataType(Function * funct, int argNo, DataType type)
+{
+	DataType oldType = funct->getDataTypeOfArgNumber(argNo);
+	if (oldType == type || type == DT_NOT_DEFINED)
+		return;
+
+	if (oldType == DT_NOT_DEFINED)
+	{
+		funct->setDataTypeOfArgNumber(argNo, type);
+		return;
+	}
+	else
+		dataType_error("Data Type Conflict");
 }
 
 // ----------------------------------------------------------

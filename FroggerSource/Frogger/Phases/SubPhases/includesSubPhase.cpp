@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.4
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -26,6 +26,8 @@ IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 
 	hasRndNode = false;
 	needsRoundFunct = false;
+	needsStringToDouble = false;
+	needsStringToAscii = false;
 }
 
 // ----------------------------------------------------------
@@ -113,6 +115,49 @@ void IncludesSubPhase::visit(RandomingNode * n)
 // Version 2.2
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(AssigningNode * n)
+{
+	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
+// This function processes the include for a function call.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void IncludesSubPhase::visit(FunctionCallNode * n)
+{
+	n->visitAllChildren(this);
+
+	Function * funct = n->getFunct();
+	if (funct->builtIn)
+	{
+		if (funct->name == "parseDouble")
+		{
+			needsStringToDouble = true;
+		}
+		else if (funct->name == "asciiAt")
+		{
+			needsStringToAscii = true;
+		}
+
+		if ((funct->name == "parseDouble" || funct->name == "asciiAt")
+					&& !isStringImported)
+			{
+				*out << "#include <string>\n";
+				isStringImported = true;
+			}
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes the include for an element of an 
+// argument list.
+// @n: The node representing the statement.
+//
+// Version 2.4
+// ----------------------------------------------------------
+void IncludesSubPhase::visit(ArgListNode * n)
 {
 	n->visitAllChildren(this);
 }

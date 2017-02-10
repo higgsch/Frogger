@@ -33,6 +33,8 @@ public:
 	void visit(EndingNode * n){}
 	void visit(IdRefNode * n){}
 	void visit(AssigningNode * n);
+	void visit(FunctionCallNode * n);
+	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n){}
 	void visit(DoubleConstingNode * n){}
 	void visit(AddingNode * n);

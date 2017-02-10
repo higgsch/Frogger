@@ -16,7 +16,7 @@ typedef enum token_types {
 	STRING,	ID, DOUBLECONST, 
 	RETRIEVE, END, DISPLAY, RANDOM,
 	IF, THEN, ELSE, 
-	SEMICOLON, LPAREN, RPAREN, 
+	COMMA, COLON, SEMICOLON, LPAREN, RPAREN, 
 	SCANEOF
 } token_type;
 
@@ -25,7 +25,7 @@ typedef enum token_types {
 // constructors for ease of use and static "constants" for 
 // compact use. 
 //
-// Version 2.3
+// Version 2.4
 // ----------------------------------------------------------
 class Token
 { //Glorified Struct with public members and static placeholders
@@ -61,6 +61,8 @@ public:
 	static Token IF;
 	static Token THEN;
 	static Token ELSE;
+	static Token COMMA;
+	static Token COLON;
 	static Token SEMICOLON;
 	static Token LPAREN;
 	static Token RPAREN;
