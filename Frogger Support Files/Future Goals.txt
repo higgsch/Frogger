@@ -6,8 +6,8 @@ v2.2: Added random() functionality.
 v2.3: Added string assignment and concatenation, variable typing dbl vs string
 v2.4: Added string indexing (<string>:asciiAt(dbl)), string parsing (<string>:parseDouble()),
 	double conversions (<double>:toString(), <double>:toAscii())
+v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble), obfuscation for function names
 
-v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble)
 v??: Refactor with clean code.
 v3: Add File I/O.
 v4: Add user-defined functions (force modulation into different files).
@@ -15,3 +15,4 @@ v5+: Add object orientation (folder modulation).
 v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 refactor phases: SummationPhase::getChildrenAsciiSum(AbstractNode * n), calc with addition (Abs n, string add), &c.
+refactor tables: Pull a generic table out

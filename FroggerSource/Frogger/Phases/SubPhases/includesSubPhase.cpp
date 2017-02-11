@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.4
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -53,61 +53,6 @@ void IncludesSubPhase::visit(IfNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes the include for a retrieve statement.
-// @n: The node representing the retrieve statement.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(RetrievalNode * n)		
-{
-	if (!isIOStreamImported)
-	{
-		*out << "#include <iostream>\n";
-		isIOStreamImported = true;
-	}
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a display statement.
-// @n: The node representing the display statement.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(DisplayingNode * n)	
-{
-	if (!isIOStreamImported)
-	{
-		*out << "#include <iostream>\n";
-		isIOStreamImported = true;
-	}
-
-	n->visitLeftChild(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a random statement.
-// @n: The node representing the random statement.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(RandomingNode * n)		
-{
-	if (!isStdLibImported)
-	{
-		*out << "#include <stdlib.h>\n";
-		isStdLibImported = true;
-	}
-
-	if (!isTimeImported)
-	{
-		*out << "#include <time.h>\n";
-		isTimeImported = true;
-	}
-
-	hasRndNode = true;
-}
-
-// ----------------------------------------------------------
 // This function processes the include for an assignment 
 // statement.
 // @n: The node representing the statement.
@@ -123,7 +68,7 @@ void IncludesSubPhase::visit(AssigningNode * n)
 // This function processes the include for a function call.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(FunctionCallNode * n)
 {
@@ -140,13 +85,62 @@ void IncludesSubPhase::visit(FunctionCallNode * n)
 		{
 			needsStringToAscii = true;
 		}
+		else if (funct->name == "retrieveDouble" || funct->name == "retrieveString")
+		{
+			if (!isIOStreamImported)
+			{
+				*out << "#include <iostream>\n";
+				isIOStreamImported = true;
+			}
+		}
+		else if (funct->name == "random")
+		{
+			if (!isStdLibImported)
+			{
+				*out << "#include <stdlib.h>\n";
+				isStdLibImported = true;
+			}
+
+			if (!isTimeImported)
+			{
+				*out << "#include <time.h>\n";
+				isTimeImported = true;
+			}
+
+			hasRndNode = true;
+		}
 
 		if ((funct->name == "parseDouble" || funct->name == "asciiAt")
 					&& !isStringImported)
+		{
+			*out << "#include <string>\n";
+			isStringImported = true;
+		}
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes the include for a command call.
+// @n: The node representing the statement.
+//
+// Version 2.5
+// ----------------------------------------------------------
+void IncludesSubPhase::visit(CommandCallNode * n)
+{
+	n->visitAllChildren(this);
+
+	Command * cmd = n->getCmd();
+	if (cmd->builtIn)
+	{
+		string name = cmd->name;
+		if (name == "display")
+		{
+			if (!isIOStreamImported)
 			{
-				*out << "#include <string>\n";
-				isStringImported = true;
+				*out << "#include <iostream>\n";
+				isIOStreamImported = true;
 			}
+		}
 	}
 }
 

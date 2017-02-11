@@ -15,13 +15,10 @@ class ControlFlowNode;
 class JmpStmtNode;
 class IfNode;
 class ProgramNode;
-class RetrievalNode;
-class DisplayingNode;
-class RandomingNode;
-class EndingNode;
 class IdRefNode;
 class AssigningNode;
 class FunctionCallNode;
+class CommandCallNode;
 class ArgListNode;
 class StringConstingNode;
 class DoubleConstingNode;
@@ -44,7 +41,7 @@ class GTEingNode;
 // This class provides the base of the visitor inheritance for
 // the AST intermediate representation. 
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 class Phase
 {
@@ -53,13 +50,10 @@ public:
 	virtual void visit(ProgramNode * n) = 0;
 	virtual void visit(JmpStmtNode * n) = 0;
 	virtual void visit(IfNode * n) = 0;
-	virtual void visit(RetrievalNode * n) = 0;
-	virtual void visit(DisplayingNode * n) = 0;
-	virtual void visit(RandomingNode * n) = 0;
-	virtual void visit(EndingNode * n) = 0;
 	virtual void visit(IdRefNode * n) = 0;
 	virtual void visit(AssigningNode * n) = 0;
 	virtual void visit(FunctionCallNode * n) = 0;
+	virtual void visit(CommandCallNode * n) = 0;
 	virtual void visit(ArgListNode * n) = 0;
 	virtual void visit(StringConstingNode * n) = 0;
 	virtual void visit(DoubleConstingNode * n) = 0;

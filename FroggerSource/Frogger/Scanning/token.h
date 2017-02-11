@@ -14,7 +14,6 @@ typedef enum token_types {
 	ASSIGN, ADD, SUB, MUL, DIV, MOD, IDIV, ROOT, EXP,
 	NOT, LT, GT, EQ, LTE, GTE, 
 	STRING,	ID, DOUBLECONST, 
-	RETRIEVE, END, DISPLAY, RANDOM,
 	IF, THEN, ELSE, 
 	COMMA, COLON, SEMICOLON, LPAREN, RPAREN, 
 	SCANEOF
@@ -25,7 +24,7 @@ typedef enum token_types {
 // constructors for ease of use and static "constants" for 
 // compact use. 
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 class Token
 { //Glorified Struct with public members and static placeholders
@@ -54,10 +53,6 @@ public:
 	static Token EQ;
 	static Token LTE;
 	static Token GTE;
-	static Token RETRIEVE;
-	static Token END;
-	static Token DISPLAY;
-	static Token RANDOM;
 	static Token IF;
 	static Token THEN;
 	static Token ELSE;

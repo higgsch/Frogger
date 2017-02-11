@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
@@ -13,14 +13,16 @@ using namespace std;
 // given output stream.
 // @outstream: The output stream to print to.
 //
-// Version 2.0
+// Version 2.5
 // ----------------------------------------------------------
 VarDecSubPhase::VarDecSubPhase(ostream* outstream, int tabCount)
 {
 	list = NULL;
 	out = outstream;
-	currStmtTempCount = 0;
-	lineTempMax = 0;
+	currStmtDblTempCount = 0;
+	currStmtStrTempCount = 0;
+	lineDblTempMax = 0;
+	lineStrTempMax = 0;
 	indentDepth = tabCount;
 }
 
@@ -82,17 +84,20 @@ bool VarDecSubPhase::isInList(string id)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 2.0
+// Version 2.5
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(JmpStmtNode * n)
 {
-	currStmtTempCount = 0;
+	currStmtDblTempCount = 0;
+	currStmtStrTempCount = 0;
 
 	n->visitThisStmt(this);
 
-	//update the temporary counter
-	if (currStmtTempCount > lineTempMax)
-		lineTempMax = currStmtTempCount;
+	//update the temporary counters
+	if (currStmtDblTempCount > lineDblTempMax)
+		lineDblTempMax = currStmtDblTempCount;
+	if (currStmtStrTempCount > lineStrTempMax)
+		lineStrTempMax = currStmtStrTempCount;
 
 	n->visitNextStmt(this);
 }
@@ -101,43 +106,25 @@ void VarDecSubPhase::visit(JmpStmtNode * n)
 // This function processes an if statement.
 // @n: The node representing the statement.
 //
-// Version 2.0
+// Version 2.5
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(IfNode * n)
 {
-	currStmtTempCount = 0;
+	currStmtDblTempCount = 0;
+	currStmtStrTempCount = 0;
 
 	n->visitBoolExp(this);
 
-	if (currStmtTempCount > lineTempMax)
-		lineTempMax = currStmtTempCount;
+	//update the temporary counters
+	if (currStmtDblTempCount > lineDblTempMax)
+		lineDblTempMax = currStmtDblTempCount;
+	if (currStmtStrTempCount > lineStrTempMax)
+		lineStrTempMax = currStmtStrTempCount;
 
 	n->visitTrueStmt(this);
 	n->visitFalseStmt(this);
 	
 	n->visitNextStmt(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a retrieve statement.
-// @n: The node representing the retrieve statement.
-//
-// Version 1.1
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(RetrievalNode * n)
-{
-	currStmtTempCount++;
-}
-
-// ----------------------------------------------------------
-// This function processes a display statement.
-// @n: The node representing the display statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void VarDecSubPhase::visit(DisplayingNode * n)
-{
-	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -179,9 +166,34 @@ void VarDecSubPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(FunctionCallNode * n)
+{
+	n->visitAllChildren(this);
+	
+	Function* funct = n->getFunct();
+	if (!funct->isUserDefined())
+	{
+		string name = funct->name;
+		if (name == "retrieveDouble")
+		{
+			currStmtDblTempCount++;
+		}
+		else if (name == "retrieveString")
+		{
+			currStmtStrTempCount++;
+		}
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes a command call.
+// @n: The node representing the statement.
+//
+// Version 2.5
+// ----------------------------------------------------------
+void VarDecSubPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 }
@@ -356,10 +368,13 @@ void VarDecSubPhase::visit(GTEingNode * n)
 // ----------------------------------------------------------
 // This function adds declarations for the temporaries.
 //
-// Version 2.0
+// Version 2.5
 // ----------------------------------------------------------
 void VarDecSubPhase::addTemporaries()
 {
-	for (int i = 1; i <= lineTempMax; i++)
-		*out << indent() << "double _temp_" << i << " = 0;\n";
+	for (int i = 1; i <= lineDblTempMax; i++)
+		*out << indent() << "double _dbltemp_" << i << " = 0;\n";
+
+	for (int i = 1; i <= lineStrTempMax; i++)
+		*out << indent() << "string _strtemp_" << i << " = \"\";\n";
 }

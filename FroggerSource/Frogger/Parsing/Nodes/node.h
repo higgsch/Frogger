@@ -15,13 +15,12 @@ typedef enum node_sides{
 
 // set of node categories
 typedef enum node_types{
-	RETRIEVING, DISPLAYING, ENDING, RANDOMING,
 	ASSIGNING, 
 	IDREF, STRINGCONSTING, DBLCONSTING, 
 	ADDING, SUBING, MULING, DIVING, 
 	MODDIVING, IDIVING, ROOTING, EXPING,
 	NOTING, LTING, GTING, EQING, LTEING, GTEING,
-	FUNCTCALLING, ARGLISTING
+	FUNCTCALLING, COMMANDCALLING, ARGLISTING
 } node_type;
 
 // ----------------------------------------------------------

@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and converts strings of 
 // chars to tokens.
@@ -79,7 +79,7 @@ void Scanner::checkForObfuscation(void)
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 Token Scanner::scan(void)
 {
@@ -255,15 +255,7 @@ Token Scanner::scan(void)
 
 			unget();
 
-			if (token_buffer == "retrieve")
-				return Token::RETRIEVE;
-			else if (token_buffer == "display")
-				return Token::DISPLAY;
-			else if (token_buffer == "random")
-				return Token::RANDOM;
-			else if (token_buffer == "end")
-				return Token::END;
-			else if (token_buffer == "if")
+			if (token_buffer == "if")
 				return Token::IF;
 			else if (token_buffer == "then")
 				return Token::THEN;

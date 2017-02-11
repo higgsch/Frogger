@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program represents a visitor for calculating the goto line
 // numbers.
@@ -95,59 +95,6 @@ void SummationPhase::visit(IfNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a retrieve statement.
-// @n: The node representing the retrieve statement.
-//
-// Version 1.1
-// ----------------------------------------------------------
-void SummationPhase::visit(RetrievalNode * n)
-{
-	//a retrieve statement only adds 'retrieve()' to the AST
-	int ascii = getAsciiSumModLength("retrieve();");
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a display statement.
-// @n: The node representing the display statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void SummationPhase::visit(DisplayingNode * n)
-{
-	AbstractNode *child = n->getLeftChild();
-	child->accept(this);
-	//a display statement only adds 'display(' and ');' to the AST
-	int ascii = getAsciiSumModLength("display();");
-	ascii = accumulateModLength(ascii, child->getAscii());
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a random statement.
-// @n: The node representing the random statement.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void SummationPhase::visit(RandomingNode * n)
-{
-	//a random statement only adds 'random(' and ');' to the AST
-	int ascii = getAsciiSumModLength("random();");
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes an end statement.
-// @n: The node representing the statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void SummationPhase::visit(EndingNode * n)
-{
-	n->setAscii(getAsciiSumModLength("end;"));
-}
-
-// ----------------------------------------------------------
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
@@ -183,7 +130,7 @@ void SummationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 void SummationPhase::visit(FunctionCallNode * n)
 {
@@ -192,8 +139,33 @@ void SummationPhase::visit(FunctionCallNode * n)
 	//Function call adds function name, '(', and ')' to the AST.
 	int ascii = getAsciiSumModLength(n->getLexeme() + "()");
 
+	//Functions with a parent add ':' to the AST (e.g. 65:toString(); )
+	if (n->getLeftChild() != NULL)
+		ascii = accumulateModLength(ascii, getAsciiSumModLength(":"));
+
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	ascii = accumulateModLength(ascii, left->getAscii());
+	if (left != NULL)
+		ascii = accumulateModLength(ascii, left->getAscii());
+	if (right != NULL)
+		ascii = accumulateModLength(ascii, right->getAscii());
+	n->setAscii(ascii);
+}
+
+// ----------------------------------------------------------
+// This function processes a command call.
+// @n: The node representing the statement.
+//
+// Version 2.5
+// ----------------------------------------------------------
+void SummationPhase::visit(CommandCallNode * n)
+{
+	n->visitAllChildren(this);
+
+	//Command call adds command name, '(', and ')' to the AST.
+	int ascii = getAsciiSumModLength(n->getLexeme() + "()");
+
+	//Commands do not have a left child
+	AbstractNode *right = n->getRightChild();
 	if (right != NULL)
 		ascii = accumulateModLength(ascii, right->getAscii());
 	n->setAscii(ascii);
@@ -209,7 +181,7 @@ void SummationPhase::visit(ArgListNode * n)
 {
 	n->visitAllChildren(this);
 
-	//Argument list element adds "," to the AST.
+	//Argument list element adds "," to the AST if it is not the first in the list.
 	int ascii = getAsciiSumModLength(",");
 	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
 	ascii = accumulateModLength(ascii, left->getAscii());

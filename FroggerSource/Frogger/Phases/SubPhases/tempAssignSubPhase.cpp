@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program represents a visitor for generating temporary's 
 // assignment within a given line of code.
@@ -13,24 +13,26 @@ using namespace std;
 // given output stream.
 // @outstream: The output stream to print to.
 //
-// Version 2.0
+// Version 2.5
 // ----------------------------------------------------------
 TempAssignSubPhase::TempAssignSubPhase(ostream* outstream, int indentCount)
 {
 	indentDepth = indentCount;
 	out = outstream;
-	tempNo = 1; //temporaries are 1-indexed
+	dblTempNo = 1; //temporaries are 1-indexed
+	strTempNo = 1;
 }
 
 // ----------------------------------------------------------
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 1.0
+// Version 2.5
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(JmpStmtNode * n)
 {
-	tempNo = 1; //restart temporary counter (1-indexed)
+	dblTempNo = 1; //restart temporary counters (1-indexed)
+	strTempNo = 1;
 
 	//emit the line's code
 	n->visitThisStmt(this);
@@ -45,28 +47,6 @@ void TempAssignSubPhase::visit(JmpStmtNode * n)
 void TempAssignSubPhase::visit(IfNode * n)
 {
 	n->visitBoolExp(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a retrieve statement.
-// @n: The node representing the retrieve statement.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(RetrievalNode * n)
-{
-	*out << indent() << "cin >> _temp_" << tempNo++ << ";\n";
-}
-
-// ----------------------------------------------------------
-// This function processes a display statement.
-// @n: The node representing the display statement.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void TempAssignSubPhase::visit(DisplayingNode * n)
-{
-	n->visitLeftChild(this);
 }
 
 // ----------------------------------------------------------
@@ -85,9 +65,34 @@ void TempAssignSubPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(FunctionCallNode * n)
+{
+	n->visitAllChildren(this);
+
+	Function * funct = n->getFunct();
+	if (!funct->isUserDefined())
+	{
+		string name = funct->name;
+		if (name == "retrieveDouble")
+		{
+			*out << indent() << "cin >> _dbltemp_" << dblTempNo++ << ";\n";
+		}
+		else if (name == "retrieveString")
+		{
+			*out << indent() << "cin >> _strtemp_" << strTempNo++ << ";\n";
+		}
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes a command call.
+// @n: The node representing the statement.
+//
+// Version 2.5
+// ----------------------------------------------------------
+void TempAssignSubPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 }

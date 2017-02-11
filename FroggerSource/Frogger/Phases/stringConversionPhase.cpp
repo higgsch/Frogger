@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program represents a visitor for converting string literals
 // from frogger syntax to c++ syntax.
@@ -62,18 +62,6 @@ void StringConversionPhase::visit(IfNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a display statement.
-// @n: The node representing the display statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void StringConversionPhase::visit(DisplayingNode * n)
-{
-	AbstractNode *child = n->getLeftChild();
-	child->accept(this);
-}
-
-// ----------------------------------------------------------
 // This function processes an assignment statement.
 // @n: The node representing the statement.
 //
@@ -94,6 +82,18 @@ void StringConversionPhase::visit(AssigningNode * n)
 void StringConversionPhase::visit(FunctionCallNode * n)
 {
 	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
+// This function processes a function call.
+// @n: The node representing the statement.
+//
+// Version 2.5
+// ----------------------------------------------------------
+void StringConversionPhase::visit(CommandCallNode * n)
+{
+	//Command call has no left child
+	n->visitRightChild(this);
 }
 
 // ----------------------------------------------------------

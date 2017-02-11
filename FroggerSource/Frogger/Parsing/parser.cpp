@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.4
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -107,6 +107,32 @@ ControlFlowNode* Parser::flowstmt()
 
 // ----------------------------------------------------------
 // This function represents production rules:
+// <nestedflowstmt> => <ifstmt>
+// <nestedflowstmt> => <jmpstmt>
+//
+// Version 2.0
+// ----------------------------------------------------------
+ControlFlowNode* Parser::nestedflowstmt()
+{
+	ControlFlowNode* stmt;
+
+	Token tok = next_token();
+	switch (tok.type)
+	{
+	case IF:
+		stmt = ifstmt();
+		break;
+	default:
+		stmt = jmpstmt();
+		break;
+	}
+
+	stmt->setNested(true);
+	return stmt;
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
 // <ifstmt> => if ( <boolexp> ) then <nestedflowstmt> else <nestedflowstmt>
 //
 // Version 2.0
@@ -124,58 +150,6 @@ IfNode* Parser::ifstmt()
 	stmt->setBoolExp(toCompare);
 	stmt->setTrueStmt(trueStmt);
 	stmt->setFalseStmt(falseStmt);
-	return stmt;
-}
-
-// ----------------------------------------------------------
-// This function represents production rules:
-// <jmpstmt> => display ( <expr> ) ;
-// <jmpstmt> => end ;
-// <jmpstmt> => id assign <expr> ;
-// Returns: A pointer to the node representing this jmpstmt.
-//
-// Version 2.3
-// ----------------------------------------------------------
-JmpStmtNode* Parser::jmpstmt()
-{
-	JmpStmtNode* stmt = new JmpStmtNode();
-
-	Token tok = next_token();
-	switch(tok.type)
-	{
-	case DISPLAY:
-		{
-			match(DISPLAY); match(LPAREN);
-
-			AbstractNode* toDisplay = expr();
-			
-			match(RPAREN); match(SEMICOLON);
-			
-			stmt->setStmt(new DisplayingNode(toDisplay));
-			break;
-		}
-	case END:
-		match(END); match(SEMICOLON);
-		stmt->setStmt(new EndingNode());
-		break;
-	case ID:
-		{
-			match(ID); 
-			IdRefNode* id = new IdRefNode(tok.lexeme);
-			match(ASSIGN);
-			
-			AbstractNode* toAssign = expr();
-			match(SEMICOLON);
-
-			stmt->setStmt(new AssigningNode(id, toAssign));
-			break;
-		}
-	default:
-		syntax_error("Invalid start of stmt - " + tok.lexeme);
-		return NULL;
-		break;
-	}
-
 	return stmt;
 }
 
@@ -215,28 +189,130 @@ BinaryOpNode* Parser::boolexp()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <nestedflowstmt> => <ifstmt>
-// <nestedflowstmt> => <jmpstmt>
+// <boolop> => lt
+// <boolop> => gt
+// <boolop> => eq
+// <boolop> => lte
+// <boolop> => gte
+// Returns: A pointer to the node representing this operator.
 //
 // Version 2.0
 // ----------------------------------------------------------
-ControlFlowNode* Parser::nestedflowstmt()
+BinaryOpNode* Parser::boolop()
 {
-	ControlFlowNode* stmt;
+	Token tok = next_token();
+	switch (tok.type)
+	{
+	case LT:
+		match(LT);
+		return new LTingNode();
+		break;
+	case GT:
+		match(GT);
+		return new GTingNode();
+		break;
+	case EQ:
+		match(EQ);
+		return new EQingNode();
+		break;
+	case LTE:
+		match(LTE);
+		return new LTEingNode();
+		break;
+	case GTE:
+		match(GTE);
+		return new GTEingNode();
+		break;
+	default:
+		syntax_error(lookahead[0].lexeme + " - Invalid Boolean Operator");
+		return NULL;
+		break;
+	}
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <jmpstmt> => <commandname> ( [<arglist>] ) ;
+// <jmpstmt> => id assign <expr> ;
+// Returns: A pointer to the node representing this jmpstmt.
+//
+// Version 2.5
+// ----------------------------------------------------------
+JmpStmtNode* Parser::jmpstmt()
+{
+	JmpStmtNode* stmt = new JmpStmtNode();
+
+	Token idTok = next_token();
+	match(ID);
 
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case IF:
-		stmt = ifstmt();
-		break;
+	case LPAREN:
+		{
+			match(LPAREN);
+			CommandCallNode* cmd = new CommandCallNode(idTok.lexeme);
+
+			Token argTok = next_token();
+			if (argTok.type != RPAREN)
+			{
+				cmd->addRightChild(arglist(0, cmd->getCmd()));
+			}
+
+			match(RPAREN);
+			match(SEMICOLON);
+
+			stmt->setStmt(cmd);
+			break;
+		}
+	case ASSIGN:
+		{
+			IdRefNode* id = new IdRefNode(idTok.lexeme);
+			match(ASSIGN);
+
+			AbstractNode* toAssign = expr();
+			match(SEMICOLON);
+
+			stmt->setStmt(new AssigningNode(id, toAssign));
+			break;
+		}
 	default:
-		stmt = jmpstmt();
+		syntax_error("Invalid start of stmt - " + tok.lexeme);
+		return NULL;
 		break;
 	}
 
-	stmt->setNested(true);
 	return stmt;
+}
+
+// ----------------------------------------------------------
+// This function represents production rules:
+// <arglist> => <expr> , <arglist>
+// <arglist> => <expr>
+// Returns: A pointer to the node representing this term.
+//
+// Version 2.4
+// ----------------------------------------------------------
+AbstractNode* Parser::arglist(int argNo, Command* cmd)
+{
+	AbstractNode * firstArg = expr();
+	AbstractNode * nextArg = NULL;
+
+	ArgListNode * list = new ArgListNode();
+	list->setCmd(cmd);
+	list->addLeftChild(firstArg);
+	list->setArgNo(argNo);
+	cmd->addArg(DT_NOT_DEFINED);
+	argNo++;
+
+	if (next_token().type == COMMA)
+	{
+		match(COMMA);
+		nextArg = arglist(argNo, cmd);
+	}
+
+	list->addRightChild(nextArg);
+	return list;
 }
 
 // ----------------------------------------------------------
@@ -307,7 +383,7 @@ AbstractNode* Parser::addterm()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <multerm> => <expterm> <multerm.1>
+// <multerm> => <typedterm> <multerm.1>
 // <multerm.1> => <expop> <multerm>
 // <multerm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
@@ -316,7 +392,7 @@ AbstractNode* Parser::addterm()
 // ----------------------------------------------------------
 AbstractNode* Parser::multerm()
 {
-	AbstractNode* left = expterm();
+	AbstractNode* left = typedterm();
 
 	Token tok = next_token();
 	switch (tok.type)
@@ -339,15 +415,15 @@ AbstractNode* Parser::multerm()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <expterm> => <primary> <expterm.1>
-// <expterm.1> => : <functname> ( <arglist> ) <expterm.1>
-// <expterm.1> => : <functname> ( ) <expterm.1>
-// <expterm.1> => [lambda]
+// <typedterm> => <primary> <typedterm.1>
+// <typedterm.1> => : id ( <arglist> ) <typedterm.1>
+// <typedterm.1> => : id ( ) <typedterm.1>
+// <typedterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
-AbstractNode* Parser::expterm()
+AbstractNode* Parser::typedterm()
 {
 	AbstractNode * root = NULL;
 	AbstractNode * prim = primary();
@@ -359,8 +435,10 @@ AbstractNode* Parser::expterm()
 		if (tok.type == COLON)
 		{
 			match(COLON);
-			string functionName = functname();
-			FunctionCallNode * funct = new FunctionCallNode(functionName);
+
+			Token idTok = next_token();
+			match(ID);
+			FunctionCallNode * funct = new FunctionCallNode(idTok.lexeme);
 			match(LPAREN);
 
 			Token firstArg = next_token();
@@ -388,13 +466,12 @@ AbstractNode* Parser::expterm()
 // This function represents production rules:
 // <primary> => dbl
 // <primary> => id
+// <primary> => id ( [<arglist>] )
 // <primary> => string
 // <primary> => ( <expr> )
-// <primary> => retrieve ( )
-// <primary> => random ( )
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 AbstractNode* Parser::primary()
 {
@@ -402,15 +479,33 @@ AbstractNode* Parser::primary()
 	switch (tok.type)
 	{
 	case DOUBLECONST:
-		match(tok.type);
+		match(DOUBLECONST);
 		return new DoubleConstingNode(tok.lexeme);
 		break;
 	case ID:
-		match(tok.type);
-		return new IdRefNode(tok.lexeme);
-		break;
+		{
+			match(ID);
+		
+			Token nextTok = next_token();
+			if (nextTok.type != LPAREN)
+				return new IdRefNode(tok.lexeme);
+
+			//Function call
+			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme);
+			match(LPAREN);
+
+			Token firstArg = next_token();
+			if (firstArg.type != RPAREN)
+			{
+				funct->addRightChild(arglist(0, funct->getFunct()));
+			}
+
+			match(RPAREN);
+			return funct;
+			break;
+		}
 	case STRING:
-		match(tok.type);
+		match(STRING);
 		return new StringConstingNode(tok.lexeme);
 		break;
 	case LPAREN:
@@ -420,67 +515,11 @@ AbstractNode* Parser::primary()
 			return val;
 			break;
 		}
-	case RETRIEVE:
-		{
-			match(RETRIEVE); match(LPAREN); match(RPAREN);
-			return new RetrievalNode();
-			break;
-		}
-	case RANDOM:
-		{
-			match(RANDOM); match(LPAREN); match(RPAREN);
-			return new RandomingNode();
-			break;
-		}
 	default:
 		syntax_error("Invalid Term - " + tok.lexeme);
 		return NULL;
 		break;
 	}
-}
-
-// ----------------------------------------------------------
-// This function represents production rules:
-// <functname> => id
-// Returns: A pointer to the node representing this term.
-//
-// Version 2.4
-// ----------------------------------------------------------
-string Parser::functname()
-{
-	Token tok = next_token();
-	match(ID); 
-	return tok.lexeme;
-}
-
-// ----------------------------------------------------------
-// This function represents production rules:
-// <arglist> => <expr> , <arglist>
-// <arglist> => <expr>
-// Returns: A pointer to the node representing this term.
-//
-// Version 2.4
-// ----------------------------------------------------------
-AbstractNode* Parser::arglist(int argNo, Function* funct)
-{
-	AbstractNode * firstArg = expr();
-	AbstractNode * nextArg = NULL;
-
-	ArgListNode * list = new ArgListNode();
-	list->setFunct(funct);
-	list->addLeftChild(firstArg);
-	list->setArgNo(argNo);
-	funct->addArg(DT_NOT_DEFINED);
-	argNo++;
-
-	if (next_token().type == COMMA)
-	{
-		match(COMMA);
-		nextArg = arglist(argNo, funct);
-	}
-
-	list->addRightChild(nextArg);
-	return list;
 }
 
 // ----------------------------------------------------------
@@ -578,55 +617,12 @@ BinaryOpNode* Parser::expop()
 }
 
 // ----------------------------------------------------------
-// This function represents production rules:
-// <boolop> => lt
-// <boolop> => gt
-// <boolop> => eq
-// <boolop> => lte
-// <boolop> => gte
-// Returns: A pointer to the node representing this operator.
-//
-// Version 2.0
-// ----------------------------------------------------------
-BinaryOpNode* Parser::boolop()
-{
-	Token tok = next_token();
-	switch (tok.type)
-	{
-	case LT:
-		match(LT);
-		return new LTingNode();
-		break;
-	case GT:
-		match(GT);
-		return new GTingNode();
-		break;
-	case EQ:
-		match(EQ);
-		return new EQingNode();
-		break;
-	case LTE:
-		match(LTE);
-		return new LTEingNode();
-		break;
-	case GTE:
-		match(GTE);
-		return new GTEingNode();
-		break;
-	default:
-		syntax_error(lookahead[0].lexeme + " - Invalid Boolean Operator");
-		return NULL;
-		break;
-	}
-}
-
-// ----------------------------------------------------------
 // This function tests if the next token matches toMatch and
 // moves to the next token on success. It displayes an error
 // on failure.
 // @toMatch: The expected token category.
 //
-// Version 2.3
+// Version 2.5
 // ----------------------------------------------------------
 void Parser::match(token_type toMatch)
 {
@@ -686,15 +682,6 @@ void Parser::match(token_type toMatch)
 		case GTE:
 			type = ">=";
 			break;
-		case RETRIEVE:
-			type = "retrieve";
-			break;
-		case END:
-			type = "end";
-			break;
-		case DISPLAY:
-			type = "display";
-			break;
 		case IF:
 			type = "if";
 			break;
@@ -703,6 +690,9 @@ void Parser::match(token_type toMatch)
 			break;
 		case ELSE:
 			type = "else";
+			break;
+		case COLON:
+			type = ":";
 			break;
 		case SEMICOLON:
 			type = ";";

@@ -2,13 +2,13 @@
 //                      FROGGER Compiler
 //                      Version: 2.4
 // ----------------------------------------------------------------
-// This program represents a collection of variables
+// This program represents a collection of functions
 // -----------------------------------------------------------------
 #include "functionTable.h"
 using namespace std;
 
 // ----------------------------------------------------------
-// This is the default constructor for a FunctionTable.
+// This is the default constructor.
 //
 // Version 2.4
 // ----------------------------------------------------------
@@ -34,6 +34,18 @@ FunctionTable::FunctionTable()
 	asciiAt->addArg(DT_DOUBLE);
 	asciiAt->builtIn = true;
 	table->push_back(asciiAt);
+
+	Function * retrieveDouble = new Function(DT_NULL, "retrieveDouble", DT_DOUBLE);
+	retrieveDouble->builtIn = true;
+	table->push_back(retrieveDouble);
+
+	Function * random = new Function(DT_NULL, "random", DT_DOUBLE);
+	random->builtIn = true;
+	table->push_back(random);
+
+	Function * retrieveString = new Function(DT_NULL, "retrieveString", DT_STRING);
+	retrieveString->builtIn = true;
+	table->push_back(retrieveString);
 }
 
 // ----------------------------------------------------------

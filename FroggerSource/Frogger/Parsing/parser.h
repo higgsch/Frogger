@@ -13,7 +13,7 @@ using namespace std;
 // This class parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 class Parser
 {
@@ -23,24 +23,32 @@ private:
 	Token lookahead[1]; //storage location for one lookahead Token
 	ProgramNode* root; //the root of the AST
 
+	//Program Organization
 	void prog();
 	ControlFlowNode* flowstmts();
 	ControlFlowNode* flowstmt();
-	IfNode* ifstmt();
-	JmpStmtNode* jmpstmt();
-	BinaryOpNode* boolexp();
 	ControlFlowNode* nestedflowstmt();
+
+	//Control
+	IfNode* ifstmt();
+	BinaryOpNode* boolexp();
+	BinaryOpNode* boolop();
+
+	//Action Statements
+	JmpStmtNode* jmpstmt();
+	AbstractNode* arglist(int argNo, Command* cmd);
+
+	//Expressions
 	AbstractNode* expr();
 	AbstractNode* addterm();
 	AbstractNode* multerm();
-	AbstractNode* expterm();
+	AbstractNode* typedterm();
 	AbstractNode* primary();
-	string functname();
-	AbstractNode* arglist(int argNo, Function* funct);
+
+	//Operators
 	BinaryOpNode* addop();
 	BinaryOpNode* mulop();
 	BinaryOpNode* expop();
-	BinaryOpNode* boolop();
 
 	void match(token_type);
 	void syntax_error(string);

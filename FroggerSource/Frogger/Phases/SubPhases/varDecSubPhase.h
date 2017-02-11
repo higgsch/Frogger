@@ -20,15 +20,17 @@ struct VarList
 // This class represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
 //
-// Version 2.3
+// Version 2.5
 // ----------------------------------------------------------
 class VarDecSubPhase : public Phase
 {
 private:
 	ostream* out; // the output stream to print to
 	VarList* list; // the "symbol table"
-	int currStmtTempCount; // a counter for the temporaries needed for the current line
-	int lineTempMax; // a storage for the maximum temporaries needed in any given line
+	int currStmtDblTempCount; // a counter for the double temporaries needed for the current line
+	int currStmtStrTempCount; // a counter for the string temporaries needed for the current line
+	int lineDblTempMax; // a storage for the maximum double temporaries needed in any given line
+	int lineStrTempMax; // a storage for the maximum string temporaries needed in any given line
 	int indentDepth; // the number of tabs to insert
 
 	void addToList(string);
@@ -40,13 +42,10 @@ public:
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
-	void visit(RetrievalNode * n);
-	void visit(DisplayingNode * n);
-	void visit(RandomingNode * n){}
-	void visit(EndingNode * n){}
 	void visit(IdRefNode * n);
 	void visit(AssigningNode * n);
 	void visit(FunctionCallNode * n);
+	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n){}
 	void visit(DoubleConstingNode * n){}

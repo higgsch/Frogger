@@ -11,8 +11,10 @@ class Phase;
 //Set of node data types
 enum DataType
 {
+	DT_NULL, //Used when the concept of a DataType is N/A 
+	//(e.g. parentType for the built-in random() function)
 	DT_DOUBLE,DT_STRING,
-	DT_NOT_DEFINED
+	DT_NOT_DEFINED //Used when the type is unknown
 };
 
 // ----------------------------------------------------------

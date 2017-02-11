@@ -4,52 +4,107 @@
 #pragma once
 
 #include "..\abstractNode.h"
+#include <vector>
 using namespace std;
 
 // ----------------------------------------------------------
-// This class provides a node representation for getting
-// double values from the user.
+// This class represents the information known about a command.
+// It holds known information about an individual command.
 //
-// Version 1.1
+// Version 2.5
 // ----------------------------------------------------------
-class RetrievalNode : public AbstractNode
+class Command
 {
 public:
-	// ----------------------------------------------------------
-	// This constructor builds a node for a retrieve statement.
-	//
-	// Version 1.1
-	// ----------------------------------------------------------
-	RetrievalNode()	{	type = RETRIEVING;	}
+	bool builtIn;
+	string name;
+	vector<DataType> *argTypeList;
+
+	Command(string i_name);
+	void addArg(DataType arg);
+	bool equals(Command* cmd);
+	bool matches(Command* cmd);
+	void copy(Command* cmd);
+
+	int getNumArgs() { return argTypeList->size(); }
+	DataType getDataTypeOfArgNumber(int argNo) 
+	{ 
+		if (argTypeList == NULL)
+			return DT_NOT_DEFINED;
+		else
+			return argTypeList->at(argNo);
+	}
+	void setDataTypeOfArgNumber(int argNo, DataType type) 
+	{ 
+		if (argNo < argTypeList->size()) 
+			(*argTypeList)[argNo] = type; 
+	}
+	bool isUserDefined() { return !builtIn; }
+};
+
+// ----------------------------------------------------------
+// This class provides a node representation for a command call.
+//
+// Version 2.5
+// ----------------------------------------------------------
+class CommandCallNode : public AbstractNode
+{
+private:
+	Command * cmd;
+
+public:
+	CommandCallNode(string);
 
 	// ----------------------------------------------------------
 	// This function prints this node to the given output stream.
 	// @out: The stream to display to.
 	//
-	// Version 1.1
+	// Version 2.5
 	// ----------------------------------------------------------
-	void printMe(ostream* out)	{	*out << "RETRIEVE";	}
+	void printMe(ostream* out)	
+	{	
+		*out << lexeme << "(";
+
+		if (rightChild != NULL)
+		{
+			rightChild->printMe(out);
+		}
+
+		*out << ")";
+	}
 
 	// ----------------------------------------------------------
 	// This function allows double dispatch required for visitor
 	// pattern.
 	// @p: The visitor to operate on this node.
 	//
-	// Version 1.1
+	// Version 2.5
 	// ----------------------------------------------------------
 	void accept(Phase* p)	{	p->visit(this);	}
+
+	Command* getCmd() { return cmd; }
+	void setCmd(Command * command)
+	{
+		//Don't just change pointer because ArgListNodes use the old pointer
+		cmd->copy(command);
+	}
+	int getArgListLength() { return cmd->getNumArgs(); }
 };
 
 // ----------------------------------------------------------
-// This class provides a node representation for the display
-// statement.
+// This class provides a node representation for an element
+// in an argument list.
 //
-// Version 1.0
+// Version 2.5
 // ----------------------------------------------------------
-class DisplayingNode : public AbstractNode
+class ArgListNode : public AbstractNode
 {
+private:
+	Command * cmd;
+	int argNo;
+
 public:
-	DisplayingNode(AbstractNode*);
+	ArgListNode();
 	void printMe(ostream*);
 
 	// ----------------------------------------------------------
@@ -57,75 +112,13 @@ public:
 	// pattern.
 	// @p: The visitor to operate on this node.
 	//
-	// Version 1.0
+	// Version 2.4
 	// ----------------------------------------------------------
 	void accept(Phase* p)	{	p->visit(this);	}
-};
 
-// ----------------------------------------------------------
-// This class provides a node representation for getting
-// a random number.
-//
-// Version 2.2
-// ----------------------------------------------------------
-class RandomingNode : public AbstractNode
-{
-public:
-	// ----------------------------------------------------------
-	// This constructor builds a node for a retrieve statement.
-	//
-	// Version 2.2
-	// ----------------------------------------------------------
-	RandomingNode()	{	type = RANDOMING;	}
-
-	// ----------------------------------------------------------
-	// This function prints this node to the given output stream.
-	// @out: The stream to display to.
-	//
-	// Version 2.2
-	// ----------------------------------------------------------
-	void printMe(ostream* out)	{	*out << "RANDOM";	}
-
-	// ----------------------------------------------------------
-	// This function allows double dispatch required for visitor
-	// pattern.
-	// @p: The visitor to operate on this node.
-	//
-	// Version 2.2
-	// ----------------------------------------------------------
-	void accept(Phase* p)	{	p->visit(this);	}
-};
-
-// ----------------------------------------------------------
-// This class provides a node representation for the end
-// statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-class EndingNode : public AbstractNode
-{
-public:
-	// ----------------------------------------------------------
-	// Default constructor.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	EndingNode()	{	type = ENDING;	}
-
-	// ----------------------------------------------------------
-	// This function prints this node to the given output stream.
-	// @out: The stream to display to.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	void printMe(ostream* out)	{	*out << "END";	}
-
-	// ----------------------------------------------------------
-	// This function allows double dispatch required for visitor
-	// pattern.
-	// @p: The visitor to operate on this node.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	void accept(Phase* p)	{	p->visit(this);	}
+	void setArgNo(int i) { argNo = i; }
+	int getArgNo() { return argNo; }
+	void setCmd(Command* c) { cmd = c; }
+	Command* getCmd() { return cmd; }
+	bool isListTyped(){	return isTreeTyped(); }
 };

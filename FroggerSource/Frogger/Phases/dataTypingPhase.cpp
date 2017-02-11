@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 2.5
 // ----------------------------------------------------------------
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
@@ -48,51 +48,6 @@ void DataTypingPhase::visit(IfNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a retrieve statement.
-// @n: The node representing the retrieve statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(RetrievalNode * n)
-{
-	checkAndSetNodeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a display statement.
-// @n: The node representing the display statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(DisplayingNode * n)
-{
-	AbstractNode * left = n->getLeftChild();
-	n->visitLeftChild(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a random statement.
-// @n: The node representing the random statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(RandomingNode * n)
-{
-	checkAndSetNodeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes an end statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(EndingNode * n)
-{
-	// No op
-}
-
-// ----------------------------------------------------------
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
@@ -103,8 +58,14 @@ void DataTypingPhase::visit(IdRefNode * n)
 	string id = n->getLexeme();
 	DataType type = n->getDataType();
 
-	if (type = DT_NOT_DEFINED)
+	if (type == DT_NOT_DEFINED)
 	{
+		if (symbols->symbolDefined(id))
+		{
+			n->setDataType(symbols->symbolType(id));
+			return;
+		}
+
 		if (setUnknownTypeNodesToDefault)
 			symbols->addSymbol(id, DT_DOUBLE);
 
@@ -128,7 +89,6 @@ void DataTypingPhase::visit(IdRefNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::visit(AssigningNode * n)
 {
-	AbstractNode * right = n->getRightChild();
 	n->visitAllChildren(this);
 	unifyTreeDataType(n);
 }
@@ -160,7 +120,27 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 	else if (functions->getNumberOfMatches(funct) == 1)
 	{
 		n->setFunct(functions->getFirstMatch(funct));
-		this->checkAndSetNodeDataType(n, funct->returnType);
+		checkAndSetNodeDataType(n, funct->returnType);
+		n->visitAllChildren(this);
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes a command call.
+// @n: The node representing the statement.
+//
+// Version 2.5
+// ----------------------------------------------------------
+void DataTypingPhase::visit(CommandCallNode * n)
+{
+	n->visitAllChildren(this);
+
+	Command * cmd = n->getCmd();
+	if (!commands->matchExists(cmd))
+		dataType_error("Command call does not match signature: " + cmd->name);
+	else if (commands->getNumberOfMatches(cmd) == 1)
+	{
+		n->setCmd(commands->getFirstMatch(cmd));
 		n->visitAllChildren(this);
 	}
 }
@@ -169,12 +149,12 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 // This function processes an element in an argument list.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 void DataTypingPhase::visit(ArgListNode * n)
 {
 	int argNo = n->getArgNo();
-	DataType oldArgType = n->getFunct()->getDataTypeOfArgNumber(argNo);
+	DataType oldArgType = n->getCmd()->getDataTypeOfArgNumber(argNo);
 	if (oldArgType != DT_NOT_DEFINED)
 		checkAndSetNodeDataType(n->getLeftChild(),oldArgType);
 
@@ -184,9 +164,9 @@ void DataTypingPhase::visit(ArgListNode * n)
 	if (argType != DT_NOT_DEFINED)
 	{
 		checkAndSetNodeDataType(n, argType);
-		Function * funct = n->getFunct();
+		Command * cmd = n->getCmd();
 		int argNo = n->getArgNo();
-		checkAndSetArgDataType(funct,argNo,argType);
+		checkAndSetArgDataType(cmd,argNo,argType);
 	}
 }
 
@@ -406,20 +386,36 @@ void DataTypingPhase::checkAndSetNodeDataType(AbstractNode * node, DataType type
 // children. It throws a dataType error if there is a dataType 
 // conflict.
 // 
-// Version 2.3
+// Version 2.5
 // ----------------------------------------------------------
 void DataTypingPhase::checkAndSetTreeDataType(AbstractNode * node, DataType type)
 {
 	if (type == DT_NOT_DEFINED)
 		return;
 
+	DataType thisOldType = node->getDataType();
 	checkAndSetNodeDataType(node, type);
 
 	AbstractNode *left = node->getLeftChild();
-	checkAndSetNodeDataType(left, type);
+	if (left != NULL)
+	{
+		DataType leftOldType = left->getDataType();
+		checkAndSetNodeDataType(left, type);
+		if (leftOldType == DT_NOT_DEFINED)
+			left->accept(this);
+	}
 
 	AbstractNode *right = node->getRightChild();
-	checkAndSetNodeDataType(right, type);
+	if (right != NULL)
+	{
+		DataType rightOldType = right->getDataType();
+		checkAndSetNodeDataType(right, type);
+		if (rightOldType == DT_NOT_DEFINED)
+			right->accept(this);
+	}
+
+	if (thisOldType == DT_NOT_DEFINED)
+		node->accept(this);
 }
 
 // ----------------------------------------------------------
@@ -429,15 +425,15 @@ void DataTypingPhase::checkAndSetTreeDataType(AbstractNode * node, DataType type
 // 
 // Version 2.4
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetArgDataType(Function * funct, int argNo, DataType type)
+void DataTypingPhase::checkAndSetArgDataType(Command * cmd, int argNo, DataType type)
 {
-	DataType oldType = funct->getDataTypeOfArgNumber(argNo);
+	DataType oldType = cmd->getDataTypeOfArgNumber(argNo);
 	if (oldType == type || type == DT_NOT_DEFINED)
 		return;
 
 	if (oldType == DT_NOT_DEFINED)
 	{
-		funct->setDataTypeOfArgNumber(argNo, type);
+		cmd->setDataTypeOfArgNumber(argNo, type);
 		return;
 	}
 	else

@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.4
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -17,12 +17,13 @@ using namespace std;
 // @outstream: The output stream to print to.
 // @root: The root node for the AST.
 //
-// Version 2.2
+// Version 2.5
 // ----------------------------------------------------------
 CodeGenerationPhase::CodeGenerationPhase(ostream* outstream)
 {
 	out = outstream;
-	tempNo = 1; //temporaries are 1-indexed
+	dblTempNo = 1; //temporaries are 1-indexed
+	strTempNo = 1;
 	indentDepth = 0;
 }
 
@@ -75,11 +76,12 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 2.0
+// Version 2.5
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(JmpStmtNode * n)
 {
-	tempNo = 1; //restart temporary counter (1-indexed)
+	dblTempNo = 1; //restart temporary counters (1-indexed)
+	strTempNo = 1;
 
 	bool isOwnLine = (!n->isNested());
 
@@ -145,52 +147,6 @@ void CodeGenerationPhase::visit(IfNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a retrieve statement.
-// @n: The node representing the retrieve statement.
-//
-// Version 1.1
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(RetrievalNode * n)
-{
-	*out << " _temp_" << tempNo++ << " ";
-}
-
-// ----------------------------------------------------------
-// This function processes a display statement.
-// @n: The node representing the display statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(DisplayingNode * n)
-{
-	*out << indent() << "cout << (";
-	n->visitLeftChild(this);
-	*out << ");" << endl;
-}
-
-// ----------------------------------------------------------
-// This function processes a random statement.
-// @n: The node representing the random statement.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(RandomingNode * n)
-{
-	*out << " ((double) rand() / (RAND_MAX)) ";
-}
-
-// ----------------------------------------------------------
-// This function processes an end statement.
-// @n: The node representing the statement.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(EndingNode * n)
-{
-	*out << indent() << "exit(0);" << endl;
-}
-
-// ----------------------------------------------------------
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
@@ -232,7 +188,7 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
 	Function* funct = n->getFunct();
-	if (funct->isUserFunction())
+	if (funct->isUserDefined())
 	{
 		*out << "(";
 		n->visitLeftChild(this);
@@ -277,8 +233,61 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 			*out << ")";
 			//<string>:asciiAt(<double>) takes an argument
 		}
+		else if (name == "retrieveDouble")
+		{
+			*out << " _dbltemp_" << dblTempNo++ << " ";
+		}
+		else if (name == "retrieveString")
+		{
+			*out << " _strtemp_" << strTempNo++ << " ";
+		}
+		else if (name == "random")
+		{
+			*out << " ((double) rand() / (RAND_MAX)) ";
+		}
 		else
 			this->semantic_error("Unrecognized function: " + name);
+	}
+}
+
+// ----------------------------------------------------------
+// This function processes a command call.
+// @n: The node representing the statement.
+//
+// Version 2.5
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(CommandCallNode * n)
+{
+	Command* cmd = n->getCmd();
+	if (cmd->isUserDefined())
+	{
+		//*out << "(";
+		//n->visitLeftChild(this);
+		//*out << ").";
+
+		*out << cmd->name << "(";
+
+		if (n->getRightChild() != NULL)
+			n->visitRightChild(this);
+
+		*out << ")";
+	}
+	else
+	{
+		string name = cmd->name;
+
+		if (name == "end")
+		{
+			*out << indent() << "exit(0);" << endl;
+		}
+		else if (name == "display")
+		{
+			*out << indent() << "cout << (";
+			n->visitRightChild(this);
+			*out << ");" << endl;
+		}
+		else
+			this->semantic_error("Unrecognized command: " + name);
 	}
 }
 

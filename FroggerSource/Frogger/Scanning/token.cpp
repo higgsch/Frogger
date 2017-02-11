@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.4
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program provides a compact interface for tokens.
 // -----------------------------------------------------------------
@@ -36,10 +36,6 @@ Token Token::GT			= Token(token_types::GT, ">");
 Token Token::EQ			= Token(token_types::EQ, "==");
 Token Token::LTE		= Token(token_types::LTE, "<=");
 Token Token::GTE		= Token(token_types::GTE, ">=");
-Token Token::RETRIEVE	= Token(token_types::RETRIEVE, "retrieve");
-Token Token::END		= Token(token_types::END, "end");
-Token Token::DISPLAY	= Token(token_types::DISPLAY, "display");
-Token Token::RANDOM		= Token(token_types::RANDOM, "random");
 Token Token::IF			= Token(token_types::IF, "if");
 Token Token::THEN		= Token(token_types::THEN, "then");
 Token Token::ELSE		= Token(token_types::ELSE, "else");

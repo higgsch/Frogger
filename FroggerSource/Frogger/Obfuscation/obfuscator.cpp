@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.2
+//                      Version: 2.5
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and provides a char 
 // stream that has been de-obfuscated per spec.
@@ -12,7 +12,7 @@ using namespace std;
 // This constructor initializes an Obfuscator with the given
 // input file stream.
 //
-// Version 1.1
+// Version 2.5
 // ----------------------------------------------------------
 Obfuscator::Obfuscator(ifstream* ifs)
 {
@@ -20,8 +20,9 @@ Obfuscator::Obfuscator(ifstream* ifs)
 	buffer = ""; //buffer starts empty
 	bufferIndex = 0; //the current location in the buffer is 0
 	//no identifiers or keywords have been read yet
-	idCounter = 0; 
+	varCounter = 0; 
 	keywordCounter = 0;
+	routineCounter = 0;
 }
 
 // ----------------------------------------------------------
@@ -96,13 +97,26 @@ bool Obfuscator::isIdChar(char c)
 // frogger keyword.
 // @s: The string in question.
 //
-// Version 2.2
+// Version 2.5
 // ----------------------------------------------------------
 bool Obfuscator::isKeyword(string s)
 {
-	return !s.compare("display") || !s.compare("end") || !s.compare("retrieve")
-		|| !s.compare("if") || !s.compare("then") || !s.compare("else")
-		|| !s.compare("random");
+	return !s.compare("if") || !s.compare("then") || !s.compare("else");
+}
+
+// ----------------------------------------------------------
+// This function returns whether the given string is a 
+// routine name.
+// @s: The string in question.
+//
+// Version 2.5
+// ----------------------------------------------------------
+bool Obfuscator::isRoutine(string s)
+{
+	char nextChar = get();
+	unget();
+
+	return nextChar == '(';
 }
 
 // ----------------------------------------------------------
@@ -133,7 +147,7 @@ void Obfuscator::fillStringBuffer(void)
 // ----------------------------------------------------------
 // This function fills the buffer the next de-obfuscated token.
 //
-// Version 1.1
+// Version 2.5
 // ----------------------------------------------------------
 void Obfuscator::fillBuffer(void)
 {
@@ -183,12 +197,20 @@ void Obfuscator::fillBuffer(void)
 		keywordCounter++;
 		return;
 	}
+
+	string routineName = obfuscateString(buffer, routineCounter + 1);
+	if (isRoutine(routineName))
+	{
+		buffer = routineName;
+		routineCounter++;
+		return;
+	}
 	
 	//sequence must be an identifier
 	//scanner will catch invalid identifiers
-	string id = obfuscateString(buffer, idCounter + 1);
+	string id = obfuscateString(buffer, varCounter + 1);
 	buffer = id;
-	idCounter++;
+	varCounter++;
 }
 
 // ----------------------------------------------------------

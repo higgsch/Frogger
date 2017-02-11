@@ -12,13 +12,14 @@ using namespace std;
 // This class represents a visitor for generating output code
 // that reflects the current AST.
 //
-// Version 2.4
+// Version 2.5
 // ----------------------------------------------------------
 class CodeGenerationPhase : public Phase
 {
 private:
 	ostream* out; // the output stream to print to
-	int tempNo; // the current temporary number in a line
+	int dblTempNo; // the current double temporary number in a line
+	int strTempNo; // the current string temporary number in a line
 	int indentDepth; // the number of tabs to insert
 
 public:
@@ -27,13 +28,10 @@ public:
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
-	void visit(RetrievalNode * n);
-	void visit(DisplayingNode * n);
-	void visit(RandomingNode * n);
-	void visit(EndingNode * n);
 	void visit(IdRefNode * n);
 	void visit(AssigningNode * n);
 	void visit(FunctionCallNode * n);
+	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n);

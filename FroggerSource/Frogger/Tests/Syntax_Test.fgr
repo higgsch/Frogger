@@ -3,12 +3,10 @@
  a_Str = '';
 
 ~Built in Commands~
- dbl = retrieve();
  display('Hello');
  display(5.5);
  display(dbl);
- dbl = random();
- end;
+ end();
 
  ~with operators~
  display('Hello' ++ ' World');
@@ -17,8 +15,11 @@
 ~Built in Functions~
  str = dbl:toString();
  str = dbl:toAscii();
+ str = retrieveString();
  dbl = str:parseDouble();
  dbl = str:asciiAt(dbl);
+ dbl = retrieveDouble();
+ dbl = random();
 
 ~Arithmetic Operations~
  dbl = 5.9;
@@ -92,39 +93,39 @@
   ~str = 't' ++ (a_Dbl ++ 2) ++ (64 ++ 1);~
 
 ~Boolean Operations~
- if (5 < 2) then end; else end;
- if (5 > 2) then end; else end;
- if (5 == 2) then end; else end;
- if (5 <= 2) then end; else end;
- if (5 >= 2) then end; else end;
+ if (5 < 2) then end(); else end();
+ if (5 > 2) then end(); else end();
+ if (5 == 2) then end(); else end();
+ if (5 <= 2) then end(); else end();
+ if (5 >= 2) then end(); else end();
 
  ~with negation~
-  if (5 !< 2) then end; else end;
-  if (5 !> 2) then end; else end;
-  if (5 !== 2) then end; else end;
-  if (5 !<= 2) then end; else end;
-  if (5 !>= 2) then end; else end;
+  if (5 !< 2) then end(); else end();
+  if (5 !> 2) then end(); else end();
+  if (5 !== 2) then end(); else end();
+  if (5 !<= 2) then end(); else end();
+  if (5 !>= 2) then end(); else end();
 
  ~with variables~
-  if (a_Dbl < 2) then end; else end;
-  if (5 < a_Dbl) then end; else end;
-  if (a_Dbl < a_Dbl) then end; else end;
+  if (a_Dbl < 2) then end(); else end();
+  if (5 < a_Dbl) then end(); else end();
+  if (a_Dbl < a_Dbl) then end(); else end();
 
-  if (a_Dbl > 2) then end; else end;
-  if (5 > a_Dbl) then end; else end;
-  if (a_Dbl > a_Dbl) then end; else end;
+  if (a_Dbl > 2) then end(); else end();
+  if (5 > a_Dbl) then end(); else end();
+  if (a_Dbl > a_Dbl) then end(); else end();
 
-  if (a_Dbl == 2) then end; else end;
-  if (5 == a_Dbl) then end; else end;
-  if (a_Dbl == a_Dbl) then end; else end;
+  if (a_Dbl == 2) then end(); else end();
+  if (5 == a_Dbl) then end(); else end();
+  if (a_Dbl == a_Dbl) then end(); else end();
 
-  if (a_Dbl <= 2) then end; else end;
-  if (5 <= a_Dbl) then end; else end;
-  if (a_Dbl <= a_Dbl) then end; else end;
+  if (a_Dbl <= 2) then end(); else end();
+  if (5 <= a_Dbl) then end(); else end();
+  if (a_Dbl <= a_Dbl) then end(); else end();
 
-  if (a_Dbl >= 2) then end; else end;
-  if (5 >= a_Dbl) then end; else end;
-  if (a_Dbl >= a_Dbl) then end; else end;
+  if (a_Dbl >= 2) then end(); else end();
+  if (5 >= a_Dbl) then end(); else end();
+  if (a_Dbl >= a_Dbl) then end(); else end();
 
 ~Strings~
  str = 'This!&t&& that?&nThat&'s something else';
