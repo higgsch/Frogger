@@ -36,10 +36,13 @@ void Compiler::run(string inFile, string outFile)
 // ----------------------------------------------------------
 void Compiler::parseInput(string inFile)
 {
-	Parser p = Parser();
-	p.open(inFile);
-	root = p.parse();
-	p.close();
+	Parser *p = new Parser();
+
+	p->open(inFile);
+	root = p->parse();
+	p->close();
+
+	delete p;
 }
 
 // ----------------------------------------------------------
@@ -50,7 +53,9 @@ void Compiler::parseInput(string inFile)
 // ----------------------------------------------------------
 void Compiler::setLineNumbers()
 {
-	root->accept(new LineNoPhase());
+	LineNoPhase *lnp = new LineNoPhase();
+	root->accept(lnp);
+	delete lnp;
 }
 
 // ----------------------------------------------------------
@@ -61,7 +66,9 @@ void Compiler::setLineNumbers()
 // ----------------------------------------------------------
 void Compiler::computeJumpToLines()
 {
-	root->accept(new SummationPhase());
+	SummationPhase *sp = new SummationPhase();
+	root->accept(sp);
+	delete sp;
 }
 
 // ----------------------------------------------------------
@@ -72,7 +79,9 @@ void Compiler::computeJumpToLines()
 // ----------------------------------------------------------
 void Compiler::convertStrings()
 {
-	root->accept(new StringConversionPhase());
+	StringConversionPhase *scp = new StringConversionPhase();
+	root->accept(scp);
+	delete scp;
 }
 
 // ----------------------------------------------------------
@@ -82,7 +91,9 @@ void Compiler::convertStrings()
 // ----------------------------------------------------------
 void Compiler::checkDataTypes()
 {
-	root->accept(new DataTypingPhase());
+	DataTypingPhase *dtp = new DataTypingPhase();
+	root->accept(dtp);
+	delete dtp;
 }
 
 // ----------------------------------------------------------
@@ -93,10 +104,13 @@ void Compiler::checkDataTypes()
 // ----------------------------------------------------------
 void Compiler::emitCode(string outFile)
 {
-	CodeGenerationPhase * codeGen = new CodeGenerationPhase();
-	codeGen->open(outFile);
-	root->accept(codeGen);
-	codeGen->close();
+	CodeGenerationPhase *cgp = new CodeGenerationPhase();
+
+	cgp->open(outFile);
+	root->accept(cgp);
+	cgp->close();
+
+	delete cgp;
 }
 
 // ----------------------------------------------------------
