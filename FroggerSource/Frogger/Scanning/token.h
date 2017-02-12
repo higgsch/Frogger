@@ -10,13 +10,15 @@ using namespace std;
 
 // set of fgr token categories
 typedef enum token_types {
-	NOTOK = -1, 
-	ASSIGN, ADD, SUB, MUL, DIV, MOD, IDIV, ROOT, EXP,
-	NOT, LT, GT, EQ, LTE, GTE, 
-	STRING,	ID, DOUBLECONST, 
-	IF, THEN, ELSE, 
-	COMMA, COLON, SEMICOLON, LPAREN, RPAREN, 
-	SCANEOF
+	TOKTYPE_NOTOK = -1, 
+	TOKTYPE_ASSIGN, 
+	TOKTYPE_ADD, TOKTYPE_SUB, TOKTYPE_MUL, TOKTYPE_DIV, 
+	TOKTYPE_MOD, TOKTYPE_IDIV, TOKTYPE_ROOT, TOKTYPE_EXP,
+	TOKTYPE_NOT, TOKTYPE_LT, TOKTYPE_GT, TOKTYPE_EQ, TOKTYPE_LTE, TOKTYPE_GTE, 
+	TOKTYPE_STRING,	TOKTYPE_ID, TOKTYPE_DOUBLECONST, 
+	TOKTYPE_IF, TOKTYPE_THEN, TOKTYPE_ELSE, 
+	TOKTYPE_COMMA, TOKTYPE_COLON, TOKTYPE_SEMICOLON, TOKTYPE_LPAREN, TOKTYPE_RPAREN, 
+	TOKTYPE_SCANEOF
 } token_type;
 
 // ----------------------------------------------------------
@@ -24,7 +26,7 @@ typedef enum token_types {
 // constructors for ease of use and static "constants" for 
 // compact use. 
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class Token
 { //Glorified Struct with public members and static placeholders
@@ -32,7 +34,7 @@ public:
 	token_type type; //The category the token belongs to
 	string lexeme; //The textual content of the token
 
-	Token(){NOTOK,"<None>";}
+	Token();
 	Token(token_type, string);
 
 	//static "constants" used for simplified processing of language

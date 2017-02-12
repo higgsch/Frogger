@@ -25,7 +25,7 @@ Scanner::Scanner()
 //
 // Version 1.0
 // ----------------------------------------------------------
-Scanner::~Scanner(void)
+Scanner::~Scanner()
 {
 	if (source.is_open())
 		source.close();
@@ -60,7 +60,7 @@ void Scanner::close()
 //
 // Version 1.1
 // ----------------------------------------------------------
-void Scanner::checkForObfuscation(void)
+void Scanner::checkForObfuscation()
 {
 	char in_char;
 	while ((in_char = source.get()) == '~')
@@ -89,9 +89,9 @@ void Scanner::checkForObfuscation(void)
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
-Token Scanner::scan(void)
+Token Scanner::scan()
 {
 	char in_char;
 
@@ -240,7 +240,7 @@ Token Scanner::scan(void)
 		}
 		else if (in_char == '\'') //Strings are single quoted
 		{
-			return Token(STRING, getString());
+			return Token(TOKTYPE_STRING, getString());
 		}
 		else if (in_char == '~') //Comments
 		{
@@ -272,7 +272,7 @@ Token Scanner::scan(void)
 			else if (token_buffer == "else")
 				return Token::ELSE;
 			else
-				return Token(ID, token_buffer);
+				return Token(TOKTYPE_ID, token_buffer);
 		}
 		else if (isdigit(in_char)) //Double literals
 		{
@@ -299,12 +299,12 @@ Token Scanner::scan(void)
 					token_buffer += c;
 				}
 				unget();
-				return Token(DOUBLECONST, token_buffer);
+				return Token(TOKTYPE_DOUBLECONST, token_buffer);
 			}
 			else
 			{
 				unget();
-				return Token(DOUBLECONST, token_buffer);
+				return Token(TOKTYPE_DOUBLECONST, token_buffer);
 			}
 		}
 		else
@@ -324,7 +324,7 @@ Token Scanner::scan(void)
 //
 // Version 1.1
 // ----------------------------------------------------------
-string Scanner::getString(void)
+string Scanner::getString()
 {
 	token_buffer = "\'";
 	int c;
@@ -369,7 +369,7 @@ string Scanner::getString(void)
 // 
 // Version 1.1
 // ----------------------------------------------------------
-char Scanner::get(void)
+char Scanner::get()
 {
 	if (obfuscated)
 		return obfus->get();
@@ -383,7 +383,7 @@ char Scanner::get(void)
 // 
 // Version 1.1
 // ----------------------------------------------------------
-void Scanner::unget(void)
+void Scanner::unget()
 {
 	if (obfuscated)
 		obfus->unget();
@@ -413,7 +413,7 @@ void Scanner::lexical_error(int lineNo, string err_msg)
 //
 // Version 1.0
 // ----------------------------------------------------------
-int Scanner::getLineNo(void)
+int Scanner::getLineNo()
 {
 	return lineNo;
 }

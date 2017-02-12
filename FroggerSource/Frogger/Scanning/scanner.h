@@ -28,16 +28,16 @@ private:
 	bool obfuscated; //a flag for the obfuscator
 
 	void lexical_error(int, string);
-	string getString(void);
-	char get(void);
-	void unget(void);
+	string getString();
+	char get();
+	void unget();
 
 public:
-	Scanner(void);
-	~Scanner(void);
+	Scanner();
+	~Scanner();
 	void open(string);
 	void close();
-	void checkForObfuscation(void);
-	Token scan(void);
-	int getLineNo(void);
+	void checkForObfuscation();
+	Token scan();
+	int getLineNo();
 };

@@ -74,18 +74,18 @@ void Parser::prog()
 // <flowstmts> => <flowstmt> <flowstmts>
 // <flowstmts> => [lambda]
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 ControlFlowNode* Parser::flowstmts()
 {
 	Token tok = next_token();
 	switch(tok.type)
 	{
-	case SCANEOF:
+	case TOKTYPE_SCANEOF:
 		//lambda
 		return NULL;
 		break;
-	case IF:
+	case TOKTYPE_IF:
 	default:
 		ControlFlowNode* thisStmt = flowstmt(); 
 		thisStmt->addNextStmt(flowstmts());
@@ -99,14 +99,14 @@ ControlFlowNode* Parser::flowstmts()
 // <flowstmt> => <ifstmt>
 // <flowstmt> => <jmpstmt>
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 ControlFlowNode* Parser::flowstmt()
 {
 	Token tok = next_token();
 	switch(tok.type)
 	{
-	case IF:
+	case TOKTYPE_IF:
 		return ifstmt();
 		break;
 	default:
@@ -120,7 +120,7 @@ ControlFlowNode* Parser::flowstmt()
 // <nestedflowstmt> => <ifstmt>
 // <nestedflowstmt> => <jmpstmt>
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 ControlFlowNode* Parser::nestedflowstmt()
 {
@@ -129,7 +129,7 @@ ControlFlowNode* Parser::nestedflowstmt()
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case IF:
+	case TOKTYPE_IF:
 		stmt = ifstmt();
 		break;
 	default:
@@ -145,15 +145,15 @@ ControlFlowNode* Parser::nestedflowstmt()
 // This function represents production rules:
 // <ifstmt> => if ( <boolexp> ) then <nestedflowstmt> else <nestedflowstmt>
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 IfNode* Parser::ifstmt()
 {
-	match(IF); match(LPAREN);
+	match(TOKTYPE_IF); match(TOKTYPE_LPAREN);
 	BinaryOpNode* toCompare = boolexp();
-	match(RPAREN); match(THEN);
+	match(TOKTYPE_RPAREN); match(TOKTYPE_THEN);
 	ControlFlowNode* trueStmt = nestedflowstmt();
-	match(ELSE);
+	match(TOKTYPE_ELSE);
 	ControlFlowNode* falseStmt = nestedflowstmt();
 
 	IfNode* stmt = new IfNode();
@@ -168,7 +168,7 @@ IfNode* Parser::ifstmt()
 // <boolexp> => <expr> <boolop> <expr>
 // <boolexp> => <expr> not <boolop> <expr>
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 BinaryOpNode* Parser::boolexp()
 {
@@ -176,9 +176,9 @@ BinaryOpNode* Parser::boolexp()
 
 	Token tok = next_token();
 	BinaryOpNode* not = NULL;
-	if (tok.type == NOT)
+	if (tok.type == TOKTYPE_NOT)
 	{
-		match(NOT); 
+		match(TOKTYPE_NOT); 
 		not = new NotingNode();
 	}
 
@@ -206,31 +206,31 @@ BinaryOpNode* Parser::boolexp()
 // <boolop> => gte
 // Returns: A pointer to the node representing this operator.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 BinaryOpNode* Parser::boolop()
 {
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case LT:
-		match(LT);
+	case TOKTYPE_LT:
+		match(TOKTYPE_LT);
 		return new LTingNode();
 		break;
-	case GT:
-		match(GT);
+	case TOKTYPE_GT:
+		match(TOKTYPE_GT);
 		return new GTingNode();
 		break;
-	case EQ:
-		match(EQ);
+	case TOKTYPE_EQ:
+		match(TOKTYPE_EQ);
 		return new EQingNode();
 		break;
-	case LTE:
-		match(LTE);
+	case TOKTYPE_LTE:
+		match(TOKTYPE_LTE);
 		return new LTEingNode();
 		break;
-	case GTE:
-		match(GTE);
+	case TOKTYPE_GTE:
+		match(TOKTYPE_GTE);
 		return new GTEingNode();
 		break;
 	default:
@@ -246,42 +246,42 @@ BinaryOpNode* Parser::boolop()
 // <jmpstmt> => id assign <expr> ;
 // Returns: A pointer to the node representing this jmpstmt.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 JmpStmtNode* Parser::jmpstmt()
 {
 	JmpStmtNode* stmt = new JmpStmtNode();
 
 	Token idTok = next_token();
-	match(ID);
+	match(TOKTYPE_ID);
 
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case LPAREN:
+	case TOKTYPE_LPAREN:
 		{
-			match(LPAREN);
+			match(TOKTYPE_LPAREN);
 			CommandCallNode* cmd = new CommandCallNode(idTok.lexeme);
 
 			Token argTok = next_token();
-			if (argTok.type != RPAREN)
+			if (argTok.type != TOKTYPE_RPAREN)
 			{
 				cmd->addRightChild(arglist(0, cmd->getCmd()));
 			}
 
-			match(RPAREN);
-			match(SEMICOLON);
+			match(TOKTYPE_RPAREN);
+			match(TOKTYPE_SEMICOLON);
 
 			stmt->setStmt(cmd);
 			break;
 		}
-	case ASSIGN:
+	case TOKTYPE_ASSIGN:
 		{
 			IdRefNode* id = new IdRefNode(idTok.lexeme);
-			match(ASSIGN);
+			match(TOKTYPE_ASSIGN);
 
 			AbstractNode* toAssign = expr();
-			match(SEMICOLON);
+			match(TOKTYPE_SEMICOLON);
 
 			stmt->setStmt(new AssigningNode(id, toAssign));
 			break;
@@ -301,7 +301,7 @@ JmpStmtNode* Parser::jmpstmt()
 // <arglist> => <expr>
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.4
+// Version 3.0
 // ----------------------------------------------------------
 AbstractNode* Parser::arglist(int argNo, Command* cmd)
 {
@@ -315,9 +315,9 @@ AbstractNode* Parser::arglist(int argNo, Command* cmd)
 	cmd->addArg(DT_NOT_DEFINED);
 	argNo++;
 
-	if (next_token().type == COMMA)
+	if (next_token().type == TOKTYPE_COMMA)
 	{
-		match(COMMA);
+		match(TOKTYPE_COMMA);
 		nextArg = arglist(argNo, cmd);
 	}
 
@@ -332,7 +332,7 @@ AbstractNode* Parser::arglist(int argNo, Command* cmd)
 // <expr.1> => [lambda]
 // Returns: A pointer to the node representing this value.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 AbstractNode* Parser::expr()
 {
@@ -341,8 +341,8 @@ AbstractNode* Parser::expr()
 	Token tok = next_token();
 	switch(tok.type)
 	{
-	case ADD: //fall through
-	case SUB:
+	case TOKTYPE_ADD: //fall through
+	case TOKTYPE_SUB:
 		{
 			BinaryOpNode* op = addop();
 			AbstractNode* right = expr();
@@ -364,7 +364,7 @@ AbstractNode* Parser::expr()
 // <addterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 AbstractNode* Parser::addterm()
 {
@@ -373,10 +373,10 @@ AbstractNode* Parser::addterm()
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case MUL: //fall through
-	case DIV: //fall through
-	case MOD: //fall through
-	case IDIV:
+	case TOKTYPE_MUL: //fall through
+	case TOKTYPE_DIV: //fall through
+	case TOKTYPE_MOD: //fall through
+	case TOKTYPE_IDIV:
 		{
 			BinaryOpNode* op = mulop();
 			AbstractNode* right = addterm();
@@ -398,7 +398,7 @@ AbstractNode* Parser::addterm()
 // <multerm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 AbstractNode* Parser::multerm()
 {
@@ -407,8 +407,8 @@ AbstractNode* Parser::multerm()
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case ROOT: //fall through
-	case EXP: 
+	case TOKTYPE_ROOT: //fall through
+	case TOKTYPE_EXP: 
 		{
 			BinaryOpNode* op = expop();
 			AbstractNode* right = multerm();
@@ -431,7 +431,7 @@ AbstractNode* Parser::multerm()
 // <typedterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 AbstractNode* Parser::typedterm()
 {
@@ -442,23 +442,23 @@ AbstractNode* Parser::typedterm()
 	do
 	{
 		Token tok = next_token();
-		if (tok.type == COLON)
+		if (tok.type == TOKTYPE_COLON)
 		{
-			match(COLON);
+			match(TOKTYPE_COLON);
 
 			Token idTok = next_token();
-			match(ID);
+			match(TOKTYPE_ID);
 			FunctionCallNode * funct = new FunctionCallNode(idTok.lexeme);
-			match(LPAREN);
+			match(TOKTYPE_LPAREN);
 
 			Token firstArg = next_token();
 
-			if (firstArg.type != RPAREN)
+			if (firstArg.type != TOKTYPE_RPAREN)
 			{
 				funct->addRightChild(arglist(0,funct->getFunct()));
 			}
 
-			match(RPAREN);
+			match(TOKTYPE_RPAREN);
 
 			funct->addLeftChild(curr);
 			curr = funct;
@@ -481,46 +481,48 @@ AbstractNode* Parser::typedterm()
 // <primary> => ( <expr> )
 // Returns: A pointer to the node representing this term.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 AbstractNode* Parser::primary()
 {
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case DOUBLECONST:
-		match(DOUBLECONST);
+	case TOKTYPE_DOUBLECONST:
+		match(TOKTYPE_DOUBLECONST);
 		return new DoubleConstingNode(tok.lexeme);
 		break;
-	case ID:
+	case TOKTYPE_ID:
 		{
-			match(ID);
+			match(TOKTYPE_ID);
 		
 			Token nextTok = next_token();
-			if (nextTok.type != LPAREN)
+			if (nextTok.type != TOKTYPE_LPAREN)
 				return new IdRefNode(tok.lexeme);
 
 			//Function call
 			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme);
-			match(LPAREN);
+			match(TOKTYPE_LPAREN);
 
 			Token firstArg = next_token();
-			if (firstArg.type != RPAREN)
+			if (firstArg.type != TOKTYPE_RPAREN)
 			{
 				funct->addRightChild(arglist(0, funct->getFunct()));
 			}
 
-			match(RPAREN);
+			match(TOKTYPE_RPAREN);
 			return funct;
 			break;
 		}
-	case STRING:
-		match(STRING);
+	case TOKTYPE_STRING:
+		match(TOKTYPE_STRING);
 		return new StringConstingNode(tok.lexeme);
 		break;
-	case LPAREN:
+	case TOKTYPE_LPAREN:
 		{
-			match(LPAREN); AbstractNode* val = expr(); match(RPAREN);
+			match(TOKTYPE_LPAREN); 
+			AbstractNode* val = expr(); 
+			match(TOKTYPE_RPAREN);
 			val->addParenNesting();
 			return val;
 			break;
@@ -538,18 +540,18 @@ AbstractNode* Parser::primary()
 // <addop> => sub
 // Returns: A pointer to the node representing this operator.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 BinaryOpNode* Parser::addop()
 {
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case ADD:
+	case TOKTYPE_ADD:
 		match(tok.type);
 		return new AddingNode();
 		break;
-	case SUB:
+	case TOKTYPE_SUB:
 		match(tok.type);
 		return new SubingNode();
 		break;
@@ -568,27 +570,27 @@ BinaryOpNode* Parser::addop()
 // <mulop> => idiv
 // Returns: A pointer to the node representing this operator.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 BinaryOpNode* Parser::mulop()
 {
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case MUL:
-		match(tok.type);
+	case TOKTYPE_MUL:
+		match(TOKTYPE_MUL);
 		return new MulingNode();
 		break;
-	case DIV:
-		match(tok.type);
+	case TOKTYPE_DIV:
+		match(TOKTYPE_DIV);
 		return new DivingNode();
 		break;
-	case MOD:
-		match(tok.type);
+	case TOKTYPE_MOD:
+		match(TOKTYPE_MOD);
 		return new ModDivingNode();
 		break;
-	case IDIV:
-		match(tok.type);
+	case TOKTYPE_IDIV:
+		match(TOKTYPE_IDIV);
 		return new IDivingNode();
 		break;
 	default:
@@ -604,19 +606,19 @@ BinaryOpNode* Parser::mulop()
 // <expop> => exp
 // Returns: A pointer to the node representing this operator.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 BinaryOpNode* Parser::expop()
 {
 	Token tok = next_token();
 	switch (tok.type)
 	{
-	case ROOT:
-		match(tok.type);
+	case TOKTYPE_ROOT:
+		match(TOKTYPE_ROOT);
 		return new RootingNode();
 		break;
-	case EXP:
-		match(tok.type);
+	case TOKTYPE_EXP:
+		match(TOKTYPE_EXP);
 		return new ExpingNode();
 		break;
 	default:
@@ -632,7 +634,7 @@ BinaryOpNode* Parser::expop()
 // on failure.
 // @toMatch: The expected token category.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void Parser::match(token_type toMatch)
 {
@@ -647,82 +649,82 @@ void Parser::match(token_type toMatch)
 		string type;
 		switch (toMatch)
 		{
-		case ASSIGN:
+		case TOKTYPE_ASSIGN:
 			type = "=";
 			break;
-		case ADD:
+		case TOKTYPE_ADD:
 			type = "++";
 			break;
-		case SUB:
+		case TOKTYPE_SUB:
 			type = "--";
 			break;
-		case MUL:
+		case TOKTYPE_MUL:
 			type = "**";
 			break;
-		case DIV:
+		case TOKTYPE_DIV:
 			type = "//";
 			break;
-		case MOD:
+		case TOKTYPE_MOD:
 			type = "%%";
 			break;
-		case IDIV:
+		case TOKTYPE_IDIV:
 			type = "\\\\";
 			break;
-		case ROOT:
+		case TOKTYPE_ROOT:
 			type = "##";
 			break;
-		case EXP:
+		case TOKTYPE_EXP:
 			type = "^^";
 			break;
-		case NOT:
+		case TOKTYPE_NOT:
 			type = "!";
 			break;
-		case LT: 
+		case TOKTYPE_LT: 
 			type = "<";
 			break;
-		case GT:
+		case TOKTYPE_GT:
 			type = ">";
 			break;
-		case EQ:
+		case TOKTYPE_EQ:
 			type = "==";
 			break;
-		case LTE:
+		case TOKTYPE_LTE:
 			type = "<=";
 			break;
-		case GTE:
+		case TOKTYPE_GTE:
 			type = ">=";
 			break;
-		case IF:
+		case TOKTYPE_IF:
 			type = "if";
 			break;
-		case THEN:
+		case TOKTYPE_THEN:
 			type = "then";
 			break;
-		case ELSE:
+		case TOKTYPE_ELSE:
 			type = "else";
 			break;
-		case COLON:
+		case TOKTYPE_COLON:
 			type = ":";
 			break;
-		case SEMICOLON:
+		case TOKTYPE_SEMICOLON:
 			type = ";";
 			break;
-		case LPAREN:
+		case TOKTYPE_LPAREN:
 			type = "(";
 			break;
-		case RPAREN:
+		case TOKTYPE_RPAREN:
 			type = ")";
 			break;
-		case SCANEOF:
+		case TOKTYPE_SCANEOF:
 			type = "<EOF>";
 			break;
-		case STRING:
+		case TOKTYPE_STRING:
 			type = "String Literal";
 			break;
-		case ID:
+		case TOKTYPE_ID:
 			type = "Identifier";
 			break;
-		case DOUBLECONST:
+		case TOKTYPE_DOUBLECONST:
 			type = "Double Literal";
 			break;
 		default:
@@ -754,11 +756,11 @@ void Parser::syntax_error(string err_msg)
 // ----------------------------------------------------------
 // This function populates and returns the lookahead token.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 Token Parser::next_token()
 {
-	if (lookahead[0].type == NOTOK)
+	if (lookahead[0].type == TOKTYPE_NOTOK)
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];
