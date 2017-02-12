@@ -128,19 +128,18 @@ int main(int argc, char* argv[])
 	string inFile; //.fgr filename
 	string outFile; //.cpp filename
 
-	if (argc > 2)
-	{ //filenames exist on command line
-		inFile = argv[1];
-		outFile = argv[2];
-
-		cout << "Starting Compilation: " << inFile << " -> " << outFile << endl;
-	}
-	else
-	{
+	if (argc != 3)
+	{ 
 		cout << "usage: compiler.exe <input filename> <output filename>" << endl;
 		return 0;
 	}
+	
+	//filenames exist on command line
+	inFile = argv[1];
+	outFile = argv[2];
 
+	cout << "Starting Compilation: " << inFile << " -> " << outFile << endl;
+	
 	Compiler c;
 	c.run(inFile, outFile);
 

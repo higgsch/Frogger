@@ -17,3 +17,5 @@ v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 refactor phases: SummationPhase::getChildrenAsciiSum(AbstractNode * n), calc with addition (Abs n, string add), &c.
 refactor tables: Pull a generic table out
+
+refactor: Line or Stmt, Number -> Index or Count
