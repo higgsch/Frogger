@@ -22,7 +22,8 @@ void Compiler::run(string inFile, string outFile)
 	buildAST(inFile);
 	
 	setLineNumbers();
-	computeJumpToLines();
+	computeJumpToLineNumbers(); //Depends on line numbers
+
 	convertStrings();
 	checkDataTypes();
 	
@@ -65,7 +66,7 @@ void Compiler::setLineNumbers()
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Compiler::computeJumpToLines()
+void Compiler::computeJumpToLineNumbers()
 {
 	SummationPhase *sp = new SummationPhase();
 	root->accept(sp);

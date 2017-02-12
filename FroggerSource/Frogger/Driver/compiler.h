@@ -23,7 +23,7 @@ private:
 	void buildAST(string inFile);
 
 	void setLineNumbers();
-	void computeJumpToLines();
+	void computeJumpToLineNumbers();
 	void convertStrings();
 	void checkDataTypes();
 
