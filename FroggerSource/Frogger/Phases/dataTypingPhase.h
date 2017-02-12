@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "phases.h"
+#include "phase.h"
 #include "..\Parsing\nodes.h"
 #include "symbolTable.h"
 #include "functionTable.h"

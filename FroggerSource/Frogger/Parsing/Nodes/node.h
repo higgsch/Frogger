@@ -5,7 +5,7 @@
 
 #include <string>
 #include <iostream>
-#include "..\..\Phases\phases.h"
+#include "..\..\Phases\phase.h"
 using namespace std;
 
 // identification for which binary child a node is.

@@ -4,7 +4,7 @@
 #pragma once
 
 #include <iostream>
-#include "..\phases.h"
+#include "..\phase.h"
 #include "..\..\Parsing\nodes.h"
 using namespace std;
 

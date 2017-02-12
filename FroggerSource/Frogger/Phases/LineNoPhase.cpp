@@ -4,7 +4,7 @@
 // -----------------------------------------------------------------
 // This program represents a visitor for setting line numbers.
 // -----------------------------------------------------------------
-#include "LineNoPhase.h"
+#include "lineNoPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
