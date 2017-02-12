@@ -10,18 +10,18 @@ using namespace std;
 // ----------------------------------------------------------
 // This class represents a visitor for setting line numbers.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 class LineNoPhase : public Phase
 {
 private:
 	int lineCount; // a counter for current line number
+	int getLineCount() { return lineCount; }
 
 public:
 	LineNoPhase() { lineCount = 0; }
-	int getLineCount() { return lineCount; }
 
-	void visit(ProgramNode * n) { n->visitAllChildren(this); }
+	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
 	void visit(IdRefNode * n){}

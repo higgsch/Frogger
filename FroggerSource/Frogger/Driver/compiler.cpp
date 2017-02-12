@@ -18,21 +18,81 @@ using namespace std;
 // ----------------------------------------------------------
 void Compiler::run(string inFile, string outFile)
 {
-	//Initialize the parser and open the file
+	parseInput(inFile);
+	
+	setLineNumbers();
+	computeJumpToLines();
+	convertStrings();
+	checkDataTypes();
+	
+	emitCode(outFile);
+}
+
+// ----------------------------------------------------------
+// This function drives the parsing of the FROGGER file.
+// @inFile: The .fgr file to open (from project directory).
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Compiler::parseInput(string inFile)
+{
 	Parser p = Parser();
 	p.open(inFile);
-	ProgramNode * root = p.parse();
+	root = p.parse();
 	p.close();
+}
 
-	LineNoPhase* lineP = new LineNoPhase();
-	root->accept(lineP);
+// ----------------------------------------------------------
+// This function drives the setting of line numbers to each 
+// line (not the jump to line, but the line number itself).
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Compiler::setLineNumbers()
+{
+	root->accept(new LineNoPhase());
+}
 
-	//Compute goto line values and convert strings from frogger to c++
-	root->accept(new SummationPhase(lineP->getLineCount()));
+// ----------------------------------------------------------
+// This function drives the computation of line numbers to 
+// jump to for each line.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Compiler::computeJumpToLines()
+{
+	root->accept(new SummationPhase());
+}
+
+// ----------------------------------------------------------
+// This function drives string conversion from FROGGER strings
+// to C++ strings.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Compiler::convertStrings()
+{
 	root->accept(new StringConversionPhase());
+}
 
-	//Generate output code to the out stream
+// ----------------------------------------------------------
+// This function drives data typing.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Compiler::checkDataTypes()
+{
 	root->accept(new DataTypingPhase());
+}
+
+// ----------------------------------------------------------
+// This function drives code generation.
+// @outFile: The file that output source is sent to.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Compiler::emitCode(string outFile)
+{
 	CodeGenerationPhase * codeGen = new CodeGenerationPhase();
 	codeGen->open(outFile);
 	root->accept(codeGen);

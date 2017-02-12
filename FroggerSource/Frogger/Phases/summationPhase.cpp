@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program represents a visitor for calculating the goto line
 // numbers.
@@ -13,11 +13,11 @@ using namespace std;
 // given number of lines of code.
 // @numberOfStmts: The total number of lines in the source.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
-SummationPhase::SummationPhase(int numberOfStmts)
+SummationPhase::SummationPhase()
 {
-	numStmts = numberOfStmts;
+	numStmts = 0;
 }
 
 // ----------------------------------------------------------
@@ -67,6 +67,19 @@ int SummationPhase::getAsciiSumModLength(string s)
 		}
 	}
 	return sum;
+}
+
+// ----------------------------------------------------------
+// This function initiates the phase over the AST.
+// @n: The node representing the program.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void SummationPhase::visit(ProgramNode * n)
+{ 
+	numStmts = n->getLineCount();
+
+	n->visitAllChildren(this); 
 }
 
 // ----------------------------------------------------------

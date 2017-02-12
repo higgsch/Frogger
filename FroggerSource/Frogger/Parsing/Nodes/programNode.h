@@ -14,13 +14,13 @@ class Phase;
 // ----------------------------------------------------------
 // This class provides a root node for the AST.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 class ProgramNode : public Node
 {
 private:
 	ControlFlowNode * firstStmt; // the first statement of code in this program
-	//int stmtCount; // the total number of statements within the program
+	int lineCount; // the total number of statements within the program
 
 public:
 	ProgramNode();
@@ -32,12 +32,8 @@ public:
 	// ----------------------------------------------------------
 	ControlFlowNode* getFirstStmt() { return firstStmt; }
 
-	// ----------------------------------------------------------
-	// This function returns the number of statements in this program.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	/*int getStmtCount() { return stmtCount; }*/
+	void setLineCount(int i_lineCount) { lineCount = i_lineCount; }
+	int getLineCount() { return lineCount; }
 
 	void addFirstStmt(ControlFlowNode* first);
 	void clean();

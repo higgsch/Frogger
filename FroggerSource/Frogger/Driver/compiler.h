@@ -19,8 +19,16 @@ class ProgramNode;
 class Compiler
 {
 private:
-	Parser p;
-	ProgramNode * root; //A pointer to the root of the AST for input source
+	ProgramNode * root;
+
+	void parseInput(string inFile);
+
+	void setLineNumbers();
+	void computeJumpToLines();
+	void convertStrings();
+	void checkDataTypes();
+
+	void emitCode(string outFile);
 
 public:
 	void run(string inFile, string outFile);

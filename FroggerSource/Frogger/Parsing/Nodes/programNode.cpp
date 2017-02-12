@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.0
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program provides a root node for the AST.
 // -----------------------------------------------------------------
@@ -10,12 +10,12 @@ using namespace std;
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 ProgramNode::ProgramNode()
 {
 	firstStmt = NULL;
-	/*stmtCount = 0;*/
+	lineCount = 0;
 }
 
 // ----------------------------------------------------------
