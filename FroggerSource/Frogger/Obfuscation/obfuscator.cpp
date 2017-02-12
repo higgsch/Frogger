@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and provides a char 
 // stream that has been de-obfuscated per spec.
@@ -26,130 +26,75 @@ Obfuscator::Obfuscator(ifstream* ifs)
 }
 
 // ----------------------------------------------------------
-// This function takes a char and returns the next char in 
-// the cycle (z-a_Z-A) [z follows A].
-// @c: The char to "increment" through the cycle.
+// This function returns the next de-obfuscated char from the 
+// input file stream.
 //
 // Version 1.1
 // ----------------------------------------------------------
-char Obfuscator::incrementChar(char c)
+char Obfuscator::get()
 {
-	if (c == 'a') //lowercase boundary
-		return '_';
-	else if (c == '_') //non-alpha boundary
-		return 'Z';
-	else if (c == 'A') //uppercase boundary
-		return 'z';
-	else //non-boundary
-		return --c;
+	//check for a buffer that has been read through and needs refilling
+	if (bufferIndex == buffer.length())
+	{
+		fillPrevBuffer();
+		fillBuffer();
+	}
+
+	//check for ungets beyond buffer boundary
+	if (bufferIndex < 0)
+	{
+		//increment bufferIndex and then negate (-1 -> 0, -2 -> 1)
+		return prevBuffer[-++bufferIndex];
+	}
+	else
+		return buffer[bufferIndex++];
 }
 
 // ----------------------------------------------------------
-// This function takes a char and returns the char incremented
-// by the given integer according to the incrementChar function.
-// @c: The char to "increment" through the cycle.
-// @by: The number of places in the cycle to increment by.
+// This function puts the previously read char back into the 
+// to be read again.
+// Note: History is limited to 4 chars beyond id, keyword, or 
+// string literal boundaries. Otherwise, only 4 chars.
 //
 // Version 1.1
 // ----------------------------------------------------------
-char Obfuscator::obfuscateChar(char c, int by)
+void Obfuscator::unget()
 {
-	for (int i = 0; i < by; i++)
-	{
-		c = incrementChar(c);
-	}
+	bufferIndex--;
+}
 
+char Obfuscator::peek()
+{
+	char c = get();
+	unget();
 	return c;
 }
 
 // ----------------------------------------------------------
-// This function takes a string and returns a string that has
-// been char-wise incremented by the given integer.
-// @s: The string to "increment" through the cycle.
-// @by: The number of places in the cycle to increment by.
+// This function fills the previous buffer to handle ungets
+// beyond original buffer boundaries.
 //
 // Version 1.1
 // ----------------------------------------------------------
-string Obfuscator::obfuscateString(string s, int by)
+void Obfuscator::fillPrevBuffer()
 {
-	for (int i = 0; i < s.length(); i++)
-	{
-		s[i] = obfuscateChar(s[i], by);
-	}
+	//prevBuffer is expected to be reverse order of buffer history
+	for (int i = 0; i < buffer.length(); i++)
+		prevBuffer = buffer[i] + prevBuffer;
 
-	return s;
+	//only allow 4 ungets in a row 
+	//this keeps the string well below the maximum allowable length
+	if (prevBuffer.length() > 4)
+		prevBuffer = prevBuffer.substr(0,4);
 }
 
 // ----------------------------------------------------------
-// This function returns whether the given char is a valid
-// identifier character (alpha or underscore).
-// @c: The char in question.
-//
-// Version 1.1
-// ----------------------------------------------------------
-bool Obfuscator::isIdChar(char c)
-{
-	return isalpha(c) || c == '_';
-}
-
-// ----------------------------------------------------------
-// This function returns whether the given string is a 
-// frogger keyword.
-// @s: The string in question.
+// This function fills the buffer with the next de-obfuscated 
+// token.
 //
 // Version 2.5
 // ----------------------------------------------------------
-bool Obfuscator::isKeyword(string s)
-{
-	return !s.compare("if") || !s.compare("then") || !s.compare("else");
-}
-
-// ----------------------------------------------------------
-// This function returns whether the given string is a 
-// routine name.
-// @s: The string in question.
-//
-// Version 2.5
-// ----------------------------------------------------------
-bool Obfuscator::isRoutine(string s)
-{
-	char nextChar = get();
-	unget();
-
-	return nextChar == '(';
-}
-
-// ----------------------------------------------------------
-// This function fills the buffer with the remaining chars in
-// the string literal.
-//
-// Version 1.1
-// ----------------------------------------------------------
-void Obfuscator::fillStringBuffer(void)
-{
-	int in_char;
-	while ((in_char = source->get()) != '\'')
-	{
-		if (in_char == '&')
-		{
-			//copy both '&' and the escaped char
-			buffer += in_char; 
-			in_char = source->get();
-		}
-
-		//straight copy; string literals are not obfuscated
-		buffer += in_char;
-	}
-
-	buffer += in_char; //end of string ('\'')
-}
-
-// ----------------------------------------------------------
-// This function fills the buffer the next de-obfuscated token.
-//
-// Version 2.5
-// ----------------------------------------------------------
-void Obfuscator::fillBuffer(void)
+void Obfuscator::fillBuffer()
 {
 	//restart the buffer
 	bufferIndex = 0;
@@ -214,57 +159,119 @@ void Obfuscator::fillBuffer(void)
 }
 
 // ----------------------------------------------------------
-// This function fills the previous buffer to handle ungets
-// beyond original buffer boundaries.
+// This function fills the buffer with the remaining chars in
+// the string literal.
 //
 // Version 1.1
 // ----------------------------------------------------------
-void Obfuscator::fillPrevBuffer(void)
+void Obfuscator::fillStringBuffer()
 {
-	//prevBuffer is expected to be reverse order of buffer history
-	for (int i = 0; i < buffer.length(); i++)
-		prevBuffer = buffer[i] + prevBuffer;
+	int in_char;
+	while ((in_char = source->get()) != '\'')
+	{
+		if (in_char == '&')
+		{
+			//copy both '&' and the escaped char
+			buffer += in_char; 
+			in_char = source->get();
+		}
 
-	//only allow 4 ungets in a row 
-	//this keeps the string well below the maximum allowable length
-	if (prevBuffer.length() > 4)
-		prevBuffer = prevBuffer.substr(0,4);
+		//straight copy; string literals are not obfuscated
+		buffer += in_char;
+	}
+
+	buffer += in_char; //end of string ('\'')
 }
 
 // ----------------------------------------------------------
-// This function returns the next de-obfuscated char from the 
-// input file stream.
+// This function takes a string and returns a string that has
+// been char-wise incremented by the given integer.
+// @s: The string to "increment" through the cycle.
+// @by: The number of places in the cycle to increment by.
 //
 // Version 1.1
 // ----------------------------------------------------------
-char Obfuscator::get(void)
+string Obfuscator::obfuscateString(string s, int by)
 {
-	//check for a buffer that has been read through and needs refilling
-	if (bufferIndex == buffer.length())
+	for (int i = 0; i < s.length(); i++)
 	{
-		fillPrevBuffer();
-		fillBuffer();
+		s[i] = obfuscateChar(s[i], by);
 	}
 
-	//check for ungets beyond buffer boundary
-	if (bufferIndex < 0)
-	{
-		//increment bufferIndex and then negate (-1 -> 0, -2 -> 1)
-		return prevBuffer[-++bufferIndex];
-	}
-	else
-		return buffer[bufferIndex++];
+	return s;
 }
 
 // ----------------------------------------------------------
-// This function puts the previously read char back into the 
-// to be read again.
-// Note: History is limited to 4 chars beyond id, keyword, or 
-// string literal boundaries. Otherwise, only 4 chars.
+// This function takes a char and returns the char incremented
+// by the given integer according to the incrementChar function.
+// @c: The char to "increment" through the cycle.
+// @by: The number of places in the cycle to increment by.
 //
 // Version 1.1
 // ----------------------------------------------------------
-void Obfuscator::unget(void)
+char Obfuscator::obfuscateChar(char c, int by)
 {
-	bufferIndex--;
+	for (int i = 0; i < by; i++)
+	{
+		c = incrementChar(c);
+	}
+
+	return c;
+}
+
+// ----------------------------------------------------------
+// This function takes a char and returns the next char in 
+// the cycle (z-a_Z-A) [z follows A].
+// @c: The char to "increment" through the cycle.
+//
+// Version 1.1
+// ----------------------------------------------------------
+char Obfuscator::incrementChar(char c)
+{
+	if (c == 'a') //lowercase boundary
+		return '_';
+	else if (c == '_') //non-alpha boundary
+		return 'Z';
+	else if (c == 'A') //uppercase boundary
+		return 'z';
+	else //non-boundary
+		return --c;
+}
+
+// ----------------------------------------------------------
+// This function returns whether the given char is a valid
+// identifier character (alpha or underscore).
+// @c: The char in question.
+//
+// Version 1.1
+// ----------------------------------------------------------
+bool Obfuscator::isIdChar(char c)
+{
+	return isalpha(c) || c == '_';
+}
+
+// ----------------------------------------------------------
+// This function returns whether the given string is a 
+// frogger keyword.
+// @s: The string in question.
+//
+// Version 2.5
+// ----------------------------------------------------------
+bool Obfuscator::isKeyword(string s)
+{
+	return !s.compare("if") || !s.compare("then") || !s.compare("else");
+}
+
+// ----------------------------------------------------------
+// This function returns whether the given string is a 
+// routine name.
+// @s: The string in question.
+//
+// Version 3.0
+// ----------------------------------------------------------
+bool Obfuscator::isRoutine(string s)
+{
+	char nextChar = peek();
+
+	return nextChar == '(';
 }

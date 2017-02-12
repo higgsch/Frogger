@@ -149,7 +149,6 @@ void Scanner::initializeObfuscator()
 // ----------------------------------------------------------
 void Scanner::terminateObfuscator()
 {
-	obfus->terminate();
 	if (obfus != NULL)
 		delete obfus;
 }
@@ -613,9 +612,7 @@ char Scanner::peek()
 {
 	if (obfuscated)
 	{
-		char c = obfus->get();
-		obfus->unget();
-		return c;
+		return obfus->peek();
 	}
 	else
 		return source.peek();

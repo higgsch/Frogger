@@ -11,7 +11,7 @@ using namespace std;
 // This class reads through a .fgr file and provides a char 
 // stream that has been de-obfuscated per spec.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class Obfuscator
 {
@@ -24,20 +24,22 @@ private:
 	int keywordCounter; //a counter for keyword obfuscation
 	int routineCounter; // a counter for function and command name obfuscation
 
-	void fillBuffer(void);
-	void fillStringBuffer(void);
-	void fillPrevBuffer(void);
+	void fillPrevBuffer();
+	void fillBuffer();
+	void fillStringBuffer();
+
 	string obfuscateString(string, int);
 	char obfuscateChar(char, int);
 	char incrementChar(char);
+
 	bool isIdChar(char);
 	bool isKeyword(string);
 	bool isRoutine(string);
 
 public:
 	Obfuscator(ifstream*);
-	void terminate();
 
-	char get(void);
-	void unget(void);
+	char get();
+	void unget();
+	char peek();
 };

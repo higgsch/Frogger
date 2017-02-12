@@ -20,3 +20,4 @@ refactor phases: SummationPhase::getChildrenAsciiSum(AbstractNode * n), calc wit
 refactor tables: Pull a generic table out
 
 refactor: Line or Stmt, Number -> Index or Count
+refactor: obfuscator inheret from ifstream and use polymorphism in scanner
