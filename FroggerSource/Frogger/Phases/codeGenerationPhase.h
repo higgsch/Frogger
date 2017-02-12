@@ -4,6 +4,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include "phases.h"
 #include "..\Parsing\nodes.h"
 using namespace std;
@@ -12,18 +13,21 @@ using namespace std;
 // This class represents a visitor for generating output code
 // that reflects the current AST.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class CodeGenerationPhase : public Phase
 {
 private:
-	ostream* out; // the output stream to print to
+	ofstream* out; // the output stream to print to
 	int dblTempNo; // the current double temporary number in a line
 	int strTempNo; // the current string temporary number in a line
 	int indentDepth; // the number of tabs to insert
 
 public:
-	CodeGenerationPhase(ostream* outstream);
+	CodeGenerationPhase();
+
+	void open(string outputFileName);
+	void close();
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);

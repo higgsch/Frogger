@@ -16,7 +16,7 @@ class Token;
 // This class reads through a .fgr file and converts strings
 // of chars to tokens.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class Scanner
 {
@@ -36,6 +36,7 @@ public:
 	Scanner(void);
 	~Scanner(void);
 	void open(string);
+	void close();
 	void checkForObfuscation(void);
 	Token scan(void);
 	int getLineNo(void);

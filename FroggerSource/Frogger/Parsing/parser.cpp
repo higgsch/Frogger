@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -31,6 +31,16 @@ void Parser::open(string inFile)
 {
 	scanner.open(inFile);
 	scanner.checkForObfuscation();
+}
+
+// ----------------------------------------------------------
+// This function closes the input file stream.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Parser::close()
+{
+	scanner.close();
 }
 
 // ----------------------------------------------------------

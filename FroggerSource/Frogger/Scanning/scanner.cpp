@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and converts strings of 
 // chars to tokens.
@@ -32,7 +32,7 @@ Scanner::~Scanner(void)
 }
 
 // ----------------------------------------------------------
-// This function opens the file stream.
+// This function opens the input file stream.
 // @filename: The .fgr file to open (from project directory).
 //
 // Version 1.0
@@ -43,6 +43,16 @@ void Scanner::open(string filename)
 	char first = source.peek();
 	if (first == EOF)
 		cout << "\nEmpty Input File\n\n";
+}
+
+// ----------------------------------------------------------
+// This function closes the input file stream.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Scanner::close()
+{
+	source.close();
 }
 
 // ----------------------------------------------------------

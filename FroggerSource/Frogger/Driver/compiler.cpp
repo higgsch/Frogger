@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
@@ -14,30 +14,19 @@
 using namespace std;
 
 // ----------------------------------------------------------
-// This is the default constructor.
-//
-// Version 1.0
-// ----------------------------------------------------------
-Compiler::Compiler()
-{
-
-}
-
-// ----------------------------------------------------------
 // This function drives the compilation process.
 // @inFile: The .fgr file to open (from project directory).
-// @out: The output stream that output source is sent to.
+// @outFile: The file that output source is sent to.
 //
-// Version 2.3
+// Version 3.0
 // ----------------------------------------------------------
-void Compiler::run(string inFile, ostream * out)
+void Compiler::run(string inFile, string outFile)
 {
 	//Initialize the parser and open the file
 	Parser p = Parser();
 	p.open(inFile);
-
-	//Initiate the compilation process
 	ProgramNode * root = p.parse();
+	p.close();
 
 	LineNoPhase* lineP = new LineNoPhase();
 	root->accept(lineP);
@@ -48,11 +37,10 @@ void Compiler::run(string inFile, ostream * out)
 
 	//Generate output code to the out stream
 	root->accept(new DataTypingPhase());
-	root->accept(new CodeGenerationPhase(out));
-	*out << "\n}" << endl; //close the c++ main function
-
-	//Test the AST
-	//root->printNodes(out);
+	CodeGenerationPhase * codeGen = new CodeGenerationPhase();
+	codeGen->open(outFile);
+	root->accept(codeGen);
+	codeGen->close();
 }
 
 // ----------------------------------------------------------
@@ -61,24 +49,17 @@ void Compiler::run(string inFile, ostream * out)
 // compilation process.
 // Note: Command line accepts .fgr filename then .cpp filename.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 int main(int argc, char* argv[])
 {
 	string inFile; //.fgr filename
 	string outFile; //.cpp filename
 
-	ostream * out;
-	ofstream outF;
-
 	if (argc > 2)
 	{ //filenames exist on command line
 		inFile = argv[1];
 		outFile = argv[2];
-
-		outF = ofstream();
-		outF.open(outFile);
-		out = &outF;
 
 		cout << "Starting Compilation: " << inFile << " -> " << outFile << endl;
 	}
@@ -89,9 +70,7 @@ int main(int argc, char* argv[])
 	}
 
 	Compiler c;
-	c.run(inFile, out);
-
-	outF.close();
+	c.run(inFile, outFile);
 
 	cout << "\nPress Enter to Exit" << endl;
 	getchar();

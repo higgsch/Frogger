@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -12,21 +12,47 @@
 using namespace std;
 
 // ----------------------------------------------------------
-// This constructor generates a CodeGenerationPhase for the
-// given output stream and AST.
-// @outstream: The output stream to print to.
-// @root: The root node for the AST.
+// Default constructor.
+//
+// Version 3.0
+// ----------------------------------------------------------
+CodeGenerationPhase::CodeGenerationPhase()
+{
+	dblTempNo = 1; //temporaries are 1-indexed
+	strTempNo = 1;
+	
+	indentDepth = 0;
+
+	out = new ofstream();
+}
+
+// ----------------------------------------------------------
+// This function opens the output file stream.
+// @filename: The file to write to (from project directory).
+//
+// Version 3.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::open(string filename)
+{
+	out->open(filename);
+}
+
+// ----------------------------------------------------------
+// This function closes the output file stream.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::close()
+{
+	out->close();	
+}
+
+// ----------------------------------------------------------
+// This function initiates the phase over the AST.
+// @n: The node representing the program.
 //
 // Version 2.5
 // ----------------------------------------------------------
-CodeGenerationPhase::CodeGenerationPhase(ostream* outstream)
-{
-	out = outstream;
-	dblTempNo = 1; //temporaries are 1-indexed
-	strTempNo = 1;
-	indentDepth = 0;
-}
-
 void CodeGenerationPhase::visit(ProgramNode * n)
 {
 	//emit the include statements code
@@ -70,6 +96,8 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 	*out << endl << endl;
 
 	 n->visitAllChildren(this);
+
+	*out << "\n}" << endl; //close the c++ main function
 }
 
 // ----------------------------------------------------------

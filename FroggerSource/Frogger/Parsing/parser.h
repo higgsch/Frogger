@@ -13,7 +13,7 @@ using namespace std;
 // This class parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class Parser
 {
@@ -57,6 +57,9 @@ private:
 
 public:
 	Parser();
-	void open(string);
+
+	void open(string inFile);
+	void close();
+
 	ProgramNode* parse();
 };
