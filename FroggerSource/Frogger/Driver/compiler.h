@@ -4,10 +4,9 @@
 #pragma once
 
 #include <string>
-#include <iostream>
-#include "..\Parsing\parser.h"
 using namespace std;
 
+//forward declaration
 class ProgramNode;
 
 // ----------------------------------------------------------
@@ -21,7 +20,7 @@ class Compiler
 private:
 	ProgramNode * root;
 
-	void parseInput(string inFile);
+	void buildAST(string inFile);
 
 	void setLineNumbers();
 	void computeJumpToLines();

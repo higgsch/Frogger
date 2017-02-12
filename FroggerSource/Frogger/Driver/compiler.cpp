@@ -6,7 +6,8 @@
 // -----------------------------------------------------------------
 #include "compiler.h"
 #include "..\Phases\phases.h"
-#include "..\Parsing\nodes.h"
+#include "..\Parsing\parser.h"
+#include <iostream>
 using namespace std;
 
 // ----------------------------------------------------------
@@ -18,7 +19,7 @@ using namespace std;
 // ----------------------------------------------------------
 void Compiler::run(string inFile, string outFile)
 {
-	parseInput(inFile);
+	buildAST(inFile);
 	
 	setLineNumbers();
 	computeJumpToLines();
@@ -34,7 +35,7 @@ void Compiler::run(string inFile, string outFile)
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Compiler::parseInput(string inFile)
+void Compiler::buildAST(string inFile)
 {
 	Parser *p = new Parser();
 
