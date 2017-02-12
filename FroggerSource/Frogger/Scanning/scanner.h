@@ -10,6 +10,7 @@
 #include "..\Obfuscation\obfuscator.h"
 using namespace std;
 
+//forward declaration
 class Token;
 
 // ----------------------------------------------------------
@@ -27,17 +28,45 @@ private:
 	int lineNo; //a count variable for the current line number
 	bool obfuscated; //a flag for the obfuscator
 
-	void lexical_error(int, string);
-	string getString();
+	void checkForEmptyFile();
+	void checkForObfuscation();
+
+	void initializeObfuscator();
+	void terminateObfuscator();
+
+	bool readEmptyComments();
+	bool readThisString(string toRead);
+	bool readUntilThisString(string toRead);
+	bool readIgnoredChars();
+	Token readId();
+	Token readDouble();
+	Token readString();
+	Token readBooleanOperator();
+	Token readArithmeticOperator();
+	bool readThisOperator(string op, string opName);
+	Token readPunctuation();
+
+	void resetBuffer() { token_buffer = ""; }
+	bool readIdCharsToBuffer();
+	bool readDigitsToBuffer();
+	bool readStringToBuffer();
+	void addToBuffer(char toAdd) { token_buffer += toAdd; }
+
 	char get();
 	void unget();
+	char peek();
+	
+	void lexical_error(string msg);
+
+	bool issinglequote(char c) { return c == '\''; }
 
 public:
 	Scanner();
-	~Scanner();
-	void open(string);
-	void close();
-	void checkForObfuscation();
+
+	void openAndInitialize(string inFile);
+	void closeAndTerminate();
+
 	Token scan();
-	int getLineNo();
+
+	int getLineNo() { return lineNo; }
 };

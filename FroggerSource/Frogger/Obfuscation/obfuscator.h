@@ -36,6 +36,8 @@ private:
 
 public:
 	Obfuscator(ifstream*);
+	void terminate();
+
 	char get(void);
 	void unget(void);
 };

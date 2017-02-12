@@ -21,38 +21,38 @@ Token::Token()
 // ----------------------------------------------------------
 // This is a straight-through constructor.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
-Token::Token(token_type aType, string aLexeme)
+Token::Token(token_type i_Type, string i_Lexeme)
 {
-	type = aType;
-	lexeme = aLexeme;
+	type = i_Type;
+	lexeme = i_Lexeme;
 }
 
 //static "constants" used for simplified processing of language
 //static tokens
-Token Token::NOTOK		= Token(token_types::TOKTYPE_NOTOK, "<None>");
-Token Token::ASSIGN		= Token(token_types::TOKTYPE_ASSIGN, "=");
-Token Token::ADD		= Token(token_types::TOKTYPE_ADD, "++");
-Token Token::SUB		= Token(token_types::TOKTYPE_SUB, "--");
-Token Token::MUL		= Token(token_types::TOKTYPE_MUL, "**");
-Token Token::DIV		= Token(token_types::TOKTYPE_DIV, "//");
-Token Token::MOD		= Token(token_types::TOKTYPE_MOD, "%%");
-Token Token::IDIV		= Token(token_types::TOKTYPE_IDIV, "\\\\");
-Token Token::ROOT		= Token(token_types::TOKTYPE_ROOT, "##");
-Token Token::EXP		= Token(token_types::TOKTYPE_EXP, "^^");
-Token Token::NOT		= Token(token_types::TOKTYPE_NOT, "!");
-Token Token::LT			= Token(token_types::TOKTYPE_LT, "<");
-Token Token::GT			= Token(token_types::TOKTYPE_GT, ">");
-Token Token::EQ			= Token(token_types::TOKTYPE_EQ, "==");
-Token Token::LTE		= Token(token_types::TOKTYPE_LTE, "<=");
-Token Token::GTE		= Token(token_types::TOKTYPE_GTE, ">=");
-Token Token::IF			= Token(token_types::TOKTYPE_IF, "if");
-Token Token::THEN		= Token(token_types::TOKTYPE_THEN, "then");
-Token Token::ELSE		= Token(token_types::TOKTYPE_ELSE, "else");
-Token Token::COMMA		= Token(token_types::TOKTYPE_COMMA, ",");
-Token Token::COLON		= Token(token_types::TOKTYPE_COLON, ":");
-Token Token::SEMICOLON	= Token(token_types::TOKTYPE_SEMICOLON, ";");
-Token Token::LPAREN		= Token(token_types::TOKTYPE_LPAREN, "(");
-Token Token::RPAREN		= Token(token_types::TOKTYPE_RPAREN, ")");
-Token Token::SCANEOF	= Token(token_types::TOKTYPE_SCANEOF, "<EOF>");
+Token Token::NOTOK		= Token(TOKTYPE_NOTOK, "<None>");
+Token Token::ASSIGN		= Token(TOKTYPE_ASSIGN, "=");
+Token Token::ADD		= Token(TOKTYPE_ADD, "++");
+Token Token::SUB		= Token(TOKTYPE_SUB, "--");
+Token Token::MUL		= Token(TOKTYPE_MUL, "**");
+Token Token::DIV		= Token(TOKTYPE_DIV, "//");
+Token Token::MOD		= Token(TOKTYPE_MOD, "%%");
+Token Token::IDIV		= Token(TOKTYPE_IDIV, "\\\\");
+Token Token::ROOT		= Token(TOKTYPE_ROOT, "##");
+Token Token::EXP		= Token(TOKTYPE_EXP, "^^");
+Token Token::NOT		= Token(TOKTYPE_NOT, "!");
+Token Token::LT			= Token(TOKTYPE_LT, "<");
+Token Token::GT			= Token(TOKTYPE_GT, ">");
+Token Token::EQ			= Token(TOKTYPE_EQ, "==");
+Token Token::LTE		= Token(TOKTYPE_LTE, "<=");
+Token Token::GTE		= Token(TOKTYPE_GTE, ">=");
+Token Token::IF			= Token(TOKTYPE_IF, "if");
+Token Token::THEN		= Token(TOKTYPE_THEN, "then");
+Token Token::ELSE		= Token(TOKTYPE_ELSE, "else");
+Token Token::COMMA		= Token(TOKTYPE_COMMA, ",");
+Token Token::COLON		= Token(TOKTYPE_COLON, ":");
+Token Token::SEMICOLON	= Token(TOKTYPE_SEMICOLON, ";");
+Token Token::LPAREN		= Token(TOKTYPE_LPAREN, "(");
+Token Token::RPAREN		= Token(TOKTYPE_RPAREN, ")");
+Token Token::SCANEOF	= Token(TOKTYPE_SCANEOF, "<EOF>");

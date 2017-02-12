@@ -25,12 +25,11 @@ Parser::Parser()
 // @inFile: The .fgr file to open.
 // Note: File reference from project directory.
 //
-// Version 1.1
+// Version 3.0
 // ----------------------------------------------------------
 void Parser::open(string inFile)
 {
-	scanner.open(inFile);
-	scanner.checkForObfuscation();
+	scanner.openAndInitialize(inFile);
 }
 
 // ----------------------------------------------------------
@@ -40,7 +39,7 @@ void Parser::open(string inFile)
 // ----------------------------------------------------------
 void Parser::close()
 {
-	scanner.close();
+	scanner.closeAndTerminate();
 }
 
 // ----------------------------------------------------------

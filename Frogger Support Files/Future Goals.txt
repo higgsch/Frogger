@@ -10,6 +10,7 @@ v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble), obfuscation 
 
 v3.0: Refactor: Uniform Abstraction
 v??: Refactor with clean code.
+v??: Add line numbers to errors throughout.
 v3: Add File I/O.
 v4: Add user-defined functions (force modulation into different files).
 v5+: Add object orientation (folder modulation).
