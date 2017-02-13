@@ -12,42 +12,37 @@ using namespace std;
 // This constructor initializes an Obfuscator with the given
 // input file stream.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
-Obfuscator::Obfuscator(ifstream* ifs)
+Obfuscator::Obfuscator(ifstream* ifs) : outSource(4)
 {
-	source = ifs;
-	buffer = ""; //buffer starts empty
-	bufferIndex = 0; //the current location in the buffer is 0
+	inSource = ifs;
+
 	//no identifiers or keywords have been read yet
 	varCounter = 0; 
 	keywordCounter = 0;
 	routineCounter = 0;
 }
 
+void Obfuscator::checkEndOfBuffer()
+{
+	if (outSource.atEndOfBuffer())
+	{
+		refillOutSource();
+	}
+}
+
 // ----------------------------------------------------------
 // This function returns the next de-obfuscated char from the 
 // input file stream.
 //
-// Version 1.1
+// Version 3.0
 // ----------------------------------------------------------
 char Obfuscator::get()
 {
-	//check for a buffer that has been read through and needs refilling
-	if (bufferIndex == buffer.length())
-	{
-		fillPrevBuffer();
-		fillBuffer();
-	}
+	checkEndOfBuffer();
 
-	//check for ungets beyond buffer boundary
-	if (bufferIndex < 0)
-	{
-		//increment bufferIndex and then negate (-1 -> 0, -2 -> 1)
-		return prevBuffer[-++bufferIndex];
-	}
-	else
-		return buffer[bufferIndex++];
+	return outSource.get();
 }
 
 // ----------------------------------------------------------
@@ -56,67 +51,49 @@ char Obfuscator::get()
 // Note: History is limited to 4 chars beyond id, keyword, or 
 // string literal boundaries. Otherwise, only 4 chars.
 //
-// Version 1.1
+// Version 3.0
 // ----------------------------------------------------------
 void Obfuscator::unget()
 {
-	bufferIndex--;
+	outSource.unget();
 }
 
 char Obfuscator::peek()
 {
-	char c = get();
-	unget();
-	return c;
-}
-
-// ----------------------------------------------------------
-// This function fills the previous buffer to handle ungets
-// beyond original buffer boundaries.
-//
-// Version 1.1
-// ----------------------------------------------------------
-void Obfuscator::fillPrevBuffer()
-{
-	//prevBuffer is expected to be reverse order of buffer history
-	for (int i = 0; i < buffer.length(); i++)
-		prevBuffer = buffer[i] + prevBuffer;
-
-	//only allow 4 ungets in a row 
-	//this keeps the string well below the maximum allowable length
-	if (prevBuffer.length() > 4)
-		prevBuffer = prevBuffer.substr(0,4);
+	checkEndOfBuffer();
+	
+	return outSource.peek();
 }
 
 // ----------------------------------------------------------
 // This function fills the buffer with the next de-obfuscated 
 // token.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
-void Obfuscator::fillBuffer()
+void Obfuscator::refillOutSource()
 {
-	//restart the buffer
-	bufferIndex = 0;
-	buffer = "";
+	outSource.archive();
+	Buffer buffer;
 
-	int in_char;
+	char in_char;
 	//if the next sequence represents an id or keyword,
 	//copy it to the buffer
-	while (isIdChar(in_char = source->get()))
-		buffer += in_char;
+	while (isIdChar(in_char = inSource->get()))
+		buffer.append(in_char);
 
-	if (buffer.length() == 0) 
+	if (buffer.isEmpty()) 
 	{ //non-id sequence
-		buffer += in_char;
 
 		//test for comments
 		if (in_char == '~')
 		{
-			while((in_char = source->get()) != '~')
-				buffer += in_char;
+			buffer.append(in_char);
+			while((in_char = inSource->get()) != '~')
+				buffer.append(in_char);
 
-			buffer += in_char; //add the closing '~'
+			buffer.append(in_char); //add the closing '~'
+			outSource.set(buffer.value());
 			return;
 		}
 
@@ -128,33 +105,34 @@ void Obfuscator::fillBuffer()
 		//non-string, non-id sequence
 		//fill the buffer with only the one char
 		//(the scanner builds tokens)
+		outSource.set("" + in_char);
 		return;
 	}
 	//id or keyword sequence is in the buffer
 
-	source->unget();
+	inSource->unget();
 
 	//determine if the sequence is an obfuscated keyword or id
-	string keyword = obfuscateString(buffer, keywordCounter + 1);
+	string keyword = obfuscateString(buffer.value(), keywordCounter + 1);
 	if (isKeyword(keyword))
 	{ //valid keyword
-		buffer = keyword;
+		outSource.set(keyword);
 		keywordCounter++;
 		return;
 	}
 
-	string routineName = obfuscateString(buffer, routineCounter + 1);
+	string routineName = obfuscateString(buffer.value(), routineCounter + 1);
 	if (isRoutine(routineName))
 	{
-		buffer = routineName;
+		outSource.set(routineName);
 		routineCounter++;
 		return;
 	}
 	
 	//sequence must be an identifier
 	//scanner will catch invalid identifiers
-	string id = obfuscateString(buffer, varCounter + 1);
-	buffer = id;
+	string id = obfuscateString(buffer.value(), varCounter + 1);
+	outSource.set(id);
 	varCounter++;
 }
 
@@ -162,25 +140,29 @@ void Obfuscator::fillBuffer()
 // This function fills the buffer with the remaining chars in
 // the string literal.
 //
-// Version 1.1
+// Version 3.0
 // ----------------------------------------------------------
 void Obfuscator::fillStringBuffer()
 {
+	Buffer buffer;
+	buffer.set("\'");
+
 	int in_char;
-	while ((in_char = source->get()) != '\'')
+	while ((in_char = inSource->get()) != '\'')
 	{
 		if (in_char == '&')
 		{
 			//copy both '&' and the escaped char
-			buffer += in_char; 
-			in_char = source->get();
+			buffer.append(in_char); 
+			in_char = inSource->get();
 		}
 
 		//straight copy; string literals are not obfuscated
-		buffer += in_char;
+		buffer.append(in_char);
 	}
 
-	buffer += in_char; //end of string ('\'')
+	buffer.append(in_char); //end of string ('\'')
+	outSource.set(buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -201,13 +183,13 @@ string Obfuscator::obfuscateString(string s, int by)
 	return s;
 }
 
-// ----------------------------------------------------------
+// ---------------------------------------------------------
 // This function takes a char and returns the char incremented
 // by the given integer according to the incrementChar function.
 // @c: The char to "increment" through the cycle.
 // @by: The number of places in the cycle to increment by.
 //
-// Version 1.1
+// Version 3.0
 // ----------------------------------------------------------
 char Obfuscator::obfuscateChar(char c, int by)
 {

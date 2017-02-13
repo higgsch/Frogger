@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <string>
+#include "..\buffers.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -16,16 +17,15 @@ using namespace std;
 class Obfuscator
 {
 private:
-	ifstream* source; //an input stream for the .fgr code file
-	string buffer; //a buffer to build the stream
-	string prevBuffer; //a buffer to hold the previous chars (used for successive ungets)
-	int bufferIndex; //a buffer pointer
+	ifstream* inSource; //an input stream for the .fgr code file
+	BufferedStream outSource; //an output stream for deobfuscated fgr code
+
 	int varCounter; //a counter for id obfuscation
 	int keywordCounter; //a counter for keyword obfuscation
 	int routineCounter; // a counter for function and command name obfuscation
 
-	void fillPrevBuffer();
-	void fillBuffer();
+	void checkEndOfBuffer();
+	void refillOutSource();
 	void fillStringBuffer();
 
 	string obfuscateString(string, int);

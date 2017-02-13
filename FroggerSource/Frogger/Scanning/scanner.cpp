@@ -302,19 +302,19 @@ bool Scanner::readIgnoredChars()
 // ----------------------------------------------------------
 Token Scanner::readId()
 {
-	resetBuffer();
+	token_buffer.reset();
 
 	if (!readIdCharsToBuffer())
 		return Token::NOTOK;
 
-	if (token_buffer == "if")
+	if (token_buffer.contentsEquals("if"))
 		return Token::IF;
-	else if (token_buffer == "then")
+	else if (token_buffer.contentsEquals("then"))
 		return Token::THEN;
-	else if (token_buffer == "else")
+	else if (token_buffer.contentsEquals("else"))
 		return Token::ELSE;
 	else
-		return Token(TOKTYPE_ID, token_buffer);
+		return Token(TOKTYPE_ID, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -326,7 +326,7 @@ Token Scanner::readId()
 // ----------------------------------------------------------
 Token Scanner::readDouble()
 {
-	resetBuffer();
+	token_buffer.reset();
 
 	if (!readDigitsToBuffer())
 		return Token::NOTOK;
@@ -335,15 +335,15 @@ Token Scanner::readDouble()
 	if (c != '.')
 	{
 		unget();
-		return Token(TOKTYPE_DOUBLECONST, token_buffer);
+		return Token(TOKTYPE_DOUBLECONST, token_buffer.value());
 	}
 
-	addToBuffer('.');
+	token_buffer.append('.');
 
 	if (!readDigitsToBuffer())
 		lexical_error("Missing decimals for double");
 	
-	return Token(TOKTYPE_DOUBLECONST, token_buffer);
+	return Token(TOKTYPE_DOUBLECONST, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -355,12 +355,12 @@ Token Scanner::readDouble()
 // ----------------------------------------------------------
 Token Scanner::readString()
 {
-	resetBuffer();
+	token_buffer.reset();
 
 	if (!readStringToBuffer())
 		return Token::NOTOK;
 
-	return Token(TOKTYPE_STRING, token_buffer);
+	return Token(TOKTYPE_STRING, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -489,7 +489,7 @@ bool Scanner::readIdCharsToBuffer()
 
 	while (isalpha(c) || c == '_')
 	{
-		addToBuffer(c);
+		token_buffer.append(c);
 		c = get();
 	}
 	unget();
@@ -512,7 +512,7 @@ bool Scanner::readDigitsToBuffer()
 
 	while (isdigit(c))
 	{
-		addToBuffer(c);
+		token_buffer.append(c);
 		c = get();
 	}
 	unget();
@@ -534,7 +534,7 @@ bool Scanner::readStringToBuffer()
 	if (!issinglequote(singleQuote))
 		return false;
 
-	addToBuffer(singleQuote);
+	token_buffer.append(singleQuote);
 
 	char c = get();
 	while (!issinglequote(c))
@@ -550,7 +550,7 @@ bool Scanner::readStringToBuffer()
 			lexical_error("Invalid string character");
 		}
 
-		addToBuffer(c);
+		token_buffer.append(c);
 
 		if (c == '&') //escape characters
 		{
@@ -558,7 +558,7 @@ bool Scanner::readStringToBuffer()
 
 			if (c == 't' || c == 'n' || c == '\'' || c == '&')
 			{
-				addToBuffer(c);
+				token_buffer.append(c);
 			}
 			else
 				lexical_error("Invalid escape sequence");
@@ -569,7 +569,7 @@ bool Scanner::readStringToBuffer()
 
 	// c is closing singleQuote
 
-	addToBuffer(singleQuote);
+	token_buffer.append(singleQuote);
 	return true;
 }
 

@@ -7,7 +7,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include "..\Obfuscation\obfuscator.h"
+#include "Obfuscation\obfuscator.h"
+#include "buffers.h"
 using namespace std;
 
 //forward declaration
@@ -22,7 +23,7 @@ class Token;
 class Scanner
 {
 private:
-	string token_buffer; //a buffer to build the current token
+	Buffer token_buffer; //a buffer to build the current token
 	ifstream source; //an input stream for the .fgr code file
 	Obfuscator* obfus; //a pointer to the obfuscator
 	int lineNo; //a count variable for the current line number
@@ -46,11 +47,9 @@ private:
 	bool readThisOperator(string op, string opName);
 	Token readPunctuation();
 
-	void resetBuffer() { token_buffer = ""; }
 	bool readIdCharsToBuffer();
 	bool readDigitsToBuffer();
 	bool readStringToBuffer();
-	void addToBuffer(char toAdd) { token_buffer += toAdd; }
 
 	char get();
 	void unget();
