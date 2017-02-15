@@ -1,8 +1,16 @@
+// -----------------------------------------------------------------
+// This is the header file for Buffer classes. 
+// -----------------------------------------------------------------
 #pragma once
 
 #include <string>
 using namespace std;
 
+// ----------------------------------------------------------
+// This class provides a resetable char buffer.
+//
+// Version 3.0
+// ----------------------------------------------------------
 class Buffer
 {
 private:
@@ -22,6 +30,11 @@ public:
 	string value() { return buffer; }
 };
 
+// ----------------------------------------------------------
+// This class provides a stream with a buffered history.
+//
+// Version 3.0
+// ----------------------------------------------------------
 class BufferedStream
 {
 private:

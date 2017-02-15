@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -300,11 +300,11 @@ void IncludesSubPhase::visit(ExpingNode * n)
 // This function processes the include for a not operation.
 // @n: The node representing the operation.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(NotingNode * n)
 {
-	n->visitLeftChild(this);
+	n->visitOperand(this);
 }
 
 // ----------------------------------------------------------

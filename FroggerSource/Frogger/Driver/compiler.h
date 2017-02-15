@@ -29,6 +29,8 @@ private:
 
 	void emitCode(string outFile);
 
+	void printAST(string outFile);
+
 public:
 	void run(string inFile, string outFile);
 };

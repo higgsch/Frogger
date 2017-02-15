@@ -2,9 +2,9 @@
 //                      FROGGER Compiler
 //                      Version: 3.0
 // -----------------------------------------------------------------
-// This program provides a root node for the AST.
+// This program provides a node for an if statement.
 // -----------------------------------------------------------------
-#include "programNode.h"
+#include "ifNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -12,10 +12,11 @@ using namespace std;
 //
 // Version 3.0
 // ----------------------------------------------------------
-ProgramNode::ProgramNode()
+IfNode::IfNode()
 {
-	firstStmt = NULL;
-	lineCount = 0;
+	boolExp = NULL;
+	trueStmt = NULL;
+	falseStmt = NULL;
 }
 
 // ----------------------------------------------------------
@@ -23,24 +24,32 @@ ProgramNode::ProgramNode()
 //
 // Version 3.0
 // ----------------------------------------------------------
-ProgramNode::~ProgramNode()
+IfNode::~IfNode()
 {
-	if (firstStmt != NULL)
-		delete firstStmt;
+	if (boolExp != NULL)
+		delete boolExp;
+
+	if (trueStmt != NULL)
+		delete trueStmt;
+
+	if (falseStmt != NULL)
+		delete falseStmt;
+
+	//TODO need to delete nextStmt?
 }
 
 // ----------------------------------------------------------
-// Adds a first statement to the root node.
-// @first: The first statement.
+// Adds a stmt to the list of stmts.
+// @next:	The stmt to add.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void ProgramNode::addFirstStmt(ControlFlowNode* first)
+void IfNode::addNextStmt(ControlFlowNode* next)
 {
-	if (firstStmt == NULL)
-		firstStmt = first;
+	if (nextStmt == NULL)
+		nextStmt = next;
 	else
-		ast_error("ProgramNode's root already exists");
+		nextStmt->addNextStmt(next);
 }
 
 // ----------------------------------------------------------
@@ -49,9 +58,15 @@ void ProgramNode::addFirstStmt(ControlFlowNode* first)
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool ProgramNode::isTreeTyped()
+bool IfNode::isTreeTyped()
 {
-	if (firstStmt != NULL && !firstStmt->isTreeTyped())
+	if (boolExp != NULL && !boolExp->isTreeTyped())
+		return false;
+
+	if (trueStmt != NULL && !trueStmt->isTreeTyped())
+		return false;
+
+	if (falseStmt != NULL && !falseStmt->isTreeTyped())
 		return false;
 
 	return isTyped();

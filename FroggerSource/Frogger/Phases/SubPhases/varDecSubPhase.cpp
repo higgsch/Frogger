@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
@@ -84,7 +84,7 @@ bool VarDecSubPhase::isInList(string id)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(JmpStmtNode * n)
 {
@@ -106,7 +106,7 @@ void VarDecSubPhase::visit(JmpStmtNode * n)
 // This function processes an if statement.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(IfNode * n)
 {
@@ -301,11 +301,11 @@ void VarDecSubPhase::visit(ExpingNode * n)
 // This function processes a not operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(NotingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitOperand(this);
 }
 
 // ----------------------------------------------------------

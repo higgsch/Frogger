@@ -6,29 +6,15 @@
 #include <string>
 #include <iostream>
 #include "..\..\Phases\phase.h"
+#include "..\dataTyped.h"
 using namespace std;
-
-// identification for which binary child a node is.
-typedef enum node_sides{
-	LEFT, RIGHT
-} node_side;
-
-// set of node categories
-typedef enum node_types{
-	ASSIGNING, 
-	IDREF, STRINGCONSTING, DBLCONSTING, 
-	ADDING, SUBING, MULING, DIVING, 
-	MODDIVING, IDIVING, ROOTING, EXPING,
-	NOTING, LTING, GTING, EQING, LTEING, GTEING,
-	FUNCTCALLING, COMMANDCALLING, ARGLISTING
-} node_type;
 
 // ----------------------------------------------------------
 // This class provides the error function for all AST nodes.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
-class Node
+class Node : public DataTyped
 {
 protected:
 	// ----------------------------------------------------------
@@ -47,6 +33,20 @@ protected:
 		exit(0);
 	}
 
+	// ----------------------------------------------------------
+	// This function safely allows a phase to visit a node.
+	//
+	// Version 3.0
+	// ----------------------------------------------------------
+	void visitNode(Phase* p, Node* n)
+	{
+		if (n != NULL && p != NULL)
+			n->accept(p);
+	}
+
 public:
+	virtual bool isTreeTyped() =0;
+
 	virtual void visitAllChildren(Phase* p) =0;
+	virtual void accept(Phase*) =0;
 };

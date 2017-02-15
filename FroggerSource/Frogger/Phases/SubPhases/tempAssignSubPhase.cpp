@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating temporary's 
 // assignment within a given line of code.
@@ -27,14 +27,13 @@ TempAssignSubPhase::TempAssignSubPhase(ostream* outstream, int indentCount)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(JmpStmtNode * n)
 {
 	dblTempNo = 1; //restart temporary counters (1-indexed)
 	strTempNo = 1;
 
-	//emit the line's code
 	n->visitThisStmt(this);
 }
 
@@ -42,7 +41,7 @@ void TempAssignSubPhase::visit(JmpStmtNode * n)
 // This function processes an if statement.
 // @n: The node representing the statement.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(IfNode * n)
 {
@@ -53,12 +52,12 @@ void TempAssignSubPhase::visit(IfNode * n)
 // This function processes an assignment statement.
 // @n: The node representing the statement.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(AssigningNode * n)
 {
-	//Ignore left as left cannot be a temporary
-	n->visitRightChild(this);
+	//Ignore Assignee as Assignee cannot be a temporary
+	n->visitAssignor(this);
 }
 
 // ----------------------------------------------------------
@@ -200,11 +199,11 @@ void TempAssignSubPhase::visit(ExpingNode * n)
 // This function processes a not operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void TempAssignSubPhase::visit(NotingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitOperand(this);
 }
 
 // ----------------------------------------------------------

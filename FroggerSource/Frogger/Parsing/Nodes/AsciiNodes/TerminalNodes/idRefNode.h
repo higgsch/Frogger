@@ -3,27 +3,20 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "..\abstractNode.h"
+#include "terminalNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
 // This class provides a node representation for a variable
 // reference.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
-class IdRefNode : public AbstractNode
+class IdRefNode : public TerminalNode
 {
 public:
-	IdRefNode(string);
-	void printMe(ostream*);
+	IdRefNode(string id) { lexeme = id; }
+	~IdRefNode() {}
 
-	// ----------------------------------------------------------
-	// This function allows double dispatch required for visitor
-	// pattern.
-	// @p: The visitor to operate on this node.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	void accept(Phase* p)	{	p->visit(this);	}
+	void accept(Phase* p) { p->visit(this); }
 };

@@ -24,7 +24,7 @@ void LineNoPhase::visit(ProgramNode * n)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void LineNoPhase::visit(JmpStmtNode * n)
 {
@@ -40,7 +40,7 @@ void LineNoPhase::visit(JmpStmtNode * n)
 // This function processes an if statement.
 // @n: The node representing the statement.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void LineNoPhase::visit(IfNode * n)
 {

@@ -7,6 +7,7 @@
 // -----------------------------------------------------------------
 #include "scanner.h"
 #include "token.h"
+#include <string>
 using namespace std;
 
 // ----------------------------------------------------------
@@ -59,8 +60,13 @@ Token Scanner::scan()
 
 	while (in_char != EOF)
 	{
+		in_char = peek();
+
 		if (readIgnoredChars())
+		{
+			in_char = peek();
 			continue;
+		}
 
 		if (isalpha(in_char)) //Identifiers
 			return readId();
@@ -226,7 +232,7 @@ bool Scanner::readUntilThisString(string toRead)
 {
 	int toReadIndex = 0;
 	int charReadCount = 0;
-	int in_char = get();
+	int in_char = peek();
 	bool stringRead = false;
 
 	while (in_char != EOF && !stringRead)
@@ -243,9 +249,11 @@ bool Scanner::readUntilThisString(string toRead)
 		else
 			toReadIndex = 0;
 
-		charReadCount++;
 		in_char = get();
+		charReadCount++;
 	}
+	unget();
+	charReadCount--;
 
 	if (stringRead)
 		return true;
@@ -279,7 +287,9 @@ bool Scanner::readIgnoredChars()
 	}
 	else if (isspace(in_char))
 	{
-		readThisString("" + in_char);
+		string toRead = "";
+		toRead += in_char;
+		readThisString(toRead);
 		return true;
 	}
 	else if (readThisString("~")) //Comments
@@ -402,29 +412,45 @@ Token Scanner::readArithmeticOperator()
 	if (readThisString("=")) //Must be after "=="
 		return Token::ASSIGN;
 	else if (in_char == '+')
+	{
 		if (readThisOperator("++", "addition or concatenation"))
 			return Token::ADD;
+	}
 	else if (in_char == '-')
+	{
 		if (readThisOperator("--", "subtraction"))
 			return Token::SUB;
+	}
 	else if (in_char == '*')
+	{
 		if (readThisOperator("**", "multiplication"))
 			return Token::MUL;
+	}
 	else if (in_char == '/')
+	{
 		if (readThisOperator("//", "division"))
 			return Token::DIV;
+	}
 	else if (in_char == '%')
+	{
 		if (readThisOperator("%%", "modulus division"))
 			return Token::MOD;
+	}
 	else if (in_char == '\\')
+	{
 		if (readThisOperator("\\\\", "integer division")) //Integer division is \\ (\\\\ in c++ string)
 			return Token::IDIV;
+	}
 	else if (in_char == '#')
+	{
 		if (readThisOperator("##", "rootation"))
 			return Token::ROOT;
+	}
 	else if (in_char == '^')
+	{
 		if (readThisOperator("^^", "exponentiation"))
 			return Token::EXP;
+	}
 
 	return Token::NOTOK;
 }

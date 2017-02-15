@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program provides nodes for FROGGER commands.
 // -----------------------------------------------------------------
@@ -14,8 +14,9 @@ using namespace std;
 // ----------------------------------------------------------
 Command::Command(string i_name)
 {
-	builtIn = false;
 	name = i_name;
+
+	builtIn = false;
 	argTypeList = NULL;
 }
 
@@ -121,36 +122,21 @@ void Command::copy(Command * cmd)
 // This constructor builds a node for a command call.
 // @str: The command's name.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 CommandCallNode::CommandCallNode(string str)
 {
-	type = COMMANDCALLING;
 	lexeme = str;
 	cmd = new Command(str);
 }
 
 // ----------------------------------------------------------
-// This constructor builds a node for an element in an
-// argument list.
-// @dbl: The textual representation of the double.
+// Destructor.
 //
-// Version 2.4
+// Version 3.0
 // ----------------------------------------------------------
-ArgListNode::ArgListNode()
+CommandCallNode::~CommandCallNode()
 {
-	type = ARGLISTING;
-}
-
-// ----------------------------------------------------------
-// This function prints this node to the given output stream.
-// @out: The stream to display to.
-//
-// Version 2.5
-// ----------------------------------------------------------
-void ArgListNode::printMe(ostream* out)
-{
-	leftChild->printMe(out);
-	*out << ", ";
-	rightChild->printMe(out);
+	if (cmd != NULL)
+		delete cmd;
 }

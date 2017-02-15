@@ -20,7 +20,7 @@ struct VarList
 // This class represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class VarDecSubPhase : public Phase
 {
@@ -65,6 +65,13 @@ public:
 	void visit(GTEingNode * n);
 
 	void addTemporaries();
+
+	// ----------------------------------------------------------
+	// This function returns a string containing the current tab
+	// indentation.
+	//
+	// Version 3.0
+	// ----------------------------------------------------------
 	string indent()
 	{
 		string result = "";

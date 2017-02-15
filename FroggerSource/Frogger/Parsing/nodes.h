@@ -3,20 +3,25 @@
 // -----------------------------------------------------------------
 #pragma once
 
+#include "Nodes\node.h"
 #include "Nodes\programNode.h"
 
-#include "Nodes\abstractNode.h"
-#include "Nodes\AbstractNodeChild\assigningNode.h"
-#include "Nodes\AbstractNodeChild\commandNodes.h"
-#include "Nodes\AbstractNodeChild\constingNodes.h"
-#include "Nodes\AbstractNodeChild\idRefNode.h"
-#include "Nodes\AbstractNodeChild\functionCallNodes.h"
+#include "Nodes\ControlFlowNodes\controlFlowNode.h"
+#include "Nodes\ControlFlowNodes\ifNode.h"
+#include "Nodes\ControlFlowNodes\jmpStmtNode.h"
 
-#include "Nodes\AbstractNodeChild\binaryOpNode.h"
-#include "Nodes\AbstractNodeChild\BinaryOpNodeChild\logicNodes.h"
-#include "Nodes\AbstractNodeChild\BinaryOpNodeChild\arithmeticNodes.h"
+#include "Nodes\AsciiNodes\asciiNode.h"
+#include "Nodes\AsciiNodes\unaryNode.h"
 
-#include "Nodes\controlFlowNode.h"
-#include "Nodes\ControlFlowNodeChild\ifNode.h"
-#include "Nodes\ControlFlowNodeChild\jmpStmtNode.h"
+#include "Nodes\AsciiNodes\BinaryNodes\binaryNode.h"
+#include "Nodes\AsciiNodes\BinaryNodes\assigningNode.h"
+#include "Nodes\AsciiNodes\BinaryNodes\commandNodes.h"
+#include "Nodes\AsciiNodes\BinaryNodes\functionCallNodes.h"
+
+#include "Nodes\AsciiNodes\BinaryNodes\BinaryOpNodes\binaryOpNode.h"
+#include "Nodes\AsciiNodes\BinaryNodes\BinaryOpNodes\logicNodes.h"
+#include "Nodes\AsciiNodes\BinaryNodes\BinaryOpNodes\arithmeticNodes.h"
+
+#include "Nodes\AsciiNodes\TerminalNodes\constingNodes.h"
+#include "Nodes\AsciiNodes\TerminalNodes\idRefNode.h"
 using namespace std;

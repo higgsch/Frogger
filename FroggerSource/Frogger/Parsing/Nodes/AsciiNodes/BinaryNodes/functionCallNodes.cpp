@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program provides nodes for function calls.
 // -----------------------------------------------------------------
@@ -10,7 +10,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This is a straight-through constructor.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 Function::Function(DataType i_parentType, string i_name, DataType i_returnType) : Command(i_name)
 {
@@ -25,7 +25,7 @@ Function::Function(DataType i_parentType, string i_name, DataType i_returnType) 
 // unique.
 // @funct: The function to compare.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 bool Function::equals(Function * funct)
 {
@@ -44,7 +44,7 @@ bool Function::equals(Function * funct)
 // Note: funct's DT_NOT_DEFINED data is ignored.
 // @funct: The function to compare.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 bool Function::matches(Function * funct)
 {
@@ -63,7 +63,7 @@ bool Function::matches(Function * funct)
 // This function performs a deep copy to itself.
 // @funct: The function to duplicate.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void Function::copy(Function * funct)
 {
@@ -76,31 +76,21 @@ void Function::copy(Function * funct)
 // This constructor builds a node for a function call.
 // @str: The function's name.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 FunctionCallNode::FunctionCallNode(string str) : CommandCallNode(str)
 {
-	type = FUNCTCALLING;
 	funct = new Function(DT_NOT_DEFINED, str, DT_NOT_DEFINED);
 	((Command*)this->getFunct())->copy(funct);
 }
 
 // ----------------------------------------------------------
-// This function prints this node to the given output stream.
-// @out: The stream to display to.
+// Destructor.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
-void FunctionCallNode::printMe(ostream* out)
+FunctionCallNode::~FunctionCallNode()
 {
-	leftChild->printMe(out);
-
-	*out << "." << lexeme << "(";
-
-	if (rightChild != NULL)
-	{
-		rightChild->printMe(out);
-	}
-
-	*out << ")";
+	if (funct != NULL)
+		delete funct;
 }

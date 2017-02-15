@@ -3,12 +3,10 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "controlFlowNode.h"
+#include "ControlFlowNodes\controlFlowNode.h"
 #include "node.h"
 using namespace std;
 
-class ControlFlowNode;
-class AbstractNode;
 class Phase;
 
 // ----------------------------------------------------------
@@ -24,21 +22,18 @@ private:
 
 public:
 	ProgramNode();
+	~ProgramNode();
 
-	// ----------------------------------------------------------
-	// This function returns the first statement of code.
-	//
-	// Version 2.0
-	// ----------------------------------------------------------
 	ControlFlowNode* getFirstStmt() { return firstStmt; }
 
 	void setLineCount(int i_lineCount) { lineCount = i_lineCount; }
 	int getLineCount() { return lineCount; }
 
 	void addFirstStmt(ControlFlowNode* first);
-	void clean();
-	void printNodes(ostream* out);
-	void visitAllChildren(Phase* p);
 
+	bool isTreeTyped();
+
+	void visitFirstStmt(Phase* p) { visitNode(p, firstStmt); }
+	void visitAllChildren(Phase* p) { visitNode(p, firstStmt); }
 	void accept(Phase* p) { p->visit(this); }
 };

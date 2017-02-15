@@ -1,33 +1,51 @@
 // -----------------------------------------------------------------
-// This is the header for the CodeGeneratingPhase class.
+// This is the header for the PrintingPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
 #include <iostream>
-#include <fstream>
 #include "phase.h"
 #include "..\Parsing\nodes.h"
 using namespace std;
 
 // ----------------------------------------------------------
-// This class represents a visitor for generating output code
-// that reflects the current AST.
+// This class represents a visitor for displaying the AST to
+// an output stream.
 //
 // Version 3.0
 // ----------------------------------------------------------
-class CodeGenerationPhase : public Phase
+class PrintingPhase : public Phase
 {
 private:
-	ofstream* out; // the output stream to print to
-	int dblTempNo; // the current double temporary number in a line
-	int strTempNo; // the current string temporary number in a line
-	int indentDepth; // the number of tabs to insert
+	ostream* out; // the output stream to print to
+	int indentDepth; // the number of indents to insert
+
+	bool printingDataTypeInfo;
+	bool printingAsciiInfo;
+	bool printingLineNumberInfo;
+
+	void printDataTypeInfo(Node* n);
+	void printAsciiInfo(AsciiNode* n);
+	void printBinaryOpNodeInfo(BinaryOpNode* n);
+
+	void printNodeData(Node* n, string name);
+	void printCmdData(Command* c, string name);
+	void printFunctData(Function* f, string name);
+
+	void printLine(string line) { *out << indent() << line << endl; }
+	void print(string toPrint) { *out << toPrint; }
+	
+	string indent();
+	string trueOrFalse(bool b) { return b ? "true" : "false"; }
+	string dataType(DataType dt);
+	string concat(string s, int i) { return s + to_string(i); }
 
 public:
-	CodeGenerationPhase();
+	PrintingPhase(ostream* i_out);
 
-	void open(string outputFileName);
-	void close();
+	void includeDataTypingInfo() { printingDataTypeInfo = true; }
+	void includeAsciiInfo() { printingAsciiInfo = true; }
+	void includeLineNumberInfo() { printingLineNumberInfo = true; }
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);
@@ -53,19 +71,4 @@ public:
 	void visit(EQingNode * n);
 	void visit(LTEingNode * n);
 	void visit(GTEingNode * n);
-	
-	// ----------------------------------------------------------
-	// This function returns a string containing the current tab
-	// indentation.
-	//
-	// Version 3.0
-	// ----------------------------------------------------------
-	string indent()
-	{
-		string result = "";
-		for (int i = 0; i < indentDepth; i++)
-			result = result + "\t";
-
-		return result;
-	}
 };

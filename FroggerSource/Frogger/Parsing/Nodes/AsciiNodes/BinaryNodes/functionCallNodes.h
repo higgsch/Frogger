@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "..\abstractNode.h"
+#include "binaryNode.h"
 #include "commandNodes.h"
 #include <vector>
 using namespace std;
@@ -12,7 +12,7 @@ using namespace std;
 // This class represents the information known about a Function.
 // It holds known information about an individual function.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class Function : public Command
 {
@@ -30,7 +30,7 @@ public:
 // This class provides a node representation for a function
 // call.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class FunctionCallNode : public CommandCallNode
 {
@@ -39,21 +39,11 @@ private:
 
 public:
 	FunctionCallNode(string);
-	void printMe(ostream* out);
-
-	// ----------------------------------------------------------
-	// This function allows double dispatch required for visitor
-	// pattern.
-	// @p: The visitor to operate on this node.
-	//
-	// Version 2.4
-	// ----------------------------------------------------------
-	void accept(Phase* p)	{	p->visit(this);	}
+	~FunctionCallNode();
 	
 	Function* getFunct() { return funct; }
-	void setFunct(Function * function)
-	{
-		//Don't just change pointer because ArgListNodes use the old pointer
-		funct->copy(function);
-	}
+	//Don't just change pointer because ArgListNodes use the old pointer
+	void setFunct(Function * function) { funct->copy(function); }
+
+	void accept(Phase* p) { p->visit(this); }
 };

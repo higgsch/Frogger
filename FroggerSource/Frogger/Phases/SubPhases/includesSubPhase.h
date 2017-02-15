@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for generating import
 // statements as a subphase of the CodeGenerationPhase.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class IncludesSubPhase : public Phase
 {

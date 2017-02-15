@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for generating temporary's
 // assignments for a given line of code.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class TempAssignSubPhase : public Phase
 {
@@ -50,6 +50,12 @@ public:
 	void visit(LTEingNode * n);
 	void visit(GTEingNode * n);
 
+	// ----------------------------------------------------------
+	// This function returns a string containing the current tab
+	// indentation.
+	//
+	// Version 3.0
+	// ----------------------------------------------------------
 	string indent()
 	{
 		string result = "";

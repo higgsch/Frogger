@@ -59,10 +59,14 @@ ProgramNode* Parser::parse()
 // This function represents production rule:
 // <prog> => <flowstmt> <flowstmts> $
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void Parser::prog()
 {
+	Token tok = next_token();
+	if (tok.type == TOKTYPE_SCANEOF)
+		this->syntax_error("A program must have at least one statement");
+
 	ControlFlowNode* first = flowstmt(); 
 	first->addNextStmt(flowstmts());
 	root->addFirstStmt(first);
@@ -149,7 +153,7 @@ ControlFlowNode* Parser::nestedflowstmt()
 IfNode* Parser::ifstmt()
 {
 	match(TOKTYPE_IF); match(TOKTYPE_LPAREN);
-	BinaryOpNode* toCompare = boolexp();
+	AsciiNode* toCompare = boolexp();
 	match(TOKTYPE_RPAREN); match(TOKTYPE_THEN);
 	ControlFlowNode* trueStmt = nestedflowstmt();
 	match(TOKTYPE_ELSE);
@@ -169,12 +173,13 @@ IfNode* Parser::ifstmt()
 //
 // Version 3.0
 // ----------------------------------------------------------
-BinaryOpNode* Parser::boolexp()
+AsciiNode* Parser::boolexp()
 {
-	AbstractNode* left = expr(); 
+	AsciiNode* left = expr(); 
 
 	Token tok = next_token();
-	BinaryOpNode* not = NULL;
+
+	NotingNode* not = NULL;
 	if (tok.type == TOKTYPE_NOT)
 	{
 		match(TOKTYPE_NOT); 
@@ -182,7 +187,7 @@ BinaryOpNode* Parser::boolexp()
 	}
 
 	BinaryOpNode* op = boolop(); 
-	AbstractNode* right = expr();
+	AsciiNode* right = expr();
 	op->addOps(left, right);
 
 	if (not == NULL)
@@ -191,7 +196,7 @@ BinaryOpNode* Parser::boolexp()
 	}
 	else
 	{
-		not->addLeftChild(op);
+		not->addOperand(op);
 		return not;
 	}
 }
@@ -265,7 +270,7 @@ JmpStmtNode* Parser::jmpstmt()
 			Token argTok = next_token();
 			if (argTok.type != TOKTYPE_RPAREN)
 			{
-				cmd->addRightChild(arglist(0, cmd->getCmd()));
+				cmd->addArgList(arglist(0, cmd->getCmd()));
 			}
 
 			match(TOKTYPE_RPAREN);
@@ -279,7 +284,7 @@ JmpStmtNode* Parser::jmpstmt()
 			IdRefNode* id = new IdRefNode(idTok.lexeme);
 			match(TOKTYPE_ASSIGN);
 
-			AbstractNode* toAssign = expr();
+			AsciiNode* toAssign = expr();
 			match(TOKTYPE_SEMICOLON);
 
 			stmt->setStmt(new AssigningNode(id, toAssign));
@@ -302,14 +307,14 @@ JmpStmtNode* Parser::jmpstmt()
 //
 // Version 3.0
 // ----------------------------------------------------------
-AbstractNode* Parser::arglist(int argNo, Command* cmd)
+AsciiNode* Parser::arglist(int argNo, Command* cmd)
 {
-	AbstractNode * firstArg = expr();
-	AbstractNode * nextArg = NULL;
+	AsciiNode * firstArg = expr();
+	AsciiNode * nextArg = NULL;
 
 	ArgListNode * list = new ArgListNode();
 	list->setCmd(cmd);
-	list->addLeftChild(firstArg);
+	list->addThisArg(firstArg);
 	list->setArgNo(argNo);
 	cmd->addArg(DT_NOT_DEFINED);
 	argNo++;
@@ -320,7 +325,7 @@ AbstractNode* Parser::arglist(int argNo, Command* cmd)
 		nextArg = arglist(argNo, cmd);
 	}
 
-	list->addRightChild(nextArg);
+	list->addNextArg(nextArg);
 	return list;
 }
 
@@ -333,9 +338,9 @@ AbstractNode* Parser::arglist(int argNo, Command* cmd)
 //
 // Version 3.0
 // ----------------------------------------------------------
-AbstractNode* Parser::expr()
+AsciiNode* Parser::expr()
 {
-	AbstractNode* left = addterm();
+	AsciiNode* left = addterm();
 
 	Token tok = next_token();
 	switch(tok.type)
@@ -344,7 +349,7 @@ AbstractNode* Parser::expr()
 	case TOKTYPE_SUB:
 		{
 			BinaryOpNode* op = addop();
-			AbstractNode* right = expr();
+			AsciiNode* right = expr();
 			op->addOps(left, right);
 			return op;
 			break;
@@ -365,9 +370,9 @@ AbstractNode* Parser::expr()
 //
 // Version 3.0
 // ----------------------------------------------------------
-AbstractNode* Parser::addterm()
+AsciiNode* Parser::addterm()
 {
-	AbstractNode* left = multerm();
+	AsciiNode* left = multerm();
 
 	Token tok = next_token();
 	switch (tok.type)
@@ -378,7 +383,7 @@ AbstractNode* Parser::addterm()
 	case TOKTYPE_IDIV:
 		{
 			BinaryOpNode* op = mulop();
-			AbstractNode* right = addterm();
+			AsciiNode* right = addterm();
 			op->addOps(left, right);
 			return op;
 			break;
@@ -399,9 +404,9 @@ AbstractNode* Parser::addterm()
 //
 // Version 3.0
 // ----------------------------------------------------------
-AbstractNode* Parser::multerm()
+AsciiNode* Parser::multerm()
 {
-	AbstractNode* left = typedterm();
+	AsciiNode* left = typedterm();
 
 	Token tok = next_token();
 	switch (tok.type)
@@ -410,7 +415,7 @@ AbstractNode* Parser::multerm()
 	case TOKTYPE_EXP: 
 		{
 			BinaryOpNode* op = expop();
-			AbstractNode* right = multerm();
+			AsciiNode* right = multerm();
 			op->addOps(left, right);
 			return op;
 			break;
@@ -432,11 +437,11 @@ AbstractNode* Parser::multerm()
 //
 // Version 3.0
 // ----------------------------------------------------------
-AbstractNode* Parser::typedterm()
+AsciiNode* Parser::typedterm()
 {
-	AbstractNode * root = NULL;
-	AbstractNode * prim = primary();
-	AbstractNode * curr = prim;
+	AsciiNode * root = NULL;
+	AsciiNode * prim = primary();
+	AsciiNode * curr = prim;
 
 	do
 	{
@@ -454,12 +459,12 @@ AbstractNode* Parser::typedterm()
 
 			if (firstArg.type != TOKTYPE_RPAREN)
 			{
-				funct->addRightChild(arglist(0,funct->getFunct()));
+				funct->addArgList(arglist(0,funct->getFunct()));
 			}
 
 			match(TOKTYPE_RPAREN);
 
-			funct->addLeftChild(curr);
+			funct->addPrimary(curr);
 			curr = funct;
 		}
 		else
@@ -482,7 +487,7 @@ AbstractNode* Parser::typedterm()
 //
 // Version 3.0
 // ----------------------------------------------------------
-AbstractNode* Parser::primary()
+AsciiNode* Parser::primary()
 {
 	Token tok = next_token();
 	switch (tok.type)
@@ -506,7 +511,7 @@ AbstractNode* Parser::primary()
 			Token firstArg = next_token();
 			if (firstArg.type != TOKTYPE_RPAREN)
 			{
-				funct->addRightChild(arglist(0, funct->getFunct()));
+				funct->addArgList(arglist(0, funct->getFunct()));
 			}
 
 			match(TOKTYPE_RPAREN);
@@ -520,7 +525,7 @@ AbstractNode* Parser::primary()
 	case TOKTYPE_LPAREN:
 		{
 			match(TOKTYPE_LPAREN); 
-			AbstractNode* val = expr(); 
+			AsciiNode* val = expr(); 
 			match(TOKTYPE_RPAREN);
 			val->addParenNesting();
 			return val;

@@ -104,7 +104,7 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(JmpStmtNode * n)
 {
@@ -141,7 +141,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 // This function processes an if statement.
 // @n: The node representing the statement.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IfNode * n)
 {
@@ -196,14 +196,14 @@ void CodeGenerationPhase::visit(IdRefNode * n)
 // This function processes an assignment statement.
 // @n: The node representing the statement.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(AssigningNode * n)
 {
 	*out << indent();
-	n->visitLeftChild(this);
+	n->visitAssignee(this);
 	*out << " = (";
-	n->visitRightChild(this);
+	n->visitAssignor(this);
 	*out << ");" << endl;
 }
 
@@ -211,7 +211,7 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
@@ -219,11 +219,10 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 	if (funct->isUserDefined())
 	{
 		*out << "(";
-		n->visitLeftChild(this);
+		n->visitPrimary(this);
 		*out << ")." << funct->name << "(";
-
-		if (n->getRightChild() != NULL)
-			n->visitRightChild(this);
+		
+		n->visitArgList(this);
 
 		*out << ")";
 	}
@@ -234,30 +233,30 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 		if (name == "toString")
 		{
 			*out << "to_string(";
-			n->visitLeftChild(this);
+			n->visitPrimary(this);
 			*out << ")";
 			//<double>:toString() takes no arguments
 		}
 		else if (name == "toAscii")
 		{
 			*out << "(char) (";
-			n->visitLeftChild(this);
+			n->visitPrimary(this);
 			*out << ")";
 			//<double>:toAscii() takes no arguments
 		}
 		else if (name == "parseDouble")
 		{
 			*out << "stringToDouble(";
-			n->visitLeftChild(this);
+			n->visitPrimary(this);
 			*out << ")";
 			//<string>:parseDouble() takes no arguments
 		}
 		else if (name == "asciiAt")
 		{
 			*out << "stringToAscii(";
-			n->visitLeftChild(this);
+			n->visitPrimary(this);
 			*out << ", ";
-			n->visitRightChild(this);
+			n->visitArgList(this);
 			*out << ")";
 			//<string>:asciiAt(<double>) takes an argument
 		}
@@ -282,7 +281,7 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(CommandCallNode * n)
 {
@@ -290,13 +289,12 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 	if (cmd->isUserDefined())
 	{
 		//*out << "(";
-		//n->visitLeftChild(this);
+		//n->visitPrimary(this);
 		//*out << ").";
 
 		*out << cmd->name << "(";
 
-		if (n->getRightChild() != NULL)
-			n->visitRightChild(this);
+		n->visitArgList(this);
 
 		*out << ")";
 	}
@@ -311,7 +309,7 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 		else if (name == "display")
 		{
 			*out << indent() << "cout << (";
-			n->visitRightChild(this);
+			n->visitArgList(this);
 			*out << ");" << endl;
 		}
 		else
@@ -323,16 +321,16 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 // This function processes an element in an argument list.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(ArgListNode * n)
 {
-	n->visitLeftChild(this);
+	n->visitThisArg(this);
 	
-	if (n->getRightChild() != NULL)
+	if (n->hasNextArg())
 	{
 		*out << ", ";
-		n->visitRightChild(this);
+		n->visitNextArg(this);
 	}
 }
 
@@ -368,7 +366,7 @@ void CodeGenerationPhase::visit(DoubleConstingNode * n)
 // This function processes an addition operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(AddingNode * n)
 {
@@ -378,9 +376,9 @@ void CodeGenerationPhase::visit(AddingNode * n)
 	if (n->getDataType() == DT_STRING)
 		*out << "emptyString + ";
 
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " + ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -390,16 +388,16 @@ void CodeGenerationPhase::visit(AddingNode * n)
 // This function processes a subtraction operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(SubingNode * n)
 {
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " - ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -409,16 +407,16 @@ void CodeGenerationPhase::visit(SubingNode * n)
 // This function processes a multiplication operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(MulingNode * n)
 {
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " * ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -428,16 +426,16 @@ void CodeGenerationPhase::visit(MulingNode * n)
 // This function processes a division operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(DivingNode * n)
 {
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " / ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -447,7 +445,7 @@ void CodeGenerationPhase::visit(DivingNode * n)
 // This function processes a modulus division operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(ModDivingNode * n)
 {
@@ -455,9 +453,9 @@ void CodeGenerationPhase::visit(ModDivingNode * n)
 		*out << "(";
 
 	*out << "fmod( ";
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << ", ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	*out << " )";
 	
 	if (n->getParenNesting() > 0)
@@ -468,7 +466,7 @@ void CodeGenerationPhase::visit(ModDivingNode * n)
 // This function processes an integer division operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IDivingNode * n)
 {
@@ -476,9 +474,9 @@ void CodeGenerationPhase::visit(IDivingNode * n)
 		*out << "(";
 
 	*out << "((int)round(";
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << ")) / ((int)round(";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	*out << "))";
 	
 	if (n->getParenNesting() > 0)
@@ -489,7 +487,7 @@ void CodeGenerationPhase::visit(IDivingNode * n)
 // This function processes a rootation operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(RootingNode * n)
 {
@@ -497,9 +495,9 @@ void CodeGenerationPhase::visit(RootingNode * n)
 		*out << "(";
 
 	*out << "pow(";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	*out << ", 1.0 / ";
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << ")";
 	
 	if (n->getParenNesting() > 0)
@@ -510,7 +508,7 @@ void CodeGenerationPhase::visit(RootingNode * n)
 // This function processes an exponentiation operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(ExpingNode * n)
 {
@@ -518,9 +516,9 @@ void CodeGenerationPhase::visit(ExpingNode * n)
 		*out << "(";
 
 	*out << "pow(";
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << ", ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 	*out << ")";
 	
 	if (n->getParenNesting() > 0)
@@ -531,12 +529,12 @@ void CodeGenerationPhase::visit(ExpingNode * n)
 // This function processes a not operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(NotingNode * n) 
 {
 	*out << "!( ";
-	n->visitLeftChild(this);
+	n->visitOperand(this);
 	*out << " )";
 }
 
@@ -544,39 +542,39 @@ void CodeGenerationPhase::visit(NotingNode * n)
 // This function processes a less than comparison operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(LTingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " < ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 }
 
 // ----------------------------------------------------------
 // This function processes a greater than comparison operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(GTingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " > ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 }
 
 // ----------------------------------------------------------
 // This function processes an equivalence comparison operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(EQingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " == ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 }
 
 // ----------------------------------------------------------
@@ -584,13 +582,13 @@ void CodeGenerationPhase::visit(EQingNode * n)
 // operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(LTEingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " <= ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 }
 
 // ----------------------------------------------------------
@@ -598,11 +596,11 @@ void CodeGenerationPhase::visit(LTEingNode * n)
 // operation.
 // @n: The node representing the operation.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(GTEingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitLeftOperand(this);
 	*out << " >= ";
-	n->visitRightChild(this);
+	n->visitRightOperand(this);
 }

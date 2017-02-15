@@ -21,6 +21,8 @@ void Compiler::run(string inFile, string outFile)
 {
 	buildAST(inFile);
 	
+	//printAST("printableAST.txt");
+
 	setLineNumbers();
 	computeJumpToLineNumbers(); //Depends on line numbers
 
@@ -113,6 +115,30 @@ void Compiler::emitCode(string outFile)
 	cgp->close();
 
 	delete cgp;
+}
+
+// ----------------------------------------------------------
+// This function drives test output of the tree to a file.
+// @outFile: The file that tree should be is sent to.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void Compiler::printAST(string outFile)
+{
+	ofstream* out = new ofstream();
+	out->open(outFile);
+
+	PrintingPhase *pp = new PrintingPhase(out);
+
+	pp->includeAsciiInfo();
+	//pp->includeDataTypingInfo();
+	//pp->includeLineNumberInfo();
+	root->accept(pp);
+
+	delete pp;
+
+	out->close();
+	delete out;
 }
 
 // ----------------------------------------------------------

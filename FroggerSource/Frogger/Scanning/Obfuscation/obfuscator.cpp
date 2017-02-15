@@ -24,6 +24,12 @@ Obfuscator::Obfuscator(ifstream* ifs) : outSource(4)
 	routineCounter = 0;
 }
 
+// ----------------------------------------------------------
+// This function refills the buffer if it has been completely
+// read.
+//
+// Version 3.0
+// ----------------------------------------------------------
 void Obfuscator::checkEndOfBuffer()
 {
 	if (outSource.atEndOfBuffer())
@@ -58,6 +64,12 @@ void Obfuscator::unget()
 	outSource.unget();
 }
 
+// ----------------------------------------------------------
+// This function returns the next char without moving file
+// position.
+//
+// Version 3.0
+// ----------------------------------------------------------
 char Obfuscator::peek()
 {
 	checkEndOfBuffer();

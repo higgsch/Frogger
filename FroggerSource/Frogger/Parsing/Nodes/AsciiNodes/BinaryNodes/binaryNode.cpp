@@ -1,27 +1,35 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.3
+//                      Version: 3.0
 // -----------------------------------------------------------------
-// This program provides the base of the node inheritance for
-// the AST intermediate representation. Supports the visitor
-// pattern for a Phase.
+// This program provides nodes with two children.
 // -----------------------------------------------------------------
-
-#include "abstractNode.h"
+#include "binaryNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
-// Default constructor initializes pointers and counters.
+// Default constructor.
 //
-// Version 2.3
+// Version 3.0
 // ----------------------------------------------------------
-AbstractNode::AbstractNode()
+BinaryNode::BinaryNode()
 {
-	parent = NULL;
 	leftChild = NULL;
 	rightChild = NULL;
-	parenNestCount = 0;
-	dataType = DT_NOT_DEFINED;
+}
+
+// ----------------------------------------------------------
+// Destructor.
+//
+// Version 3.0
+// ----------------------------------------------------------
+BinaryNode::~BinaryNode()
+{
+	if (leftChild != NULL)
+		delete leftChild;
+
+	if (rightChild != NULL)
+		delete rightChild;
 }
 
 // ----------------------------------------------------------
@@ -29,18 +37,15 @@ AbstractNode::AbstractNode()
 // left child.
 // @absNode: The new left child for this node.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
-void AbstractNode::addLeftChild(AbstractNode * absNode)
+void BinaryNode::addLeftChild(AsciiNode * absNode)
 {
 	if (absNode == NULL)
 		return;
+
 	if (leftChild == NULL)
-	{
-		absNode->setParent(this);
-		absNode->setWhichSide(LEFT);
 		leftChild = absNode;
-	}
 	else
 		cout << "COMPILER ERROR: expression not correct" << endl;
 }
@@ -50,38 +55,30 @@ void AbstractNode::addLeftChild(AbstractNode * absNode)
 // right child.
 // @absNode: The new right child for this node.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
-void AbstractNode::addRightChild(AbstractNode * absNode)
+void BinaryNode::addRightChild(AsciiNode * absNode)
 {
 	if (absNode == NULL)
 		return;
-	if (rightChild == NULL)
-	{
-		absNode->setParent(this);
-		absNode->setWhichSide(RIGHT);
-		rightChild = absNode;
 
-	}
+	if (rightChild == NULL)
+		rightChild = absNode;
 	else
 		cout << "COMPILER ERROR: expression not correct" << endl;
 }
 
 // ----------------------------------------------------------
-// This function handles the memory cleanup.
+// This function determines if the tree down from this node
+// has been successfully typed yet.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
-void AbstractNode::clean()
+bool BinaryNode::isTreeTyped()
 {
-	if (leftChild != NULL)
-	{
-		leftChild->clean();
-		free(leftChild);
-	}
-	if (rightChild != NULL)
-	{
-		rightChild->clean();
-		free(rightChild);
-	}
+	if (leftChild != NULL && !leftChild->isTreeTyped())
+		return false;
+	if (rightChild != NULL && !rightChild->isTreeTyped())
+		return false;
+	return isTyped();
 }

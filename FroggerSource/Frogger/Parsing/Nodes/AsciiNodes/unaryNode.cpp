@@ -2,45 +2,38 @@
 //                      FROGGER Compiler
 //                      Version: 3.0
 // -----------------------------------------------------------------
-// This program provides a root node for the AST.
+// This program provides nodes with one child.
 // -----------------------------------------------------------------
-#include "programNode.h"
+#include "unaryNode.h"
 using namespace std;
-
-// ----------------------------------------------------------
-// Default constructor.
-//
-// Version 3.0
-// ----------------------------------------------------------
-ProgramNode::ProgramNode()
-{
-	firstStmt = NULL;
-	lineCount = 0;
-}
 
 // ----------------------------------------------------------
 // Destructor.
 //
 // Version 3.0
 // ----------------------------------------------------------
-ProgramNode::~ProgramNode()
+UnaryNode::~UnaryNode()
 {
-	if (firstStmt != NULL)
-		delete firstStmt;
+	if (child != NULL)
+		delete child;
 }
 
 // ----------------------------------------------------------
-// Adds a first statement to the root node.
-// @first: The first statement.
+// This function incorporates the given node as this node's
+// child.
+// @absNode: The new child for this node.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
-void ProgramNode::addFirstStmt(ControlFlowNode* first)
+void UnaryNode::addChild(AsciiNode * absNode)
 {
-	if (firstStmt == NULL)
-		firstStmt = first;
+	if (absNode == NULL)
+		return;
+
+	if (child == NULL)
+		child = absNode;
 	else
-		ast_error("ProgramNode's root already exists");
+		cout << "COMPILER ERROR: expression not correct" << endl;
 }
 
 // ----------------------------------------------------------
@@ -49,10 +42,9 @@ void ProgramNode::addFirstStmt(ControlFlowNode* first)
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool ProgramNode::isTreeTyped()
+bool UnaryNode::isTreeTyped()
 {
-	if (firstStmt != NULL && !firstStmt->isTreeTyped())
+	if (child != NULL && !child->isTreeTyped())
 		return false;
-
 	return isTyped();
 }

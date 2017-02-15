@@ -11,7 +11,7 @@ using namespace std;
 // This class represents a visitor for converting string
 // literals from frogger syntax to c++ syntax.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class StringConversionPhase : public Phase
 {

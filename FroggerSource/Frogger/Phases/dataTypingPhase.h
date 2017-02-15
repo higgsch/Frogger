@@ -13,7 +13,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class represents a visitor for checking data types
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 class DataTypingPhase : public Phase
 {
@@ -24,21 +24,18 @@ private:
 	bool changeMadeThisRound;
 	bool setUnknownTypeNodesToDefault;
 
-	void checkAndSetNodeDataType(AbstractNode * node, DataType type);
-	void checkAndSetTreeDataType(AbstractNode * node, DataType type);
+	void checkAndSetNodeDataType(AsciiNode * node, DataType type);
+	void checkAndSetTreeDataType(TerminalNode * node, DataType type);
+	void checkAndSetTreeDataType(UnaryNode * node, DataType type);
+	void checkAndSetTreeDataType(BinaryNode * node, DataType type);
 	void checkAndSetArgDataType(Command * cmd, int argNo, DataType type);
-	void unifyTreeDataType(AbstractNode * node);
+	void unifyTreeDataType(TerminalNode * node);
+	void unifyTreeDataType(UnaryNode * node);
+	void unifyTreeDataType(BinaryNode * node);
 	void dataType_error(string);
 
 public:
-	DataTypingPhase() 
-	{ 
-		symbols = new SymbolTable(); 
-		functions = new FunctionTable();
-		commands = new CommandTable();
-		changeMadeThisRound = false; 
-		setUnknownTypeNodesToDefault = false;
-	}
+	DataTypingPhase();
 
 	SymbolTable * getSymbolTable();
 	FunctionTable * getFunctionTable();

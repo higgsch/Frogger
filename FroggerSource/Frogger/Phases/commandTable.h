@@ -4,8 +4,8 @@
 #pragma once
 
 #include <vector>
-#include "../Parsing/Nodes/abstractNode.h"
-#include "../Parsing/Nodes/AbstractNodeChild/commandNodes.h"
+#include "../Parsing/Nodes/AsciiNodes/asciiNode.h"
+#include "../Parsing/Nodes/AsciiNodes/BinaryNodes/commandNodes.h"
 using namespace std;
 
 // ----------------------------------------------------------

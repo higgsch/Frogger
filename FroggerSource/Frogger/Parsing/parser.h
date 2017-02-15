@@ -31,19 +31,19 @@ private:
 
 	//Control
 	IfNode* ifstmt();
-	BinaryOpNode* boolexp();
+	AsciiNode* boolexp();
 	BinaryOpNode* boolop();
 
 	//Action Statements
 	JmpStmtNode* jmpstmt();
-	AbstractNode* arglist(int argNo, Command* cmd);
+	AsciiNode* arglist(int argNo, Command* cmd);
 
 	//Expressions
-	AbstractNode* expr();
-	AbstractNode* addterm();
-	AbstractNode* multerm();
-	AbstractNode* typedterm();
-	AbstractNode* primary();
+	AsciiNode* expr();
+	AsciiNode* addterm();
+	AsciiNode* multerm();
+	AsciiNode* typedterm();
+	AsciiNode* primary();
 
 	//Operators
 	BinaryOpNode* addop();

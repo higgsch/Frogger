@@ -86,7 +86,7 @@ void SummationPhase::visit(ProgramNode * n)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 2.0
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(JmpStmtNode * n)
 {
@@ -125,7 +125,7 @@ void SummationPhase::visit(IdRefNode * n)
 // This function processes a assignment statement.
 // @n: The node representing the statement.
 //
-// Version 2.3
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(AssigningNode * n)
 {
@@ -133,9 +133,9 @@ void SummationPhase::visit(AssigningNode * n)
 
 	//Assignment adds '=' and ';' to the AST.
 	int ascii = getAsciiSumModLength("=;");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
+	AsciiNode *assignee = n->getAssignee(), *assignor = n->getAssignor();
+	ascii = accumulateModLength(ascii, assignee->getAscii());
+	ascii = accumulateModLength(ascii, assignor->getAscii());
 	n->setAscii(ascii);
 }
 
@@ -143,7 +143,7 @@ void SummationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(FunctionCallNode * n)
 {
@@ -153,14 +153,14 @@ void SummationPhase::visit(FunctionCallNode * n)
 	int ascii = getAsciiSumModLength(n->getLexeme() + "()");
 
 	//Functions with a parent add ':' to the AST (e.g. 65:toString(); )
-	if (n->getLeftChild() != NULL)
+	if (n->getPrimary() != NULL)
 		ascii = accumulateModLength(ascii, getAsciiSumModLength(":"));
 
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	if (left != NULL)
-		ascii = accumulateModLength(ascii, left->getAscii());
-	if (right != NULL)
-		ascii = accumulateModLength(ascii, right->getAscii());
+	AsciiNode *primary = n->getPrimary(), *argList = n->getArgList();
+	if (primary != NULL)
+		ascii = accumulateModLength(ascii, primary->getAscii());
+	if (argList != NULL)
+		ascii = accumulateModLength(ascii, argList->getAscii());
 	n->setAscii(ascii);
 }
 
@@ -168,7 +168,7 @@ void SummationPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(CommandCallNode * n)
 {
@@ -178,9 +178,9 @@ void SummationPhase::visit(CommandCallNode * n)
 	int ascii = getAsciiSumModLength(n->getLexeme() + "()");
 
 	//Commands do not have a left child
-	AbstractNode *right = n->getRightChild();
-	if (right != NULL)
-		ascii = accumulateModLength(ascii, right->getAscii());
+	AsciiNode *argList = n->getArgList();
+	if (argList != NULL)
+		ascii = accumulateModLength(ascii, argList->getAscii());
 	n->setAscii(ascii);
 }
 
@@ -188,7 +188,7 @@ void SummationPhase::visit(CommandCallNode * n)
 // This function processes an element in an argument list.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(ArgListNode * n)
 {
@@ -196,10 +196,10 @@ void SummationPhase::visit(ArgListNode * n)
 
 	//Argument list element adds "," to the AST if it is not the first in the list.
 	int ascii = getAsciiSumModLength(",");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	if (right != NULL)
-		ascii = accumulateModLength(ascii, right->getAscii());
+	AsciiNode *thisArg = n->getThisArg(), *nextArg = n->getNextArg();
+	ascii = accumulateModLength(ascii, thisArg->getAscii());
+	if (nextArg != NULL)
+		ascii = accumulateModLength(ascii, nextArg->getAscii());
 	n->setAscii(ascii);
 }
 
@@ -232,14 +232,14 @@ void SummationPhase::visit(DoubleConstingNode * n)
 // This function processes an addition operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(AddingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("++");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -252,14 +252,14 @@ void SummationPhase::visit(AddingNode * n)
 // This function processes a subtraction operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(SubingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("--");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -272,14 +272,14 @@ void SummationPhase::visit(SubingNode * n)
 // This function processes a multiplication operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(MulingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("**");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -292,14 +292,14 @@ void SummationPhase::visit(MulingNode * n)
 // This function processes a division operation.
 // @n: The node representing the operation.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(DivingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("//");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -312,14 +312,14 @@ void SummationPhase::visit(DivingNode * n)
 // This function processes a modulus division operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(ModDivingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("%%");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -332,14 +332,14 @@ void SummationPhase::visit(ModDivingNode * n)
 // This function processes an integer division operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(IDivingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("\\\\");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -352,14 +352,14 @@ void SummationPhase::visit(IDivingNode * n)
 // This function processes a rootation operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(RootingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("##");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	
@@ -372,14 +372,14 @@ void SummationPhase::visit(RootingNode * n)
 // This function processes an exponentiation operation.
 // @n: The node representing the operation.
 //
-// Version 2.1
+// Version 3.0
 // ----------------------------------------------------------
 void SummationPhase::visit(ExpingNode * n)
 {
 	n->visitAllChildren(this);
 
 	int ascii = getAsciiSumModLength("^^");
-	AbstractNode *left = n->getLeftChild(), *right = n->getRightChild();
+	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
 	ascii = accumulateModLength(ascii, left->getAscii());
 	ascii = accumulateModLength(ascii, right->getAscii());
 	

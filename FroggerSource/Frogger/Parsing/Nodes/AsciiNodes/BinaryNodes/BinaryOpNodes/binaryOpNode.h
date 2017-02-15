@@ -1,34 +1,34 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 1.0
+//                      Version: 3.0
 // -----------------------------------------------------------------
 // This program provides a node representation for a binary
 // operation; such as addition and division.
 // -----------------------------------------------------------------
 #pragma once
 
-#include "..\abstractNode.h"
+#include "..\binaryNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
 // This class provides a node representation for a binary
 // operation; such as addition and division.
 //
-// Version 1.0
+// Version 3.0
 // ----------------------------------------------------------
-class BinaryOpNode : public AbstractNode
+class BinaryOpNode : public BinaryNode
 {
 public:
-	// ----------------------------------------------------------
-	// This function adds the left and right operands to the AST.
-	// @left: The left side of the operator.
-	// @right: The right side of the operator.
-	//
-	// Version 1.0
-	// ----------------------------------------------------------
-	void addOps(AbstractNode* left, AbstractNode* right)
-	{
-		addLeftChild(left);
-		addRightChild(right);
-	}
+	BinaryOpNode() {}
+	~BinaryOpNode() {}
+
+	void addOps(AsciiNode* left, AsciiNode* right) {
+		addLeftChild(left); addRightChild(right); }
+
+	AsciiNode* getLeftOperand() { return getLeftChild(); }
+	AsciiNode* getRightOperand() { return getRightChild(); }
+
+	void visitLeftOperand(Phase* p) { visitLeftChild(p); }
+	void visitRightOperand(Phase* p) { visitRightChild(p); }
+	void visitBothOperands(Phase* p) { visitAllChildren(p); }
 };

@@ -9,7 +9,7 @@ using namespace std;
 
 //forward declarations
 class ProgramNode;
-class AbstractNode;
+class AsciiNode;
 class BinaryOpNode;
 class ControlFlowNode;
 class JmpStmtNode;

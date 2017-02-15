@@ -2,9 +2,9 @@
 //                      FROGGER Compiler
 //                      Version: 3.0
 // -----------------------------------------------------------------
-// This program provides a root node for the AST.
+// This program provides a node for a statement.
 // -----------------------------------------------------------------
-#include "programNode.h"
+#include "jmpStmtNode.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -12,10 +12,10 @@ using namespace std;
 //
 // Version 3.0
 // ----------------------------------------------------------
-ProgramNode::ProgramNode()
+JmpStmtNode::JmpStmtNode()
 {
-	firstStmt = NULL;
-	lineCount = 0;
+	stmt = NULL;
+	ascii_jmp = -1;
 }
 
 // ----------------------------------------------------------
@@ -23,24 +23,26 @@ ProgramNode::ProgramNode()
 //
 // Version 3.0
 // ----------------------------------------------------------
-ProgramNode::~ProgramNode()
+JmpStmtNode::~JmpStmtNode()
 {
-	if (firstStmt != NULL)
-		delete firstStmt;
+	if (stmt != NULL)
+		delete stmt;
+	
+	//TODO need to delete nextStmt?
 }
 
 // ----------------------------------------------------------
-// Adds a first statement to the root node.
-// @first: The first statement.
+// Adds a stmt to the list of statements.
+// @next:	The stmt to add.
 //
 // Version 2.0
 // ----------------------------------------------------------
-void ProgramNode::addFirstStmt(ControlFlowNode* first)
+void JmpStmtNode::addNextStmt(ControlFlowNode * next)
 {
-	if (firstStmt == NULL)
-		firstStmt = first;
+	if (nextStmt == NULL)
+		nextStmt = next;
 	else
-		ast_error("ProgramNode's root already exists");
+		nextStmt->addNextStmt(next);
 }
 
 // ----------------------------------------------------------
@@ -49,9 +51,12 @@ void ProgramNode::addFirstStmt(ControlFlowNode* first)
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool ProgramNode::isTreeTyped()
+bool JmpStmtNode::isTreeTyped()
 {
-	if (firstStmt != NULL && !firstStmt->isTreeTyped())
+	if (stmt != NULL && !stmt->isTreeTyped())
+		return false;
+
+	if (nextStmt != NULL && !nextStmt->isTreeTyped())
 		return false;
 
 	return isTyped();

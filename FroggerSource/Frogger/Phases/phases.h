@@ -9,4 +9,6 @@
 #include "stringConversionPhase.h"
 #include "dataTypingPhase.h"
 #include "codeGenerationPhase.h"
+
+#include "printingPhase.h"
 using namespace std;

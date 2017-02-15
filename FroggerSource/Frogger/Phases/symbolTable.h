@@ -4,7 +4,7 @@
 #pragma once
 
 #include <vector>
-#include "..\Parsing\Nodes\abstractNode.h"
+#include "..\Parsing\Nodes\AsciiNodes\asciiNode.h"
 using namespace std;
 
 // ----------------------------------------------------------

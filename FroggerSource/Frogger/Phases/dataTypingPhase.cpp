@@ -1,11 +1,25 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 2.5
+//                      Version: 3.0
 // ----------------------------------------------------------------
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
 #include "dataTypingPhase.h"
 using namespace std;
+
+// ----------------------------------------------------------
+// Default constructor.
+//
+// Version 3.0
+// ----------------------------------------------------------
+DataTypingPhase::DataTypingPhase() 
+{ 
+	symbols = new SymbolTable(); 
+	functions = new FunctionTable();
+	commands = new CommandTable();
+	changeMadeThisRound = false; 
+	setUnknownTypeNodesToDefault = false;
+}
 
 // ----------------------------------------------------------
 // This function starts the phase on the program root node.
@@ -156,11 +170,11 @@ void DataTypingPhase::visit(ArgListNode * n)
 	int argNo = n->getArgNo();
 	DataType oldArgType = n->getCmd()->getDataTypeOfArgNumber(argNo);
 	if (oldArgType != DT_NOT_DEFINED)
-		checkAndSetNodeDataType(n->getLeftChild(),oldArgType);
+		checkAndSetNodeDataType(n->getThisArg(),oldArgType);
 
 	n->visitAllChildren(this);
 	
-	DataType argType = n->getLeftChild()->getDataType();
+	DataType argType = n->getThisArg()->getDataType();
 	if (argType != DT_NOT_DEFINED)
 	{
 		checkAndSetNodeDataType(n, argType);
@@ -292,11 +306,11 @@ void DataTypingPhase::visit(ExpingNode * n)
 // This function processes a not operation.
 // @n: The node representing the operation.
 //
-// Version 2.3
+// Version 3.0
 // ----------------------------------------------------------
 void DataTypingPhase::visit(NotingNode * n) 
 {
-	n->visitLeftChild(this);
+	n->visitOperand(this);
 }
 
 // ----------------------------------------------------------
@@ -367,7 +381,7 @@ void DataTypingPhase::visit(GTEingNode * n)
 // 
 // Version 2.3
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetNodeDataType(AbstractNode * node, DataType type)
+void DataTypingPhase::checkAndSetNodeDataType(AsciiNode * node, DataType type)
 {
 	if (node->getDataType() == type || type == DT_NOT_DEFINED)
 		return;
@@ -386,9 +400,25 @@ void DataTypingPhase::checkAndSetNodeDataType(AbstractNode * node, DataType type
 // children. It throws a dataType error if there is a dataType 
 // conflict.
 // 
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetTreeDataType(AbstractNode * node, DataType type)
+void DataTypingPhase::checkAndSetTreeDataType(TerminalNode * node, DataType type)
+{
+	if (type == DT_NOT_DEFINED)
+		return;
+
+	DataType thisOldType = node->getDataType();
+	checkAndSetNodeDataType(node, type);
+}
+
+// ----------------------------------------------------------
+// This function safely sets the dataType of a node and all 
+// children. It throws a dataType error if there is a dataType 
+// conflict.
+// 
+// Version 3.0
+// ----------------------------------------------------------
+void DataTypingPhase::checkAndSetTreeDataType(UnaryNode * node, DataType type)
 {
 	if (type == DT_NOT_DEFINED)
 		return;
@@ -396,7 +426,35 @@ void DataTypingPhase::checkAndSetTreeDataType(AbstractNode * node, DataType type
 	DataType thisOldType = node->getDataType();
 	checkAndSetNodeDataType(node, type);
 
-	AbstractNode *left = node->getLeftChild();
+	AsciiNode *child = node->getChild();
+	if (child != NULL)
+	{
+		DataType leftOldType = child->getDataType();
+		checkAndSetNodeDataType(child, type);
+		if (leftOldType == DT_NOT_DEFINED)
+			child->accept(this);
+	}
+
+	if (thisOldType == DT_NOT_DEFINED)
+		node->accept(this);
+}
+
+// ----------------------------------------------------------
+// This function safely sets the dataType of a node and all 
+// children. It throws a dataType error if there is a dataType 
+// conflict.
+// 
+// Version 2.5
+// ----------------------------------------------------------
+void DataTypingPhase::checkAndSetTreeDataType(BinaryNode * node, DataType type)
+{
+	if (type == DT_NOT_DEFINED)
+		return;
+
+	DataType thisOldType = node->getDataType();
+	checkAndSetNodeDataType(node, type);
+
+	AsciiNode *left = node->getLeftChild();
 	if (left != NULL)
 	{
 		DataType leftOldType = left->getDataType();
@@ -405,7 +463,7 @@ void DataTypingPhase::checkAndSetTreeDataType(AbstractNode * node, DataType type
 			left->accept(this);
 	}
 
-	AbstractNode *right = node->getRightChild();
+	AsciiNode *right = node->getRightChild();
 	if (right != NULL)
 	{
 		DataType rightOldType = right->getDataType();
@@ -445,9 +503,30 @@ void DataTypingPhase::checkAndSetArgDataType(Command * cmd, int argNo, DataType 
 // children based on the node and children's dataType. It 
 // throws a dataType error if there is a dataType conflict.
 // 
-// Version 2.3
+// Version 3.0
 // ----------------------------------------------------------
-void DataTypingPhase::unifyTreeDataType(AbstractNode * node)
+void DataTypingPhase::unifyTreeDataType(TerminalNode * node)
+{
+	DataType type = node->getDataType();
+	if (type != DT_NOT_DEFINED)
+	{
+		checkAndSetTreeDataType(node, type);
+		return;
+	}
+	
+	//All nodes are DT_NOT_DEFINED
+	if (setUnknownTypeNodesToDefault)
+		checkAndSetTreeDataType(node, DT_DOUBLE);
+}
+
+// ----------------------------------------------------------
+// This function safely sets the dataType of a node and all 
+// children based on the node and children's dataType. It 
+// throws a dataType error if there is a dataType conflict.
+// 
+// Version 3.0
+// ----------------------------------------------------------
+void DataTypingPhase::unifyTreeDataType(UnaryNode * node)
 {
 	DataType type = node->getDataType();
 	if (type != DT_NOT_DEFINED)
@@ -456,7 +535,36 @@ void DataTypingPhase::unifyTreeDataType(AbstractNode * node)
 		return;
 	}
 
-	AbstractNode *left = node->getLeftChild();
+	AsciiNode *child = node->getChild();
+	type = child->getDataType();
+	if (type != DT_NOT_DEFINED)
+	{
+		checkAndSetTreeDataType(node, type);
+		return;
+	}
+
+	//All nodes are DT_NOT_DEFINED
+	if (setUnknownTypeNodesToDefault)
+		checkAndSetTreeDataType(node, DT_DOUBLE);
+}
+
+// ----------------------------------------------------------
+// This function safely sets the dataType of a node and all 
+// children based on the node and children's dataType. It 
+// throws a dataType error if there is a dataType conflict.
+// 
+// Version 3.0
+// ----------------------------------------------------------
+void DataTypingPhase::unifyTreeDataType(BinaryNode * node)
+{
+	DataType type = node->getDataType();
+	if (type != DT_NOT_DEFINED)
+	{
+		checkAndSetTreeDataType(node, type);
+		return;
+	}
+
+	AsciiNode *left = node->getLeftChild();
 	type = left->getDataType();
 	if (type != DT_NOT_DEFINED)
 	{
@@ -464,7 +572,7 @@ void DataTypingPhase::unifyTreeDataType(AbstractNode * node)
 		return;
 	}
 
-	AbstractNode *right = node->getRightChild();
+	AsciiNode *right = node->getRightChild();
 	type = right->getDataType();
 	if (type != DT_NOT_DEFINED)
 	{
@@ -475,7 +583,6 @@ void DataTypingPhase::unifyTreeDataType(AbstractNode * node)
 	//All nodes are DT_NOT_DEFINED
 	if (setUnknownTypeNodesToDefault)
 		checkAndSetTreeDataType(node, DT_DOUBLE);
-
 }
 
 // ----------------------------------------------------------
