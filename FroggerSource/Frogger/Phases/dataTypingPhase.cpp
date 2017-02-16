@@ -74,20 +74,20 @@ void DataTypingPhase::visit(IdRefNode * n)
 
 	if (type == DT_NOT_DEFINED)
 	{
-		if (symbols->symbolDefined(id))
+		if (symbols->isDefined(new Symbol(id, DT_NOT_DEFINED)))
 		{
 			n->setDataType(symbols->symbolType(id));
 			return;
 		}
 
 		if (setUnknownTypeNodesToDefault)
-			symbols->addSymbol(id, DT_DOUBLE);
+			symbols->add(new SymbolRecord(new Symbol(id, DT_DOUBLE)));
 
 		return;
 	}
 	
-	if (!symbols->symbolDefined(id))
-		symbols->addSymbol(id,type);
+	if (!symbols->isDefined(new Symbol(id, DT_NOT_DEFINED)))
+		symbols->add(new SymbolRecord(new Symbol(id,type)));
 	else
 	{
 		if (symbols->symbolType(id) != type)

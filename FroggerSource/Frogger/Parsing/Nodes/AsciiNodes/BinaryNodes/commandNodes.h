@@ -3,49 +3,10 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "binaryNode.h"
 #include <vector>
+#include "binaryNode.h"
+#include "..\..\..\..\Phases\records.h"
 using namespace std;
-
-// ----------------------------------------------------------
-// This class represents the information known about a command.
-// It holds known information about an individual command.
-//
-// Version 3.0
-// ----------------------------------------------------------
-class Command
-{
-public:
-	bool builtIn;
-	string name;
-	vector<DataType> *argTypeList;
-
-	Command(string i_name);
-	void addArg(DataType arg);
-	bool equals(Command* cmd);
-	bool matches(Command* cmd);
-	void copy(Command* cmd);
-
-	int getNumArgs() { 
-		if (argTypeList != NULL)
-			return argTypeList->size(); 
-		else
-			return 0;
-	}
-	DataType getDataTypeOfArgNumber(int argNo) 
-	{ 
-		if (argTypeList == NULL)
-			return DT_NOT_DEFINED;
-		else
-			return argTypeList->at(argNo);
-	}
-	void setDataTypeOfArgNumber(int argNo, DataType type) 
-	{ 
-		if (argNo < argTypeList->size()) 
-			(*argTypeList)[argNo] = type; 
-	}
-	bool isUserDefined() { return !builtIn; }
-};
 
 // ----------------------------------------------------------
 // This class provides a node representation for an element

@@ -5,9 +5,7 @@
 
 #include "phase.h"
 #include "..\Parsing\nodes.h"
-#include "symbolTable.h"
-#include "functionTable.h"
-#include "commandTable.h"
+#include "tables.h"
 using namespace std;
 
 // ----------------------------------------------------------

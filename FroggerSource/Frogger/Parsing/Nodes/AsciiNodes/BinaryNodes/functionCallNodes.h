@@ -3,28 +3,11 @@
 // -----------------------------------------------------------------
 #pragma once
 
+#include <vector>
 #include "binaryNode.h"
 #include "commandNodes.h"
-#include <vector>
+#include "..\..\..\..\Phases\records.h"
 using namespace std;
-
-// ----------------------------------------------------------
-// This class represents the information known about a Function.
-// It holds known information about an individual function.
-//
-// Version 3.0
-// ----------------------------------------------------------
-class Function : public Command
-{
-public:
-	DataType parentType;
-	DataType returnType;
-
-	Function(DataType i_parentType, string i_name, DataType i_returnType);
-	bool equals(Function* funct);
-	bool matches(Function* funct);
-	void copy(Function* funct);
-};
 
 // ----------------------------------------------------------
 // This class provides a node representation for a function
