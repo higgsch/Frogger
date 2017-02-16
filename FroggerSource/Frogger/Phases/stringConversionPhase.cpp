@@ -38,76 +38,6 @@ string StringConversionPhase::convertString(string s)
 }
 
 // ----------------------------------------------------------
-// This function processes a line of code.
-// @n: The node representing the line.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void StringConversionPhase::visit(JmpStmtNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an if statement.
-// @n: The node representing the statement.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void StringConversionPhase::visit(IfNode * n)
-{
-	n->visitTrueStmt(this);
-	n->visitFalseStmt(this);
-	n->visitNextStmt(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an assignment statement.
-// @n: The node representing the statement.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void StringConversionPhase::visit(AssigningNode * n)
-{
-	//Don't need to visit assignee because assignee is an id
-	n->visitAssignor(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a function call.
-// @n: The node representing the statement.
-//
-// Version 2.4
-// ----------------------------------------------------------
-void StringConversionPhase::visit(FunctionCallNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a function call.
-// @n: The node representing the statement.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void StringConversionPhase::visit(CommandCallNode * n)
-{
-	//Command call has no left child
-	n->visitArgList(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an element in an argument list.
-// @n: The node representing the statement.
-//
-// Version 2.4
-// ----------------------------------------------------------
-void StringConversionPhase::visit(ArgListNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
 // This function processes a string literal.
 // @n: The node representing the string.
 //
@@ -116,15 +46,4 @@ void StringConversionPhase::visit(ArgListNode * n)
 void StringConversionPhase::visit(StringConstingNode * n)
 {
 	n->setLexeme(convertString(n->getLexeme()));
-}
-
-// ----------------------------------------------------------
-// This function processes an addition operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void StringConversionPhase::visit(AddingNode * n)
-{
-	n->visitAllChildren(this);
 }

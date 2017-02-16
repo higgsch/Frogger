@@ -40,28 +40,6 @@ void DataTypingPhase::visit(ProgramNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a line of code.
-// @n: The node representing the line.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(JmpStmtNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an if statement.
-// @n: The node representing the statement.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(IfNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
@@ -185,28 +163,6 @@ void DataTypingPhase::visit(ArgListNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a string literal.
-// @n: The node representing the string.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(StringConstingNode * n)
-{
-	checkAndSetNodeDataType(n, DT_STRING);
-}
-
-// ----------------------------------------------------------
-// This function processes a double literal.
-// @n: The node representing the literal.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(DoubleConstingNode * n)
-{
-	checkAndSetNodeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
 // This function processes an addition operation.
 // @n: The node representing the operation.
 //
@@ -300,17 +256,6 @@ void DataTypingPhase::visit(ExpingNode * n)
 {
 	n->visitAllChildren(this);
 	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a not operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void DataTypingPhase::visit(NotingNode * n) 
-{
-	n->visitOperand(this);
 }
 
 // ----------------------------------------------------------

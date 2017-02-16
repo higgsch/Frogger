@@ -40,15 +40,15 @@ public:
 	CommandTable * getCommandTable();
 
 	void visit(ProgramNode * n);
-	void visit(JmpStmtNode * n);
-	void visit(IfNode * n);
+	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }
+	void visit(IfNode * n) { n->visitAllChildren(this); }
 	void visit(IdRefNode * n);
 	void visit(AssigningNode * n);
 	void visit(FunctionCallNode * n);
 	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n);
-	void visit(StringConstingNode * n);
-	void visit(DoubleConstingNode * n);
+	void visit(StringConstingNode * n) { checkAndSetNodeDataType(n, DT_STRING); }
+	void visit(DoubleConstingNode * n) { checkAndSetNodeDataType(n, DT_DOUBLE); }
 	void visit(AddingNode * n);
 	void visit(SubingNode * n);
 	void visit(MulingNode * n);
@@ -57,7 +57,7 @@ public:
 	void visit(IDivingNode * n);
 	void visit(RootingNode * n);
 	void visit(ExpingNode * n);
-	void visit(NotingNode * n);
+	void visit(NotingNode * n) { n->visitOperand(this); }
 	void visit(LTingNode * n);
 	void visit(GTingNode * n);
 	void visit(EQingNode * n);

@@ -27,27 +27,6 @@ CodeGenerationPhase::CodeGenerationPhase()
 }
 
 // ----------------------------------------------------------
-// This function opens the output file stream.
-// @filename: The file to write to (from project directory).
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::open(string filename)
-{
-	out->open(filename);
-}
-
-// ----------------------------------------------------------
-// This function closes the output file stream.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::close()
-{
-	out->close();	
-}
-
-// ----------------------------------------------------------
 // This function initiates the phase over the AST.
 // @n: The node representing the program.
 //
@@ -332,17 +311,6 @@ void CodeGenerationPhase::visit(ArgListNode * n)
 		*out << ", ";
 		n->visitNextArg(this);
 	}
-}
-
-// ----------------------------------------------------------
-// This function processes a string literal.
-// @n: The node representing the string.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(StringConstingNode * n)
-{
-	*out << n->getLexeme();
 }
 
 // ----------------------------------------------------------

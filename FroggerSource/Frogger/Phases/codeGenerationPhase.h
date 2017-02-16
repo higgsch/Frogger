@@ -26,8 +26,8 @@ private:
 public:
 	CodeGenerationPhase();
 
-	void open(string outputFileName);
-	void close();
+	void open(string filename) { out->open(filename); }
+	void close() { out->close(); }
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);
@@ -37,7 +37,7 @@ public:
 	void visit(FunctionCallNode * n);
 	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n);
-	void visit(StringConstingNode * n);
+	void visit(StringConstingNode * n) { *out << n->getLexeme(); }
 	void visit(DoubleConstingNode * n);
 	void visit(AddingNode * n);
 	void visit(SubingNode * n);

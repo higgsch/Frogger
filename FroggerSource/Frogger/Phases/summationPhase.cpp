@@ -9,18 +9,6 @@
 using namespace std;
 
 // ----------------------------------------------------------
-// This constructor generates a SummationPhase for the
-// given number of lines of code.
-// @numberOfStmts: The total number of lines in the source.
-//
-// Version 3.0
-// ----------------------------------------------------------
-SummationPhase::SummationPhase()
-{
-	numStmts = 0;
-}
-
-// ----------------------------------------------------------
 // This function adds the augend and the addend in mod length.
 // @augend: The left side of the addition (assumed to already
 //          be mod length).
@@ -94,17 +82,6 @@ void SummationPhase::visit(JmpStmtNode * n)
 	n->setJump(n->getStmt()->getAscii());
 
 	n->visitNextStmt(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an if statement.
-// @n: The node representing the statement.
-//
-// Version 2.0
-// ----------------------------------------------------------
-void SummationPhase::visit(IfNode * n)
-{
-	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------

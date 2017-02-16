@@ -31,40 +31,6 @@ IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 }
 
 // ----------------------------------------------------------
-// This function processes the include for a line of code.
-// @n: The node representing the line.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(JmpStmtNode * n)		
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for an if statement.
-// @n: The node representing the statement.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(IfNode * n)			
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for an assignment 
-// statement.
-// @n: The node representing the statement.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(AssigningNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
 // This function processes the include for a function call.
 // @n: The node representing the statement.
 //
@@ -145,18 +111,6 @@ void IncludesSubPhase::visit(CommandCallNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes the include for an element of an 
-// argument list.
-// @n: The node representing the statement.
-//
-// Version 2.4
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(ArgListNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
 // This function processes the include for a string literal.
 // @n: The node representing the string.
 //
@@ -186,39 +140,6 @@ void IncludesSubPhase::visit(AddingNode * n)
 		isStringImported = true;
 	}
 	
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a subtraction operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(SubingNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a multiplication operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(MulingNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a division operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(DivingNode * n)
-{
 	n->visitAllChildren(this);
 }
 
@@ -293,76 +214,5 @@ void IncludesSubPhase::visit(ExpingNode * n)
 		isMathImported = true;
 	}
 	
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a not operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(NotingNode * n)
-{
-	n->visitOperand(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a less than 
-// comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(LTingNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a greater than 
-// comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(GTingNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for an equivalence 
-// comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(EQingNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a less than or 
-// equal comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(LTEingNode * n)
-{
-	n->visitAllChildren(this);
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a greater than or 
-// equal comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.2
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(GTEingNode * n)
-{
 	n->visitAllChildren(this);
 }

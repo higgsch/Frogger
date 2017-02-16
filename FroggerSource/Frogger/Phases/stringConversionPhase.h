@@ -20,16 +20,16 @@ private:
 
 public:
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
-	void visit(JmpStmtNode * n);
-	void visit(IfNode * n);
+	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }
+	void visit(IfNode * n) { n->visitAllChildren(this); }
 	void visit(IdRefNode * n){}
-	void visit(AssigningNode * n);
-	void visit(FunctionCallNode * n);
-	void visit(CommandCallNode * n);
-	void visit(ArgListNode * n);
+	void visit(AssigningNode * n) { n->visitAllChildren(this); }
+	void visit(FunctionCallNode * n) { n->visitAllChildren(this); }
+	void visit(CommandCallNode * n) { n->visitAllChildren(this); }
+	void visit(ArgListNode * n) { n->visitAllChildren(this); }
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n){}
-	void visit(AddingNode * n);
+	void visit(AddingNode * n) { n->visitAllChildren(this); }
 	void visit(SubingNode * n){}
 	void visit(MulingNode * n){}
 	void visit(DivingNode * n){}

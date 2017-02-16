@@ -22,11 +22,11 @@ private:
 	int accumulateModLength(int,int);
 
 public:
-	SummationPhase();
+	SummationPhase() { numStmts = 0; }
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);
-	void visit(IfNode * n);
+	void visit(IfNode * n) { n->visitAllChildren(this); }
 	void visit(IdRefNode * n);
 	void visit(AssigningNode * n);
 	void visit(FunctionCallNode * n);

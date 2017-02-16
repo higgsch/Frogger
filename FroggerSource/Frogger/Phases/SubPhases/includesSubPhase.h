@@ -33,29 +33,29 @@ public:
 	IncludesSubPhase(ostream*);
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
-	void visit(JmpStmtNode * n);
-	void visit(IfNode * n);
+	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }
+	void visit(IfNode * n) { n->visitAllChildren(this); }
 	void visit(IdRefNode * n){}
-	void visit(AssigningNode * n);
+	void visit(AssigningNode * n) { n->visitAllChildren(this); }
 	void visit(FunctionCallNode * n);
 	void visit(CommandCallNode * n);
-	void visit(ArgListNode * n);
+	void visit(ArgListNode * n) { n->visitAllChildren(this); }
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n){}
 	void visit(AddingNode * n);
-	void visit(SubingNode * n);
-	void visit(MulingNode * n);
-	void visit(DivingNode * n);
+	void visit(SubingNode * n) { n->visitAllChildren(this); }
+	void visit(MulingNode * n) { n->visitAllChildren(this); }
+	void visit(DivingNode * n) { n->visitAllChildren(this); }
 	void visit(ModDivingNode * n);
 	void visit(IDivingNode * n);
 	void visit(RootingNode * n);
 	void visit(ExpingNode * n);
-	void visit(NotingNode * n);
-	void visit(LTingNode * n);
-	void visit(GTingNode * n);
-	void visit(EQingNode * n);
-	void visit(LTEingNode * n);
-	void visit(GTEingNode * n);
+	void visit(NotingNode * n) { n->visitOperand(this); }
+	void visit(LTingNode * n) { n->visitAllChildren(this); }
+	void visit(GTingNode * n) { n->visitAllChildren(this); }
+	void visit(EQingNode * n) { n->visitAllChildren(this); }
+	void visit(LTEingNode * n) { n->visitAllChildren(this); }
+	void visit(GTEingNode * n) { n->visitAllChildren(this); }
 
 	bool hasRandomNode(){ return hasRndNode; }
 	bool needsRoundFunction(){ return needsRoundFunct; }
