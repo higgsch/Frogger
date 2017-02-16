@@ -5,7 +5,7 @@
 
 #include <fstream>
 #include <string>
-#include "..\buffers.h"
+#include "..\DataStructures\buffers.h"
 using namespace std;
 
 // ----------------------------------------------------------

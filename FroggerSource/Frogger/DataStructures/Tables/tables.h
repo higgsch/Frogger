@@ -6,7 +6,7 @@
 #include <vector>
 #include "table.h"
 #include "records.h"
-#include "..\Parsing\dataTyped.h"
+#include "..\dataTyped.h"
 using namespace std;
 
 // ----------------------------------------------------------

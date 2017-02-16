@@ -4,7 +4,7 @@
 #pragma once
 
 #include "phase.h"
-#include "..\Parsing\nodes.h"
+#include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
 // ----------------------------------------------------------

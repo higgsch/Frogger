@@ -5,7 +5,7 @@
 
 #include <string>
 #include <vector>
-#include "..\Parsing\dataTyped.h"
+#include "..\dataTyped.h"
 using namespace std;
 
 // ----------------------------------------------------------

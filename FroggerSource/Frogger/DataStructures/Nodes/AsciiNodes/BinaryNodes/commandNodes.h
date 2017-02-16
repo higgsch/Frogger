@@ -5,7 +5,7 @@
 
 #include <vector>
 #include "binaryNode.h"
-#include "..\..\..\..\Phases\records.h"
+#include "..\..\..\Tables\records.h"
 using namespace std;
 
 // ----------------------------------------------------------

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include "phase.h"
-#include "..\Parsing\nodes.h"
+#include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
 // ----------------------------------------------------------

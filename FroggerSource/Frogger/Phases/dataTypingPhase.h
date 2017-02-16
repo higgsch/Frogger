@@ -4,8 +4,8 @@
 #pragma once
 
 #include "phase.h"
-#include "..\Parsing\nodes.h"
-#include "tables.h"
+#include "..\DataStructures\Nodes\nodes.h"
+#include "..\DataStructures\Tables\tables.h"
 using namespace std;
 
 // ----------------------------------------------------------

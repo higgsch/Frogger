@@ -6,7 +6,7 @@
 #include <string>
 #include "..\Scanning\scanner.h"
 #include "..\Scanning\token.h"
-#include "nodes.h"
+#include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
 // ----------------------------------------------------------

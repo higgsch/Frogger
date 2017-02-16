@@ -7,8 +7,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include "Obfuscation\obfuscator.h"
-#include "buffers.h"
+#include "obfuscator.h"
+#include "..\DataStructures\buffers.h"
 using namespace std;
 
 //forward declaration
