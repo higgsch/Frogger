@@ -73,6 +73,10 @@ class CommandTable : public Table<Command>
 {
 public:
 	CommandTable();
+
+	static Command* CMD_END;
+	static Command* CMD_DISPLAY_STR;
+	static Command* CMD_DISPLAY_DBL;
 };
 
 // ----------------------------------------------------------
@@ -86,4 +90,12 @@ public:
 	FunctionTable();
 
 	DataType getFunctionReturnType(Function* funct);
+
+	static Function* FUNCT_TO_STRING;
+	static Function* FUNCT_TO_ASCII;
+	static Function* FUNCT_PARSE_DOUBLE;
+	static Function* FUNCT_ASCII_AT;
+	static Function* FUNCT_RETRIEVE_DOUBLE;
+	static Function* FUNCT_RANDOM;
+	static Function* FUNCT_RETRIEVE_STRING;
 };

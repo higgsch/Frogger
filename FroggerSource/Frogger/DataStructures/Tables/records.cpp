@@ -48,12 +48,19 @@ bool Command::equals(Command * cmd)
 {
 	if (name != cmd->name)
 		return false;
-	if (argTypeList->size() != cmd->argTypeList->size())
+	if (argTypeList == NULL && cmd->argTypeList != NULL)
 		return false;
-	for (int i = 0; i < argTypeList->size(); i++)
+	if (argTypeList != NULL && cmd->argTypeList == NULL)
+		return false;
+	if (argTypeList != NULL && cmd->argTypeList != NULL)
 	{
-		if (argTypeList->at(i) != cmd->argTypeList->at(i))
+		if (argTypeList->size() != cmd->argTypeList->size())
 			return false;
+		for (int i = 0; i < argTypeList->size(); i++)
+		{
+			if (argTypeList->at(i) != cmd->argTypeList->at(i))
+				return false;
+		}
 	}
 
 	return true;

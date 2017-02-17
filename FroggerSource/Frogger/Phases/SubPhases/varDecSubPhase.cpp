@@ -13,71 +13,17 @@ using namespace std;
 // given output stream.
 // @outstream: The output stream to print to.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
-VarDecSubPhase::VarDecSubPhase(ostream* outstream, int tabCount)
+VarDecSubPhase::VarDecSubPhase(ostream* i_out, int i_tabCount, SymbolTable* i_symbols)
 {
-	list = NULL;
-	out = outstream;
+	symbols = i_symbols;
+	out = i_out;
 	currStmtDblTempCount = 0;
 	currStmtStrTempCount = 0;
 	lineDblTempMax = 0;
 	lineStrTempMax = 0;
-	indentDepth = tabCount;
-}
-
-// ----------------------------------------------------------
-// This function adds the given variable to the symbol table.
-// @id: The variable to add.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void VarDecSubPhase::addToList(string id)
-{
-	if (list == NULL)
-	{ //this is the first variable in the list
-		list = new VarList();
-		list->id = id;
-		list->tail = NULL;
-		return;
-	}
-	
-	//navigate to the last variable in the list
-	VarList* curr = list;
-	while (curr->tail != NULL)
-		curr = curr->tail;
-
-	//add the variable
-	curr->tail = new VarList();
-	VarList* currtail = curr->tail;
-	currtail->id = id;
-	currtail->tail = NULL;
-}
-
-// ----------------------------------------------------------
-// This function returns if the given variable is in the 
-// symbol table.
-// @id: The variable to check for.
-//
-// Version 1.0
-// ----------------------------------------------------------
-bool VarDecSubPhase::isInList(string id)
-{
-	if (list == NULL)
-		return false;
-
-	//traverse the list
-	VarList* curr = list;
-	while (curr->tail != NULL)
-	{
-		if (!curr->id.compare(id))
-			return true;
-		curr = curr->tail;
-	}
-
-	if (!curr->id.compare(id))
-		return true;
-	return false;
+	indentDepth = i_tabCount;
 }
 
 // ----------------------------------------------------------
@@ -131,23 +77,18 @@ void VarDecSubPhase::visit(IfNode * n)
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
-// Version 2.3
+// Version 3.0
 // ----------------------------------------------------------
 void VarDecSubPhase::visit(IdRefNode * n)
 {
 	string id = n->getLexeme();
-	DataType type = n->getDataType();
 
-	if (!isInList(id))
+	Symbol s = Symbol(id, DT_NOT_DEFINED);
+
+	if (!symbols->isDefined(&s))
 	{
-		addToList(id);
-		//emit variable declaration and initialization
-		if (type == DT_DOUBLE)
-			*out << indent() << "double _" << id << " = 0;\n";
-		else if (type == DT_STRING)
-			*out << indent() << "string _" << id << " = \"\";\n";
-		else
-			*out << indent() << "Not_Defined _" << id << " = NULL;\n";
+		//variable is not in SymbolTable
+		*out << indent() << "Not_Defined _" << id << " = NULL;\n";
 	}
 }
 
@@ -177,11 +118,33 @@ void VarDecSubPhase::visit(FunctionCallNode * n)
 }
 
 // ----------------------------------------------------------
+// This function adds declarations for each symbol in the 
+// symbol table.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void VarDecSubPhase::emitSymbolTable()
+{
+	for (int i = 0; i < symbols->size(); i++)
+	{
+		Symbol s = *(*symbols)[i];
+		
+		//emit variable declaration and initialization
+		if (s.type == DT_DOUBLE)
+			*out << indent() << "double _" << s.id << " = 0;\n";
+		else if (s.type == DT_STRING)
+			*out << indent() << "string _" << s.id << " = \"\";\n";
+		else
+			*out << indent() << "Not_Defined _" << s.id << " = NULL;\n";
+	}
+}
+
+// ----------------------------------------------------------
 // This function adds declarations for the temporaries.
 //
 // Version 2.5
 // ----------------------------------------------------------
-void VarDecSubPhase::addTemporaries()
+void VarDecSubPhase::emitTemporaries()
 {
 	for (int i = 1; i <= lineDblTempMax; i++)
 		*out << indent() << "double _dbltemp_" << i << " = 0;\n";

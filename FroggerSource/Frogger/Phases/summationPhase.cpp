@@ -85,38 +85,6 @@ void SummationPhase::visit(JmpStmtNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a variable reference.
-// @n: The node representing the variable.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void SummationPhase::visit(IdRefNode * n)
-{
-	int ascii = getAsciiSumModLength(n->getLexeme());
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a assignment statement.
-// @n: The node representing the statement.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void SummationPhase::visit(AssigningNode * n)
-{
-	n->visitAllChildren(this);
-
-	//Assignment adds '=' and ';' to the AST.
-	int ascii = getAsciiSumModLength("=;");
-	AsciiNode *assignee = n->getAssignee(), *assignor = n->getAssignor();
-	ascii = accumulateModLength(ascii, assignee->getAscii());
-	ascii = accumulateModLength(ascii, assignor->getAscii());
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
 // This function processes a function call.
 // @n: The node representing the statement.
 //
@@ -124,21 +92,14 @@ void SummationPhase::visit(AssigningNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(FunctionCallNode * n)
 {
-	n->visitAllChildren(this);
-
 	//Function call adds function name, '(', and ')' to the AST.
-	int ascii = getAsciiSumModLength(n->getLexeme() + "()");
+	string asciiAddition = n->getLexeme() + "()";
 
 	//Functions with a parent add ':' to the AST (e.g. 65:toString(); )
 	if (n->getPrimary() != NULL)
-		ascii = accumulateModLength(ascii, getAsciiSumModLength(":"));
+		asciiAddition = ":" + asciiAddition;
 
-	AsciiNode *primary = n->getPrimary(), *argList = n->getArgList();
-	if (primary != NULL)
-		ascii = accumulateModLength(ascii, primary->getAscii());
-	if (argList != NULL)
-		ascii = accumulateModLength(ascii, argList->getAscii());
-	n->setAscii(ascii);
+	calcAsciiWithAddition(n, asciiAddition);
 }
 
 // ----------------------------------------------------------
@@ -149,16 +110,8 @@ void SummationPhase::visit(FunctionCallNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(CommandCallNode * n)
 {
-	n->visitAllChildren(this);
-
-	//Command call adds command name, '(', and ')' to the AST.
-	int ascii = getAsciiSumModLength(n->getLexeme() + "()");
-
-	//Commands do not have a left child
-	AsciiNode *argList = n->getArgList();
-	if (argList != NULL)
-		ascii = accumulateModLength(ascii, argList->getAscii());
-	n->setAscii(ascii);
+	//Command call adds command name, '(', and ');' to the AST.
+	calcAsciiWithAddition(n, n->getLexeme() + "();");
 }
 
 // ----------------------------------------------------------
@@ -169,56 +122,34 @@ void SummationPhase::visit(CommandCallNode * n)
 // ----------------------------------------------------------
 void SummationPhase::visit(ArgListNode * n)
 {
-	n->visitAllChildren(this);
-
 	//Argument list element adds "," to the AST if it is not the first in the list.
-	int ascii = getAsciiSumModLength(",");
-	AsciiNode *thisArg = n->getThisArg(), *nextArg = n->getNextArg();
-	ascii = accumulateModLength(ascii, thisArg->getAscii());
-	if (nextArg != NULL)
-		ascii = accumulateModLength(ascii, nextArg->getAscii());
-	n->setAscii(ascii);
+	if (n->getArgNo() == 0)
+		calcAsciiWithAddition(n, "");
+	else
+		calcAsciiWithAddition(n, ",");
 }
 
 // ----------------------------------------------------------
-// This function processes a string literal.
-// @n: The node representing the string.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void SummationPhase::visit(StringConstingNode * n)
-{
-	n->setAscii(getAsciiSumModLength(n->getLexeme()));
-}
-
-// ----------------------------------------------------------
-// This function processes a double literal.
-// @n: The node representing the literal.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void SummationPhase::visit(DoubleConstingNode * n)
-{
-	int ascii = getAsciiSumModLength(n->getLexeme());
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes an addition operation.
-// @n: The node representing the operation.
+// This calculates and sets the ascii total of the given node, 
+// mods by the number of lines.
+// @n: The node to calculate with.
+// @addition: The string addition of this node (not including 
+//            this node's children).
 //
 // Version 3.0
 // ----------------------------------------------------------
-void SummationPhase::visit(AddingNode * n)
+void SummationPhase::calcAsciiWithAddition(BinaryNode* n, string addition)
 {
 	n->visitAllChildren(this);
 
-	int ascii = getAsciiSumModLength("++");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
+	int ascii = getAsciiSumModLength(addition);
+	AsciiNode *left = n->getLeftChild(), *right = n->getRightChild();
+
+	if (left != NULL)
+		ascii = accumulateModLength(ascii, left->getAscii());
+
+	if (right != NULL)
+		ascii = accumulateModLength(ascii, right->getAscii());
 	
 	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
 		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
@@ -226,140 +157,16 @@ void SummationPhase::visit(AddingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a subtraction operation.
-// @n: The node representing the operation.
+// This calculates and sets the ascii total of the given node, 
+// mods by the number of lines.
+// @n: The node to calculate with.
+// @addition: The string addition of this node.
 //
 // Version 3.0
 // ----------------------------------------------------------
-void SummationPhase::visit(SubingNode * n)
+void SummationPhase::calcAsciiWithAddition(TerminalNode* n, string addition)
 {
-	n->visitAllChildren(this);
-
-	int ascii = getAsciiSumModLength("--");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a multiplication operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void SummationPhase::visit(MulingNode * n)
-{
-	n->visitAllChildren(this);
-
-	int ascii = getAsciiSumModLength("**");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void SummationPhase::visit(DivingNode * n)
-{
-	n->visitAllChildren(this);
-
-	int ascii = getAsciiSumModLength("//");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a modulus division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void SummationPhase::visit(ModDivingNode * n)
-{
-	n->visitAllChildren(this);
-
-	int ascii = getAsciiSumModLength("%%");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes an integer division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void SummationPhase::visit(IDivingNode * n)
-{
-	n->visitAllChildren(this);
-
-	int ascii = getAsciiSumModLength("\\\\");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes a rootation operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void SummationPhase::visit(RootingNode * n)
-{
-	n->visitAllChildren(this);
-
-	int ascii = getAsciiSumModLength("##");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
-	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
-		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
-	n->setAscii(ascii);
-}
-
-// ----------------------------------------------------------
-// This function processes an exponentiation operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void SummationPhase::visit(ExpingNode * n)
-{
-	n->visitAllChildren(this);
-
-	int ascii = getAsciiSumModLength("^^");
-	AsciiNode *left = n->getLeftOperand(), *right = n->getRightOperand();
-	ascii = accumulateModLength(ascii, left->getAscii());
-	ascii = accumulateModLength(ascii, right->getAscii());
-	
+	int ascii = getAsciiSumModLength(addition);
 	if (n->getParenNesting() > 0) //only the innermost parens count towards the goto line
 		ascii = accumulateModLength(ascii, getAsciiSumModLength("()"));
 	n->setAscii(ascii);

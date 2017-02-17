@@ -117,4 +117,7 @@ public:
 		}
 		return NULL;
 	}
+
+	int size() { return table->size(); }
+	T* operator[] (int x) { return (*table)[x]->rec; }
 };

@@ -7,6 +7,7 @@
 #include <fstream>
 #include "phase.h"
 #include "..\DataStructures\Nodes\nodes.h"
+#include "..\DataStructures\Tables\tables.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -18,13 +19,14 @@ using namespace std;
 class CodeGenerationPhase : public Phase
 {
 private:
+	SymbolTable* symbols;
 	ofstream* out; // the output stream to print to
 	int dblTempNo; // the current double temporary number in a line
 	int strTempNo; // the current string temporary number in a line
 	int indentDepth; // the number of tabs to insert
 
 public:
-	CodeGenerationPhase();
+	CodeGenerationPhase(SymbolTable* i_symbols);
 
 	void open(string filename) { out->open(filename); }
 	void close() { out->close(); }

@@ -6,15 +6,8 @@
 #include <iostream>
 #include "..\phase.h"
 #include "..\..\DataStructures\Nodes\nodes.h"
+#include "..\..\DataStructures\Tables\tables.h"
 using namespace std;
-
-// A structure for a list of variables
-// A simple dynamic "symbol table"
-struct VarList
-{
-	string id; // the variable's lexeme
-	VarList* tail; // the remaining variables
-};
 
 // ----------------------------------------------------------
 // This class represents a visitor for generating variable
@@ -26,18 +19,15 @@ class VarDecSubPhase : public Phase
 {
 private:
 	ostream* out; // the output stream to print to
-	VarList* list; // the "symbol table"
+	SymbolTable* symbols; // the symbol table
 	int currStmtDblTempCount; // a counter for the double temporaries needed for the current line
 	int currStmtStrTempCount; // a counter for the string temporaries needed for the current line
 	int lineDblTempMax; // a storage for the maximum double temporaries needed in any given line
 	int lineStrTempMax; // a storage for the maximum string temporaries needed in any given line
 	int indentDepth; // the number of tabs to insert
 
-	void addToList(string);
-	bool isInList(string);
-
 public:
-	VarDecSubPhase(ostream*, int tabCount);
+	VarDecSubPhase(ostream*, int tabCount, SymbolTable* i_symbols);
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n);
@@ -64,7 +54,8 @@ public:
 	void visit(LTEingNode * n) { n->visitAllChildren(this); }
 	void visit(GTEingNode * n) { n->visitAllChildren(this); }
 
-	void addTemporaries();
+	void emitSymbolTable();
+	void emitTemporaries();
 
 	// ----------------------------------------------------------
 	// This function returns a string containing the current tab

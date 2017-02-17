@@ -97,6 +97,7 @@ void Compiler::checkDataTypes()
 {
 	DataTypingPhase *dtp = new DataTypingPhase();
 	root->accept(dtp);
+	symbols = dtp->getSymbolTable();
 	delete dtp;
 }
 
@@ -108,7 +109,7 @@ void Compiler::checkDataTypes()
 // ----------------------------------------------------------
 void Compiler::emitCode(string outFile)
 {
-	CodeGenerationPhase *cgp = new CodeGenerationPhase();
+	CodeGenerationPhase *cgp = new CodeGenerationPhase(symbols);
 
 	cgp->open(outFile);
 	root->accept(cgp);

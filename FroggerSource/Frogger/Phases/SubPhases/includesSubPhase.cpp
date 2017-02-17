@@ -5,6 +5,7 @@
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
 #include "includesSubPhase.h"
+#include "..\..\DataStructures\Tables\tables.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -34,54 +35,38 @@ IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 // This function processes the include for a function call.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(FunctionCallNode * n)
 {
 	n->visitAllChildren(this);
 
 	Function * funct = n->getFunct();
-	if (funct->builtIn)
+	if (funct->equals(FunctionTable::FUNCT_PARSE_DOUBLE))
 	{
-		if (funct->name == "parseDouble")
-		{
-			needsStringToDouble = true;
-		}
-		else if (funct->name == "asciiAt")
-		{
-			needsStringToAscii = true;
-		}
-		else if (funct->name == "retrieveDouble" || funct->name == "retrieveString")
-		{
-			if (!isIOStreamImported)
-			{
-				*out << "#include <iostream>\n";
-				isIOStreamImported = true;
-			}
-		}
-		else if (funct->name == "random")
-		{
-			if (!isStdLibImported)
-			{
-				*out << "#include <stdlib.h>\n";
-				isStdLibImported = true;
-			}
+		needsStringToDouble = true;
+	}
+	else if (funct->equals(FunctionTable::FUNCT_ASCII_AT))
+	{
+		needsStringToAscii = true;
+	}
+	else if (funct->equals(FunctionTable::FUNCT_RETRIEVE_DOUBLE) 
+		|| funct->equals(FunctionTable::FUNCT_RETRIEVE_STRING))
+	{
+		importIOStream();
+	}
+	else if (funct->equals(FunctionTable::FUNCT_RANDOM))
+	{
+		importStdLib();
+		importTime();
 
-			if (!isTimeImported)
-			{
-				*out << "#include <time.h>\n";
-				isTimeImported = true;
-			}
+		hasRndNode = true;
+	}
 
-			hasRndNode = true;
-		}
-
-		if ((funct->name == "parseDouble" || funct->name == "asciiAt")
-					&& !isStringImported)
-		{
-			*out << "#include <string>\n";
-			isStringImported = true;
-		}
+	if (funct->equals(FunctionTable::FUNCT_PARSE_DOUBLE) 
+		|| funct->equals(FunctionTable::FUNCT_ASCII_AT))
+	{
+		importString();
 	}
 }
 
@@ -89,24 +74,17 @@ void IncludesSubPhase::visit(FunctionCallNode * n)
 // This function processes the include for a command call.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 
 	Command * cmd = n->getCmd();
-	if (cmd->builtIn)
+	if (cmd->equals(CommandTable::CMD_DISPLAY_DBL)
+		|| cmd->equals(CommandTable::CMD_DISPLAY_STR))
 	{
-		string name = cmd->name;
-		if (name == "display")
-		{
-			if (!isIOStreamImported)
-			{
-				*out << "#include <iostream>\n";
-				isIOStreamImported = true;
-			}
-		}
+		importIOStream();
 	}
 }
 
@@ -114,31 +92,23 @@ void IncludesSubPhase::visit(CommandCallNode * n)
 // This function processes the include for a string literal.
 // @n: The node representing the string.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(StringConstingNode * n)
 {
-	if (!isStringImported)
-	{
-		*out << "#include <string>\n";
-		isStringImported = true;
-	}
+	importString();
 }
 
 // ----------------------------------------------------------
 // This function processes the include for an addition operation.
 // @n: The node representing the operation.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(AddingNode * n)
 {
 	//include string for concatenation
-	if (!isStringImported)
-	{
-		*out << "#include <string>\n";
-		isStringImported = true;
-	}
+	importString();
 	
 	n->visitAllChildren(this);
 }
@@ -148,15 +118,11 @@ void IncludesSubPhase::visit(AddingNode * n)
 // operation.
 // @n: The node representing the operation.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(ModDivingNode * n)		
 {
-	if (!isMathImported)
-	{
-		*out << "#include <math.h>\n";
-		isMathImported = true;
-	}
+	importMath();
 	
 	n->visitAllChildren(this);
 }
@@ -166,15 +132,11 @@ void IncludesSubPhase::visit(ModDivingNode * n)
 // operation.
 // @n: The node representing the operation.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(IDivingNode * n)		
 {
-	if (!isMathImported)
-	{
-		*out << "#include <math.h>\n";
-		isMathImported = true;
-	}
+	importMath();
 	
 	n->visitAllChildren(this);
 
@@ -186,15 +148,11 @@ void IncludesSubPhase::visit(IDivingNode * n)
 // operation.
 // @n: The node representing the operation.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(RootingNode * n)		
 {
-	if (!isMathImported)
-	{
-		*out << "#include <math.h>\n";
-		isMathImported = true;
-	}
+	importMath();
 	
 	n->visitAllChildren(this);
 }
@@ -204,15 +162,86 @@ void IncludesSubPhase::visit(RootingNode * n)
 // operation.
 // @n: The node representing the operation.
 //
-// Version 2.2
+// Version 3.0
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(ExpingNode * n)		
+{
+	importMath();
+	
+	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the string
+// library.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::importString()
+{
+	if (!isStringImported)
+	{
+		*out << "#include <string>\n";
+		isStringImported = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the iostream
+// library.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::importIOStream()
+{
+	if (!isIOStreamImported)
+	{
+		*out << "#include <iostream>\n";
+		isIOStreamImported = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the math
+// library.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::importMath()
 {
 	if (!isMathImported)
 	{
 		*out << "#include <math.h>\n";
 		isMathImported = true;
 	}
-	
-	n->visitAllChildren(this);
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the stdlib
+// library.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::importStdLib()
+{
+	if (!isStdLibImported)
+	{
+		*out << "#include <stdlib.h>\n";
+		isStdLibImported = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the time
+// library.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::importTime()
+{
+	if (!isTimeImported)
+	{
+		*out << "#include <time.h>\n";
+		isTimeImported = true;
+	}
 }

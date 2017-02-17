@@ -49,10 +49,11 @@ void DataTypingPhase::visit(IdRefNode * n)
 {
 	string id = n->getLexeme();
 	DataType type = n->getDataType();
+	Symbol sym = Symbol(id, DT_NOT_DEFINED);
 
 	if (type == DT_NOT_DEFINED)
 	{
-		if (symbols->isDefined(new Symbol(id, DT_NOT_DEFINED)))
+		if (symbols->isDefined(&sym))
 		{
 			n->setDataType(symbols->symbolType(id));
 			return;
@@ -64,7 +65,7 @@ void DataTypingPhase::visit(IdRefNode * n)
 		return;
 	}
 	
-	if (!symbols->isDefined(new Symbol(id, DT_NOT_DEFINED)))
+	if (!symbols->isDefined(&sym))
 		symbols->add(new SymbolRecord(new Symbol(id,type)));
 	else
 	{
@@ -172,152 +173,6 @@ void DataTypingPhase::visit(AddingNode * n)
 {
 	n->visitAllChildren(this);
 	unifyTreeDataType(n);
-}
-
-// ----------------------------------------------------------
-// This function processes a subtraction operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(SubingNode * n)
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a multiplication operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(MulingNode * n)
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a division operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(DivingNode * n)
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a modulus division operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(ModDivingNode * n)
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes an integer division operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(IDivingNode * n)
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a rootation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(RootingNode * n)
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes an exponentiation operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(ExpingNode * n)
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a less than comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(LTingNode * n) 
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a greater than comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(GTingNode * n) 
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes an equivalence comparison operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(EQingNode * n) 
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a less than or equal comparison 
-// operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(LTEingNode * n) 
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
-}
-
-// ----------------------------------------------------------
-// This function processes a greater than or equal comparison 
-// operation.
-// @n: The node representing the operation.
-//
-// Version 2.3
-// ----------------------------------------------------------
-void DataTypingPhase::visit(GTEingNode * n) 
-{
-	n->visitAllChildren(this);
-	checkAndSetTreeDataType(n, DT_DOUBLE);
 }
 
 // ----------------------------------------------------------
@@ -544,4 +399,10 @@ void DataTypingPhase::dataType_error(string err_msg)
 
 	getchar();
 	exit(0);
+}
+
+void DataTypingPhase::processDoubleOperator(BinaryOpNode * n)
+{
+	n->visitAllChildren(this);
+	checkAndSetTreeDataType(n, DT_DOUBLE);
 }

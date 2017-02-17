@@ -92,21 +92,18 @@ DataType SymbolTable::symbolType(string id)
 CommandTable::CommandTable()
 {
 	//Add built-in commands
-	Command * end = new Command("end");
-	end->builtIn = true;
-	add(new CommandRecord(end));
+	CMD_END->builtIn = true;
+	add(new CommandRecord(CMD_END));
 
-	Command * displayString = new Command("display");
-	displayString->argTypeList = new vector<DataType>();
-	displayString->addArg(DT_STRING);
-	displayString->builtIn = true;
-	add(new CommandRecord(displayString));
+	CMD_DISPLAY_STR->argTypeList = new vector<DataType>();
+	CMD_DISPLAY_STR->addArg(DT_STRING);
+	CMD_DISPLAY_STR->builtIn = true;
+	add(new CommandRecord(CMD_DISPLAY_STR));
 
-	Command * displayDouble = new Command("display");
-	displayDouble->argTypeList = new vector<DataType>();
-	displayDouble->addArg(DT_DOUBLE);
-	displayDouble->builtIn = true;
-	add(new CommandRecord(displayDouble));
+	CMD_DISPLAY_DBL->argTypeList = new vector<DataType>();
+	CMD_DISPLAY_DBL->addArg(DT_DOUBLE);
+	CMD_DISPLAY_DBL->builtIn = true;
+	add(new CommandRecord(CMD_DISPLAY_DBL));
 }
 
 // ----------------------------------------------------------
@@ -117,35 +114,28 @@ CommandTable::CommandTable()
 FunctionTable::FunctionTable()
 {
 	//Add built-in functions
-	Function * toString = new Function(DT_DOUBLE,"toString",DT_STRING);
-	toString->builtIn = true;
-	add(new FunctionRecord(toString));
+	FUNCT_TO_STRING->builtIn = true;
+	add(new FunctionRecord(FUNCT_TO_STRING));
 
-	Function * toAscii = new Function(DT_DOUBLE,"toAscii",DT_STRING);
-	toAscii->builtIn = true;
-	add(new FunctionRecord(toAscii));
+	FUNCT_TO_ASCII->builtIn = true;
+	add(new FunctionRecord(FUNCT_TO_ASCII));
 
-	Function * parseDouble = new Function(DT_STRING,"parseDouble",DT_DOUBLE);
-	parseDouble->builtIn = true;
-	add(new FunctionRecord(parseDouble));
+	FUNCT_PARSE_DOUBLE->builtIn = true;
+	add(new FunctionRecord(FUNCT_PARSE_DOUBLE));
 
-	Function * asciiAt = new Function(DT_STRING,"asciiAt",DT_DOUBLE);
-	asciiAt->argTypeList = new vector<DataType>();
-	asciiAt->addArg(DT_DOUBLE);
-	asciiAt->builtIn = true;
-	add(new FunctionRecord(asciiAt));
+	FUNCT_ASCII_AT->argTypeList = new vector<DataType>();
+	FUNCT_ASCII_AT->addArg(DT_DOUBLE);
+	FUNCT_ASCII_AT->builtIn = true;
+	add(new FunctionRecord(FUNCT_ASCII_AT));
 
-	Function * retrieveDouble = new Function(DT_NULL, "retrieveDouble", DT_DOUBLE);
-	retrieveDouble->builtIn = true;
-	add(new FunctionRecord(retrieveDouble));
+	FUNCT_RETRIEVE_DOUBLE->builtIn = true;
+	add(new FunctionRecord(FUNCT_RETRIEVE_DOUBLE));
 
-	Function * random = new Function(DT_NULL, "random", DT_DOUBLE);
-	random->builtIn = true;
-	add(new FunctionRecord(random));
+	FUNCT_RANDOM->builtIn = true;
+	add(new FunctionRecord(FUNCT_RANDOM));
 
-	Function * retrieveString = new Function(DT_NULL, "retrieveString", DT_STRING);
-	retrieveString->builtIn = true;
-	add(new FunctionRecord(retrieveString));
+	FUNCT_RETRIEVE_STRING->builtIn = true;
+	add(new FunctionRecord(FUNCT_RETRIEVE_STRING));
 }
 
 // ----------------------------------------------------------
@@ -166,3 +156,15 @@ DataType FunctionTable::getFunctionReturnType(Function* funct)
 
 	return DT_NOT_DEFINED;
 }
+
+Command* CommandTable::CMD_END			= new Command("end");
+Command* CommandTable::CMD_DISPLAY_STR	= new Command("display");
+Command* CommandTable::CMD_DISPLAY_DBL	= new Command("display");
+
+Function* FunctionTable::FUNCT_TO_STRING		= new Function(DT_DOUBLE, "toString", DT_STRING);
+Function* FunctionTable::FUNCT_TO_ASCII			= new Function(DT_DOUBLE, "toAscii", DT_STRING);
+Function* FunctionTable::FUNCT_PARSE_DOUBLE		= new Function(DT_STRING, "parseDouble", DT_DOUBLE);
+Function* FunctionTable::FUNCT_ASCII_AT			= new Function(DT_STRING, "asciiAt", DT_DOUBLE);
+Function* FunctionTable::FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, "retrieveDouble", DT_DOUBLE);
+Function* FunctionTable::FUNCT_RANDOM			= new Function(DT_NULL, "random", DT_DOUBLE);
+Function* FunctionTable::FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, "retrieveString", DT_STRING);

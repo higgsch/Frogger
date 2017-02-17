@@ -32,12 +32,14 @@ private:
 	void unifyTreeDataType(BinaryNode * node);
 	void dataType_error(string);
 
+	void processDoubleOperator(BinaryOpNode * n);
+
 public:
 	DataTypingPhase();
 
-	SymbolTable * getSymbolTable();
-	FunctionTable * getFunctionTable();
-	CommandTable * getCommandTable();
+	SymbolTable * getSymbolTable() { return symbols; }
+	FunctionTable * getFunctionTable() { return functions; }
+	CommandTable * getCommandTable() { return commands; }
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }
@@ -50,17 +52,17 @@ public:
 	void visit(StringConstingNode * n) { checkAndSetNodeDataType(n, DT_STRING); }
 	void visit(DoubleConstingNode * n) { checkAndSetNodeDataType(n, DT_DOUBLE); }
 	void visit(AddingNode * n);
-	void visit(SubingNode * n);
-	void visit(MulingNode * n);
-	void visit(DivingNode * n);
-	void visit(ModDivingNode * n);
-	void visit(IDivingNode * n);
-	void visit(RootingNode * n);
-	void visit(ExpingNode * n);
+	void visit(SubingNode * n) { processDoubleOperator(n); }
+	void visit(MulingNode * n) { processDoubleOperator(n); }
+	void visit(DivingNode * n) { processDoubleOperator(n); }
+	void visit(ModDivingNode * n) { processDoubleOperator(n); }
+	void visit(IDivingNode * n) { processDoubleOperator(n); }
+	void visit(RootingNode * n) { processDoubleOperator(n); }
+	void visit(ExpingNode * n) { processDoubleOperator(n); }
 	void visit(NotingNode * n) { n->visitOperand(this); }
-	void visit(LTingNode * n);
-	void visit(GTingNode * n);
-	void visit(EQingNode * n);
-	void visit(LTEingNode * n);
-	void visit(GTEingNode * n);
+	void visit(LTingNode * n) { processDoubleOperator(n); }
+	void visit(GTingNode * n) { processDoubleOperator(n); }
+	void visit(EQingNode * n) { processDoubleOperator(n); }
+	void visit(LTEingNode * n) { processDoubleOperator(n); }
+	void visit(GTEingNode * n) { processDoubleOperator(n); }
 };

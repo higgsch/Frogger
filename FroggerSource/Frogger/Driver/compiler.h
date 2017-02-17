@@ -4,6 +4,7 @@
 #pragma once
 
 #include <string>
+#include "..\DataStructures\Tables\tables.h"
 using namespace std;
 
 //forward declaration
@@ -19,6 +20,7 @@ class Compiler
 {
 private:
 	ProgramNode * root;
+	SymbolTable * symbols;
 
 	void buildAST(string inFile);
 

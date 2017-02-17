@@ -16,8 +16,10 @@ using namespace std;
 //
 // Version 3.0
 // ----------------------------------------------------------
-CodeGenerationPhase::CodeGenerationPhase()
+CodeGenerationPhase::CodeGenerationPhase(SymbolTable* i_symbols)
 {
+	symbols = i_symbols;
+
 	dblTempNo = 1; //temporaries are 1-indexed
 	strTempNo = 1;
 	
@@ -30,7 +32,7 @@ CodeGenerationPhase::CodeGenerationPhase()
 // This function initiates the phase over the AST.
 // @n: The node representing the program.
 //
-// Version 2.5
+// Version 3.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(ProgramNode * n)
 {
@@ -69,9 +71,10 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 	indentDepth++;
 
 	//emit the variable declarations
-	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth);
+	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, symbols);
 	n->accept(sub);
-	sub->addTemporaries();
+	sub->emitSymbolTable();
+	sub->emitTemporaries();
 	*out << endl << endl;
 
 	 n->visitAllChildren(this);

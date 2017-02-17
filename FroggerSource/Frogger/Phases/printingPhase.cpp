@@ -260,142 +260,6 @@ void PrintingPhase::visit(DoubleConstingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes an addition operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(AddingNode * n)
-{
-	print("AddingNode {\n");
-	indentDepth++;
-
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a subtraction operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(SubingNode * n)
-{
-	print("SubingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a multiplication operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(MulingNode * n)
-{
-	print("MulingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(DivingNode * n)
-{
-	print("DivingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a modulus division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(ModDivingNode * n)
-{
-	print("ModDivingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes an integer division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(IDivingNode * n)
-{
-	print("IDivingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a rootation operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(RootingNode * n)
-{
-	print("RootingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes an exponentiation operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(ExpingNode * n)
-{
-	print("ExpingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
 // This function processes a not operation.
 // @n: The node representing the operation.
 //
@@ -410,93 +274,6 @@ void PrintingPhase::visit(NotingNode * n)
 	printDataTypeInfo(n);
 
 	printNodeData(n->getOperand(), "operand");
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a less than comparison operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(LTingNode * n) 
-{
-	print("LTingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a greater than comparison operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(GTingNode * n) 
-{
-	print("GTingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes an equivalence comparison operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(EQingNode * n) 
-{
-	print("EQingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a less than or equal comparison 
-// operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(LTEingNode * n) 
-{
-	print("LTEingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
-
-	indentDepth--;
-	printLine("}");
-}
-
-// ----------------------------------------------------------
-// This function processes a greater than or equal comparison 
-// operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::visit(GTEingNode * n) 
-{
-	print("GTEingNode {\n");
-	indentDepth++;
-	
-	printBinaryOpNodeInfo(n);
 
 	indentDepth--;
 	printLine("}");
@@ -542,13 +319,19 @@ void PrintingPhase::printAsciiInfo(AsciiNode* n)
 //
 // Version 3.0
 // ----------------------------------------------------------
-void PrintingPhase::printBinaryOpNodeInfo(BinaryOpNode* n)
+void PrintingPhase::printBinaryOpNodeInfo(BinaryOpNode* n, string name)
 {
+	print(name + " {\n");
+	indentDepth++;
+	
 	printAsciiInfo(n);
 	printDataTypeInfo(n);
 	
 	printNodeData(n->getLeftOperand(), "leftOperand");
 	printNodeData(n->getRightOperand(), "rightOperand");
+
+	indentDepth--;
+	printLine("}");
 }
 
 // ----------------------------------------------------------

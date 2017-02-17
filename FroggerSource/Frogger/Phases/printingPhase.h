@@ -26,7 +26,7 @@ private:
 
 	void printDataTypeInfo(Node* n);
 	void printAsciiInfo(AsciiNode* n);
-	void printBinaryOpNodeInfo(BinaryOpNode* n);
+	void printBinaryOpNodeInfo(BinaryOpNode* n, string name);
 
 	void printNodeData(Node* n, string name);
 	void printCmdData(Command* c, string name);
@@ -57,18 +57,18 @@ public:
 	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n);
-	void visit(AddingNode * n);
-	void visit(SubingNode * n);
-	void visit(MulingNode * n);
-	void visit(DivingNode * n);
-	void visit(ModDivingNode * n);
-	void visit(IDivingNode * n);
-	void visit(RootingNode * n);
-	void visit(ExpingNode * n);
+	void visit(AddingNode * n) { printBinaryOpNodeInfo(n, "AddingNode"); }
+	void visit(SubingNode * n) { printBinaryOpNodeInfo(n, "SubingNode"); }
+	void visit(MulingNode * n) { printBinaryOpNodeInfo(n, "MulingNode"); }
+	void visit(DivingNode * n) { printBinaryOpNodeInfo(n, "DivingNode"); }
+	void visit(ModDivingNode * n) { printBinaryOpNodeInfo(n, "ModDivingNode"); }
+	void visit(IDivingNode * n) { printBinaryOpNodeInfo(n, "IDivingNode"); }
+	void visit(RootingNode * n) { printBinaryOpNodeInfo(n, "RootingNode"); }
+	void visit(ExpingNode * n) { printBinaryOpNodeInfo(n, "ExpingNode"); }
 	void visit(NotingNode * n);
-	void visit(LTingNode * n);
-	void visit(GTingNode * n);
-	void visit(EQingNode * n);
-	void visit(LTEingNode * n);
-	void visit(GTEingNode * n);
+	void visit(LTingNode * n) { printBinaryOpNodeInfo(n, "LTingNode"); }
+	void visit(GTingNode * n) { printBinaryOpNodeInfo(n, "GTingNode"); }
+	void visit(EQingNode * n) { printBinaryOpNodeInfo(n, "EQingNode"); }
+	void visit(LTEingNode * n) { printBinaryOpNodeInfo(n, "LTEingNode"); }
+	void visit(GTEingNode * n) { printBinaryOpNodeInfo(n, "GTEingNode"); }
 };

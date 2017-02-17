@@ -29,6 +29,12 @@ private:
 	bool needsStringToDouble; // flag for stringToDouble() creation
 	bool needsStringToAscii; // flag for stringToAscii() creation
 
+	void importString();
+	void importIOStream();
+	void importMath();
+	void importStdLib();
+	void importTime();
+
 public:
 	IncludesSubPhase(ostream*);
 
