@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.1
 // -----------------------------------------------------------------
 // This program provides a node representation for a binary
 // operation; such as addition and division.
@@ -14,12 +14,12 @@ using namespace std;
 // This class provides a node representation for a binary
 // operation; such as addition and division.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class BinaryOpNode : public BinaryNode
 {
 public:
-	BinaryOpNode() {}
+	BinaryOpNode(int lineNo) : BinaryNode(lineNo) {}
 	~BinaryOpNode() {}
 
 	void addOps(AsciiNode* left, AsciiNode* right) {

@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.1
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -176,7 +176,7 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
@@ -238,7 +238,7 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 			*out << " ((double) rand() / (RAND_MAX)) ";
 		}
 		else
-			this->semantic_error("Unrecognized function: " + name);
+			this->semantic_error("Unrecognized function: " + name, n->getLineNo());
 	}
 }
 
@@ -246,7 +246,7 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(CommandCallNode * n)
 {
@@ -278,7 +278,7 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 			*out << ");" << endl;
 		}
 		else
-			this->semantic_error("Unrecognized command: " + name);
+			this->semantic_error("Unrecognized command: " + name, n->getLineNo());
 	}
 }
 

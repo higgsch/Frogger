@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.1
 // -----------------------------------------------------------------
 // This program provides nodes with two children.
 // -----------------------------------------------------------------
@@ -10,9 +10,9 @@ using namespace std;
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
-BinaryNode::BinaryNode()
+BinaryNode::BinaryNode(int lineNo) : AsciiNode(lineNo)
 {
 	leftChild = NULL;
 	rightChild = NULL;

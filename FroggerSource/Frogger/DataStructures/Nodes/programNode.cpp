@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.1
 // -----------------------------------------------------------------
 // This program provides a root node for the AST.
 // -----------------------------------------------------------------
@@ -33,14 +33,14 @@ ProgramNode::~ProgramNode()
 // Adds a first statement to the root node.
 // @first: The first statement.
 //
-// Version 2.0
+// Version 3.1
 // ----------------------------------------------------------
 void ProgramNode::addFirstStmt(ControlFlowNode* first)
 {
 	if (firstStmt == NULL)
 		firstStmt = first;
 	else
-		ast_error("ProgramNode's root already exists");
+		ast_error("ProgramNode's root already exists", 1);
 }
 
 // ----------------------------------------------------------

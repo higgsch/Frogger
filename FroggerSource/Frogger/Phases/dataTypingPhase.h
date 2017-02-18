@@ -11,7 +11,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class represents a visitor for checking data types
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class DataTypingPhase : public Phase
 {
@@ -26,11 +26,11 @@ private:
 	void checkAndSetTreeDataType(TerminalNode * node, DataType type);
 	void checkAndSetTreeDataType(UnaryNode * node, DataType type);
 	void checkAndSetTreeDataType(BinaryNode * node, DataType type);
-	void checkAndSetArgDataType(Command * cmd, int argNo, DataType type);
+	void checkAndSetArgDataType(Command * cmd, int argNo, DataType type, int lineNo);
 	void unifyTreeDataType(TerminalNode * node);
 	void unifyTreeDataType(UnaryNode * node);
 	void unifyTreeDataType(BinaryNode * node);
-	void dataType_error(string);
+	void dataType_error(string msg, int line_no);
 
 	void processDoubleOperator(BinaryOpNode * n);
 

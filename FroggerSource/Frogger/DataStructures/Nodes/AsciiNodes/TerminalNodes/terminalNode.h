@@ -10,12 +10,12 @@ using namespace std;
 // This class provides representation for nodes with no
 // children.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class TerminalNode : public AsciiNode
 {
 public:
-	TerminalNode() {}
+	TerminalNode(int lineNo) : AsciiNode(lineNo) {}
 	~TerminalNode() {}
 
 	bool isTreeTyped() { return isTyped(); }

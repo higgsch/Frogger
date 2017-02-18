@@ -12,7 +12,7 @@ class Phase;
 // ----------------------------------------------------------
 // This class provides a root node for the AST.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class ProgramNode : public Node
 {

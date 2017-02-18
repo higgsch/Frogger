@@ -12,7 +12,7 @@ class Phase;
 // This class provides representation for nodes with two 
 // children.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class BinaryNode : public AsciiNode
 {
@@ -28,7 +28,7 @@ protected:
 	void visitRightChild(Phase* p) { visitNode(p, rightChild); }
 
 public:
-	BinaryNode();
+	BinaryNode(int lineNo);
 	~BinaryNode();
 
 	AsciiNode * getLeftChild() { return leftChild; }

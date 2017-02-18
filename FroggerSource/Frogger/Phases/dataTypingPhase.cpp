@@ -43,7 +43,7 @@ void DataTypingPhase::visit(ProgramNode * n)
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
-// Version 2.3
+// Version 3.1
 // ----------------------------------------------------------
 void DataTypingPhase::visit(IdRefNode * n)
 {
@@ -70,7 +70,7 @@ void DataTypingPhase::visit(IdRefNode * n)
 	else
 	{
 		if (symbols->symbolType(id) != type)
-			dataType_error("Variable " + id + " used as multiple type");
+			dataType_error("Variable " + id + " used as multiple type", n->getLineNo());
 	}
 }
 
@@ -90,7 +90,7 @@ void DataTypingPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 2.4
+// Version 3.1
 // ----------------------------------------------------------
 void DataTypingPhase::visit(FunctionCallNode * n)
 {
@@ -109,7 +109,7 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 
 	Function * funct = n->getFunct();
 	if (!functions->matchExists(funct))
-		dataType_error("Function call does not match signature: " + funct->name);
+		dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
 	else if (functions->getNumberOfMatches(funct) == 1)
 	{
 		n->setFunct(functions->getFirstMatch(funct));
@@ -122,7 +122,7 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.1
 // ----------------------------------------------------------
 void DataTypingPhase::visit(CommandCallNode * n)
 {
@@ -130,7 +130,7 @@ void DataTypingPhase::visit(CommandCallNode * n)
 
 	Command * cmd = n->getCmd();
 	if (!commands->matchExists(cmd))
-		dataType_error("Command call does not match signature: " + cmd->name);
+		dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
 	else if (commands->getNumberOfMatches(cmd) == 1)
 	{
 		n->setCmd(commands->getFirstMatch(cmd));
@@ -142,7 +142,7 @@ void DataTypingPhase::visit(CommandCallNode * n)
 // This function processes an element in an argument list.
 // @n: The node representing the statement.
 //
-// Version 2.5
+// Version 3.1
 // ----------------------------------------------------------
 void DataTypingPhase::visit(ArgListNode * n)
 {
@@ -159,7 +159,7 @@ void DataTypingPhase::visit(ArgListNode * n)
 		checkAndSetNodeDataType(n, argType);
 		Command * cmd = n->getCmd();
 		int argNo = n->getArgNo();
-		checkAndSetArgDataType(cmd,argNo,argType);
+		checkAndSetArgDataType(cmd,argNo,argType,n->getLineNo());
 	}
 }
 
@@ -179,7 +179,7 @@ void DataTypingPhase::visit(AddingNode * n)
 // This function safely sets the dataType of a node. It throws
 // a dataType error if there is a dataType conflict.
 // 
-// Version 2.3
+// Version 3.1
 // ----------------------------------------------------------
 void DataTypingPhase::checkAndSetNodeDataType(AsciiNode * node, DataType type)
 {
@@ -192,7 +192,7 @@ void DataTypingPhase::checkAndSetNodeDataType(AsciiNode * node, DataType type)
 		changeMadeThisRound = true;
 	}
 	else
-		dataType_error("Data Type Conflict");
+		dataType_error("Data Type Conflict", node->getLineNo());
 }
 
 // ----------------------------------------------------------
@@ -281,9 +281,9 @@ void DataTypingPhase::checkAndSetTreeDataType(BinaryNode * node, DataType type)
 // It throws a dataType error if there is a dataType 
 // conflict.
 // 
-// Version 2.4
+// Version 3.1
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetArgDataType(Command * cmd, int argNo, DataType type)
+void DataTypingPhase::checkAndSetArgDataType(Command * cmd, int argNo, DataType type, int lineNo)
 {
 	DataType oldType = cmd->getDataTypeOfArgNumber(argNo);
 	if (oldType == type || type == DT_NOT_DEFINED)
@@ -295,7 +295,7 @@ void DataTypingPhase::checkAndSetArgDataType(Command * cmd, int argNo, DataType 
 		return;
 	}
 	else
-		dataType_error("Data Type Conflict");
+		dataType_error("Data Type Conflict", lineNo);
 }
 
 // ----------------------------------------------------------
@@ -389,12 +389,13 @@ void DataTypingPhase::unifyTreeDataType(BinaryNode * node)
 // This function displays an error message to the user and 
 // terminates the program.
 // @err_msg: The message to display to the user.
+// @line_no: The line on which the error occured.
 // 
-// Version 2.3
+// Version 3.1
 // ----------------------------------------------------------
-void DataTypingPhase::dataType_error(string err_msg)
+void DataTypingPhase::dataType_error(string err_msg, int line_no)
 {
-	cout << "DATA TYPE ERROR: " << err_msg << endl;
+	cout << "DATA TYPE ERROR on line " << line_no << ": " << err_msg << endl;
 	cout << "Press Enter to Exit" << endl;
 
 	getchar();

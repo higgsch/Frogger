@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.1
 // -----------------------------------------------------------------
 // This program represents a visitor for displaying the AST to
 // an output stream.
@@ -300,13 +300,14 @@ void PrintingPhase::printDataTypeInfo(Node* n)
 // of a node.
 // @n: The node representing the operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 void PrintingPhase::printAsciiInfo(AsciiNode* n)
 {
 	if (printingAsciiInfo)
 	{
 		printLine("lexeme = " + n->getLexeme());
+		printLine("lineNo = " + to_string(n->getLineNo()));
 		printLine(concat("parenCount = ", n->getParenNesting()));
 		printLine(concat("asciiSum = ", n->getAscii()));
 	}

@@ -13,12 +13,13 @@ class IdRefNode;
 // This class provides a node representation for the 
 // assignment operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class AssigningNode : public BinaryNode
 {
 public:
-	AssigningNode(IdRefNode* id, AsciiNode* toAssign) {
+	AssigningNode(IdRefNode* id, AsciiNode* toAssign, int lineNo) 
+		: BinaryNode(lineNo) {
 		addLeftChild(id); addRightChild(toAssign); }
 	~AssigningNode() {}
 

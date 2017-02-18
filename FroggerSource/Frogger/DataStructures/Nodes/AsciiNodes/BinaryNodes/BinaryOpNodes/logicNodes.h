@@ -11,12 +11,12 @@ using namespace std;
 // This class provides a node representation for a boolean not
 // operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class NotingNode : public UnaryNode
 {
 public:
-	NotingNode() {}
+	NotingNode(int lineNo) : UnaryNode(lineNo) {}
 	~NotingNode() {}
 
 	void addOperand(AsciiNode* n) { addChild(n); }
@@ -30,12 +30,12 @@ public:
 // This class provides a node representation for a less than
 // comparison.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class LTingNode : public BinaryOpNode
 {
 public:
-	LTingNode()	{}
+	LTingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~LTingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -45,12 +45,12 @@ public:
 // This class provides a node representation for a greater 
 // than comparison.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class GTingNode : public BinaryOpNode
 {
 public:
-	GTingNode() {}
+	GTingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~GTingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -60,12 +60,12 @@ public:
 // This class provides a node representation for an equivalence
 // comparison.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class EQingNode : public BinaryOpNode
 {
 public:
-	EQingNode() {}
+	EQingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~EQingNode() {}
 	
 	void accept(Phase* p)	{	p->visit(this);	}
@@ -75,12 +75,12 @@ public:
 // This class provides a node representation for a less than
 // or equal comparison.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class LTEingNode : public BinaryOpNode
 {
 public:
-	LTEingNode() {}
+	LTEingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~LTEingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -90,12 +90,12 @@ public:
 // This class provides a node representation for a greater 
 // than or equal comparison.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class GTEingNode : public BinaryOpNode
 {
 public:
-	GTEingNode() {}
+	GTEingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~GTEingNode() {}
 
 	void accept(Phase* p) { p->visit(this); }

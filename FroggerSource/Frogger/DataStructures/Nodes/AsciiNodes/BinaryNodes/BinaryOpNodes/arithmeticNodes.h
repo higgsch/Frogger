@@ -10,12 +10,12 @@ using namespace std;
 // This class provides a node representation for an addition
 // operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class AddingNode : public BinaryOpNode
 {
 public:
-	AddingNode() {}
+	AddingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~AddingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -25,12 +25,12 @@ public:
 // This class provides a node representation for a subtraction
 // operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class SubingNode : public BinaryOpNode
 {
 public:
-	SubingNode() {}
+	SubingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~SubingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -40,12 +40,12 @@ public:
 // This class provides a node representation for a multiplication
 // operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class MulingNode : public BinaryOpNode
 {
 public:
-	MulingNode(){}
+	MulingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~MulingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -55,12 +55,12 @@ public:
 // This class provides a node representation for a division
 // operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class DivingNode : public BinaryOpNode
 {
 public:
-	DivingNode() {}
+	DivingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~DivingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -70,12 +70,12 @@ public:
 // This class provides a node representation for a modulus 
 // division operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class ModDivingNode : public BinaryOpNode
 {
 public:
-	ModDivingNode() {}
+	ModDivingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~ModDivingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -84,13 +84,13 @@ public:
 // This class provides a node representation for an integer 
 // division operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 
 class IDivingNode : public BinaryOpNode
 {
 public:
-	IDivingNode() {}
+	IDivingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~IDivingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -100,12 +100,12 @@ public:
 // This class provides a node representation for a rootation 
 // operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class RootingNode : public BinaryOpNode
 {
 public:
-	RootingNode() {}
+	RootingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~RootingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }
@@ -115,12 +115,12 @@ public:
 // This class provides a node representation for an exponentiation 
 // operation.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class ExpingNode : public BinaryOpNode
 {
 public:
-	ExpingNode() {}
+	ExpingNode(int lineNo) : BinaryOpNode(lineNo) {}
 	~ExpingNode() {}
 	
 	void accept(Phase* p) { p->visit(this); }

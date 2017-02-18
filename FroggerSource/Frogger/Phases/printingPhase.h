@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for displaying the AST to
 // an output stream.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class PrintingPhase : public Phase
 {

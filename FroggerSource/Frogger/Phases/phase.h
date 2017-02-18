@@ -41,7 +41,7 @@ class GTEingNode;
 // This class provides the base of the visitor inheritance for
 // the AST intermediate representation. 
 //
-// Version 2.5
+// Version 3.1
 // ----------------------------------------------------------
 class Phase
 {
@@ -76,12 +76,13 @@ public:
 	// This function displays an error to the user and terminates
 	// the program.
 	// @msg: The message to display.
+	// @line_no: The line number that the error occured on.
 	//
-	// Version 1.0
+	// Version 3.1
 	// ----------------------------------------------------------
-	void semantic_error(string msg)
+	void semantic_error(string msg, int line_no)
 	{
-		cout << "SEMANTIC ERROR: " << msg << endl;
+		cout << "SEMANTIC ERROR on line " << line_no << ": " << msg << endl;
 		cout << "Press Enter to Exit" << endl;
 
 		getchar();

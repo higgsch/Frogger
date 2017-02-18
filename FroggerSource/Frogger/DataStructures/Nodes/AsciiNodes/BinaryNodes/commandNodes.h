@@ -12,7 +12,7 @@ using namespace std;
 // This class provides a node representation for an element
 // in an argument list.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class ArgListNode : public BinaryNode
 {
@@ -21,7 +21,7 @@ private:
 	int argNo;
 
 public:
-	ArgListNode() { cmd = NULL; argNo = -1;}
+	ArgListNode(int lineNo) : BinaryNode(lineNo) { cmd = NULL; argNo = -1;}
 	~ArgListNode() {} // cmd is deleted by FunctionCallNode or CommandCallNode 
 
 	void setArgNo(int i) { argNo = i; }
@@ -45,7 +45,7 @@ public:
 // ----------------------------------------------------------
 // This class provides a node representation for a command call.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class CommandCallNode : public BinaryNode
 {
@@ -53,7 +53,7 @@ private:
 	Command * cmd;
 
 public:
-	CommandCallNode(string);
+	CommandCallNode(string name, int lineNo);
 	~CommandCallNode();
 
 	Command* getCmd() { return cmd; }

@@ -13,7 +13,7 @@ using namespace std;
 // This class provides a node representation for a function
 // call.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class FunctionCallNode : public CommandCallNode
 {
@@ -21,7 +21,7 @@ private:
 	Function * funct;
 
 public:
-	FunctionCallNode(string);
+	FunctionCallNode(string name, int lineNo);
 	~FunctionCallNode();
 	
 	Function* getFunct() { return funct; }

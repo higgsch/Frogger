@@ -171,7 +171,7 @@ IfNode* Parser::ifstmt()
 // <boolexp> => <expr> <boolop> <expr>
 // <boolexp> => <expr> not <boolop> <expr>
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 AsciiNode* Parser::boolexp()
 {
@@ -183,7 +183,7 @@ AsciiNode* Parser::boolexp()
 	if (tok.type == TOKTYPE_NOT)
 	{
 		match(TOKTYPE_NOT); 
-		not = new NotingNode();
+		not = new NotingNode(scanner.getLineNo());
 	}
 
 	BinaryOpNode* op = boolop(); 
@@ -210,7 +210,7 @@ AsciiNode* Parser::boolexp()
 // <boolop> => gte
 // Returns: A pointer to the node representing this operator.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 BinaryOpNode* Parser::boolop()
 {
@@ -219,23 +219,23 @@ BinaryOpNode* Parser::boolop()
 	{
 	case TOKTYPE_LT:
 		match(TOKTYPE_LT);
-		return new LTingNode();
+		return new LTingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_GT:
 		match(TOKTYPE_GT);
-		return new GTingNode();
+		return new GTingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_EQ:
 		match(TOKTYPE_EQ);
-		return new EQingNode();
+		return new EQingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_LTE:
 		match(TOKTYPE_LTE);
-		return new LTEingNode();
+		return new LTEingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_GTE:
 		match(TOKTYPE_GTE);
-		return new GTEingNode();
+		return new GTEingNode(scanner.getLineNo());
 		break;
 	default:
 		syntax_error(lookahead[0].lexeme + " - Invalid Boolean Operator");
@@ -250,7 +250,7 @@ BinaryOpNode* Parser::boolop()
 // <jmpstmt> => id assign <expr> ;
 // Returns: A pointer to the node representing this jmpstmt.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 JmpStmtNode* Parser::jmpstmt()
 {
@@ -265,7 +265,7 @@ JmpStmtNode* Parser::jmpstmt()
 	case TOKTYPE_LPAREN:
 		{
 			match(TOKTYPE_LPAREN);
-			CommandCallNode* cmd = new CommandCallNode(idTok.lexeme);
+			CommandCallNode* cmd = new CommandCallNode(idTok.lexeme, scanner.getLineNo());
 
 			Token argTok = next_token();
 			if (argTok.type != TOKTYPE_RPAREN)
@@ -281,13 +281,13 @@ JmpStmtNode* Parser::jmpstmt()
 		}
 	case TOKTYPE_ASSIGN:
 		{
-			IdRefNode* id = new IdRefNode(idTok.lexeme);
+			IdRefNode* id = new IdRefNode(idTok.lexeme, scanner.getLineNo());
 			match(TOKTYPE_ASSIGN);
 
 			AsciiNode* toAssign = expr();
 			match(TOKTYPE_SEMICOLON);
 
-			stmt->setStmt(new AssigningNode(id, toAssign));
+			stmt->setStmt(new AssigningNode(id, toAssign, scanner.getLineNo()));
 			break;
 		}
 	default:
@@ -305,14 +305,14 @@ JmpStmtNode* Parser::jmpstmt()
 // <arglist> => <expr>
 // Returns: A pointer to the node representing this term.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 AsciiNode* Parser::arglist(int argNo, Command* cmd)
 {
 	AsciiNode * firstArg = expr();
 	AsciiNode * nextArg = NULL;
 
-	ArgListNode * list = new ArgListNode();
+	ArgListNode * list = new ArgListNode(scanner.getLineNo());
 	list->setCmd(cmd);
 	list->addThisArg(firstArg);
 	list->setArgNo(argNo);
@@ -435,7 +435,7 @@ AsciiNode* Parser::multerm()
 // <typedterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 AsciiNode* Parser::typedterm()
 {
@@ -452,7 +452,7 @@ AsciiNode* Parser::typedterm()
 
 			Token idTok = next_token();
 			match(TOKTYPE_ID);
-			FunctionCallNode * funct = new FunctionCallNode(idTok.lexeme);
+			FunctionCallNode * funct = new FunctionCallNode(idTok.lexeme, scanner.getLineNo());
 			match(TOKTYPE_LPAREN);
 
 			Token firstArg = next_token();
@@ -485,7 +485,7 @@ AsciiNode* Parser::typedterm()
 // <primary> => ( <expr> )
 // Returns: A pointer to the node representing this term.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 AsciiNode* Parser::primary()
 {
@@ -494,7 +494,7 @@ AsciiNode* Parser::primary()
 	{
 	case TOKTYPE_DOUBLECONST:
 		match(TOKTYPE_DOUBLECONST);
-		return new DoubleConstingNode(tok.lexeme);
+		return new DoubleConstingNode(tok.lexeme, scanner.getLineNo());
 		break;
 	case TOKTYPE_ID:
 		{
@@ -502,10 +502,10 @@ AsciiNode* Parser::primary()
 		
 			Token nextTok = next_token();
 			if (nextTok.type != TOKTYPE_LPAREN)
-				return new IdRefNode(tok.lexeme);
+				return new IdRefNode(tok.lexeme, scanner.getLineNo());
 
 			//Function call
-			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme);
+			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme, scanner.getLineNo());
 			match(TOKTYPE_LPAREN);
 
 			Token firstArg = next_token();
@@ -520,7 +520,7 @@ AsciiNode* Parser::primary()
 		}
 	case TOKTYPE_STRING:
 		match(TOKTYPE_STRING);
-		return new StringConstingNode(tok.lexeme);
+		return new StringConstingNode(tok.lexeme, scanner.getLineNo());
 		break;
 	case TOKTYPE_LPAREN:
 		{
@@ -544,7 +544,7 @@ AsciiNode* Parser::primary()
 // <addop> => sub
 // Returns: A pointer to the node representing this operator.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 BinaryOpNode* Parser::addop()
 {
@@ -553,11 +553,11 @@ BinaryOpNode* Parser::addop()
 	{
 	case TOKTYPE_ADD:
 		match(tok.type);
-		return new AddingNode();
+		return new AddingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_SUB:
 		match(tok.type);
-		return new SubingNode();
+		return new SubingNode(scanner.getLineNo());
 		break;
 	default:
 		syntax_error("Expected '++' or '--' - Found " + tok.lexeme);
@@ -574,7 +574,7 @@ BinaryOpNode* Parser::addop()
 // <mulop> => idiv
 // Returns: A pointer to the node representing this operator.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 BinaryOpNode* Parser::mulop()
 {
@@ -583,19 +583,19 @@ BinaryOpNode* Parser::mulop()
 	{
 	case TOKTYPE_MUL:
 		match(TOKTYPE_MUL);
-		return new MulingNode();
+		return new MulingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_DIV:
 		match(TOKTYPE_DIV);
-		return new DivingNode();
+		return new DivingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_MOD:
 		match(TOKTYPE_MOD);
-		return new ModDivingNode();
+		return new ModDivingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_IDIV:
 		match(TOKTYPE_IDIV);
-		return new IDivingNode();
+		return new IDivingNode(scanner.getLineNo());
 		break;
 	default:
 		syntax_error("Expected '**', '//', '%%', or '\\\\' - Found " + tok.lexeme);
@@ -610,7 +610,7 @@ BinaryOpNode* Parser::mulop()
 // <expop> => exp
 // Returns: A pointer to the node representing this operator.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 BinaryOpNode* Parser::expop()
 {
@@ -619,11 +619,11 @@ BinaryOpNode* Parser::expop()
 	{
 	case TOKTYPE_ROOT:
 		match(TOKTYPE_ROOT);
-		return new RootingNode();
+		return new RootingNode(scanner.getLineNo());
 		break;
 	case TOKTYPE_EXP:
 		match(TOKTYPE_EXP);
-		return new ExpingNode();
+		return new ExpingNode(scanner.getLineNo());
 		break;
 	default:
 		syntax_error("Expected '##' or '^^' - Found " + tok.lexeme);
@@ -745,7 +745,7 @@ void Parser::match(token_type toMatch)
 // the program.
 // @err_msg: The message to display.
 //
-// Version 1.0
+// Version 3.1
 // ----------------------------------------------------------
 void Parser::syntax_error(string err_msg)
 {

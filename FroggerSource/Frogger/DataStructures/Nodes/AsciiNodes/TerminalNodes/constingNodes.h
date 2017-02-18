@@ -10,12 +10,12 @@ using namespace std;
 // This class provides a node representation for a string
 // constant.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class StringConstingNode : public TerminalNode
 {
 public:
-	StringConstingNode(string str) { lexeme = str; }
+	StringConstingNode(string str, int lineNo) : TerminalNode(lineNo) { lexeme = str; }
 	~StringConstingNode() {}
 
 	void accept(Phase* p)	{	p->visit(this);	}
@@ -25,12 +25,12 @@ public:
 // This class provides a node representation for a double
 // constant.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class DoubleConstingNode : public TerminalNode
 {
 public:
-	DoubleConstingNode(string dbl) { lexeme = dbl; }
+	DoubleConstingNode(string dbl, int lineNo) : TerminalNode(lineNo) { lexeme = dbl; }
 	~DoubleConstingNode() {}
 
 	void accept(Phase* p)	{	p->visit(this);	}

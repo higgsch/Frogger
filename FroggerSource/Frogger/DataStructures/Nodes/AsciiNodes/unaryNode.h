@@ -12,7 +12,7 @@ class Phase;
 // This class provides representation for nodes with one 
 // child.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class UnaryNode : public AsciiNode
 {
@@ -24,7 +24,7 @@ protected:
 	void visitChild(Phase* p) { visitNode(p, child); }
 
 public:
-	UnaryNode() { child = NULL; }
+	UnaryNode(int lineNo) : AsciiNode(lineNo) { child = NULL; }
 	~UnaryNode();
 	
 	AsciiNode * getChild() { return child; }

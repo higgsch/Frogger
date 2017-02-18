@@ -12,7 +12,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class provides the error function for all AST nodes.
 //
-// Version 3.0
+// Version 3.1
 // ----------------------------------------------------------
 class Node : public DataTyped
 {
@@ -21,12 +21,13 @@ protected:
 	// This function displays an error to the user and terminates
 	// the program.
 	// @err_msg: The message to display.
+	// @line_no: The line number on which the error occured.
 	//
-	// Version 2.0
+	// Version 3.1
 	// ----------------------------------------------------------
-	void ast_error(string err_msg)
+	void ast_error(string err_msg, int line_no)
 	{
-		cout << "AST ERROR: " << err_msg << endl;
+		cout << "AST ERROR on Line " << line_no << ": " << err_msg << endl;
 		cout << "Press Enter to Exit" << endl;
 
 		getchar();
