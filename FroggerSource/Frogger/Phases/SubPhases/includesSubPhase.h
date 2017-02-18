@@ -35,6 +35,11 @@ private:
 	void importStdLib();
 	void importTime();
 
+	void emitEmptyString();
+	void emitRoundFunction();
+	void emitStringToDoubleFunction();
+	void emitStringToAsciiFunction();
+
 public:
 	IncludesSubPhase(ostream*);
 
@@ -62,6 +67,9 @@ public:
 	void visit(EQingNode * n) { n->visitAllChildren(this); }
 	void visit(LTEingNode * n) { n->visitAllChildren(this); }
 	void visit(GTEingNode * n) { n->visitAllChildren(this); }
+
+	void emitUsingStatment();
+	void emitSupportCode();
 
 	bool hasRandomNode(){ return hasRndNode; }
 	bool needsRoundFunction(){ return needsRoundFunct; }

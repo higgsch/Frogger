@@ -39,33 +39,14 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 	//emit the include statements code
 	IncludesSubPhase* iSub = new IncludesSubPhase(out);
 	n->accept(iSub);
-	*out << "using namespace std;\n\n";
-
-	if (iSub->needsString())
-		*out << "const string emptyString = \"\";\n\n";
-
-	if (iSub->needsRoundFunction())
-		*out << "double round(double num) {\n"
-			<< "\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n"
-			<< "}\n\n";
-
-	if (iSub->needsStringToDoubleFunction())
-		*out << "double stringToDouble(string s) {\n"
-			<< "\tif (isdigit(s[0]) || s[0] == '-')\n"
-			<< "\t\treturn stod(s, NULL);\n"
-			<< "\treturn 0;\n"
-			<< "}\n\n";
-
-	if (iSub->needsStringToAsciiFunction())
-		*out << "double stringToAscii(string s, int loc) {\n"
-			<< "\tif (loc < 0 || loc >= s.length())\n"
-			<< "\t\treturn 0;\n"
-			<< "\treturn s.at(loc);\n"
-			<< "}\n\n";
+	iSub->emitUsingStatment();
+	iSub->emitSupportCode();
+	bool needsRand = iSub->hasRandomNode();
+	delete iSub; iSub = NULL;
 
 	*out << "int main(int argc, char* argv[])\n{\n";
 
-	if (iSub->hasRandomNode())
+	if (needsRand)
 		*out << "\tsrand(time(NULL)); rand();\n";
 
 	indentDepth++;
@@ -75,6 +56,8 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 	n->accept(sub);
 	sub->emitSymbolTable();
 	sub->emitTemporaries();
+	delete sub; sub = NULL;
+
 	*out << endl << endl;
 
 	 n->visitAllChildren(this);

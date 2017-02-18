@@ -172,6 +172,30 @@ void IncludesSubPhase::visit(ExpingNode * n)
 }
 
 // ----------------------------------------------------------
+// This function emits the using statement.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::emitUsingStatment()
+{
+	*out << "using namespace std;\n\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the global support code (constants and
+// functions).
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::emitSupportCode()
+{
+	emitEmptyString();
+	emitRoundFunction();
+	emitStringToDoubleFunction();
+	emitStringToAsciiFunction();
+}
+
+// ----------------------------------------------------------
 // This function writes the include statment for the string
 // library.
 //
@@ -244,4 +268,59 @@ void IncludesSubPhase::importTime()
 		*out << "#include <time.h>\n";
 		isTimeImported = true;
 	}
+}
+
+// ----------------------------------------------------------
+// This function emits the emptyString constant.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::emitEmptyString()
+{
+	if (needsString())
+		*out << "const string emptyString = \"\";\n\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the round function.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::emitRoundFunction()
+{
+	if (needsRoundFunction())
+		*out << "double round(double num) {\n"
+			<< "\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n"
+			<< "}\n\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the string to double conversion 
+// function.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::emitStringToDoubleFunction()
+{
+	if (needsStringToDoubleFunction())
+		*out << "double stringToDouble(string s) {\n"
+			<< "\tif (isdigit(s[0]) || s[0] == '-')\n"
+			<< "\t\treturn stod(s, NULL);\n"
+			<< "\treturn 0;\n"
+			<< "}\n\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the string to ascii conversion function.
+//
+// Version 3.0
+// ----------------------------------------------------------
+void IncludesSubPhase::emitStringToAsciiFunction()
+{
+	if (needsStringToAsciiFunction())
+		*out << "double stringToAscii(string s, int loc) {\n"
+			<< "\tif (loc < 0 || loc >= s.length())\n"
+			<< "\t\treturn 0;\n"
+			<< "\treturn s.at(loc);\n"
+			<< "}\n\n";
 }
