@@ -117,7 +117,8 @@ void Obfuscator::refillOutSource()
 		//non-string, non-id sequence
 		//fill the buffer with only the one char
 		//(the scanner builds tokens)
-		outSource.set("" + in_char);
+		buffer.append(in_char);
+		outSource.set(buffer.value());
 		return;
 	}
 	//id or keyword sequence is in the buffer
@@ -265,7 +266,7 @@ bool Obfuscator::isKeyword(string s)
 // ----------------------------------------------------------
 bool Obfuscator::isRoutine(string s)
 {
-	char nextChar = peek();
+	char nextChar = inSource->peek();
 
 	return nextChar == '(';
 }

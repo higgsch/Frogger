@@ -18,8 +18,6 @@ v5+.2: Add asciiFunction config file functionality.
 v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 Notes---
-Fix Obfuscator - Headache_obfuscated.fgr
-
 refactor: Line or Stmt, Number -> Index or Count
 refactor: obfuscator inheret from ifstream and use polymorphism in scanner
 refactor: check use of "Magic Numbers"
