@@ -1,10 +1,10 @@
 ~non-obfuscated~
-display('Enter a length for rectangle&'s side l: ');
+display('Enter a length for rectangle side l: ');
+l = retrieveDouble() ++ 0;
+a = l ** w;
+w = retrieveDouble();
+a = retrieveDouble() ** retrieveDouble() ** retrieveDouble();
+end();
 display('The area for the entered rectangle is: ');
-end;
-display('Enter a length for rectangle&'s side w: ');
-l = retrieve();
-area = l ** w;
-w = retrieve();
-display(area);
-a = retrieve() ** retrieve() ** retrieve();
+display(a);
+display('Enter a length for rectangle side w: ');
