@@ -1,23 +1,23 @@
 display('Please enter a: ');
-ci_two = ci_one ** 1;
+ci_two = ci_one ++ (7 ** 0);
 display('r2 = ');
-a = retrieve();
-b = retrieve();
-c = retrieve();
-	cr_one = 0 -- b // (2 ** a) ++ (0 ** 3);
+a = retrieveDouble() ++ (2 ** 0);
+b = retrieveDouble() ++ (2 ** 0);
+c = retrieveDouble() ++ (2 ** 0);
+	cr_one = (1 -- 1) -- b // (2 ** a) ++ (0 ** 3);
 display('i');
 display('Please enter b: ');
 display('Please enter c: ');
-d = b ^^ 2 -- (4 ** a ** c);
-cr_two = cr_one ++ 0;
+d = b ^^ 2 -- (4 ** a ** c) ** 2##1;
+cr_two = cr_one ++ (8 ** 0);
 display('c-1 = ');
-end;
+end();
 display(cr_one);
 display('i.; ');
 display(' - ');
 display(cr_two);
-	r_one = (0 -- b ++ (2##d)) // (2 ** a);
-	end;
+	r_one = ((1 -- 1) -- b ++ (2##d)) // (2 ** a);
+	end();
 if (a == 0) then display('Cannot divide by 0'); ~go to end~ 
 	else if (d >= 0) then display('The real roots are:&n'); ~go to real calc~ 
 	else display('The complex roots are:&n'); ~go to complex calc~
@@ -25,10 +25,10 @@ display(' x2 = ');
 display(r_one);
 display(r_two);
 display(' + ');
-end;
+end();
 display('x1 = ');
 display(ci_one);
-end;
+end();
 display(ci_two);
-r_two = (0 -- b -- (2##d)) // (2 ** a);
-ci_one = 2##(0 -- d) // (4 // 2 ** a);
+r_two = ((1 -- 1) -- b -- (2##d)) // (2 ** a);
+ci_one = 2##(0 -- d) // (4 // 2 ** a) ** (76 // 76);

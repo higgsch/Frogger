@@ -1,5 +1,5 @@
 display('Enter 1 to display the alphabet or 2 to display digits: ');
-if (input == 1) then display('Alphabet: abcdefghijklmnopqrstuvwxyz'); else a = 1;
+if (input == 1) then display('Alphabet: abcdefghijklmnopqrstuvwxyz'); else a = 2;
 if (input == 2) then display('Hexadecimal Digits: 0123456789ABCDEF'); else display('Invalid Input - Exiting');
-input = retrieve();
-end;
+input = retrieveDouble() ** 1 ++ 0;
+end();
