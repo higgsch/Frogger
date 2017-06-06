@@ -1,1 +1,1 @@
-if (0 == 0) then total = retrieve() ++ retrieve(); else total = retrieve() ** retrieve();
+if (0 == 0) then total = retrieveDouble() ++ retrieveDouble(); else total = retrieveDouble() ** retrieveDouble();

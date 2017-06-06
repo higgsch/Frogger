@@ -1,7 +1,8 @@
 display('This is a test');
 display(5);
 display(5 ++ 4);
-a = retrieve();
+a = retrieveDouble();
 display(a);
-b = random();
+b = retrieveString();
 display(b);
+end();

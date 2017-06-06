@@ -1,0 +1,8 @@
+display(5:toString());
+five = retrieveDouble();
+display(five);
+display(65:toAscii());
+display(random());
+display('Hello':asciiAt(1));
+display('A':parseDouble());
+display(retrieveString());

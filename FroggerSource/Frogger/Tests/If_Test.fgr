@@ -1,9 +1,9 @@
 if (1 < 2) then a = 0; else a = 2;
 if (1 > 2) then b = 1; else b = 2;
 if (a == 2) then c = 1; else c = 3;
-if (b <= 2) then d = 0; else d = retrieve();
+if (b <= 2) then d = 0; else d = retrieveDouble();
 if (4 >= c) then a = 1; else a = a ++ 1;
-if (5 !== 5) then display(4 ++ retrieve()); else end;
+if (5 !== 5) then display(4 ++ retrieveDouble()); else end();
 if (a ++ b !<= c ** 5 -- (d // 4)) then display('true'); else display('false');
 
 if (a > 10) then display('Value is too large!'); else
