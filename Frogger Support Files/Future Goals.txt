@@ -18,6 +18,9 @@ v5+.2: Add asciiFunction config file functionality.
 v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 Notes---
+add <string>:length() function
+decide to add write(<double>) or remove display(<double>)
+
 refactor: Line or Stmt, Number -> Index or Count
 refactor: obfuscator inheret from ifstream and use polymorphism in scanner
 refactor: check use of "Magic Numbers"
