@@ -1,0 +1,14 @@
+if (args:size() !== 2) 
+  then display('Usage: CopyFile.exe <source_filename> <destination_filename>'); 
+  else openI(args:elementAt(0));
+end();
+if (inChar:asciiAt(0) == (0 -- 1)) 
+  then finished = 1 ^^ 6; 
+  else write(inChar);
+closeO();
+finished = 0 ^^ 7;
+if (finished == 0) 
+  then inChar = read(); 
+  else closeI();
+openO(args:elementAt(1));
+a = 'BadData';

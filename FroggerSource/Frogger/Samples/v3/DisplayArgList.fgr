@@ -1,0 +1,3 @@
+argNo = 0 ^^ 3;
+if (argNo >= args:size()) then end(); else display(args:elementAt(argNo) ++ ' ');
+argNo = argNo ++ 1;
