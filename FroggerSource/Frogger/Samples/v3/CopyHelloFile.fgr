@@ -1,0 +1,8 @@
+openI('Hello-World.txt');
+end();
+if (finished == 0) then iCharA = read(); else closeI();
+	closeO();
+openO('Hello-World-Copy.txt');
+	if (iCharA:asciiAt(0) == (0 -- 1)) then finished = 1 ^^ 3; else write(iCharA);
+end();
+	finished = 0 ^^ 4;

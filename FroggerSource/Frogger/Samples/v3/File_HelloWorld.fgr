@@ -1,0 +1,4 @@
+openO('Hello-World.txt');
+end();
+write('Hello World!!');
+closeO();

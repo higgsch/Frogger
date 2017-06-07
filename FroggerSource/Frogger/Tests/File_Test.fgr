@@ -1,0 +1,6 @@
+openI('test.fgr');
+openO('test.cpp');
+a = read();
+write('This is a test:&n');
+closeI();
+closeO();
