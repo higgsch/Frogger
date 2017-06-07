@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.2
 // -----------------------------------------------------------------
 // This program provides the SymbolTable, FunctionTable, and 
 // CommandTable.
@@ -87,7 +87,7 @@ DataType SymbolTable::symbolType(string id)
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 CommandTable::CommandTable()
 {
@@ -104,12 +104,33 @@ CommandTable::CommandTable()
 	CMD_DISPLAY_DBL->addArg(DT_DOUBLE);
 	CMD_DISPLAY_DBL->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_DBL));
+
+	CMD_OPEN_INPUT->argTypeList = new vector<DataType>();
+	CMD_OPEN_INPUT->addArg(DT_STRING);
+	CMD_OPEN_INPUT->builtIn = true;
+	add(new CommandRecord(CMD_OPEN_INPUT));
+
+	CMD_CLOSE_INPUT->builtIn = true;
+	add(new CommandRecord(CMD_CLOSE_INPUT));
+
+	CMD_WRITE->argTypeList = new vector<DataType>();
+	CMD_WRITE->addArg(DT_STRING);
+	CMD_WRITE->builtIn = true;
+	add(new CommandRecord(CMD_WRITE));
+
+	CMD_OPEN_OUTPUT->argTypeList = new vector<DataType>();
+	CMD_OPEN_OUTPUT->addArg(DT_STRING);
+	CMD_OPEN_OUTPUT->builtIn = true;
+	add(new CommandRecord(CMD_OPEN_OUTPUT));
+
+	CMD_CLOSE_OUTPUT->builtIn = true;
+	add(new CommandRecord(CMD_CLOSE_OUTPUT));
 }
 
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 FunctionTable::FunctionTable()
 {
@@ -136,6 +157,9 @@ FunctionTable::FunctionTable()
 
 	FUNCT_RETRIEVE_STRING->builtIn = true;
 	add(new FunctionRecord(FUNCT_RETRIEVE_STRING));
+
+	FUNCT_READ->builtIn = true;
+	add(new FunctionRecord(FUNCT_READ));
 }
 
 // ----------------------------------------------------------
@@ -160,6 +184,11 @@ DataType FunctionTable::getFunctionReturnType(Function* funct)
 Command* CommandTable::CMD_END			= new Command("end");
 Command* CommandTable::CMD_DISPLAY_STR	= new Command("display");
 Command* CommandTable::CMD_DISPLAY_DBL	= new Command("display");
+Command* CommandTable::CMD_OPEN_INPUT	= new Command("openI");
+Command* CommandTable::CMD_CLOSE_INPUT	= new Command("closeI");
+Command* CommandTable::CMD_WRITE		= new Command("write");
+Command* CommandTable::CMD_OPEN_OUTPUT	= new Command("openO");
+Command* CommandTable::CMD_CLOSE_OUTPUT	= new Command("closeO");
 
 Function* FunctionTable::FUNCT_TO_STRING		= new Function(DT_DOUBLE, "toString", DT_STRING);
 Function* FunctionTable::FUNCT_TO_ASCII			= new Function(DT_DOUBLE, "toAscii", DT_STRING);
@@ -168,3 +197,4 @@ Function* FunctionTable::FUNCT_ASCII_AT			= new Function(DT_STRING, "asciiAt", D
 Function* FunctionTable::FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, "retrieveDouble", DT_DOUBLE);
 Function* FunctionTable::FUNCT_RANDOM			= new Function(DT_NULL, "random", DT_DOUBLE);
 Function* FunctionTable::FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, "retrieveString", DT_STRING);
+Function* FunctionTable::FUNCT_READ				= new Function(DT_NULL, "read", DT_STRING);

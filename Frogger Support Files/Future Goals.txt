@@ -9,8 +9,8 @@ v2.4: Added string indexing (<string>:asciiAt(dbl)), string parsing (<string>:pa
 v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble), obfuscation for function names
 v3.0: Refactored with cleaner code.
 v3.1: Added line numbers to errors throughout.
+v3.2: Added File I/O: openI, openO, read, write, closeI, closeO routines
 
-v3.2: Add File I/O.
 v3.3: Add commandline argument functionality.
 v4: Add user-defined functions (force modulation into different files).
 v5+: Add object orientation (folder modulation).

@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.2
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -13,7 +13,7 @@ using namespace std;
 // given output stream and AST.
 // @outstream: The output stream to print to.
 //
-// Version 2.2
+// Version 3.2
 // ----------------------------------------------------------
 IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 {
@@ -24,18 +24,21 @@ IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 	isMathImported = false;
 	isStdLibImported = false;
 	isTimeImported = false;
+	isFStreamImported = false;
 
 	hasRndNode = false;
 	needsRoundFunct = false;
 	needsStringToDouble = false;
 	needsStringToAscii = false;
+	needsIFile = false;
+	needsOFile = false;
 }
 
 // ----------------------------------------------------------
 // This function processes the include for a function call.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(FunctionCallNode * n)
 {
@@ -62,6 +65,12 @@ void IncludesSubPhase::visit(FunctionCallNode * n)
 
 		hasRndNode = true;
 	}
+	else if (funct->equals(FunctionTable::FUNCT_READ))
+	{
+		importFStream();
+
+		needsIFile = true;
+	}
 
 	if (funct->equals(FunctionTable::FUNCT_PARSE_DOUBLE) 
 		|| funct->equals(FunctionTable::FUNCT_ASCII_AT))
@@ -74,7 +83,7 @@ void IncludesSubPhase::visit(FunctionCallNode * n)
 // This function processes the include for a command call.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(CommandCallNode * n)
 {
@@ -85,6 +94,21 @@ void IncludesSubPhase::visit(CommandCallNode * n)
 		|| cmd->equals(CommandTable::CMD_DISPLAY_STR))
 	{
 		importIOStream();
+	}
+	else if (cmd->equals(CommandTable::CMD_OPEN_INPUT)
+		|| cmd->equals(CommandTable::CMD_CLOSE_INPUT))
+	{
+		importFStream();
+
+		needsIFile = true;
+	}
+	else if (cmd->equals(CommandTable::CMD_OPEN_OUTPUT)
+		|| cmd->equals(CommandTable::CMD_CLOSE_OUTPUT)
+		|| cmd->equals(CommandTable::CMD_WRITE))
+	{
+		importFStream();
+
+		needsOFile = true;
 	}
 }
 
@@ -267,6 +291,21 @@ void IncludesSubPhase::importTime()
 	{
 		*out << "#include <time.h>\n";
 		isTimeImported = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the fstream
+// library.
+//
+// Version 3.2
+// ----------------------------------------------------------
+void IncludesSubPhase::importFStream()
+{
+	if (!isFStreamImported)
+	{
+		*out << "#include <fstream>\n";
+		isFStreamImported = true;
 	}
 }
 

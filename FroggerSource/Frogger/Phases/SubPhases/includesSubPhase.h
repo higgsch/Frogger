@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for generating import
 // statements as a subphase of the CodeGenerationPhase.
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 class IncludesSubPhase : public Phase
 {
@@ -23,17 +23,21 @@ private:
 	bool isMathImported; // flag for <math.h>
 	bool isStdLibImported; // flag for <stdlib.h>
 	bool isTimeImported; // flag for <time.h>
+	bool isFStreamImported; // flag for <fstream>
 
 	bool hasRndNode; // flag for seeding
 	bool needsRoundFunct; // flag for round() creation
 	bool needsStringToDouble; // flag for stringToDouble() creation
 	bool needsStringToAscii; // flag for stringToAscii() creation
+	bool needsIFile; // flag for in_file
+	bool needsOFile; // flag for out_file
 
 	void importString();
 	void importIOStream();
 	void importMath();
 	void importStdLib();
 	void importTime();
+	void importFStream();
 
 	void emitEmptyString();
 	void emitRoundFunction();
@@ -76,4 +80,6 @@ public:
 	bool needsString(){ return isStringImported; }
 	bool needsStringToDoubleFunction() { return needsStringToDouble; }
 	bool needsStringToAsciiFunction() { return needsStringToAscii; }
+	bool needsInputFile() { return needsIFile; }
+	bool needsOutputFile() { return needsOFile; }
 };

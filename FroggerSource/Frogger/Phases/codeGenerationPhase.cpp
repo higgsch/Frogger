@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.1
+//                      Version: 3.2
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -32,7 +32,7 @@ CodeGenerationPhase::CodeGenerationPhase(SymbolTable* i_symbols)
 // This function initiates the phase over the AST.
 // @n: The node representing the program.
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(ProgramNode * n)
 {
@@ -42,12 +42,22 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 	iSub->emitUsingStatment();
 	iSub->emitSupportCode();
 	bool needsRand = iSub->hasRandomNode();
+	bool needsInFile = iSub->needsInputFile();
+	bool needsOutFile = iSub->needsOutputFile();
 	delete iSub; iSub = NULL;
 
 	*out << "int main(int argc, char* argv[])\n{\n";
 
 	if (needsRand)
 		*out << "\tsrand(time(NULL)); rand();\n";
+
+	if (needsInFile)
+		*out << "\tifstream in_file = ifstream();\n";
+
+	if (needsOutFile)
+		*out << "\tofstream out_file = ofstream();\n";
+
+	*out << "\n";
 
 	indentDepth++;
 
@@ -176,7 +186,7 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 3.1
+// Version 3.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
@@ -237,6 +247,10 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 		{
 			*out << " ((double) rand() / (RAND_MAX)) ";
 		}
+		else if (name == "read")
+		{
+			*out << "(char)(in_file.get())";
+		}
 		else
 			this->semantic_error("Unrecognized function: " + name, n->getLineNo());
 	}
@@ -246,7 +260,7 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 3.1
+// Version 3.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(CommandCallNode * n)
 {
@@ -276,6 +290,32 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 			*out << indent() << "cout << (";
 			n->visitArgList(this);
 			*out << ");" << endl;
+		}
+		else if (name == "openI")
+		{
+			*out << indent() << "in_file.open(";
+			n->visitArgList(this);
+			*out << ");\n";
+		}
+		else if (name == "openO")
+		{
+			*out << indent() << "out_file.open(";
+			n->visitArgList(this);
+			*out << ");\n";
+		}
+		else if (name == "write")
+		{
+			*out << indent() << "out_file << (";
+			n->visitArgList(this);
+			*out << ");\n";
+		}
+		else if (name == "closeI")
+		{
+			*out << indent() << "in_file.close();\n";
+		}
+		else if (name == "closeO")
+		{
+			*out << indent() << "out_file.close();\n";
 		}
 		else
 			this->semantic_error("Unrecognized command: " + name, n->getLineNo());

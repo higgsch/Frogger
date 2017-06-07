@@ -67,7 +67,7 @@ public:
 // ----------------------------------------------------------
 // This class represents a collection of commands
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 class CommandTable : public Table<Command>
 {
@@ -77,12 +77,18 @@ public:
 	static Command* CMD_END;
 	static Command* CMD_DISPLAY_STR;
 	static Command* CMD_DISPLAY_DBL;
+	static Command* CMD_OPEN_INPUT;
+	static Command* CMD_CLOSE_INPUT;
+	static Command* CMD_WRITE;
+	static Command* CMD_OPEN_OUTPUT;
+	static Command* CMD_CLOSE_OUTPUT;
+
 };
 
 // ----------------------------------------------------------
 // This class represents a collection of functions
 //
-// Version 3.0
+// Version 3.2
 // ----------------------------------------------------------
 class FunctionTable : public Table<Function>
 {
@@ -98,4 +104,5 @@ public:
 	static Function* FUNCT_RETRIEVE_DOUBLE;
 	static Function* FUNCT_RANDOM;
 	static Function* FUNCT_RETRIEVE_STRING;
+	static Function* FUNCT_READ;
 };
