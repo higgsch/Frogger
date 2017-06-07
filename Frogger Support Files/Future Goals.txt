@@ -10,15 +10,15 @@ v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble), obfuscation 
 v3.0: Refactored with cleaner code.
 v3.1: Added line numbers to errors throughout.
 v3.2: Added File I/O: openI, openO, read, write, closeI, closeO routines
+v3.3: Added commandline argument and string length functionality.
 
-v3.3: Add commandline argument functionality.
 v4: Add user-defined functions (force modulation into different files).
 v5+: Add object orientation (folder modulation).
 v5+.2: Add asciiFunction config file functionality.
 v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 Notes---
-add <string>:length() function
+add security checks for functions
 decide to add write(<double>) or remove display(<double>)
 
 refactor: Line or Stmt, Number -> Index or Count
