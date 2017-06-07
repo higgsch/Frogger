@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.2
+//                      Version: 3.3
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -32,7 +32,7 @@ CodeGenerationPhase::CodeGenerationPhase(SymbolTable* i_symbols)
 // This function initiates the phase over the AST.
 // @n: The node representing the program.
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(ProgramNode * n)
 {
@@ -46,7 +46,8 @@ void CodeGenerationPhase::visit(ProgramNode * n)
 	bool needsOutFile = iSub->needsOutputFile();
 	delete iSub; iSub = NULL;
 
-	*out << "int main(int argc, char* argv[])\n{\n";
+	*out << "int main(int argc, char* argv[])\n{\n"
+		<< "\tvector<string> args(argv + 1, argv + argc);\n";
 
 	if (needsRand)
 		*out << "\tsrand(time(NULL)); rand();\n";
@@ -186,7 +187,7 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
@@ -235,6 +236,12 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 			*out << ")";
 			//<string>:asciiAt(<double>) takes an argument
 		}
+		else if (name == "length")
+		{
+			*out << "(emptyString + ";
+			n->visitPrimary(this);
+			*out << ").size()";
+		}
 		else if (name == "retrieveDouble")
 		{
 			*out << " _dbltemp_" << dblTempNo++ << " ";
@@ -250,6 +257,16 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 		else if (name == "read")
 		{
 			*out << "(char)(in_file.get())";
+		}
+		else if (name == "elementAt")
+		{
+			*out << "elemAt(args,";
+			n->visitArgList(this);
+			*out << ")";
+		}
+		else if (name == "size")
+		{
+			*out << "args.size()";
 		}
 		else
 			this->semantic_error("Unrecognized function: " + name, n->getLineNo());

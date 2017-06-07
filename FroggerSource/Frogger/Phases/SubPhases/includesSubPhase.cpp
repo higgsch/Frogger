@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.2
+//                      Version: 3.3
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -13,13 +13,12 @@ using namespace std;
 // given output stream and AST.
 // @outstream: The output stream to print to.
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 {
 	out = outstream;
 
-	isStringImported = false;
 	isIOStreamImported = false;
 	isMathImported = false;
 	isStdLibImported = false;
@@ -38,7 +37,7 @@ IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 // This function processes the include for a function call.
 // @n: The node representing the statement.
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(FunctionCallNode * n)
 {
@@ -70,12 +69,6 @@ void IncludesSubPhase::visit(FunctionCallNode * n)
 		importFStream();
 
 		needsIFile = true;
-	}
-
-	if (funct->equals(FunctionTable::FUNCT_PARSE_DOUBLE) 
-		|| funct->equals(FunctionTable::FUNCT_ASCII_AT))
-	{
-		importString();
 	}
 }
 
@@ -110,31 +103,6 @@ void IncludesSubPhase::visit(CommandCallNode * n)
 
 		needsOFile = true;
 	}
-}
-
-// ----------------------------------------------------------
-// This function processes the include for a string literal.
-// @n: The node representing the string.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(StringConstingNode * n)
-{
-	importString();
-}
-
-// ----------------------------------------------------------
-// This function processes the include for an addition operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void IncludesSubPhase::visit(AddingNode * n)
-{
-	//include string for concatenation
-	importString();
-	
-	n->visitAllChildren(this);
 }
 
 // ----------------------------------------------------------
@@ -198,18 +166,20 @@ void IncludesSubPhase::visit(ExpingNode * n)
 // ----------------------------------------------------------
 // This function emits the using statement.
 //
-// Version 3.0
+// Version 3.3
 // ----------------------------------------------------------
 void IncludesSubPhase::emitUsingStatment()
 {
-	*out << "using namespace std;\n\n";
+	*out << "#include <string>;\n"
+		<< "#include <vector>;\n"
+		<< "using namespace std;\n\n";
 }
 
 // ----------------------------------------------------------
 // This function emits the global support code (constants and
 // functions).
 //
-// Version 3.0
+// Version 3.3
 // ----------------------------------------------------------
 void IncludesSubPhase::emitSupportCode()
 {
@@ -217,21 +187,7 @@ void IncludesSubPhase::emitSupportCode()
 	emitRoundFunction();
 	emitStringToDoubleFunction();
 	emitStringToAsciiFunction();
-}
-
-// ----------------------------------------------------------
-// This function writes the include statment for the string
-// library.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void IncludesSubPhase::importString()
-{
-	if (!isStringImported)
-	{
-		*out << "#include <string>\n";
-		isStringImported = true;
-	}
+	emitElemAtFunction();
 }
 
 // ----------------------------------------------------------
@@ -312,12 +268,11 @@ void IncludesSubPhase::importFStream()
 // ----------------------------------------------------------
 // This function emits the emptyString constant.
 //
-// Version 3.0
+// Version 3.3
 // ----------------------------------------------------------
 void IncludesSubPhase::emitEmptyString()
 {
-	if (needsString())
-		*out << "const string emptyString = \"\";\n\n";
+	*out << "const string emptyString = \"\";\n\n";
 }
 
 // ----------------------------------------------------------
@@ -362,4 +317,18 @@ void IncludesSubPhase::emitStringToAsciiFunction()
 			<< "\t\treturn 0;\n"
 			<< "\treturn s.at(loc);\n"
 			<< "}\n\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the elemAt function.
+//
+// Version 3.3
+// ----------------------------------------------------------
+void IncludesSubPhase::emitElemAtFunction()
+{
+	*out << "string elemAt(vector<string> v, int index) {\n"
+		<< "\tif (index < 0 || index >= v.size())\n"
+		<< "\t\treturn \"\";\n"
+		<< "\treturn v[index];\n"
+		<< "}\n\n";
 }

@@ -54,12 +54,12 @@ struct FunctionRecord : public Record<Function>
 // ----------------------------------------------------------
 // This class represents a collection of variables
 //
-// Version 3.0
+// Version 3.3
 // ----------------------------------------------------------
 class SymbolTable : public Table<Symbol>
 {
 public:
-	SymbolTable() {}
+	SymbolTable() { add(new SymbolRecord(new Symbol("args",DT_ARGS))); }
 
 	DataType symbolType(string id);
 };
@@ -88,7 +88,7 @@ public:
 // ----------------------------------------------------------
 // This class represents a collection of functions
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 class FunctionTable : public Table<Function>
 {
@@ -101,8 +101,11 @@ public:
 	static Function* FUNCT_TO_ASCII;
 	static Function* FUNCT_PARSE_DOUBLE;
 	static Function* FUNCT_ASCII_AT;
+	static Function* FUNCT_LENGTH;
 	static Function* FUNCT_RETRIEVE_DOUBLE;
 	static Function* FUNCT_RANDOM;
 	static Function* FUNCT_RETRIEVE_STRING;
 	static Function* FUNCT_READ;
+	static Function* FUNCT_ELEMENT_AT;
+	static Function* FUNCT_SIZE;
 };

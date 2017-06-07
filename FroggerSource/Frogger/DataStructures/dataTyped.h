@@ -9,7 +9,7 @@ using namespace std;
 enum DataType
 {
 	DT_NULL, //Used when the concept of a DataType is N/A 
-	DT_DOUBLE,DT_STRING,
+	DT_DOUBLE,DT_STRING,DT_ARGS,
 	DT_NOT_DEFINED //Used when the type is unknown
 };
 

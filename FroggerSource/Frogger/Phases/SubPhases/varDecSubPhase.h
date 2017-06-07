@@ -13,7 +13,7 @@ using namespace std;
 // This class represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
 //
-// Version 3.0
+// Version 3.3
 // ----------------------------------------------------------
 class VarDecSubPhase : public Phase
 {

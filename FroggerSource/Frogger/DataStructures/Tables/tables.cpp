@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.2
+//                      Version: 3.3
 // -----------------------------------------------------------------
 // This program provides the SymbolTable, FunctionTable, and 
 // CommandTable.
@@ -130,7 +130,7 @@ CommandTable::CommandTable()
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 FunctionTable::FunctionTable()
 {
@@ -149,6 +149,9 @@ FunctionTable::FunctionTable()
 	FUNCT_ASCII_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ASCII_AT));
 
+	FUNCT_LENGTH->builtIn = true;
+	add(new FunctionRecord(FUNCT_LENGTH));
+
 	FUNCT_RETRIEVE_DOUBLE->builtIn = true;
 	add(new FunctionRecord(FUNCT_RETRIEVE_DOUBLE));
 
@@ -160,6 +163,14 @@ FunctionTable::FunctionTable()
 
 	FUNCT_READ->builtIn = true;
 	add(new FunctionRecord(FUNCT_READ));
+
+	FUNCT_ELEMENT_AT->argTypeList = new vector<DataType>();
+	FUNCT_ELEMENT_AT->addArg(DT_DOUBLE);
+	FUNCT_ELEMENT_AT->builtIn = true;
+	add(new FunctionRecord(FUNCT_ELEMENT_AT));
+
+	FUNCT_SIZE->builtIn = true;
+	add(new FunctionRecord(FUNCT_SIZE));
 }
 
 // ----------------------------------------------------------
@@ -194,7 +205,10 @@ Function* FunctionTable::FUNCT_TO_STRING		= new Function(DT_DOUBLE, "toString", 
 Function* FunctionTable::FUNCT_TO_ASCII			= new Function(DT_DOUBLE, "toAscii", DT_STRING);
 Function* FunctionTable::FUNCT_PARSE_DOUBLE		= new Function(DT_STRING, "parseDouble", DT_DOUBLE);
 Function* FunctionTable::FUNCT_ASCII_AT			= new Function(DT_STRING, "asciiAt", DT_DOUBLE);
+Function* FunctionTable::FUNCT_LENGTH			= new Function(DT_STRING, "length", DT_DOUBLE);
 Function* FunctionTable::FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, "retrieveDouble", DT_DOUBLE);
 Function* FunctionTable::FUNCT_RANDOM			= new Function(DT_NULL, "random", DT_DOUBLE);
 Function* FunctionTable::FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, "retrieveString", DT_STRING);
 Function* FunctionTable::FUNCT_READ				= new Function(DT_NULL, "read", DT_STRING);
+Function* FunctionTable::FUNCT_ELEMENT_AT		= new Function(DT_ARGS, "elementAt", DT_STRING);
+Function* FunctionTable::FUNCT_SIZE				= new Function(DT_ARGS, "size", DT_DOUBLE);

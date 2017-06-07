@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 3.3
 // -----------------------------------------------------------------
 // This program represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
@@ -121,7 +121,7 @@ void VarDecSubPhase::visit(FunctionCallNode * n)
 // This function adds declarations for each symbol in the 
 // symbol table.
 //
-// Version 3.0
+// Version 3.3
 // ----------------------------------------------------------
 void VarDecSubPhase::emitSymbolTable()
 {
@@ -134,6 +134,8 @@ void VarDecSubPhase::emitSymbolTable()
 			*out << indent() << "double _" << s.id << " = 0;\n";
 		else if (s.type == DT_STRING)
 			*out << indent() << "string _" << s.id << " = \"\";\n";
+		else if (s.type == DT_ARGS)
+			continue;
 		else
 			*out << indent() << "Not_Defined _" << s.id << " = NULL;\n";
 	}

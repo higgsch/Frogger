@@ -14,7 +14,7 @@ using namespace std;
 // This class represents a visitor for generating output code
 // that reflects the current AST.
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 class CodeGenerationPhase : public Phase
 {

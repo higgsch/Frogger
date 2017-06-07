@@ -12,13 +12,12 @@ using namespace std;
 // This class represents a visitor for generating import
 // statements as a subphase of the CodeGenerationPhase.
 //
-// Version 3.2
+// Version 3.3
 // ----------------------------------------------------------
 class IncludesSubPhase : public Phase
 {
 private:
 	ostream* out; // the output stream to print to
-	bool isStringImported; // flag for <string>
 	bool isIOStreamImported; // flag for <iostream>
 	bool isMathImported; // flag for <math.h>
 	bool isStdLibImported; // flag for <stdlib.h>
@@ -32,7 +31,6 @@ private:
 	bool needsIFile; // flag for in_file
 	bool needsOFile; // flag for out_file
 
-	void importString();
 	void importIOStream();
 	void importMath();
 	void importStdLib();
@@ -43,6 +41,7 @@ private:
 	void emitRoundFunction();
 	void emitStringToDoubleFunction();
 	void emitStringToAsciiFunction();
+	void emitElemAtFunction();
 
 public:
 	IncludesSubPhase(ostream*);
@@ -55,9 +54,9 @@ public:
 	void visit(FunctionCallNode * n);
 	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n) { n->visitAllChildren(this); }
-	void visit(StringConstingNode * n);
+	void visit(StringConstingNode * n){}
 	void visit(DoubleConstingNode * n){}
-	void visit(AddingNode * n);
+	void visit(AddingNode * n) { n->visitAllChildren(this); }
 	void visit(SubingNode * n) { n->visitAllChildren(this); }
 	void visit(MulingNode * n) { n->visitAllChildren(this); }
 	void visit(DivingNode * n) { n->visitAllChildren(this); }
@@ -77,7 +76,6 @@ public:
 
 	bool hasRandomNode(){ return hasRndNode; }
 	bool needsRoundFunction(){ return needsRoundFunct; }
-	bool needsString(){ return isStringImported; }
 	bool needsStringToDoubleFunction() { return needsStringToDouble; }
 	bool needsStringToAsciiFunction() { return needsStringToAscii; }
 	bool needsInputFile() { return needsIFile; }
