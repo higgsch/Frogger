@@ -1,0 +1,1 @@
+call GuessMyNumber.exe < ..\ExpectedOutput\v2\GuessMyNumberInput.txt >v2\GuessMyNumber.txt

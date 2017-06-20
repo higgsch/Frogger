@@ -1,0 +1,1 @@
+call StringLength.exe >v3\StringLength.txt

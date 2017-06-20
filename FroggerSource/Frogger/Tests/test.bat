@@ -1,0 +1,2 @@
+call _compileArithmetic_Test.lnk
+pause

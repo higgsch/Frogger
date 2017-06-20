@@ -1,0 +1,1 @@
+call Headache_obfuscated.exe>v1\Headache_obfuscated.txt

@@ -1,0 +1,2 @@
+Welcome to Guess My Number!
+I have my number- please guess a number between 0 and 100: I'm sorry, Too high. Guess again: Too low. Guess again: 

@@ -1,0 +1,1 @@
+Enter 1 to display the alphabet or 2 to display digits: Alphabet: abcdefghijklmnopqrstuvwxyz

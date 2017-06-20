@@ -1,0 +1,1 @@
+call HelloWorld_full.exe>v1\HelloWorld_full.txt
