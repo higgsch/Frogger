@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 4.0
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and converts strings of 
 // chars to tokens.
@@ -652,7 +652,7 @@ char FGRScanner::peek()
 // @lineNo: The line number that the error occurred on.
 // @err_msg: The message to display to the user.
 // 
-// Version 1.0
+// Version 4.0
 // ----------------------------------------------------------
 void FGRScanner::lexical_error(string err_msg)
 {

@@ -12,12 +12,23 @@ using namespace std;
 //forward declaration
 class ProgramNode;
 
+// ----------------------------------------------------------
+// This class represents the data known about an argument.
+//
+// Version 4.0
+// ----------------------------------------------------------
 struct argPair
 {
 	string name;
 	DataType type;
 };
 
+// ----------------------------------------------------------
+// This class represents the data known about a User Defined 
+// Function.
+//
+// Version 4.0
+// ----------------------------------------------------------
 struct UDFRecord
 {
 	string UDFName;
@@ -25,6 +36,12 @@ struct UDFRecord
 	DataType returnType;
 };
 
+// ----------------------------------------------------------
+// This class represents the data known about a Frogger
+// Program. Generated from the .struct file.
+//
+// Version 4.0
+// ----------------------------------------------------------
 struct ProgramStruct
 {
 	UDFRecord * PEF;
@@ -132,12 +149,22 @@ public:
 	static Function* FUNCT_SIZE;
 };
 
+// ----------------------------------------------------------
+// This class wraps the AST and Symbol Table for a UDF.
+//
+// Version 4.0
+// ----------------------------------------------------------
 struct FunctionAST
 {
 	ProgramNode * root;
 	SymbolTable * symbols;
 };
 
+// ----------------------------------------------------------
+// This class wraps the PEF and all UDFs in a Frogger program.
+//
+// Version 4.0
+// ----------------------------------------------------------
 struct ProgramAST
 {
 	FunctionAST * PEF;

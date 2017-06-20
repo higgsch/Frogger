@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.3
+//                      Version: 4.0
 // -----------------------------------------------------------------
 // This program provides the SymbolTable, FunctionTable, and 
 // CommandTable.
@@ -65,6 +65,13 @@ bool FunctionRecord::isAddable()
 	return true;
 }
 
+// ----------------------------------------------------------
+// This function creates a symbol table prepopulated with
+// the argument list in the given UDFRecord.
+// @rec: The UDFRecord to copy symbols from.
+//
+// Version 4.0
+// ----------------------------------------------------------
 SymbolTable::SymbolTable(UDFRecord * rec)
 {
 	add(new SymbolRecord(new Symbol("args",DT_ARGS)));

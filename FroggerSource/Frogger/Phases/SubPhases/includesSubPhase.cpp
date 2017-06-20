@@ -351,6 +351,11 @@ void IncludesSubPhase::emitElemAtFunction()
 		<< "}\n\n";
 }
 
+// ----------------------------------------------------------
+// This function emits the vector of argument strings.
+//
+// Version 4.0
+// ----------------------------------------------------------
 void IncludesSubPhase::emitArgVector()
 {
 	*out << "vector<string> args;\n";

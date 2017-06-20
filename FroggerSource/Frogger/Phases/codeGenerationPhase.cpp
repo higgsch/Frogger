@@ -139,11 +139,25 @@ void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 	*out << endl;
 }
 
+// ----------------------------------------------------------
+// This function generates the function prototype of the given
+// UDFRecord.
+// @rec: The function to print.
+//
+// Version 4.0
+// ----------------------------------------------------------
 void CodeGenerationPhase::printFunctionPrototype(UDFRecord * rec)
 {
 	*out << typeString(rec->returnType) << " " << rec->UDFName << "(" << argsString(rec->args) << ")";
 }
 
+// ----------------------------------------------------------
+// This function returns the output string corresponding to
+// the given DataType.
+// @dt: The DataType to print.
+//
+// Version 4.0
+// ----------------------------------------------------------
 string CodeGenerationPhase::typeString(DataType dt)
 {
 	switch (dt)
@@ -159,6 +173,13 @@ string CodeGenerationPhase::typeString(DataType dt)
 	}
 }
 
+// ----------------------------------------------------------
+// This function returns a string representation of the
+// argument list.
+// @args: The argument list to convert.
+//
+// Version 4.0
+// ----------------------------------------------------------
 string CodeGenerationPhase::argsString(vector<argPair *> * args)
 {
 	string result = "";
