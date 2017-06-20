@@ -14,24 +14,37 @@ using namespace std;
 // This class represents a visitor for generating output code
 // that reflects the current AST.
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 class CodeGenerationPhase : public Phase
 {
 private:
-	SymbolTable* symbols;
 	ofstream* out; // the output stream to print to
 	int dblTempNo; // the current double temporary number in a line
 	int strTempNo; // the current string temporary number in a line
 	int indentDepth; // the number of tabs to insert
 
+	bool needsRand; // flag for random()
+	bool needsInFile; // flag for in_file object
+	bool needsOutFile; // flag for out_file object
+
+	void printForwardDeclarations(ProgramStruct * prog);
+	void printFunctionPrototype(UDFRecord * rec);
+
+	string typeString(DataType dt);
+	string argsString(vector<argPair *> *);
+
 public:
-	CodeGenerationPhase(SymbolTable* i_symbols);
+	CodeGenerationPhase();
 
 	void open(string filename) { out->open(filename); }
 	void close() { out->close(); }
 
-	void visit(ProgramNode * n);
+	void printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct);
+	void printUDFCode(FunctionAST * UDF, UDFRecord * rec);
+	void printPEFCode(FunctionAST * PEF, UDFRecord * rec);
+
+	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
 	void visit(IdRefNode * n);

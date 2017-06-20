@@ -9,6 +9,28 @@
 #include "..\dataTyped.h"
 using namespace std;
 
+//forward declaration
+class ProgramNode;
+
+struct argPair
+{
+	string name;
+	DataType type;
+};
+
+struct UDFRecord
+{
+	string UDFName;
+	vector<argPair *> * args;
+	DataType returnType;
+};
+
+struct ProgramStruct
+{
+	UDFRecord * PEF;
+	vector<UDFRecord *> * UDFs;
+};
+
 // ----------------------------------------------------------
 // This class wraps a Symbol for Table use.
 //
@@ -54,12 +76,12 @@ struct FunctionRecord : public Record<Function>
 // ----------------------------------------------------------
 // This class represents a collection of variables
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 class SymbolTable : public Table<Symbol>
 {
 public:
-	SymbolTable() { add(new SymbolRecord(new Symbol("args",DT_ARGS))); }
+	SymbolTable(UDFRecord * rec);
 
 	DataType symbolType(string id);
 };
@@ -108,4 +130,16 @@ public:
 	static Function* FUNCT_READ;
 	static Function* FUNCT_ELEMENT_AT;
 	static Function* FUNCT_SIZE;
+};
+
+struct FunctionAST
+{
+	ProgramNode * root;
+	SymbolTable * symbols;
+};
+
+struct ProgramAST
+{
+	FunctionAST * PEF;
+	vector<FunctionAST *> * UDFs;
 };

@@ -11,4 +11,4 @@ $(fname).o: $(fname).cpp
 	$(CC) $(CFLAGS) -c -Fo$(fname).o $(fname).cpp
 
 $(fname).cpp: $(fname).fgr
-	..\Debug\Frogger.exe $(fname).fgr $(fname).cpp
+	..\Debug\Frogger.exe /if $(fname).fgr /o $(fname).cpp

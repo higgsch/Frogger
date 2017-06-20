@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header file for the Scanner class
+// This is the header file for the Obfuscator class
 // -----------------------------------------------------------------
 #pragma once
 

@@ -1,21 +1,23 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 4.0
 // ----------------------------------------------------------------
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
 #include "dataTypingPhase.h"
 using namespace std;
 
+extern bool quietMode;
+
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
-DataTypingPhase::DataTypingPhase() 
+DataTypingPhase::DataTypingPhase(FunctionTable * functs, SymbolTable * syms) 
 { 
-	symbols = new SymbolTable(); 
-	functions = new FunctionTable();
+	symbols = syms; 
+	functions = functs;
 	commands = new CommandTable();
 	changeMadeThisRound = false; 
 	setUnknownTypeNodesToDefault = false;
@@ -391,15 +393,19 @@ void DataTypingPhase::unifyTreeDataType(BinaryNode * node)
 // @err_msg: The message to display to the user.
 // @line_no: The line on which the error occured.
 // 
-// Version 3.1
+// Version 4.0
 // ----------------------------------------------------------
 void DataTypingPhase::dataType_error(string err_msg, int line_no)
 {
 	cout << "DATA TYPE ERROR on line " << line_no << ": " << err_msg << endl;
-	cout << "Press Enter to Exit" << endl;
+	
+	if (!quietMode)
+	{
+		cout << "Press Enter to Exit" << endl;
 
-	getchar();
-	exit(0);
+		getchar();
+		exit(0);
+	}
 }
 
 void DataTypingPhase::processDoubleOperator(BinaryOpNode * n)

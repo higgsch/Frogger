@@ -1,11 +1,11 @@
 // -----------------------------------------------------------------
-// This is the header for the Parser class.
+// This is the header for the FGRParser class.
 // -----------------------------------------------------------------
 #pragma once
 
 #include <string>
-#include "..\Scanning\scanner.h"
-#include "..\Scanning\token.h"
+#include "..\Scanning\fgrScanner.h"
+#include "..\Scanning\fgrToken.h"
 #include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
@@ -15,12 +15,12 @@ using namespace std;
 //
 // Version 3.1
 // ----------------------------------------------------------
-class Parser
+class FGRParser
 {
 private:
-	Scanner scanner; //the scanning object that provides a Token stream
-	Token current_token; //the currently-selected Token
-	Token lookahead[1]; //storage location for one lookahead Token
+	FGRScanner scanner; //the scanning object that provides a Token stream
+	FGRToken current_token; //the currently-selected Token
+	FGRToken lookahead[1]; //storage location for one lookahead Token
 	ProgramNode* root; //the root of the AST
 
 	//Program Organization
@@ -50,13 +50,13 @@ private:
 	BinaryOpNode* mulop();
 	BinaryOpNode* expop();
 
-	void match(token_type);
+	void match(fgr_token_type);
 	void syntax_error(string);
 
-	Token next_token();
+	FGRToken next_token();
 
 public:
-	Parser();
+	FGRParser();
 
 	void open(string inFile);
 	void close();

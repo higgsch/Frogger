@@ -9,10 +9,12 @@
 #include "..\dataTyped.h"
 using namespace std;
 
+extern bool quietMode;
+
 // ----------------------------------------------------------
 // This class provides the error function for all AST nodes.
 //
-// Version 3.1
+// Version 4.0
 // ----------------------------------------------------------
 class Node : public DataTyped
 {
@@ -23,15 +25,19 @@ protected:
 	// @err_msg: The message to display.
 	// @line_no: The line number on which the error occured.
 	//
-	// Version 3.1
+	// Version 4.0
 	// ----------------------------------------------------------
 	void ast_error(string err_msg, int line_no)
 	{
 		cout << "AST ERROR on Line " << line_no << ": " << err_msg << endl;
-		cout << "Press Enter to Exit" << endl;
+		
+		if (!quietMode)
+		{
+			cout << "Press Enter to Exit" << endl;
 
-		getchar();
-		exit(0);
+			getchar();
+			exit(0);
+		}
 	}
 
 	// ----------------------------------------------------------

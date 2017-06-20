@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.3
+//                      Version: 4.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -14,66 +14,169 @@ using namespace std;
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
-CodeGenerationPhase::CodeGenerationPhase(SymbolTable* i_symbols)
+CodeGenerationPhase::CodeGenerationPhase()
 {
-	symbols = i_symbols;
-
 	dblTempNo = 1; //temporaries are 1-indexed
 	strTempNo = 1;
 	
 	indentDepth = 0;
 
 	out = new ofstream();
+
+	needsRand = false;
+	needsInFile = false;
+	needsOutFile = false;
 }
 
 // ----------------------------------------------------------
-// This function initiates the phase over the AST.
-// @n: The node representing the program.
+// This function generates the pre-function code.
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(ProgramNode * n)
+void CodeGenerationPhase::printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct)
 {
 	//emit the include statements code
 	IncludesSubPhase* iSub = new IncludesSubPhase(out);
-	n->accept(iSub);
+	progAST->PEF->root->accept(iSub);
+
+	int UDFCount = progAST->UDFs->size();
+	if (UDFCount > 0)
+	{
+		int index = 0;
+		while (index < UDFCount)
+		{
+			(*(progAST->UDFs))[index]->root->accept(iSub);
+		}
+	}
+
 	iSub->emitUsingStatment();
 	iSub->emitSupportCode();
-	bool needsRand = iSub->hasRandomNode();
-	bool needsInFile = iSub->needsInputFile();
-	bool needsOutFile = iSub->needsOutputFile();
+	needsRand = iSub->hasRandomNode();
+	needsInFile = iSub->needsInputFile();
+	needsOutFile = iSub->needsOutputFile();
 	delete iSub; iSub = NULL;
 
+	printForwardDeclarations(progStruct);
+
 	*out << "int main(int argc, char* argv[])\n{\n"
-		<< "\tvector<string> args(argv + 1, argv + argc);\n";
+	<< "\targs = vector<string>(argv + 1, argv + argc);\n";
 
 	if (needsRand)
 		*out << "\tsrand(time(NULL)); rand();\n";
 
 	if (needsInFile)
-		*out << "\tifstream in_file = ifstream();\n";
+		*out << "\tin_file = ifstream();\n";
 
 	if (needsOutFile)
-		*out << "\tofstream out_file = ofstream();\n";
+		*out << "\tout_file = ofstream();\n";
 
 	*out << "\n";
+	
+	*out << "\t" << progStruct->PEF->UDFName << "();\n"
+		<< "}\n\n";
+}
 
+// ----------------------------------------------------------
+// This function generates the code for the PEF.
+// @PEF: The PEF's struct.
+//
+// Version 4.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::printPEFCode(FunctionAST * PEF, UDFRecord * rec)
+{
+	printUDFCode(PEF, rec);
+}
+
+// ----------------------------------------------------------
+// This function generates the code for a given UDF.
+// @UDF: The UDF's struct.
+//
+// Version 4.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec) 
+{
+	printFunctionPrototype(rec);
+	*out << " \n" 
+		<< "{\n";
 	indentDepth++;
 
 	//emit the variable declarations
-	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, symbols);
-	n->accept(sub);
+	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, UDF->symbols);
+	UDF->root->accept(sub);
 	sub->emitSymbolTable();
 	sub->emitTemporaries();
 	delete sub; sub = NULL;
 
 	*out << endl << endl;
 
-	 n->visitAllChildren(this);
+	UDF->root->accept(this);
 
-	*out << "\n}" << endl; //close the c++ main function
+	*out << "\n}" << endl;
+}
+
+// ----------------------------------------------------------
+// This function generates the forward function declarations.
+// @prog: The structure table for the program.
+//
+// Version 4.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
+{
+	printFunctionPrototype(prog->PEF);
+	*out << ";\n";
+
+	int index = 0;
+	while (index < prog->UDFs->size())
+	{
+		printFunctionPrototype((*(prog->UDFs))[index]);
+		*out << ";\n";
+
+		index++;
+	}
+
+	*out << endl;
+}
+
+void CodeGenerationPhase::printFunctionPrototype(UDFRecord * rec)
+{
+	*out << typeString(rec->returnType) << " " << rec->UDFName << "(" << argsString(rec->args) << ")";
+}
+
+string CodeGenerationPhase::typeString(DataType dt)
+{
+	switch (dt)
+	{
+	case DT_DOUBLE:
+		return "double";
+	case DT_STRING:
+		return "string";
+	case DT_NULL:
+		return "void";
+	default:
+		return "UNDEFINED TYPE";
+	}
+}
+
+string CodeGenerationPhase::argsString(vector<argPair *> * args)
+{
+	string result = "";
+	int index = 0;
+
+	if (args->size() > 0)
+	{
+		result = typeString((*args)[index]->type) + " " + (*args)[index]->name;
+		index++;
+	}
+
+	while (index < args->size())
+	{
+		result = result + ", " + typeString((*args)[index]->type) + " " + (*args)[index]->name;
+		index++;
+	}
+
+	return result;
 }
 
 // ----------------------------------------------------------

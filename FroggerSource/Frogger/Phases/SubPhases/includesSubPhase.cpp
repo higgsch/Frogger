@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.3
+//                      Version: 4.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -179,11 +179,14 @@ void IncludesSubPhase::emitUsingStatment()
 // This function emits the global support code (constants and
 // functions).
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 void IncludesSubPhase::emitSupportCode()
 {
+	emitArgVector();
+	emitFileStreams();
 	emitEmptyString();
+
 	emitRoundFunction();
 	emitStringToDoubleFunction();
 	emitStringToAsciiFunction();
@@ -276,6 +279,21 @@ void IncludesSubPhase::emitEmptyString()
 }
 
 // ----------------------------------------------------------
+// This function emits the in_file and out_file objects.
+//
+// Version 4.0
+// ----------------------------------------------------------
+void IncludesSubPhase::emitFileStreams()
+{
+
+	if (needsIFile)
+		*out << "ifstream in_file;\n";
+
+	if (needsOFile)
+		*out << "ofstream out_file;\n";
+}
+
+// ----------------------------------------------------------
 // This function emits the round function.
 //
 // Version 3.0
@@ -331,4 +349,9 @@ void IncludesSubPhase::emitElemAtFunction()
 		<< "\t\treturn \"\";\n"
 		<< "\treturn v[index];\n"
 		<< "}\n\n";
+}
+
+void IncludesSubPhase::emitArgVector()
+{
+	*out << "vector<string> args;\n";
 }

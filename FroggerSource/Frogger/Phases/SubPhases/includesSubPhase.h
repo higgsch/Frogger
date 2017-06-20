@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for generating import
 // statements as a subphase of the CodeGenerationPhase.
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 class IncludesSubPhase : public Phase
 {
@@ -38,10 +38,12 @@ private:
 	void importFStream();
 
 	void emitEmptyString();
+	void emitFileStreams();
 	void emitRoundFunction();
 	void emitStringToDoubleFunction();
 	void emitStringToAsciiFunction();
 	void emitElemAtFunction();
+	void emitArgVector();
 
 public:
 	IncludesSubPhase(ostream*);

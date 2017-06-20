@@ -65,6 +65,17 @@ bool FunctionRecord::isAddable()
 	return true;
 }
 
+SymbolTable::SymbolTable(UDFRecord * rec)
+{
+	add(new SymbolRecord(new Symbol("args",DT_ARGS)));
+	int index = 0;
+	while (index < rec->args->size())
+	{
+		argPair * pair = (*(rec->args))[index];
+		add(new SymbolRecord(new Symbol(pair->name, pair->type)));
+	}
+}
+
 // ----------------------------------------------------------
 // This function returns the data type of the desired symbol
 // or DataType::DT_NOT_DEFINED if the symbol is not in the 

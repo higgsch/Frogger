@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header file for the Scanner class
+// This is the header file for the FGRScanner class
 // -----------------------------------------------------------------
 #pragma once
 
@@ -12,7 +12,7 @@
 using namespace std;
 
 //forward declaration
-class Token;
+class FGRToken;
 
 // ----------------------------------------------------------
 // This class reads through a .fgr file and converts strings
@@ -20,7 +20,7 @@ class Token;
 //
 // Version 3.0
 // ----------------------------------------------------------
-class Scanner
+class FGRScanner
 {
 private:
 	Buffer token_buffer; //a buffer to build the current token
@@ -39,13 +39,13 @@ private:
 	bool readThisString(string toRead);
 	bool readUntilThisString(string toRead);
 	bool readIgnoredChars();
-	Token readId();
-	Token readDouble();
-	Token readString();
-	Token readBooleanOperator();
-	Token readArithmeticOperator();
+	FGRToken readId();
+	FGRToken readDouble();
+	FGRToken readString();
+	FGRToken readBooleanOperator();
+	FGRToken readArithmeticOperator();
 	bool readThisOperator(string op, string opName);
-	Token readPunctuation();
+	FGRToken readPunctuation();
 
 	bool readIdCharsToBuffer();
 	bool readDigitsToBuffer();
@@ -60,12 +60,12 @@ private:
 	bool issinglequote(char c) { return c == '\''; }
 
 public:
-	Scanner();
+	FGRScanner();
 
 	void openAndInitialize(string inFile);
 	void closeAndTerminate();
 
-	Token scan();
+	FGRToken scan();
 
 	int getLineNo() { return lineNo; }
 };

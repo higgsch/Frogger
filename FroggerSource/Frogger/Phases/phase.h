@@ -37,11 +37,13 @@ class EQingNode;
 class LTEingNode;
 class GTEingNode;
 
+extern bool quietMode;
+
 // ----------------------------------------------------------
 // This class provides the base of the visitor inheritance for
 // the AST intermediate representation. 
 //
-// Version 3.1
+// Version 4.0
 // ----------------------------------------------------------
 class Phase
 {
@@ -78,14 +80,18 @@ public:
 	// @msg: The message to display.
 	// @line_no: The line number that the error occured on.
 	//
-	// Version 3.1
+	// Version 4.0
 	// ----------------------------------------------------------
 	void semantic_error(string msg, int line_no)
 	{
 		cout << "SEMANTIC ERROR on line " << line_no << ": " << msg << endl;
-		cout << "Press Enter to Exit" << endl;
+		
+		if (!quietMode)
+		{
+			cout << "Press Enter to Exit" << endl;
 
-		getchar();
-		exit(0);
+			getchar();
+			exit(0);
+		}
 	}
 };

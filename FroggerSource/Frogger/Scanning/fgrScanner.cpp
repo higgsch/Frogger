@@ -5,17 +5,19 @@
 // This program reads through a .fgr file and converts strings of 
 // chars to tokens.
 // -----------------------------------------------------------------
-#include "scanner.h"
-#include "token.h"
+#include "fgrScanner.h"
+#include "fgrToken.h"
 #include <string>
 using namespace std;
+
+extern bool quietMode;
 
 // ----------------------------------------------------------
 // This is the default constructor.
 //
 // Version 1.1
 // ----------------------------------------------------------
-Scanner::Scanner()
+FGRScanner::FGRScanner()
 {
 	lineNo = 1; //starts on the first line
 	obfuscated = false; //defaults to non-obfuscated
@@ -28,7 +30,7 @@ Scanner::Scanner()
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Scanner::openAndInitialize(string filename)
+void FGRScanner::openAndInitialize(string filename)
 {
 	source.open(filename);
 	checkForEmptyFile();
@@ -41,7 +43,7 @@ void Scanner::openAndInitialize(string filename)
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Scanner::closeAndTerminate()
+void FGRScanner::closeAndTerminate()
 {
 	source.close();
 	terminateObfuscator();
@@ -52,11 +54,11 @@ void Scanner::closeAndTerminate()
 //
 // Version 3.0
 // ----------------------------------------------------------
-Token Scanner::scan()
+FGRToken FGRScanner::scan()
 {
 	char in_char = peek();
 
-	Token foundToken = Token::NOTOK;
+	FGRToken foundToken = FGRToken::NOTOK;
 
 	while (in_char != EOF)
 	{
@@ -96,7 +98,7 @@ Token Scanner::scan()
 		}
 	}
 
-	return Token::SCANEOF;
+	return FGRToken::SCANEOF;
 }
 
 // ----------------------------------------------------------
@@ -105,7 +107,7 @@ Token Scanner::scan()
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Scanner::checkForEmptyFile()
+void FGRScanner::checkForEmptyFile()
 {
 	char first = source.peek();
 	if (first == EOF)
@@ -117,7 +119,7 @@ void Scanner::checkForEmptyFile()
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Scanner::checkForObfuscation()
+void FGRScanner::checkForObfuscation()
 {
 	//Don't care if there are empty comments or not
 	readEmptyComments(); 
@@ -141,7 +143,7 @@ void Scanner::checkForObfuscation()
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Scanner::initializeObfuscator()
+void FGRScanner::initializeObfuscator()
 {
 	checkForObfuscation();
 	if (obfuscated == true)
@@ -153,7 +155,7 @@ void Scanner::initializeObfuscator()
 //
 // Version 3.0
 // ----------------------------------------------------------
-void Scanner::terminateObfuscator()
+void FGRScanner::terminateObfuscator()
 {
 	if (obfus != NULL)
 		delete obfus;
@@ -165,7 +167,7 @@ void Scanner::terminateObfuscator()
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readEmptyComments()
+bool FGRScanner::readEmptyComments()
 {
 	bool hadEmptyComment = false;
 	bool isEmptyComment = true;
@@ -192,7 +194,7 @@ bool Scanner::readEmptyComments()
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readThisString(string toRead)
+bool FGRScanner::readThisString(string toRead)
 {
 	bool matches = true;
 	int stringIndex = 0;
@@ -228,7 +230,7 @@ bool Scanner::readThisString(string toRead)
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readUntilThisString(string toRead)
+bool FGRScanner::readUntilThisString(string toRead)
 {
 	int toReadIndex = 0;
 	int charReadCount = 0;
@@ -274,7 +276,7 @@ bool Scanner::readUntilThisString(string toRead)
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readIgnoredChars()
+bool FGRScanner::readIgnoredChars()
 {
 	char in_char = peek();
 
@@ -310,21 +312,21 @@ bool Scanner::readIgnoredChars()
 //
 // Version 3.0
 // ----------------------------------------------------------
-Token Scanner::readId()
+FGRToken FGRScanner::readId()
 {
 	token_buffer.reset();
 
 	if (!readIdCharsToBuffer())
-		return Token::NOTOK;
+		return FGRToken::NOTOK;
 
 	if (token_buffer.contentsEquals("if"))
-		return Token::IF;
+		return FGRToken::IF;
 	else if (token_buffer.contentsEquals("then"))
-		return Token::THEN;
+		return FGRToken::THEN;
 	else if (token_buffer.contentsEquals("else"))
-		return Token::ELSE;
+		return FGRToken::ELSE;
 	else
-		return Token(TOKTYPE_ID, token_buffer.value());
+		return FGRToken(TOKTYPE_ID, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -334,18 +336,18 @@ Token Scanner::readId()
 //
 // Version 3.0
 // ----------------------------------------------------------
-Token Scanner::readDouble()
+FGRToken FGRScanner::readDouble()
 {
 	token_buffer.reset();
 
 	if (!readDigitsToBuffer())
-		return Token::NOTOK;
+		return FGRToken::NOTOK;
 
 	char c = get();
 	if (c != '.')
 	{
 		unget();
-		return Token(TOKTYPE_DOUBLECONST, token_buffer.value());
+		return FGRToken(TOKTYPE_DOUBLECONST, token_buffer.value());
 	}
 
 	token_buffer.append('.');
@@ -353,7 +355,7 @@ Token Scanner::readDouble()
 	if (!readDigitsToBuffer())
 		lexical_error("Missing decimals for double");
 	
-	return Token(TOKTYPE_DOUBLECONST, token_buffer.value());
+	return FGRToken(TOKTYPE_DOUBLECONST, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -363,14 +365,14 @@ Token Scanner::readDouble()
 //
 // Version 3.0
 // ----------------------------------------------------------
-Token Scanner::readString()
+FGRToken FGRScanner::readString()
 {
 	token_buffer.reset();
 
 	if (!readStringToBuffer())
-		return Token::NOTOK;
+		return FGRToken::NOTOK;
 
-	return Token(TOKTYPE_STRING, token_buffer.value());
+	return FGRToken(TOKTYPE_STRING, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -380,22 +382,22 @@ Token Scanner::readString()
 //
 // Version 3.0
 // ----------------------------------------------------------
-Token Scanner::readBooleanOperator()
+FGRToken FGRScanner::readBooleanOperator()
 {
 	if (readThisString("!"))
-		return Token::NOT;
+		return FGRToken::NOT;
 	else if (readThisString("=="))
-		return Token::EQ;
+		return FGRToken::EQ;
 	else if (readThisString("<="))
-		return Token::LTE;
+		return FGRToken::LTE;
 	else if (readThisString("<")) //Must be after "<="
-		return Token::LT;
+		return FGRToken::LT;
 	else if (readThisString(">="))
-		return Token::GTE;
+		return FGRToken::GTE;
 	else if (readThisString(">")) //Must be after ">="
-		return Token::GT;
+		return FGRToken::GT;
 	else
-		return Token::NOTOK;
+		return FGRToken::NOTOK;
 }
 
 // ----------------------------------------------------------
@@ -405,54 +407,54 @@ Token Scanner::readBooleanOperator()
 //
 // Version 3.0
 // ----------------------------------------------------------
-Token Scanner::readArithmeticOperator()
+FGRToken FGRScanner::readArithmeticOperator()
 {
 	int in_char = peek();
 
 	if (readThisString("=")) //Must be after "=="
-		return Token::ASSIGN;
+		return FGRToken::ASSIGN;
 	else if (in_char == '+')
 	{
 		if (readThisOperator("++", "addition or concatenation"))
-			return Token::ADD;
+			return FGRToken::ADD;
 	}
 	else if (in_char == '-')
 	{
 		if (readThisOperator("--", "subtraction"))
-			return Token::SUB;
+			return FGRToken::SUB;
 	}
 	else if (in_char == '*')
 	{
 		if (readThisOperator("**", "multiplication"))
-			return Token::MUL;
+			return FGRToken::MUL;
 	}
 	else if (in_char == '/')
 	{
 		if (readThisOperator("//", "division"))
-			return Token::DIV;
+			return FGRToken::DIV;
 	}
 	else if (in_char == '%')
 	{
 		if (readThisOperator("%%", "modulus division"))
-			return Token::MOD;
+			return FGRToken::MOD;
 	}
 	else if (in_char == '\\')
 	{
 		if (readThisOperator("\\\\", "integer division")) //Integer division is \\ (\\\\ in c++ string)
-			return Token::IDIV;
+			return FGRToken::IDIV;
 	}
 	else if (in_char == '#')
 	{
 		if (readThisOperator("##", "rootation"))
-			return Token::ROOT;
+			return FGRToken::ROOT;
 	}
 	else if (in_char == '^')
 	{
 		if (readThisOperator("^^", "exponentiation"))
-			return Token::EXP;
+			return FGRToken::EXP;
 	}
 
-	return Token::NOTOK;
+	return FGRToken::NOTOK;
 }
 
 // ----------------------------------------------------------
@@ -463,7 +465,7 @@ Token Scanner::readArithmeticOperator()
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readThisOperator(string op, string opName)
+bool FGRScanner::readThisOperator(string op, string opName)
 {
 	if (peek() != op[0])
 		return false;
@@ -484,20 +486,20 @@ bool Scanner::readThisOperator(string op, string opName)
 //
 // Version 3.0
 // ----------------------------------------------------------
-Token Scanner::readPunctuation()
+FGRToken FGRScanner::readPunctuation()
 {
 	if (readThisString("("))
-		return Token::LPAREN;
+		return FGRToken::LPAREN;
 	else if (readThisString(")"))
-		return Token::RPAREN;
+		return FGRToken::RPAREN;
 	else if (readThisString(","))
-		return Token::COMMA;
+		return FGRToken::COMMA;
 	else if (readThisString(":"))
-		return Token::COLON;
+		return FGRToken::COLON;
 	else if (readThisString(";"))
-		return Token::SEMICOLON;
+		return FGRToken::SEMICOLON;
 	else
-		return Token::NOTOK;
+		return FGRToken::NOTOK;
 }
 
 // ----------------------------------------------------------
@@ -508,7 +510,7 @@ Token Scanner::readPunctuation()
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readIdCharsToBuffer()
+bool FGRScanner::readIdCharsToBuffer()
 {
 	char c = get();
 	bool idRead = isalpha(c);
@@ -531,7 +533,7 @@ bool Scanner::readIdCharsToBuffer()
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readDigitsToBuffer()
+bool FGRScanner::readDigitsToBuffer()
 {
 	char c = get();
 	bool digitsRead = isdigit(c);
@@ -554,7 +556,7 @@ bool Scanner::readDigitsToBuffer()
 //
 // Version 3.0
 // ----------------------------------------------------------
-bool Scanner::readStringToBuffer()
+bool FGRScanner::readStringToBuffer()
 {
 	char singleQuote = get();
 	if (!issinglequote(singleQuote))
@@ -605,7 +607,7 @@ bool Scanner::readStringToBuffer()
 // 
 // Version 1.1
 // ----------------------------------------------------------
-char Scanner::get()
+char FGRScanner::get()
 {
 	if (obfuscated)
 		return obfus->get();
@@ -619,7 +621,7 @@ char Scanner::get()
 // 
 // Version 1.1
 // ----------------------------------------------------------
-void Scanner::unget()
+void FGRScanner::unget()
 {
 	if (obfuscated)
 		obfus->unget();
@@ -634,7 +636,7 @@ void Scanner::unget()
 // 
 // Version 3.0
 // ----------------------------------------------------------
-char Scanner::peek()
+char FGRScanner::peek()
 {
 	if (obfuscated)
 	{
@@ -652,13 +654,17 @@ char Scanner::peek()
 // 
 // Version 1.0
 // ----------------------------------------------------------
-void Scanner::lexical_error(string err_msg)
+void FGRScanner::lexical_error(string err_msg)
 {
 	cout << "LEXICAL ERROR on line " << lineNo << ": " << err_msg << endl;
-	cout << "Press Enter to Exit" << endl;
+	
+	if (!quietMode)
+	{
+		cout << "Press Enter to Exit" << endl;
 
-	getchar();
-	exit(0);
+		getchar();
+		exit(0);
+	}
 }
 
 //int main(int argc, char * argv[])
@@ -671,7 +677,7 @@ void Scanner::lexical_error(string err_msg)
 //
 //	Scanner s;
 //	s.open(filename);
-//	Token t = s.scan();
+//	FGRToken t = s.scan();
 //
 //	while (t.type != token_type::SCANEOF)
 //	{
