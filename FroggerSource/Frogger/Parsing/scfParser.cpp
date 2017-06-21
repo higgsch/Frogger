@@ -26,7 +26,7 @@ SCFParser::SCFParser()
 //
 // Version 4.0
 // ----------------------------------------------------------
-vector<UDFRecord *> * SCFParser::parseSCF(string SCFPath)
+vector<UDFRecord *> * SCFParser::parseSCF(string SCFPath, string projectName)
 {
 	open(SCFPath);
 
@@ -34,7 +34,11 @@ vector<UDFRecord *> * SCFParser::parseSCF(string SCFPath)
 
 	while (next_token().type != TOKTYPE_SCANEOF)
 	{
-		files->push_back(record());
+		UDFRecord * currRec = record();
+		if (!isPEF(currRec, projectName))
+		{
+			files->push_back(currRec);
+		}
 		if (next_token().type != TOKTYPE_SCANEOF)
 			match(TOKTYPE_EOL);
 	}
@@ -144,6 +148,27 @@ DataType SCFParser::dataType()
 		syntax_error("Invalid data type -- Expected double, string, or null");
 
 	return DT_NOT_DEFINED;
+}
+
+// ----------------------------------------------------------
+// This function determines if the given UDFRecord matches 
+// the required PEF.
+// @rec: The UDFRecord to compare to PEF.
+//
+// Version 4.0
+// ----------------------------------------------------------
+bool SCFParser::isPEF(UDFRecord * rec, string pefName)
+{
+	if (rec->returnType != DT_NULL)
+		return false;
+
+	if (rec->UDFName != pefName)
+		return false;
+
+	if (rec->args != NULL && rec->args->size() != 0)
+		return false;
+
+	return true;
 }
 
 // ----------------------------------------------------------

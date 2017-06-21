@@ -47,7 +47,7 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 void FroggerC::compileInputProject(string projectDir, string projectName, string outFile)
 {
 	SCFParser p;
-	progStruct.UDFs = p.parseSCF(projectDir + projectName + ".struct");
+	progStruct.UDFs = p.parseSCF(projectDir + projectName + ".struct", projectName);
 	FunctionTable * table = new FunctionTable();
 
 	//verify all referenced files exist

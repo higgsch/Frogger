@@ -34,11 +34,13 @@ private:
 
 	SCFToken next_token();
 
+	bool isPEF(UDFRecord * rec, string pefName);
+
 public:
 	SCFParser();
 
 	void open(string SCFPath) { scanner.open(SCFPath); }
 	void close() { scanner.close(); }
 
-	vector<UDFRecord *> * parseSCF(string SCFPath);
+	vector<UDFRecord *> * parseSCF(string SCFPath, string projectName);
 };
