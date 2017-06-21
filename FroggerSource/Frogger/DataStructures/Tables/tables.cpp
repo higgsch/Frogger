@@ -80,6 +80,7 @@ SymbolTable::SymbolTable(UDFRecord * rec)
 	{
 		argPair * pair = (*(rec->args))[index];
 		add(new SymbolRecord(new Symbol(pair->name, pair->type)));
+		index++;
 	}
 }
 

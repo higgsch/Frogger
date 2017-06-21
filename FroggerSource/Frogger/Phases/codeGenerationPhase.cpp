@@ -48,6 +48,7 @@ void CodeGenerationPhase::printMetaCode(ProgramAST * progAST, ProgramStruct * pr
 		while (index < UDFCount)
 		{
 			(*(progAST->UDFs))[index]->root->accept(iSub);
+			index++;
 		}
 	}
 
