@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 4.0
 // -----------------------------------------------------------------
 // This program provides the Symbol, Function, and Command classes.
 // -----------------------------------------------------------------
@@ -72,22 +72,21 @@ bool Command::equals(Command * cmd)
 // Note: cmd's DT_NOT_DEFINED data is ignored.
 // @cmd: The command to compare.
 //
-// Version 2.5
+// Version 4.0
 // ----------------------------------------------------------
 bool Command::matches(Command * cmd)
 {
 	if (name != cmd->name)
 		return false;
-	if (cmd->argTypeList != NULL && argTypeList->size() != cmd->argTypeList->size())
+	if (cmd->argTypeList == NULL)
+		return argTypeList == NULL;
+	if (argTypeList->size() != cmd->argTypeList->size())
 		return false;
 
-	if (cmd->argTypeList != NULL)
+	for (int i = 0; i < argTypeList->size(); i++)
 	{
-		for (int i = 0; i < argTypeList->size(); i++)
-		{
-			if (cmd->argTypeList->at(i) != DT_NOT_DEFINED && argTypeList->at(i) != cmd->argTypeList->at(i))
-				return false;
-		}
+		if (cmd->argTypeList->at(i) != DT_NOT_DEFINED && argTypeList->at(i) != cmd->argTypeList->at(i))
+			return false;
 	}
 
 	return true;

@@ -27,7 +27,7 @@ struct Symbol
 // ----------------------------------------------------------
 // This class represents everything known about a command.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 class Command
 {
