@@ -210,6 +210,9 @@ void SCFParser::match(scf_token_type toMatch)
 		case TOKTYPE_ID:
 			type = "Identifier";
 			break;
+		case TOKTYPE_EOL:
+			type = "End of Line";
+			break;
 		default:
 			type = "<type>";
 			break;

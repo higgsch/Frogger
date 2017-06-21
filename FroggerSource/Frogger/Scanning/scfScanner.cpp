@@ -99,6 +99,11 @@ bool SCFScanner::readIgnoredChars()
 {
 	char in_char = source.peek();
 
+	if (in_char == '\n')
+	{
+		return false;
+	}
+
 	if (isspace(in_char))
 	{
 		string toRead = "";
