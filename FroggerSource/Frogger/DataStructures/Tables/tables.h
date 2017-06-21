@@ -106,14 +106,16 @@ public:
 // ----------------------------------------------------------
 // This class represents a collection of commands
 //
-// Version 3.2
+// Version 4.0
 // ----------------------------------------------------------
 class CommandTable : public Table<Command>
 {
 public:
 	CommandTable();
 
-	static Command* CMD_END;
+	static Command* CMD_END_NULL;
+	static Command* CMD_END_STR;
+	static Command* CMD_END_DBL;
 	static Command* CMD_DISPLAY_STR;
 	static Command* CMD_DISPLAY_DBL;
 	static Command* CMD_OPEN_INPUT;

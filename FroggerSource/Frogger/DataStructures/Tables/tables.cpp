@@ -105,13 +105,23 @@ DataType SymbolTable::symbolType(string id)
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 3.2
+// Version 4.0
 // ----------------------------------------------------------
 CommandTable::CommandTable()
 {
 	//Add built-in commands
-	CMD_END->builtIn = true;
-	add(new CommandRecord(CMD_END));
+	CMD_END_NULL->builtIn = true;
+	add(new CommandRecord(CMD_END_NULL));
+	
+	CMD_END_STR->argTypeList = new vector<DataType>();
+	CMD_END_STR->addArg(DT_STRING);
+	CMD_END_STR->builtIn = true;
+	add(new CommandRecord(CMD_END_STR));
+	
+	CMD_END_DBL->argTypeList = new vector<DataType>();
+	CMD_END_DBL->addArg(DT_DOUBLE);
+	CMD_END_DBL->builtIn = true;
+	add(new CommandRecord(CMD_END_DBL));
 
 	CMD_DISPLAY_STR->argTypeList = new vector<DataType>();
 	CMD_DISPLAY_STR->addArg(DT_STRING);
@@ -210,7 +220,9 @@ DataType FunctionTable::getFunctionReturnType(Function* funct)
 	return DT_NOT_DEFINED;
 }
 
-Command* CommandTable::CMD_END			= new Command("end");
+Command* CommandTable::CMD_END_NULL		= new Command("end");
+Command* CommandTable::CMD_END_STR		= new Command("end");
+Command* CommandTable::CMD_END_DBL		= new Command("end");
 Command* CommandTable::CMD_DISPLAY_STR	= new Command("display");
 Command* CommandTable::CMD_DISPLAY_DBL	= new Command("display");
 Command* CommandTable::CMD_OPEN_INPUT	= new Command("openI");
