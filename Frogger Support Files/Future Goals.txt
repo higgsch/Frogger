@@ -12,9 +12,8 @@ v3.1: Added line numbers to errors throughout.
 v3.2: Added File I/O: openI, openO, read, write, closeI, closeO routines
 v3.3: Added commandline argument and string length functionality.
 v4.0: Added user-defined functions (force modulation into different files).
+v4.1: Added Test Framework.
 
-v4.1: Add Test Framework.
-v4.x: Refactor support code.
 v5.0: Refactor with cleaner code.
 v5.1: Add function overloading.
       Perhaps numToMonth(num=double)~string.fgr
@@ -23,7 +22,6 @@ v5+.2: Add asciiFunction config file functionality.
 v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 Notes---
-straighten out .bat test framework
 refactor
 
 add security checks for functions
