@@ -412,7 +412,7 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 3.2
+// Version 4.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(CommandCallNode * n)
 {
@@ -435,7 +435,9 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 
 		if (name == "end")
 		{
-			*out << indent() << "exit(0);" << endl;
+			*out << indent() << "return "; 
+			n->visitArgList(this);
+			*out << ";" << endl;
 		}
 		else if (name == "display")
 		{
