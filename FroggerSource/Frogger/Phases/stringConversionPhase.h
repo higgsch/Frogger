@@ -11,7 +11,7 @@ using namespace std;
 // This class represents a visitor for converting string
 // literals from frogger syntax to c++ syntax.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 class StringConversionPhase : public Phase
 {
@@ -30,17 +30,17 @@ public:
 	void visit(StringConstingNode * n);
 	void visit(DoubleConstingNode * n){}
 	void visit(AddingNode * n) { n->visitAllChildren(this); }
-	void visit(SubingNode * n){}
-	void visit(MulingNode * n){}
-	void visit(DivingNode * n){}
-	void visit(ModDivingNode * n){}
-	void visit(IDivingNode * n){}
-	void visit(RootingNode * n){}
-	void visit(ExpingNode * n){}
-	void visit(NotingNode * n){}
-	void visit(LTingNode * n){}
-	void visit(GTingNode * n){}
-	void visit(EQingNode * n){}
-	void visit(LTEingNode * n){}
-	void visit(GTEingNode * n){}
+	void visit(SubingNode * n){ n->visitAllChildren(this); }
+	void visit(MulingNode * n){ n->visitAllChildren(this); }
+	void visit(DivingNode * n){ n->visitAllChildren(this); }
+	void visit(ModDivingNode * n){ n->visitAllChildren(this); }
+	void visit(IDivingNode * n){ n->visitAllChildren(this); }
+	void visit(RootingNode * n){ n->visitAllChildren(this); }
+	void visit(ExpingNode * n){ n->visitAllChildren(this); }
+	void visit(NotingNode * n){ n->visitAllChildren(this); }
+	void visit(LTingNode * n){ n->visitAllChildren(this); }
+	void visit(GTingNode * n){ n->visitAllChildren(this); }
+	void visit(EQingNode * n){ n->visitAllChildren(this); }
+	void visit(LTEingNode * n){ n->visitAllChildren(this); }
+	void visit(GTEingNode * n){ n->visitAllChildren(this); }
 };
