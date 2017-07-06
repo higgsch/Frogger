@@ -192,13 +192,13 @@ string CodeGenerationPhase::argsString(vector<argPair *> * args)
 
 	if (args->size() > 0)
 	{
-		result = typeString((*args)[index]->type) + " " + (*args)[index]->name;
+		result = typeString((*args)[index]->type) + " _" + (*args)[index]->name;
 		index++;
 	}
 
 	while (index < args->size())
 	{
-		result = result + ", " + typeString((*args)[index]->type) + " " + (*args)[index]->name;
+		result = result + ", " + typeString((*args)[index]->type) + " _" + (*args)[index]->name;
 		index++;
 	}
 

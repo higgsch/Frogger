@@ -13,13 +13,14 @@ using namespace std;
 // This class represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 class VarDecSubPhase : public Phase
 {
 private:
 	ostream* out; // the output stream to print to
 	SymbolTable* symbols; // the symbol table
+	UDFRecord * currRec; //The current UDF record
 	int currStmtDblTempCount; // a counter for the double temporaries needed for the current line
 	int currStmtStrTempCount; // a counter for the string temporaries needed for the current line
 	int lineDblTempMax; // a storage for the maximum double temporaries needed in any given line
@@ -27,7 +28,7 @@ private:
 	int indentDepth; // the number of tabs to insert
 
 public:
-	VarDecSubPhase(ostream*, int tabCount, SymbolTable* i_symbols);
+	VarDecSubPhase(ostream*, int tabCount, SymbolTable* i_symbols, UDFRecord * rec);
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n);

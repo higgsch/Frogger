@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.3
+//                      Version: 4.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating variable
 // declarations as a subphase of the CodeGenerationPhase.
@@ -13,10 +13,11 @@ using namespace std;
 // given output stream.
 // @outstream: The output stream to print to.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
-VarDecSubPhase::VarDecSubPhase(ostream* i_out, int i_tabCount, SymbolTable* i_symbols)
+VarDecSubPhase::VarDecSubPhase(ostream* i_out, int i_tabCount, SymbolTable* i_symbols, UDFRecord * rec)
 {
+	currRec = rec;
 	symbols = i_symbols;
 	out = i_out;
 	currStmtDblTempCount = 0;
@@ -121,13 +122,26 @@ void VarDecSubPhase::visit(FunctionCallNode * n)
 // This function adds declarations for each symbol in the 
 // symbol table.
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 void VarDecSubPhase::emitSymbolTable()
 {
 	for (int i = 0; i < symbols->size(); i++)
 	{
 		Symbol s = *(*symbols)[i];
+
+		bool isDefinedInPrototype = false;
+		for (int j = 0; j < currRec->args->size(); j++)
+		{
+			if (currRec->args->at(j)->name == s.id)
+			{
+				isDefinedInPrototype = true;
+				break;
+			}
+		}
+
+		if (isDefinedInPrototype)
+			continue;
 		
 		//emit variable declaration and initialization
 		if (s.type == DT_DOUBLE)
