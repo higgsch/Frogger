@@ -18,6 +18,8 @@ call Compilation\runCompileTest.bat v3\CopyFile "Pass - CopyFile" "Fail - CopyFi
 call Compilation\runCompileTest.bat v3\DisplayArgList "Pass - DisplayArgList" "Fail - DisplayArgList"
 call Compilation\runCompileTest.bat v3\StringLength "Pass - StringLength" "Fail - StringLength"
 
+call Compilation\runCompileTest_PF.bat v4 Months "Pass - Months" "Fail - Months"
+
 pause
 
 call _clean.lnk>nul
