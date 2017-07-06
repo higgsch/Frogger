@@ -48,12 +48,11 @@ void FGRParser::close()
 // This function initiates the parse and returns a pointer
 // to the root node in the AST.
 //
-// Version 1.0
+// Version 4.0
 // ----------------------------------------------------------
 ProgramNode* FGRParser::parse()
 {
 	prog();
-	cout << "Program successfully parsed" << endl;
 	return root;
 }
 

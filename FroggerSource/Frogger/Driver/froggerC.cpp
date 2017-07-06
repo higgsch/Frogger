@@ -35,6 +35,8 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 	progAST.PEF = funcComp.compileFunctionToAST(inFile, new FunctionTable(), progStruct.PEF);
 	
 	emitInputFileCode(outFile);
+
+	cout << "Program successfully compiled" << endl;
 }
 
 // ----------------------------------------------------------
@@ -93,6 +95,8 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 
 	//emit project code
 	emitInputProjectCode(outFile);
+
+	cout << "Program successfully compiled" << endl;
 }
 
 // ----------------------------------------------------------
