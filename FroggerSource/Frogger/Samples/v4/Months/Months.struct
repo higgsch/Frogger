@@ -1,0 +1,4 @@
+Months.fgr -> null
+numToMonth.fgr moNum:double -> string
+monthToNum.fgr moStr:string -> double
+stringEquals.fgr first_str:string, second_str:string -> double

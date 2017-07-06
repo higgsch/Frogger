@@ -1,0 +1,13 @@
+if (1 == stringEquals(moStr, 'January')) then end(1);
+else if (1 == stringEquals(moStr, 'February')) then end(2);
+else if (1 == stringEquals(moStr, 'March')) then end(3);
+else if (1 == stringEquals(moStr, 'April')) then end(4);
+else if (1 == stringEquals(moStr, 'May')) then end(5);
+else if (1 == stringEquals(moStr, 'June')) then end(6);
+else if (1 == stringEquals(moStr, 'July')) then end(7);
+else if (1 == stringEquals(moStr, 'August')) then end(8);
+else if (1 == stringEquals(moStr, 'September')) then end(9);
+else if (1 == stringEquals(moStr, 'October')) then end(10);
+else if (1 == stringEquals(moStr, 'November')) then end(11);
+else if (1 == stringEquals(moStr, 'December')) then end(12);
+else end( 0 -- 1 );

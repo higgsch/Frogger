@@ -1,0 +1,4 @@
+i = i ++ (1 ^^ 0);
+monthNo = monthToNum(month);
+if (i < 14) then month = numToMonth(i); else end();
+display(', ' ++ monthNo:toString() ++ ':' ++ month);

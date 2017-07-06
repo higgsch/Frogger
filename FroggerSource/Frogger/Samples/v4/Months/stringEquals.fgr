@@ -1,0 +1,6 @@
+if (first_str:length() !== second_str:length()) then end(0);
+else i = 0 ** 0;
+if (i < first_str:length()) then
+if (first_str:asciiAt(i) !== second_str:asciiAt(i)) then end(0);
+else i = i ++ (1 ^^ 1);
+else end(1);

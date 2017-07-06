@@ -1,0 +1,1 @@
+, 1.000000:January, 2.000000:February, 3.000000:March, 4.000000:April, 5.000000:May, 6.000000:June, 7.000000:July, 8.000000:August, 9.000000:September, 10.000000:October, 11.000000:November, 12.000000:December, -1.000000:Invalid Month

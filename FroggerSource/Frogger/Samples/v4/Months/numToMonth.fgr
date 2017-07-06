@@ -1,0 +1,13 @@
+if (moNum == 1) then end('January');
+else if (moNum == 2) then end('February');
+else if (moNum == 3) then end('March');
+else if (moNum == 4) then end('April');
+else if (moNum == 5) then end('May');
+else if (moNum == 6) then end('June');
+else if (moNum == 7) then end('July');
+else if (moNum == 8) then end('August');
+else if (moNum == 9) then end('September');
+else if (moNum == 10) then end('October');
+else if (moNum == 11) then end('November');
+else if (moNum == 12) then end('December');
+else end('Invalid Month');
