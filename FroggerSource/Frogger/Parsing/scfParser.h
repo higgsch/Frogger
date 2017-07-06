@@ -35,6 +35,7 @@ private:
 	SCFToken next_token();
 
 	bool isPEF(UDFRecord * rec, string pefName);
+	bool isInFiles(UDFRecord * rec, vector<UDFRecord *> * files);
 
 public:
 	SCFParser();

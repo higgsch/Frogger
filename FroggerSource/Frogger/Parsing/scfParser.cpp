@@ -37,7 +37,14 @@ vector<UDFRecord *> * SCFParser::parseSCF(string SCFPath, string projectName)
 		UDFRecord * currRec = record();
 		if (!isPEF(currRec, projectName))
 		{
-			files->push_back(currRec);
+			if (isInFiles(currRec, files))
+			{
+				syntax_error("" + currRec->UDFName + " function is duplicated.");
+			}
+			else
+			{
+				files->push_back(currRec);
+			}
 		}
 		if (next_token().type != TOKTYPE_SCANEOF)
 			match(TOKTYPE_EOL);
@@ -169,6 +176,28 @@ bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 		return false;
 
 	return true;
+}
+
+// ----------------------------------------------------------
+// This function determines if the given UDFRecord exists 
+// in the file list.
+// @rec: The UDFRecord to compare to files.
+// @files: A list of files
+//
+// Version 4.0
+// ----------------------------------------------------------
+bool SCFParser::isInFiles(UDFRecord * rec, vector<UDFRecord *> * files)
+{
+	for (int recordIndex = 0; recordIndex < files->size(); recordIndex++)
+	{
+		UDFRecord * currRec = files->at(recordIndex);
+
+		if (currRec->UDFName == rec->UDFName)
+			//Cannot have two files of identical name, so overloading is impossible
+			return true;
+	}
+
+	return false;
 }
 
 // ----------------------------------------------------------
