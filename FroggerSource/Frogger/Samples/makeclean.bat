@@ -12,3 +12,5 @@ cd ..\v2
 nmake /f ..\makefile clean
 cd ..\v3
 nmake /f ..\makefile clean
+cd ..\v4
+nmake /f ..\makefile clean
