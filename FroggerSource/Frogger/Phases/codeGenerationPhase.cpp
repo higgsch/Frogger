@@ -316,16 +316,22 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
 	Function* funct = n->getFunct();
 	if (funct->isUserDefined())
 	{
-		*out << "(";
-		n->visitPrimary(this);
-		*out << ")." << funct->name << "(";
+
+		/*if (funct->parentType != DT_NULL)
+		{
+			*out << "(";
+			n->visitPrimary(this);
+			*out << ").";
+		}*/
+		
+		*out << funct->name << "(";
 		
 		n->visitArgList(this);
 
