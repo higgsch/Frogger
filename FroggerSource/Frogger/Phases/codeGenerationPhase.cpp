@@ -100,6 +100,7 @@ void CodeGenerationPhase::printPEFCode(FunctionAST * PEF, UDFRecord * rec)
 // ----------------------------------------------------------
 void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec) 
 {
+	indentDepth = 0; 
 	currUDFName = rec->UDFName;
 
 	printFunctionPrototype(rec);
@@ -118,7 +119,7 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 
 	UDF->root->accept(this);
 
-	*out << "\n}" << endl;
+	*out << "\n}\n" << endl;
 }
 
 // ----------------------------------------------------------
