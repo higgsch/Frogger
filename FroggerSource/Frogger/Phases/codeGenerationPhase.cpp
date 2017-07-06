@@ -28,6 +28,8 @@ CodeGenerationPhase::CodeGenerationPhase()
 	needsRand = false;
 	needsInFile = false;
 	needsOutFile = false;
+
+	currUDFName = "<META>";
 }
 
 // ----------------------------------------------------------
@@ -98,6 +100,8 @@ void CodeGenerationPhase::printPEFCode(FunctionAST * PEF, UDFRecord * rec)
 // ----------------------------------------------------------
 void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec) 
 {
+	currUDFName = rec->UDFName;
+
 	printFunctionPrototype(rec);
 	*out << " \n" 
 		<< "{\n";
@@ -205,7 +209,7 @@ string CodeGenerationPhase::argsString(vector<argPair *> * args)
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(JmpStmtNode * n)
 {
@@ -217,7 +221,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 	if (isOwnLine) 
 	{
 		//emit this line's label
-		*out << indent() << "__LABEL_" << n->getStmtNo() << ":" << endl;
+		*out << indent() << "__LABEL_" << currUDFName << "_" << n->getStmtNo() << ":" << endl;
 		indentDepth++;
 	}
 
@@ -228,7 +232,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 	n->visitThisStmt(this);
 	
 	//emit this line's goto statement
-	*out << indent() << "goto __LABEL_" << n->getJump() << ";" << endl;
+	*out << indent() << "goto __LABEL_" << currUDFName << "_" << n->getJump() << ";" << endl;
 
 	if (isOwnLine)
 	{
@@ -242,7 +246,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 // This function processes an if statement.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IfNode * n)
 {
@@ -250,7 +254,7 @@ void CodeGenerationPhase::visit(IfNode * n)
 
 	if (isOwnLine)
 	{
-		*out << indent() << "__LABEL_" << n->getStmtNo() << ":" << endl;
+		*out << indent() << "__LABEL_" << currUDFName << "_" << n->getStmtNo() << ":" << endl;
 		indentDepth++;
 	}
 

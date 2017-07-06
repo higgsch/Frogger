@@ -28,6 +28,8 @@ private:
 	bool needsInFile; // flag for in_file object
 	bool needsOutFile; // flag for out_file object
 
+	string currUDFName;
+
 	void printForwardDeclarations(ProgramStruct * prog);
 	void printFunctionPrototype(UDFRecord * rec);
 
