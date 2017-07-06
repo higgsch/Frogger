@@ -166,12 +166,12 @@ void IncludesSubPhase::visit(ExpingNode * n)
 // ----------------------------------------------------------
 // This function emits the using statement.
 //
-// Version 3.3
+// Version 4.0
 // ----------------------------------------------------------
 void IncludesSubPhase::emitUsingStatment()
 {
-	*out << "#include <string>;\n"
-		<< "#include <vector>;\n"
+	*out << "#include <string>\n"
+		<< "#include <vector>\n"
 		<< "using namespace std;\n\n";
 }
 
