@@ -1,0 +1,7 @@
+Multi_UDF.fgr -> null
+a_str_UDF.fgr -> string
+a_dbl_UDF.fgr -> double
+b_str_UDF.fgr str:string -> string
+b_dbl_UDF.fgr str:string -> double
+c_str_UDF.fgr str:string, dbl:double -> string
+c_dbl_UDF.fgr str:string, dbl:double -> double

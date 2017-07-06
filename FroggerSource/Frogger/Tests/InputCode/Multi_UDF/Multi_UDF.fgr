@@ -1,0 +1,6 @@
+s = a_str_UDF();
+d = a_dbl_UDF();
+s = b_str_UDF('Something');
+d = b_dbl_UDF('Something');
+s = c_str_UDF('Something', 2);
+d = c_dbl_UDF('Something', 2);
