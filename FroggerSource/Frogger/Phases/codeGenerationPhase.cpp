@@ -108,7 +108,7 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 	indentDepth++;
 
 	//emit the variable declarations
-	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, UDF->symbols);
+	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, UDF->symbols, rec);
 	UDF->root->accept(sub);
 	sub->emitSymbolTable();
 	sub->emitTemporaries();
