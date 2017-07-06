@@ -80,6 +80,9 @@ bool Command::matches(Command * cmd)
 		return false;
 	if (cmd->argTypeList == NULL)
 		return argTypeList == NULL;
+	if (argTypeList == NULL)
+		return false;
+
 	if (argTypeList->size() != cmd->argTypeList->size())
 		return false;
 
