@@ -1,1 +1,1 @@
-Program successfully parsed
+Program successfully compiled
