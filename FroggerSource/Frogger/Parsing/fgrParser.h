@@ -23,6 +23,8 @@ private:
 	FGRToken lookahead[1]; //storage location for one lookahead Token
 	ProgramNode* root; //the root of the AST
 
+	string currFileName;
+
 	//Program Organization
 	void prog();
 	ControlFlowNode* flowstmts();

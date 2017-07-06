@@ -15,12 +15,13 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 1.1
+// Version 4.0
 // ----------------------------------------------------------
 FGRScanner::FGRScanner()
 {
 	lineNo = 1; //starts on the first line
 	obfuscated = false; //defaults to non-obfuscated
+	currFileName = "";
 }
 
 // ----------------------------------------------------------
@@ -28,10 +29,11 @@ FGRScanner::FGRScanner()
 // the obfuscator.
 // @filename: The .fgr file to open (from project directory).
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 void FGRScanner::openAndInitialize(string filename)
 {
+	currFileName = filename;
 	source.open(filename);
 	checkForEmptyFile();
 	initializeObfuscator();
@@ -41,10 +43,11 @@ void FGRScanner::openAndInitialize(string filename)
 // This function closes the input file stream and terminates
 // the obfuscator.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 void FGRScanner::closeAndTerminate()
 {
+	currFileName = "";
 	source.close();
 	terminateObfuscator();
 }
@@ -656,7 +659,7 @@ char FGRScanner::peek()
 // ----------------------------------------------------------
 void FGRScanner::lexical_error(string err_msg)
 {
-	cout << "LEXICAL ERROR on line " << lineNo << ": " << err_msg << endl;
+	cout << "LEXICAL ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
 	
 	if (!quietMode)
 	{

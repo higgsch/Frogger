@@ -25,6 +25,7 @@ class FGRScanner
 private:
 	Buffer token_buffer; //a buffer to build the current token
 	ifstream source; //an input stream for the .fgr code file
+	string currFileName;
 	Obfuscator* obfus; //a pointer to the obfuscator
 	int lineNo; //a count variable for the current line number
 	bool obfuscated; //a flag for the obfuscator

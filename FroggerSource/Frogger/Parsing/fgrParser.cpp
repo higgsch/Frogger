@@ -13,13 +13,14 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 1.0
+// Version 4.0
 // ----------------------------------------------------------
 FGRParser::FGRParser()
 {
 	current_token = FGRToken::NOTOK;
 	lookahead[0] = FGRToken::NOTOK;
 	root = new ProgramNode();
+	currFileName = "";
 }
 
 // ----------------------------------------------------------
@@ -27,20 +28,22 @@ FGRParser::FGRParser()
 // @inFile: The .fgr file to open.
 // Note: File reference from project directory.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 void FGRParser::open(string inFile)
 {
+	currFileName = inFile;
 	scanner.openAndInitialize(inFile);
 }
 
 // ----------------------------------------------------------
 // This function closes the input file stream.
 //
-// Version 3.0
+// Version 4.0
 // ----------------------------------------------------------
 void FGRParser::close()
 {
+	currFileName = "";
 	scanner.closeAndTerminate();
 }
 
@@ -751,7 +754,7 @@ void FGRParser::match(fgr_token_type toMatch)
 void FGRParser::syntax_error(string err_msg)
 {
 	int lineNo = scanner.getLineNo();
-	cout << "SYNTAX ERROR on line " << lineNo << ": " << err_msg << endl;
+	cout << "SYNTAX ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
 	
 	if (!quietMode)
 	{
