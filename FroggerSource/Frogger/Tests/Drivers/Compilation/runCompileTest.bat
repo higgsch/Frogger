@@ -1,5 +1,5 @@
-call Compilation\makeCompile.bat %1>nul
+call Compilation\makeCompile.bat %1 %2 %3>nul
 cd ..\Output
-call ..\Drivers\Compilation\%1.bat %2 %3
+call ..\Drivers\Compilation\%2\%3.bat %3
 cd ..\Drivers
-call runMatchTest.bat ..\Output\%1.txt ..\ExpectedOutput\%1.txt %2 %3
+call runMatchTest.bat ..\Output\%2\%3.txt ..\ExpectedOutput\%2\%3.txt %3

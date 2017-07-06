@@ -1,1 +1,1 @@
-call Months_PF.exe>v4\Months.txt
+call Months.exe>v4\Months.txt

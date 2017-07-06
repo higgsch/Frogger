@@ -7,10 +7,11 @@ echo Reload VS
 
 cd "C:\Users\Wayne\Desktop\Notes\Personal\Frogger\FroggerSource\Frogger\Tests\Output"
 
-set arg=%1
+set flag=%1
+set arg=%2
 
 if exist ..\..\Debug\Frogger.exe (
-	nmake makefile syntaxCheck fname=%arg% 2<nul
+	nmake /f makefile_%flag% syntaxCheck fname=%arg% 2>nul
 ) else (
 	echo "Frogger is not compiled"
 )

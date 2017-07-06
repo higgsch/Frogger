@@ -1,2 +1,2 @@
-call SyntaxChecking\makeCheckSyntax.bat %1>nul
-call runMatchTest.bat ..\Output\%1.txt ..\ExpectedOutput\%1.txt %2 %3
+call SyntaxChecking\makeCheckSyntax.bat %1 %2>nul
+call runMatchTest.bat ..\Output\%2.txt ..\ExpectedOutput\%2.txt %2
