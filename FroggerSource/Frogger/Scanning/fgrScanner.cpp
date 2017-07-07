@@ -669,25 +669,3 @@ void FGRScanner::lexical_error(string err_msg)
 		exit(0);
 	}
 }
-
-//int main(int argc, char * argv[])
-//{
-//	string filename;
-//	if (argc > 1)
-//		filename = argv[1];
-//	else 
-//		filename = "ScannerTest.fgr";
-//
-//	Scanner s;
-//	s.open(filename);
-//	FGRToken t = s.scan();
-//
-//	while (t.type != token_type::SCANEOF)
-//	{
-//		cout << t.type << ": " << t.lexeme << endl;
-//		t = s.scan();
-//	}
-//
-//	cout << "Press Enter to Exit" << endl;
-//	getchar();
-//}

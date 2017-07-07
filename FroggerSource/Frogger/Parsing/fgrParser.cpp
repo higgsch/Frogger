@@ -777,34 +777,3 @@ FGRToken FGRParser::next_token()
 
 	return lookahead[0];
 }
-
-//int main(int argc, char * argv[])
-//{
-//	string inFile;
-//	string outFile;
-//
-//	if (argc > 2)
-//	{
-//		inFile = argv[1];
-//		outFile = argv[2];
-//	}
-//	else
-//	{
-//		inFile = "Sample1.fgr";
-//		outFile = "Sample1.cpp";
-//	}
-//
-//	cout << "Starting Parse: " << inFile << " -> " << outFile << endl;
-//
-//	FGRParser p = FGRParser();
-//	p.open(inFile, outFile);
-//
-//	ProgramNode* root = p.parse();
-//
-//	root->printNodes(&cout);
-//
-//	cout << "Press Enter to exit" << endl;
-//	getchar();
-//
-//	return 0;
-//}
