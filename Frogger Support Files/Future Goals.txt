@@ -14,8 +14,8 @@ v3.3: Added commandline argument and string length functionality.
 v4.0: Added user-defined functions (force modulation into different files).
 v4.1: Added Test Framework.
 
-v5.0: Refactor with cleaner code.
-v5.1: Add function overloading.
+v4.2: Refactor with cleaner code.
+v5.0: Add function overloading.
       Perhaps numToMonth(num=double)~string.fgr
 v5+: Add object orientation (folder modulation).
 v5+.2: Add asciiFunction config file functionality.
@@ -23,6 +23,8 @@ v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 Notes---
 refactor
+
+refactor: vector should only be used in inheritance (e.g. ArgList instead of vector<argPair *>)
 
 add security checks for functions
 decide to add write(<double>) or remove display(<double>)

@@ -8,34 +8,37 @@
 #include "phase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
+#include "SubPhases\includesSubPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
 // This class represents a visitor for generating output code
 // that reflects the current AST.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class CodeGenerationPhase : public Phase
 {
 private:
 	ofstream* out; // the output stream to print to
-	int dblTempNo; // the current double temporary number in a line
-	int strTempNo; // the current string temporary number in a line
 	int indentDepth; // the number of tabs to insert
-
-	bool needsRand; // flag for random()
-	bool needsInFile; // flag for in_file object
-	bool needsOutFile; // flag for out_file object
-
 	string currUDFName;
 
+	void printBuiltInFunctions(IncludesSubPhase * iSub);
+	void printBuiltInCommands(IncludesSubPhase * iSub);
 	void printForwardDeclarations(ProgramStruct * prog);
+	void printMainFunction(string PEFName, IncludesSubPhase * iSub);
+
 	void printFunctionPrototype(UDFRecord * rec);
+	void printLabelText(int labelIndex);
 
 	string typeString(DataType dt);
 	string argsString(vector<argPair *> *);
 
+	void processBinaryOpNode(BinaryOpNode * n, string pretext, string midtext, string posttext);
+
+	bool invalidBuiltInFunctionName(string name);
+	bool invalidBuiltInCommandName(string name);
 public:
 	CodeGenerationPhase();
 
@@ -44,7 +47,7 @@ public:
 
 	void printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct);
 	void printUDFCode(FunctionAST * UDF, UDFRecord * rec);
-	void printPEFCode(FunctionAST * PEF, UDFRecord * rec);
+	void printPEFCode(FunctionAST * PEF, UDFRecord * rec) { printUDFCode(PEF, rec); }
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n);
@@ -57,19 +60,19 @@ public:
 	void visit(StringConstingNode * n) { *out << n->getLexeme(); }
 	void visit(DoubleConstingNode * n);
 	void visit(AddingNode * n);
-	void visit(SubingNode * n);
-	void visit(MulingNode * n);
-	void visit(DivingNode * n);
-	void visit(ModDivingNode * n);
-	void visit(IDivingNode * n);
-	void visit(RootingNode * n);
-	void visit(ExpingNode * n);
+	void visit(SubingNode * n) { processBinaryOpNode(n, "", " - ", ""); }
+	void visit(MulingNode * n) { processBinaryOpNode(n, "", " * ", ""); }
+	void visit(DivingNode * n) { processBinaryOpNode(n, "", " / ", ""); }
+	void visit(ModDivingNode * n) { processBinaryOpNode(n, "fmod( ", ", ", ")"); }
+	void visit(IDivingNode * n) { processBinaryOpNode(n, "((int)round(",")) / ((int)round(","))"); }
+	void visit(RootingNode * n) { processBinaryOpNode(n, "rt(", ", ", ")"); }
+	void visit(ExpingNode * n) { processBinaryOpNode(n, "pow(", ", ", ")"); }
 	void visit(NotingNode * n);
-	void visit(LTingNode * n);
-	void visit(GTingNode * n);
-	void visit(EQingNode * n);
-	void visit(LTEingNode * n);
-	void visit(GTEingNode * n);
+	void visit(LTingNode * n) { processBinaryOpNode(n, "", " < ", ""); }
+	void visit(GTingNode * n) { processBinaryOpNode(n, "", " > ", ""); }
+	void visit(EQingNode * n) { processBinaryOpNode(n, "", " == ", ""); }
+	void visit(LTEingNode * n) { processBinaryOpNode(n, "", " <= ", ""); }
+	void visit(GTEingNode * n) { processBinaryOpNode(n, "", " >= ", ""); }
 	
 	// ----------------------------------------------------------
 	// This function returns a string containing the current tab

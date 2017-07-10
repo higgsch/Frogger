@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.2
 // -----------------------------------------------------------------
 // This program represents a visitor for generating include statements.
 // -----------------------------------------------------------------
@@ -13,7 +13,7 @@ using namespace std;
 // given output stream and AST.
 // @outstream: The output stream to print to.
 //
-// Version 3.3
+// Version 4.2
 // ----------------------------------------------------------
 IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 {
@@ -27,35 +27,78 @@ IncludesSubPhase::IncludesSubPhase(ostream* outstream)
 
 	hasRndNode = false;
 	needsRoundFunct = false;
-	needsStringToDouble = false;
-	needsStringToAscii = false;
 	needsIFile = false;
 	needsOFile = false;
+
+	needsToString = false;
+	needsToAscii = false; 
+	needsParseDouble = false;
+	needsAsciiAt = false;
+	needsLength = false; 
+	needsRetrieveDouble = false;
+	needsRetrieveString = false;
+	needsRandom = false;
+	needsRead = false; 
+	needsElementAt = false;
+	needsSize = false; 
+
+	needsDisplay = false;
+	needsOpenI = false; 
+	needsOpenO = false; 
+	needsWrite = false; 
+	needsCloseI = false;
+	needsCloseO = false;
+}
+
+// ----------------------------------------------------------
+// This function emits the includes and using statements.
+// @ast: The representation of the input program.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void IncludesSubPhase::emitIncludesStatements(ProgramAST * ast)
+{
+	ast->PEF->root->accept(this);
+
+	int UDFCount = ast->UDFs->size();
+	for (int index = 0; index < UDFCount; index++)
+	{
+		(*(ast->UDFs))[index]->root->accept(this);
+	}
+
+	emitUsingStatment();
 }
 
 // ----------------------------------------------------------
 // This function processes the include for a function call.
 // @n: The node representing the statement.
 //
-// Version 3.3
+// Version 4.2
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(FunctionCallNode * n)
 {
 	n->visitAllChildren(this);
 
 	Function * funct = n->getFunct();
-	if (funct->equals(FunctionTable::FUNCT_PARSE_DOUBLE))
-	{
-		needsStringToDouble = true;
-	}
+	if (funct->equals(FunctionTable::FUNCT_TO_STRING))
+		needsToString = true;
+	else if (funct->equals(FunctionTable::FUNCT_TO_ASCII))
+		needsToAscii = true;
+	else if (funct->equals(FunctionTable::FUNCT_PARSE_DOUBLE))
+		needsParseDouble = true;
 	else if (funct->equals(FunctionTable::FUNCT_ASCII_AT))
-	{
-		needsStringToAscii = true;
-	}
-	else if (funct->equals(FunctionTable::FUNCT_RETRIEVE_DOUBLE) 
-		|| funct->equals(FunctionTable::FUNCT_RETRIEVE_STRING))
+		needsAsciiAt = true;
+	else if (funct->equals(FunctionTable::FUNCT_LENGTH))
+		needsLength = true;
+	else if (funct->equals(FunctionTable::FUNCT_RETRIEVE_DOUBLE))
 	{
 		importIOStream();
+		needsRetrieveDouble = true;
+	}
+	else if (funct->equals(FunctionTable::FUNCT_RETRIEVE_STRING))
+	{
+		importIOStream();
+		needsRetrieveString = true;
 	}
 	else if (funct->equals(FunctionTable::FUNCT_RANDOM))
 	{
@@ -63,20 +106,26 @@ void IncludesSubPhase::visit(FunctionCallNode * n)
 		importTime();
 
 		hasRndNode = true;
+		needsRandom = true;
 	}
 	else if (funct->equals(FunctionTable::FUNCT_READ))
 	{
 		importFStream();
 
 		needsIFile = true;
+		needsRead = true;
 	}
+	else if (funct->equals(FunctionTable::FUNCT_ELEMENT_AT))
+		needsElementAt = true;
+	else if (funct->equals(FunctionTable::FUNCT_SIZE))
+		needsSize = true;
 }
 
 // ----------------------------------------------------------
 // This function processes the include for a command call.
 // @n: The node representing the statement.
 //
-// Version 3.2
+// Version 4.2
 // ----------------------------------------------------------
 void IncludesSubPhase::visit(CommandCallNode * n)
 {
@@ -87,21 +136,37 @@ void IncludesSubPhase::visit(CommandCallNode * n)
 		|| cmd->equals(CommandTable::CMD_DISPLAY_STR))
 	{
 		importIOStream();
+		needsDisplay = true;
 	}
-	else if (cmd->equals(CommandTable::CMD_OPEN_INPUT)
-		|| cmd->equals(CommandTable::CMD_CLOSE_INPUT))
+	else if (cmd->equals(CommandTable::CMD_OPEN_INPUT))
 	{
 		importFStream();
-
 		needsIFile = true;
+		needsOpenI = true;
 	}
-	else if (cmd->equals(CommandTable::CMD_OPEN_OUTPUT)
-		|| cmd->equals(CommandTable::CMD_CLOSE_OUTPUT)
-		|| cmd->equals(CommandTable::CMD_WRITE))
+	else if (cmd->equals(CommandTable::CMD_CLOSE_INPUT))
 	{
 		importFStream();
-
+		needsIFile = true;
+		needsCloseI = true;
+	}
+	else if (cmd->equals(CommandTable::CMD_OPEN_OUTPUT))
+	{
+		importFStream();
 		needsOFile = true;
+		needsOpenO = true;
+	}
+	else if (cmd->equals(CommandTable::CMD_CLOSE_OUTPUT))
+	{
+		importFStream();
+		needsOFile = true;
+		needsCloseO = true;
+	}
+	else if (cmd->equals(CommandTable::CMD_WRITE))
+	{
+		importFStream();
+		needsOFile = true;
+		needsWrite = true;
 	}
 }
 
@@ -179,7 +244,7 @@ void IncludesSubPhase::emitUsingStatment()
 // This function emits the global support code (constants and
 // functions).
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void IncludesSubPhase::emitSupportCode()
 {
@@ -188,9 +253,7 @@ void IncludesSubPhase::emitSupportCode()
 	emitEmptyString();
 
 	emitRoundFunction();
-	emitStringToDoubleFunction();
-	emitStringToAsciiFunction();
-	emitElemAtFunction();
+	emitRtFunction();
 }
 
 // ----------------------------------------------------------
@@ -281,11 +344,10 @@ void IncludesSubPhase::emitEmptyString()
 // ----------------------------------------------------------
 // This function emits the in_file and out_file objects.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void IncludesSubPhase::emitFileStreams()
 {
-
 	if (needsIFile)
 		*out << "ifstream in_file;\n";
 
@@ -296,7 +358,7 @@ void IncludesSubPhase::emitFileStreams()
 // ----------------------------------------------------------
 // This function emits the round function.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void IncludesSubPhase::emitRoundFunction()
 {
@@ -307,51 +369,6 @@ void IncludesSubPhase::emitRoundFunction()
 }
 
 // ----------------------------------------------------------
-// This function emits the string to double conversion 
-// function.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void IncludesSubPhase::emitStringToDoubleFunction()
-{
-	if (needsStringToDoubleFunction())
-		*out << "double stringToDouble(string s) {\n"
-			<< "\tif (isdigit(s[0]) || s[0] == '-')\n"
-			<< "\t\treturn stod(s, NULL);\n"
-			<< "\treturn 0;\n"
-			<< "}\n\n";
-}
-
-// ----------------------------------------------------------
-// This function emits the string to ascii conversion function.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void IncludesSubPhase::emitStringToAsciiFunction()
-{
-	if (needsStringToAsciiFunction())
-		*out << "double stringToAscii(string s, int loc) {\n"
-			<< "\tif (loc < 0 || loc >= s.length())\n"
-			<< "\t\treturn 0;\n"
-			<< "\treturn s.at(loc);\n"
-			<< "}\n\n";
-}
-
-// ----------------------------------------------------------
-// This function emits the elemAt function.
-//
-// Version 3.3
-// ----------------------------------------------------------
-void IncludesSubPhase::emitElemAtFunction()
-{
-	*out << "string elemAt(vector<string> v, int index) {\n"
-		<< "\tif (index < 0 || index >= v.size())\n"
-		<< "\t\treturn \"\";\n"
-		<< "\treturn v[index];\n"
-		<< "}\n\n";
-}
-
-// ----------------------------------------------------------
 // This function emits the vector of argument strings.
 //
 // Version 4.0
@@ -359,4 +376,16 @@ void IncludesSubPhase::emitElemAtFunction()
 void IncludesSubPhase::emitArgVector()
 {
 	*out << "vector<string> args;\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the rt function.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void IncludesSubPhase::emitRtFunction()
+{
+	*out << "double rt(double l, double r) {\n"
+		<< "\t return pow(r, 1.0 / l);\n"
+		<< "}\n\n";
 }

@@ -6,13 +6,14 @@
 #include <iostream>
 #include "..\phase.h"
 #include "..\..\DataStructures\Nodes\nodes.h"
+#include "..\..\DataStructures\Tables\tables.h"
 using namespace std;
 
 // ----------------------------------------------------------
 // This class represents a visitor for generating import
 // statements as a subphase of the CodeGenerationPhase.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class IncludesSubPhase : public Phase
 {
@@ -26,10 +27,27 @@ private:
 
 	bool hasRndNode; // flag for seeding
 	bool needsRoundFunct; // flag for round() creation
-	bool needsStringToDouble; // flag for stringToDouble() creation
-	bool needsStringToAscii; // flag for stringToAscii() creation
 	bool needsIFile; // flag for in_file
 	bool needsOFile; // flag for out_file
+
+	bool needsToString; //flag for toString() creation
+	bool needsToAscii; //flag for toAscii() creation
+	bool needsParseDouble; // flag for parseDouble() creation
+	bool needsAsciiAt; // flag for asciiAt() creation
+	bool needsLength; // flag for length() creation
+	bool needsRetrieveDouble; //flag for retrieveDouble() creation
+	bool needsRetrieveString; //flag for retrieveString() creation
+	bool needsRandom; //flag for random() creation
+	bool needsRead; //flag for read() creation
+	bool needsElementAt; //flag for elementAt() creation
+	bool needsSize; //flag for size() creation
+
+	bool needsDisplay; //flag for display() creation
+	bool needsOpenI; //flag for openI() creation
+	bool needsOpenO; //flag for openO() creation
+	bool needsWrite; //flag for write() creation
+	bool needsCloseI; //flag for closeI() creation
+	bool needsCloseO; //flag for closeO() creation
 
 	void importIOStream();
 	void importMath();
@@ -40,13 +58,13 @@ private:
 	void emitEmptyString();
 	void emitFileStreams();
 	void emitRoundFunction();
-	void emitStringToDoubleFunction();
-	void emitStringToAsciiFunction();
-	void emitElemAtFunction();
 	void emitArgVector();
+	void emitRtFunction();
 
 public:
 	IncludesSubPhase(ostream*);
+
+	void emitIncludesStatements(ProgramAST * progAST);
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }
@@ -78,8 +96,25 @@ public:
 
 	bool hasRandomNode(){ return hasRndNode; }
 	bool needsRoundFunction(){ return needsRoundFunct; }
-	bool needsStringToDoubleFunction() { return needsStringToDouble; }
-	bool needsStringToAsciiFunction() { return needsStringToAscii; }
 	bool needsInputFile() { return needsIFile; }
 	bool needsOutputFile() { return needsOFile; }
+	
+	bool needsToStringFunction() { return needsToString; }
+	bool needsToAsciiFunction() { return needsToAscii; }
+	bool needsParseDoubleFunction() { return needsParseDouble; }
+	bool needsAsciiAtFunction() { return needsAsciiAt; }
+	bool needsLengthFunction() { return needsLength; } 
+	bool needsRetrieveDoubleFunction() { return needsRetrieveDouble; }
+	bool needsRetrieveStringFunction() { return needsRetrieveString; }
+	bool needsRandomFunction() { return needsRandom; }
+	bool needsReadFunction() { return needsRead; } 
+	bool needsElementAtFunction() { return needsElementAt; }
+	bool needsSizeFunction() { return needsSize; } 
+
+	bool needsDisplayCommand() { return needsDisplay; }
+	bool needsOpenICommand() { return needsOpenI; } 
+	bool needsOpenOCommand() { return needsOpenO; } 
+	bool needsWriteCommand() { return needsWrite; } 
+	bool needsCloseICommand() { return needsCloseI; }
+	bool needsCloseOCommand() { return needsCloseO; }
 };

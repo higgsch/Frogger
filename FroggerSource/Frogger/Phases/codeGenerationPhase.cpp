@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.2
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -8,95 +8,44 @@
 #include "codeGenerationPhase.h"
 #include "SubPhases\includesSubPhase.h"
 #include "SubPhases\varDecSubPhase.h"
-#include "SubPhases\tempAssignSubPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 CodeGenerationPhase::CodeGenerationPhase()
-{
-	dblTempNo = 1; //temporaries are 1-indexed
-	strTempNo = 1;
-	
-	indentDepth = 0;
-
+{	
 	out = new ofstream();
-
-	needsRand = false;
-	needsInFile = false;
-	needsOutFile = false;
-
+	indentDepth = 0;
 	currUDFName = "<META>";
 }
 
 // ----------------------------------------------------------
 // This function generates the pre-function code.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct)
 {
 	//emit the include statements code
-	IncludesSubPhase* iSub = new IncludesSubPhase(out);
-	progAST->PEF->root->accept(iSub);
+	IncludesSubPhase iSub = IncludesSubPhase(out);
+	iSub.emitIncludesStatements(progAST);
+	iSub.emitSupportCode();
 
-	int UDFCount = progAST->UDFs->size();
-	if (UDFCount > 0)
-	{
-		int index = 0;
-		while (index < UDFCount)
-		{
-			(*(progAST->UDFs))[index]->root->accept(iSub);
-			index++;
-		}
-	}
-
-	iSub->emitUsingStatment();
-	iSub->emitSupportCode();
-	needsRand = iSub->hasRandomNode();
-	needsInFile = iSub->needsInputFile();
-	needsOutFile = iSub->needsOutputFile();
-	delete iSub; iSub = NULL;
+	printBuiltInFunctions(&iSub);
+	printBuiltInCommands(&iSub);
 
 	printForwardDeclarations(progStruct);
-
-	*out << "int main(int argc, char* argv[])\n{\n"
-	<< "\targs = vector<string>(argv + 1, argv + argc);\n";
-
-	if (needsRand)
-		*out << "\tsrand(time(NULL)); rand();\n";
-
-	if (needsInFile)
-		*out << "\tin_file = ifstream();\n";
-
-	if (needsOutFile)
-		*out << "\tout_file = ofstream();\n";
-
-	*out << "\n";
-	
-	*out << "\t" << progStruct->PEF->UDFName << "();\n"
-		<< "}\n\n";
-}
-
-// ----------------------------------------------------------
-// This function generates the code for the PEF.
-// @PEF: The PEF's struct.
-//
-// Version 4.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::printPEFCode(FunctionAST * PEF, UDFRecord * rec)
-{
-	printUDFCode(PEF, rec);
+	printMainFunction(progStruct->PEF->UDFName, &iSub);
 }
 
 // ----------------------------------------------------------
 // This function generates the code for a given UDF.
 // @UDF: The UDF's struct.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec) 
 {
@@ -112,7 +61,6 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, UDF->symbols, rec);
 	UDF->root->accept(sub);
 	sub->emitSymbolTable();
-	sub->emitTemporaries();
 	delete sub; sub = NULL;
 
 	*out << endl << endl;
@@ -126,23 +74,46 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 // This function generates the forward function declarations.
 // @prog: The structure table for the program.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 {
 	printFunctionPrototype(prog->PEF);
 	*out << ";\n";
 
-	int index = 0;
-	while (index < prog->UDFs->size())
+	for (int index = 0; index < prog->UDFs->size(); index++)
 	{
 		printFunctionPrototype((*(prog->UDFs))[index]);
 		*out << ";\n";
-
-		index++;
 	}
 
 	*out << endl;
+}
+
+// ----------------------------------------------------------
+// This function generates the code for main.
+// @PEFName: The name of the PEF function.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::printMainFunction(string PEFName, IncludesSubPhase * iSub)
+{
+	*out << "int main(int argc, char* argv[])\n{\n"
+	<< "\targs = vector<string>(argv + 1, argv + argc);\n";
+
+	if (iSub->hasRandomNode())
+		*out << "\tsrand(time(NULL)); rand();\n";
+
+	if (iSub->needsInputFile())
+		*out << "\tin_file = ifstream();\n";
+
+	if (iSub->needsOutputFile())
+		*out << "\tout_file = ofstream();\n";
+
+	*out << "\n";
+	
+	*out << "\t" << PEFName << "();\n"
+		<< "}\n\n";
 }
 
 // ----------------------------------------------------------
@@ -155,6 +126,93 @@ void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 void CodeGenerationPhase::printFunctionPrototype(UDFRecord * rec)
 {
 	*out << typeString(rec->returnType) << " " << rec->UDFName << "(" << argsString(rec->args) << ")";
+}
+
+// ----------------------------------------------------------
+// This function generates the label text for the given index
+// in the current UDF.
+// @labelIndex: The index of the label to print.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::printLabelText(int labelIndex)
+{
+	*out << "__LABEL_" << currUDFName << "_" << labelIndex;
+}
+
+// ----------------------------------------------------------
+// This function generates the built in functions.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
+{
+	if (iSub->needsToStringFunction())
+		*out << "string toString(double d) { return to_string(d); }\n";
+	if (iSub->needsToAsciiFunction())
+		*out << "char toAscii(double d) { return (char) d; }\n";
+	if (iSub->needsParseDoubleFunction())
+		*out << "double parseDouble(string s) {\n"
+				<< "\tif (isdigit(s[0]) || s[0] == '-')\n"
+				<< "\t\treturn stod(s, NULL);\n"
+				<< "\treturn 0;\n"
+			<< "}\n";
+	if (iSub->needsAsciiAtFunction())
+		*out << "double asciiAt(string s, int loc) {\n"
+				<< "\tif (loc < 0 || loc >= s.length())\n"
+				<< "\t\treturn 0;\n"
+				<< "\treturn s.at(loc);\n"
+			<< "}\n";
+	if (iSub->needsLengthFunction())
+		*out << "double length(string s) { return (emptyString + s).size(); }\n";
+	if (iSub->needsRetrieveDoubleFunction())
+		*out << "double retrieveDouble() {\n"
+				<< "\tdouble d = 0;\n"
+				<< "\tcin >> d;\n"
+				<< "\treturn d;\n"
+			<< "}\n";
+	if (iSub->needsRetrieveStringFunction())
+		*out << "string retrieveString() {\n"
+				<< "\tstring s = "";\n"
+				<< "\tcin >> s;\n"
+				<< "\treturn s;\n"
+			<< "}\n";
+	if (iSub->needsRandomFunction())
+		*out << "double random() { return ((double) rand() / (RAND_MAX)); }\n";
+	if (iSub->needsReadFunction())
+		*out << "char read() { return (char)(in_file.get()); }\n";
+	if (iSub->needsElementAtFunction())
+		*out << "string elementAt(vector<string> v, int index) {\n"
+				<< "\tif (index < 0 || index >= v.size())\n"
+				<< "\t\treturn \"\";\n"
+				<< "\treturn v[index];\n"
+			<< "}\n";
+	if (iSub->needsSizeFunction())
+		*out << "double size(vector<string> v) { return v.size(); }\n";
+}
+
+// ----------------------------------------------------------
+// This function generates the built in commands.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::printBuiltInCommands(IncludesSubPhase * iSub)
+{
+	if (iSub->needsDisplayCommand())
+	{
+		*out << "void display(double d) { cout << d; }\n";
+		*out << "void display(string s) { cout << s; }\n";
+	}
+	if (iSub->needsOpenICommand())
+		*out << "void openI(string s) { in_file.open(s); }\n";
+	if (iSub->needsOpenOCommand())
+		*out << "void openO(string s) { out_file.open(s); }\n";
+	if (iSub->needsWriteCommand())
+		*out << "void write(string s) { out_file << s; }\n";
+	if (iSub->needsCloseICommand())
+		*out << "void closeI() { in_file.close(); }\n";
+	if (iSub->needsCloseOCommand())
+		*out << "void closeO() { out_file.close(); }\n";
 }
 
 // ----------------------------------------------------------
@@ -184,56 +242,77 @@ string CodeGenerationPhase::typeString(DataType dt)
 // argument list.
 // @args: The argument list to convert.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 string CodeGenerationPhase::argsString(vector<argPair *> * args)
 {
 	string result = "";
 	int index = 0;
 
-	if (args->size() > 0)
-	{
-		result = typeString((*args)[index]->type) + " _" + (*args)[index]->name;
-		index++;
-	}
-
 	while (index < args->size())
 	{
-		result = result + ", " + typeString((*args)[index]->type) + " _" + (*args)[index]->name;
+		argPair * arg = (*args)[index];
+		result = result + typeString(arg->type) + " _" + arg->name;
 		index++;
+
+		if (index != args->size())
+			result = result + ", ";
 	}
 
 	return result;
 }
 
 // ----------------------------------------------------------
+// This function emits the code for a BinaryOpNode.
+// @n: The BinaryOpNode to process.
+// @pretext: The text to emit before the left operand.
+// @midtext: The text to emit between left and right operands.
+// @posttext: The text to emit after the right operand.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::processBinaryOpNode(BinaryOpNode * n, string pretext, string midtext, string posttext)
+{
+	if (n->getParenNesting() > 0)
+		*out << "(";
+
+	*out << pretext;
+	n->visitLeftOperand(this);
+	*out << midtext;
+	n->visitRightOperand(this);
+	*out << posttext;
+	
+	if (n->getParenNesting() > 0)
+		*out << ")";
+}
+
+// ----------------------------------------------------------
 // This function processes a line of code.
 // @n: The node representing the line.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(JmpStmtNode * n)
 {
-	dblTempNo = 1; //restart temporary counters (1-indexed)
-	strTempNo = 1;
-
 	bool isOwnLine = (!n->isNested());
 
 	if (isOwnLine) 
 	{
 		//emit this line's label
-		*out << indent() << "__LABEL_" << currUDFName << "_" << n->getStmtNo() << ":" << endl;
+		*out << indent();
+		printLabelText(n->getStmtNo());
+		*out << ":" << endl; 
+
 		indentDepth++;
 	}
-
-	//generate temp assignments for the line
-	n->visitThisStmt(new TempAssignSubPhase(out, indentDepth));
 
 	//emit the line's code
 	n->visitThisStmt(this);
 	
 	//emit this line's goto statement
-	*out << indent() << "goto __LABEL_" << currUDFName << "_" << n->getJump() << ";" << endl;
+	*out << indent() << "goto ";
+	printLabelText(n->getJump());
+	*out << ";" << endl; 
 
 	if (isOwnLine)
 	{
@@ -247,7 +326,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 // This function processes an if statement.
 // @n: The node representing the statement.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IfNode * n)
 {
@@ -255,11 +334,11 @@ void CodeGenerationPhase::visit(IfNode * n)
 
 	if (isOwnLine)
 	{
-		*out << indent() << "__LABEL_" << currUDFName << "_" << n->getStmtNo() << ":" << endl;
+		*out << indent();
+		printLabelText(n->getStmtNo());
+		*out << ":" << endl;
 		indentDepth++;
 	}
-
-	n->visitBoolExp(new TempAssignSubPhase(out, indentDepth));
 
 	*out << indent() << "if (";
 	n->visitBoolExp(this);
@@ -284,15 +363,20 @@ void CodeGenerationPhase::visit(IfNode * n)
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
-// Version 1.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IdRefNode * n)
 {
 	if (n->getParenNesting() > 0)
 		*out << "(";
 
-	//prepend identifiers to avoid c++ keyword conflicts
-	*out << "_" << n->getLexeme();
+	string id = n->getLexeme();
+
+	if (id == "args")
+		*out << "args";
+	else
+		//prepend identifiers to avoid c++ keyword conflicts
+		*out << "_" << n->getLexeme();
 	
 	if (n->getParenNesting() > 0)
 		*out << ")";
@@ -317,164 +401,75 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
 	Function* funct = n->getFunct();
-	if (funct->isUserDefined())
+	string name = funct->name;
+
+	if (!(funct->isUserDefined()))
 	{
-
-		/*if (funct->parentType != DT_NULL)
-		{
-			*out << "(";
-			n->visitPrimary(this);
-			*out << ").";
-		}*/
-		
-		*out << funct->name << "(";
-		
-		n->visitArgList(this);
-
-		*out << ")";
+		if (invalidBuiltInFunctionName(name))
+			semantic_error("Unrecognized function: " + name, n->getLineNo());
 	}
+
+	/* For User Defined
+	if (funct->parentType != DT_NULL)
+	{
+		*out << "(";
+		n->visitPrimary(this);
+		*out << ").";
+	}*/
+
+	*out << name << "(";
+
+	if (n->getPrimary() == NULL)
+		n->visitArgList(this);
 	else
 	{
-		string name = funct->name;
-
-		if (name == "toString")
+		n->visitPrimary(this);
+		if (n->getArgListLength() > 0)
 		{
-			*out << "to_string(";
-			n->visitPrimary(this);
-			*out << ")";
-			//<double>:toString() takes no arguments
-		}
-		else if (name == "toAscii")
-		{
-			*out << "(char) (";
-			n->visitPrimary(this);
-			*out << ")";
-			//<double>:toAscii() takes no arguments
-		}
-		else if (name == "parseDouble")
-		{
-			*out << "stringToDouble(";
-			n->visitPrimary(this);
-			*out << ")";
-			//<string>:parseDouble() takes no arguments
-		}
-		else if (name == "asciiAt")
-		{
-			*out << "stringToAscii(";
-			n->visitPrimary(this);
 			*out << ", ";
 			n->visitArgList(this);
-			*out << ")";
-			//<string>:asciiAt(<double>) takes an argument
 		}
-		else if (name == "length")
-		{
-			*out << "(emptyString + ";
-			n->visitPrimary(this);
-			*out << ").size()";
-		}
-		else if (name == "retrieveDouble")
-		{
-			*out << " _dbltemp_" << dblTempNo++ << " ";
-		}
-		else if (name == "retrieveString")
-		{
-			*out << " _strtemp_" << strTempNo++ << " ";
-		}
-		else if (name == "random")
-		{
-			*out << " ((double) rand() / (RAND_MAX)) ";
-		}
-		else if (name == "read")
-		{
-			*out << "(char)(in_file.get())";
-		}
-		else if (name == "elementAt")
-		{
-			*out << "elemAt(args,";
-			n->visitArgList(this);
-			*out << ")";
-		}
-		else if (name == "size")
-		{
-			*out << "args.size()";
-		}
-		else
-			this->semantic_error("Unrecognized function: " + name, n->getLineNo());
 	}
+	*out << ")";
 }
 
 // ----------------------------------------------------------
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(CommandCallNode * n)
 {
 	Command* cmd = n->getCmd();
-	if (cmd->isUserDefined())
+	string name = cmd->name;
+
+	if (!cmd->isUserDefined())
 	{
-		//*out << "(";
-		//n->visitPrimary(this);
-		//*out << ").";
-
-		*out << cmd->name << "(";
-
-		n->visitArgList(this);
-
-		*out << ")";
-	}
-	else
-	{
-		string name = cmd->name;
+		if (invalidBuiltInCommandName(name))
+			semantic_error("Unrecognized command: " + name, n->getLineNo());
 
 		if (name == "end")
 		{
 			*out << indent() << "return "; 
 			n->visitArgList(this);
 			*out << ";" << endl;
+			return;
 		}
-		else if (name == "display")
-		{
-			*out << indent() << "cout << (";
-			n->visitArgList(this);
-			*out << ");" << endl;
-		}
-		else if (name == "openI")
-		{
-			*out << indent() << "in_file.open(";
-			n->visitArgList(this);
-			*out << ");\n";
-		}
-		else if (name == "openO")
-		{
-			*out << indent() << "out_file.open(";
-			n->visitArgList(this);
-			*out << ");\n";
-		}
-		else if (name == "write")
-		{
-			*out << indent() << "out_file << (";
-			n->visitArgList(this);
-			*out << ");\n";
-		}
-		else if (name == "closeI")
-		{
-			*out << indent() << "in_file.close();\n";
-		}
-		else if (name == "closeO")
-		{
-			*out << indent() << "out_file.close();\n";
-		}
-		else
-			this->semantic_error("Unrecognized command: " + name, n->getLineNo());
 	}
+
+	//*out << "(";
+	//n->visitPrimary(this);
+	//*out << ").";
+
+	*out << indent() << name << "(";
+	n->visitArgList(this);
+	*out << ");\n";
 }
 
 // ----------------------------------------------------------
@@ -515,163 +510,12 @@ void CodeGenerationPhase::visit(DoubleConstingNode * n)
 // This function processes an addition operation.
 // @n: The node representing the operation.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(AddingNode * n)
 {
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	if (n->getDataType() == DT_STRING)
-		*out << "emptyString + ";
-
-	n->visitLeftOperand(this);
-	*out << " + ";
-	n->visitRightOperand(this);
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes a subtraction operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(SubingNode * n)
-{
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	n->visitLeftOperand(this);
-	*out << " - ";
-	n->visitRightOperand(this);
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes a multiplication operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(MulingNode * n)
-{
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	n->visitLeftOperand(this);
-	*out << " * ";
-	n->visitRightOperand(this);
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes a division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(DivingNode * n)
-{
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	n->visitLeftOperand(this);
-	*out << " / ";
-	n->visitRightOperand(this);
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes a modulus division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(ModDivingNode * n)
-{
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	*out << "fmod( ";
-	n->visitLeftOperand(this);
-	*out << ", ";
-	n->visitRightOperand(this);
-	*out << " )";
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes an integer division operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(IDivingNode * n)
-{
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	*out << "((int)round(";
-	n->visitLeftOperand(this);
-	*out << ")) / ((int)round(";
-	n->visitRightOperand(this);
-	*out << "))";
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes a rootation operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(RootingNode * n)
-{
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	*out << "pow(";
-	n->visitRightOperand(this);
-	*out << ", 1.0 / ";
-	n->visitLeftOperand(this);
-	*out << ")";
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
-}
-
-// ----------------------------------------------------------
-// This function processes an exponentiation operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(ExpingNode * n)
-{
-	if (n->getParenNesting() > 0)
-		*out << "(";
-
-	*out << "pow(";
-	n->visitLeftOperand(this);
-	*out << ", ";
-	n->visitRightOperand(this);
-	*out << ")";
-	
-	if (n->getParenNesting() > 0)
-		*out << ")";
+	string pretext = (n->getDataType() == DT_STRING) ? "emptyString + " : "";
+	processBinaryOpNode(n, pretext, " + ", "");
 }
 
 // ----------------------------------------------------------
@@ -688,68 +532,41 @@ void CodeGenerationPhase::visit(NotingNode * n)
 }
 
 // ----------------------------------------------------------
-// This function processes a less than comparison operation.
-// @n: The node representing the operation.
+// This function determines if the given name is a valid
+// built-in function name.
+// @name: The name to test.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(LTingNode * n) 
+bool CodeGenerationPhase::invalidBuiltInFunctionName(string name)
 {
-	n->visitLeftOperand(this);
-	*out << " < ";
-	n->visitRightOperand(this);
+	return name != "toString" &&
+		   name != "toAscii" &&
+		   name != "parseDouble" &&
+		   name != "asciiAt" &&
+		   name != "length" &&
+		   name != "retrieveDouble" &&
+		   name != "retrieveString" &&
+		   name != "random" &&
+		   name != "read" &&
+		   name != "elementAt" &&
+		   name != "size";
 }
 
 // ----------------------------------------------------------
-// This function processes a greater than comparison operation.
-// @n: The node representing the operation.
+// This function determines if the given name is a valid
+// built-in command name.
+// @name: The name to test.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(GTingNode * n) 
+bool CodeGenerationPhase::invalidBuiltInCommandName(string name)
 {
-	n->visitLeftOperand(this);
-	*out << " > ";
-	n->visitRightOperand(this);
-}
-
-// ----------------------------------------------------------
-// This function processes an equivalence comparison operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(EQingNode * n) 
-{
-	n->visitLeftOperand(this);
-	*out << " == ";
-	n->visitRightOperand(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a less than or equal comparison 
-// operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(LTEingNode * n) 
-{
-	n->visitLeftOperand(this);
-	*out << " <= ";
-	n->visitRightOperand(this);
-}
-
-// ----------------------------------------------------------
-// This function processes a greater than or equal comparison 
-// operation.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(GTEingNode * n) 
-{
-	n->visitLeftOperand(this);
-	*out << " >= ";
-	n->visitRightOperand(this);
+	return name != "end" &&
+		   name != "display" &&
+		   name != "openI" &&
+		   name != "openO" &&
+		   name != "write" &&
+		   name != "closeI" &&
+		   name != "closeO";
 }
