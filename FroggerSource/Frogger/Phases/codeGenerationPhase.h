@@ -29,16 +29,22 @@ private:
 	void printForwardDeclarations(ProgramStruct * prog);
 	void printMainFunction(string PEFName, IncludesSubPhase * iSub);
 
-	void printFunctionPrototype(UDFRecord * rec);
-	void printLabelText(int labelIndex);
+	void printIndent() { *out << indent(); }
+	void printString(string s) { *out << s; }
+	void printEmptyLine() { *out << endl; }
+	void printLine(string s) { *out << indent() << s << endl; }
+	void printOpenBraceLine() { printLine("{"); indentDepth++; }
+	void printCloseBraceLine() { printLine("}"); indentDepth--; }
 
+	string getFunctionPrototype(UDFRecord * rec);
+	string getLabelText(int labelIndex);
 	string typeString(DataType dt);
 	string argsString(vector<argPair *> *);
 
 	void processBinaryOpNode(BinaryOpNode * n, string pretext, string midtext, string posttext);
 
-	bool invalidBuiltInFunctionName(string name);
-	bool invalidBuiltInCommandName(string name);
+	bool validBuiltInFunctionName(string name);
+	bool validBuiltInCommandName(string name);
 public:
 	CodeGenerationPhase();
 

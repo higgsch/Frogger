@@ -49,13 +49,10 @@ void CodeGenerationPhase::printMetaCode(ProgramAST * progAST, ProgramStruct * pr
 // ----------------------------------------------------------
 void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec) 
 {
-	indentDepth = 0; 
 	currUDFName = rec->UDFName;
 
-	printFunctionPrototype(rec);
-	*out << " \n" 
-		<< "{\n";
-	indentDepth++;
+	printLine(getFunctionPrototype(rec));
+	printOpenBraceLine();
 
 	//emit the variable declarations
 	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, UDF->symbols, rec);
@@ -63,11 +60,14 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 	sub->emitSymbolTable();
 	delete sub; sub = NULL;
 
-	*out << endl << endl;
+	printEmptyLine();
+	printEmptyLine();
 
 	UDF->root->accept(this);
 
-	*out << "\n}\n" << endl;
+	printEmptyLine();
+	printCloseBraceLine();
+	printEmptyLine();
 }
 
 // ----------------------------------------------------------
@@ -78,16 +78,15 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 // ----------------------------------------------------------
 void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 {
-	printFunctionPrototype(prog->PEF);
-	*out << ";\n";
+	printLine(getFunctionPrototype(prog->PEF) + ";");
 
 	for (int index = 0; index < prog->UDFs->size(); index++)
 	{
-		printFunctionPrototype((*(prog->UDFs))[index]);
-		*out << ";\n";
+		UDFRecord * currFunct = (*(prog->UDFs))[index];
+		printLine(getFunctionPrototype(currFunct) + ";");
 	}
 
-	*out << endl;
+	printEmptyLine();
 }
 
 // ----------------------------------------------------------
@@ -98,46 +97,23 @@ void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 // ----------------------------------------------------------
 void CodeGenerationPhase::printMainFunction(string PEFName, IncludesSubPhase * iSub)
 {
-	*out << "int main(int argc, char* argv[])\n{\n"
-	<< "\targs = vector<string>(argv + 1, argv + argc);\n";
+	printLine("int main(int argc, char* argv[])");
+	printOpenBraceLine();
+	printLine("args = vector<string>(argv + 1, argv + argc);");
 
 	if (iSub->hasRandomNode())
-		*out << "\tsrand(time(NULL)); rand();\n";
+		printLine("srand(time(NULL)); rand();");
 
 	if (iSub->needsInputFile())
-		*out << "\tin_file = ifstream();\n";
+		printLine("in_file = ifstream();");
 
 	if (iSub->needsOutputFile())
-		*out << "\tout_file = ofstream();\n";
+		printLine("out_file = ofstream();");
 
-	*out << "\n";
-	
-	*out << "\t" << PEFName << "();\n"
-		<< "}\n\n";
-}
-
-// ----------------------------------------------------------
-// This function generates the function prototype of the given
-// UDFRecord.
-// @rec: The function to print.
-//
-// Version 4.0
-// ----------------------------------------------------------
-void CodeGenerationPhase::printFunctionPrototype(UDFRecord * rec)
-{
-	*out << typeString(rec->returnType) << " " << rec->UDFName << "(" << argsString(rec->args) << ")";
-}
-
-// ----------------------------------------------------------
-// This function generates the label text for the given index
-// in the current UDF.
-// @labelIndex: The index of the label to print.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::printLabelText(int labelIndex)
-{
-	*out << "__LABEL_" << currUDFName << "_" << labelIndex;
+	printEmptyLine();
+	printLine(PEFName + "();");
+	printCloseBraceLine();
+	printEmptyLine();
 }
 
 // ----------------------------------------------------------
@@ -148,47 +124,68 @@ void CodeGenerationPhase::printLabelText(int labelIndex)
 void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
 {
 	if (iSub->needsToStringFunction())
-		*out << "string toString(double d) { return to_string(d); }\n";
+		printLine("string toString(double d) { return to_string(d); }");
 	if (iSub->needsToAsciiFunction())
-		*out << "char toAscii(double d) { return (char) d; }\n";
+		printLine("char toAscii(double d) { return (char) d; }");
 	if (iSub->needsParseDoubleFunction())
-		*out << "double parseDouble(string s) {\n"
-				<< "\tif (isdigit(s[0]) || s[0] == '-')\n"
-				<< "\t\treturn stod(s, NULL);\n"
-				<< "\treturn 0;\n"
-			<< "}\n";
+	{
+		printLine("double parseDouble(string s)"); 
+		printOpenBraceLine();
+		printLine("if (isdigit(s[0]) || s[0] == '-')");
+		printOpenBraceLine();
+		printLine("return stod(s, NULL);"); 
+		printCloseBraceLine();
+		printLine("return 0;");
+		printCloseBraceLine();
+	}
 	if (iSub->needsAsciiAtFunction())
-		*out << "double asciiAt(string s, int loc) {\n"
-				<< "\tif (loc < 0 || loc >= s.length())\n"
-				<< "\t\treturn 0;\n"
-				<< "\treturn s.at(loc);\n"
-			<< "}\n";
+	{
+		printLine("double asciiAt(string s, int loc)");
+		printOpenBraceLine();
+		printLine("if (loc < 0 || loc >= s.length())");
+		printOpenBraceLine();
+		printLine("return 0;");
+		printCloseBraceLine();
+		printLine("return s.at(loc);");
+		printCloseBraceLine();
+	}
 	if (iSub->needsLengthFunction())
-		*out << "double length(string s) { return (emptyString + s).size(); }\n";
+		printLine("double length(string s) { return (emptyString + s).size(); }");
 	if (iSub->needsRetrieveDoubleFunction())
-		*out << "double retrieveDouble() {\n"
-				<< "\tdouble d = 0;\n"
-				<< "\tcin >> d;\n"
-				<< "\treturn d;\n"
-			<< "}\n";
+	{
+		printLine("double retrieveDouble()");
+		printOpenBraceLine();
+		printLine("double d = 0;");
+		printLine("cin >> d;");
+		printLine("return d;");
+		printCloseBraceLine();
+	}
 	if (iSub->needsRetrieveStringFunction())
-		*out << "string retrieveString() {\n"
-				<< "\tstring s = "";\n"
-				<< "\tcin >> s;\n"
-				<< "\treturn s;\n"
-			<< "}\n";
+	{
+		printLine("string retrieveString()");
+		printOpenBraceLine();
+		printLine("string s = "";");
+		printLine("cin >> s;");
+		printLine("return s;");
+		printCloseBraceLine();
+	}
 	if (iSub->needsRandomFunction())
-		*out << "double random() { return ((double) rand() / (RAND_MAX)); }\n";
+		printLine("double random() { return ((double) rand() / (RAND_MAX)); }");
 	if (iSub->needsReadFunction())
-		*out << "char read() { return (char)(in_file.get()); }\n";
+		printLine("char read() { return (char)(in_file.get()); }");
 	if (iSub->needsElementAtFunction())
-		*out << "string elementAt(vector<string> v, int index) {\n"
-				<< "\tif (index < 0 || index >= v.size())\n"
-				<< "\t\treturn \"\";\n"
-				<< "\treturn v[index];\n"
-			<< "}\n";
+	{
+		printLine("string elementAt(vector<string> v, int index)");
+		printOpenBraceLine();
+		printLine("if (index < 0 || index >= v.size())");
+		printOpenBraceLine();
+		printLine("return \"\";");
+		printCloseBraceLine();
+		printLine("return v[index];");
+		printCloseBraceLine();
+	}
 	if (iSub->needsSizeFunction())
-		*out << "double size(vector<string> v) { return v.size(); }\n";
+		printLine("double size(vector<string> v) { return v.size(); }");
 }
 
 // ----------------------------------------------------------
@@ -200,19 +197,43 @@ void CodeGenerationPhase::printBuiltInCommands(IncludesSubPhase * iSub)
 {
 	if (iSub->needsDisplayCommand())
 	{
-		*out << "void display(double d) { cout << d; }\n";
-		*out << "void display(string s) { cout << s; }\n";
+		printLine("void display(double d) { cout << d; }");
+		printLine("void display(string s) { cout << s; }");
 	}
 	if (iSub->needsOpenICommand())
-		*out << "void openI(string s) { in_file.open(s); }\n";
+		printLine("void openI(string s) { in_file.open(s); }");
 	if (iSub->needsOpenOCommand())
-		*out << "void openO(string s) { out_file.open(s); }\n";
+		printLine("void openO(string s) { out_file.open(s); }");
 	if (iSub->needsWriteCommand())
-		*out << "void write(string s) { out_file << s; }\n";
+		printLine("void write(string s) { out_file << s; }");
 	if (iSub->needsCloseICommand())
-		*out << "void closeI() { in_file.close(); }\n";
+		printLine("void closeI() { in_file.close(); }");
 	if (iSub->needsCloseOCommand())
-		*out << "void closeO() { out_file.close(); }\n";
+		printLine("void closeO() { out_file.close(); }");
+}
+
+// ----------------------------------------------------------
+// This function generates the function prototype of the given
+// UDFRecord.
+// @rec: The function to print.
+//
+// Version 4.2
+// ----------------------------------------------------------
+string CodeGenerationPhase::getFunctionPrototype(UDFRecord * rec)
+{
+	return typeString(rec->returnType) + " " + rec->UDFName + "(" + argsString(rec->args) + ")";
+}
+
+// ----------------------------------------------------------
+// This function generates the label text for the given index
+// in the current UDF.
+// @labelIndex: The index of the label to print.
+//
+// Version 4.2
+// ----------------------------------------------------------
+string CodeGenerationPhase::getLabelText(int labelIndex)
+{
+	return "__LABEL_" + currUDFName + "_" + to_string(labelIndex);
 }
 
 // ----------------------------------------------------------
@@ -274,16 +295,16 @@ string CodeGenerationPhase::argsString(vector<argPair *> * args)
 void CodeGenerationPhase::processBinaryOpNode(BinaryOpNode * n, string pretext, string midtext, string posttext)
 {
 	if (n->getParenNesting() > 0)
-		*out << "(";
+		printString("(");
 
-	*out << pretext;
+	printString(pretext);
 	n->visitLeftOperand(this);
-	*out << midtext;
+	printString(midtext);
 	n->visitRightOperand(this);
-	*out << posttext;
+	printString(posttext);
 	
 	if (n->getParenNesting() > 0)
-		*out << ")";
+		printString(")");
 }
 
 // ----------------------------------------------------------
@@ -299,10 +320,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 	if (isOwnLine) 
 	{
 		//emit this line's label
-		*out << indent();
-		printLabelText(n->getStmtNo());
-		*out << ":" << endl; 
-
+		printLine(getLabelText(n->getStmtNo()) + ":");
 		indentDepth++;
 	}
 
@@ -310,13 +328,11 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 	n->visitThisStmt(this);
 	
 	//emit this line's goto statement
-	*out << indent() << "goto ";
-	printLabelText(n->getJump());
-	*out << ";" << endl; 
+	printLine("goto " + getLabelText(n->getJump()) + ";");
 
 	if (isOwnLine)
 	{
-		*out << endl;
+		printEmptyLine();
 		indentDepth--;
 		n->visitNextStmt(this);
 	}
@@ -334,24 +350,23 @@ void CodeGenerationPhase::visit(IfNode * n)
 
 	if (isOwnLine)
 	{
-		*out << indent();
-		printLabelText(n->getStmtNo());
-		*out << ":" << endl;
+		//emit this line's label
+		printLine(getLabelText(n->getStmtNo()) + ":");
 		indentDepth++;
 	}
 
-	*out << indent() << "if (";
-	n->visitBoolExp(this);
-	*out << ")\n" << indent() << "{\n";
-	indentDepth++;
+	printIndent(); printString("if ("); n->visitBoolExp(this); printString(")\n");
+	printOpenBraceLine();
+
 	n->visitTrueStmt(this);
-	indentDepth--;
-	*out << indent() << "}\n";
-	*out << indent() << "else\n" << indent() << "{\n";
-	indentDepth++;
+
+	printCloseBraceLine();
+	printLine("else");
+	printOpenBraceLine();
+
 	n->visitFalseStmt(this);
-	indentDepth--;
-	*out << indent() << "}\n" << endl;
+
+	printCloseBraceLine();
 
 	if (isOwnLine)
 		indentDepth--;
@@ -368,33 +383,33 @@ void CodeGenerationPhase::visit(IfNode * n)
 void CodeGenerationPhase::visit(IdRefNode * n)
 {
 	if (n->getParenNesting() > 0)
-		*out << "(";
+		printString("(");
 
 	string id = n->getLexeme();
 
 	if (id == "args")
-		*out << "args";
+		printString("args");
 	else
 		//prepend identifiers to avoid c++ keyword conflicts
-		*out << "_" << n->getLexeme();
+		printString("_" + n->getLexeme());
 	
 	if (n->getParenNesting() > 0)
-		*out << ")";
+		printString(")");
 }
 
 // ----------------------------------------------------------
 // This function processes an assignment statement.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(AssigningNode * n)
 {
-	*out << indent();
+	printIndent();
 	n->visitAssignee(this);
-	*out << " = (";
+	printString(" = (");
 	n->visitAssignor(this);
-	*out << ");" << endl;
+	printString(");\n");
 }
 
 // ----------------------------------------------------------
@@ -410,19 +425,19 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 
 	if (!(funct->isUserDefined()))
 	{
-		if (invalidBuiltInFunctionName(name))
+		if (!validBuiltInFunctionName(name))
 			semantic_error("Unrecognized function: " + name, n->getLineNo());
 	}
 
 	/* For User Defined
 	if (funct->parentType != DT_NULL)
 	{
-		*out << "(";
+		printString("(");
 		n->visitPrimary(this);
-		*out << ").";
+		printString(").");
 	}*/
 
-	*out << name << "(";
+	printString(name + "(");
 
 	if (n->getPrimary() == NULL)
 		n->visitArgList(this);
@@ -431,11 +446,11 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 		n->visitPrimary(this);
 		if (n->getArgListLength() > 0)
 		{
-			*out << ", ";
+			printString(", ");
 			n->visitArgList(this);
 		}
 	}
-	*out << ")";
+	printString(")");
 }
 
 // ----------------------------------------------------------
@@ -451,32 +466,32 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 
 	if (!cmd->isUserDefined())
 	{
-		if (invalidBuiltInCommandName(name))
+		if (!validBuiltInCommandName(name))
 			semantic_error("Unrecognized command: " + name, n->getLineNo());
 
 		if (name == "end")
 		{
-			*out << indent() << "return "; 
+			printIndent(); printString("return ");
 			n->visitArgList(this);
-			*out << ";" << endl;
+			printString(";\n");
 			return;
 		}
 	}
 
-	//*out << "(";
+	//printString("(");
 	//n->visitPrimary(this);
-	//*out << ").";
+	//printString(").");
 
-	*out << indent() << name << "(";
+	printIndent(); printString(name + "(");
 	n->visitArgList(this);
-	*out << ");\n";
+	printString(");\n");
 }
 
 // ----------------------------------------------------------
 // This function processes an element in an argument list.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(ArgListNode * n)
 {
@@ -484,7 +499,7 @@ void CodeGenerationPhase::visit(ArgListNode * n)
 	
 	if (n->hasNextArg())
 	{
-		*out << ", ";
+		printString(", ");
 		n->visitNextArg(this);
 	}
 }
@@ -493,17 +508,17 @@ void CodeGenerationPhase::visit(ArgListNode * n)
 // This function processes a double literal.
 // @n: The node representing the literal.
 //
-// Version 1.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(DoubleConstingNode * n)
 {
 	if (n->getParenNesting() > 0)
-		*out << "(";
+		printString("(");
 
-	*out << n->getLexeme();
+	printString(n->getLexeme());
 	
 	if (n->getParenNesting() > 0)
-		*out << ")";
+		printString(")");
 }
 
 // ----------------------------------------------------------
@@ -522,13 +537,13 @@ void CodeGenerationPhase::visit(AddingNode * n)
 // This function processes a not operation.
 // @n: The node representing the operation.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(NotingNode * n) 
 {
-	*out << "!( ";
+	printString("!( ");
 	n->visitOperand(this);
-	*out << " )";
+	printString(" )");
 }
 
 // ----------------------------------------------------------
@@ -538,19 +553,19 @@ void CodeGenerationPhase::visit(NotingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-bool CodeGenerationPhase::invalidBuiltInFunctionName(string name)
+bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 {
-	return name != "toString" &&
-		   name != "toAscii" &&
-		   name != "parseDouble" &&
-		   name != "asciiAt" &&
-		   name != "length" &&
-		   name != "retrieveDouble" &&
-		   name != "retrieveString" &&
-		   name != "random" &&
-		   name != "read" &&
-		   name != "elementAt" &&
-		   name != "size";
+	return name == "toString" ||
+		   name == "toAscii" ||
+		   name == "parseDouble" ||
+		   name == "asciiAt" ||
+		   name == "length" ||
+		   name == "retrieveDouble" ||
+		   name == "retrieveString" ||
+		   name == "random" ||
+		   name == "read" ||
+		   name == "elementAt" ||
+		   name == "size";
 }
 
 // ----------------------------------------------------------
@@ -560,13 +575,13 @@ bool CodeGenerationPhase::invalidBuiltInFunctionName(string name)
 //
 // Version 4.2
 // ----------------------------------------------------------
-bool CodeGenerationPhase::invalidBuiltInCommandName(string name)
+bool CodeGenerationPhase::validBuiltInCommandName(string name)
 {
-	return name != "end" &&
-		   name != "display" &&
-		   name != "openI" &&
-		   name != "openO" &&
-		   name != "write" &&
-		   name != "closeI" &&
-		   name != "closeO";
+	return name == "end" ||
+		   name == "display" ||
+		   name == "openI" ||
+		   name == "openO" ||
+		   name == "write" ||
+		   name == "closeI" ||
+		   name == "closeO";
 }
