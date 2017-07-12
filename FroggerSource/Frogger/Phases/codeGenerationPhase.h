@@ -8,7 +8,7 @@
 #include "phase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
-#include "SubPhases\includesSubPhase.h"
+#include "SubPhases\supportReqsSubPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -24,10 +24,24 @@ private:
 	int indentDepth; // the number of tabs to insert
 	string currUDFName;
 
-	void printBuiltInFunctions(IncludesSubPhase * iSub);
-	void printBuiltInCommands(IncludesSubPhase * iSub);
+	void emitUsingStatement();
+	void importIOStream();
+	void importMath();
+	void importStdLib();
+	void importTime();
+	void importFStream();
+
+	void emitSupportCode();
+	void emitArgVector();
+	void emitFileStreams();
+	void emitEmptyString();
+	void emitRoundFunction();
+	void emitRtFunction();
+
+	void printBuiltInFunctions();
+	void printBuiltInCommands();
 	void printForwardDeclarations(ProgramStruct * prog);
-	void printMainFunction(string PEFName, IncludesSubPhase * iSub);
+	void printMainFunction(string PEFName);
 
 	void printIndent() { *out << indent(); }
 	void printString(string s) { *out << s; }

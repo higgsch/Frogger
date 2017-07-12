@@ -6,7 +6,6 @@
 // that reflects the current AST.
 // -----------------------------------------------------------------
 #include "codeGenerationPhase.h"
-#include "SubPhases\includesSubPhase.h"
 #include "SubPhases\varDecSubPhase.h"
 using namespace std;
 
@@ -23,22 +22,25 @@ CodeGenerationPhase::CodeGenerationPhase()
 }
 
 // ----------------------------------------------------------
-// This function generates the pre-function code.
+// This function generates the pre-program code.
 //
 // Version 4.2
 // ----------------------------------------------------------
 void CodeGenerationPhase::printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct)
 {
 	//emit the include statements code
-	IncludesSubPhase iSub = IncludesSubPhase(out);
-	iSub.emitIncludesStatements(progAST);
-	iSub.emitSupportCode();
+	SupportReqsSubPhase * reqs = new SupportReqsSubPhase();
+	reqs->gatherRequirements(progAST);
+	delete reqs; reqs = NULL;
 
-	printBuiltInFunctions(&iSub);
-	printBuiltInCommands(&iSub);
+	emitUsingStatement();
+	emitSupportCode();
+
+	printBuiltInFunctions();
+	printBuiltInCommands();
 
 	printForwardDeclarations(progStruct);
-	printMainFunction(progStruct->PEF->UDFName, &iSub);
+	printMainFunction(progStruct->PEF->UDFName);
 }
 
 // ----------------------------------------------------------
@@ -95,19 +97,19 @@ void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printMainFunction(string PEFName, IncludesSubPhase * iSub)
+void CodeGenerationPhase::printMainFunction(string PEFName)
 {
 	printLine("int main(int argc, char* argv[])");
 	printOpenBraceLine();
 	printLine("args = vector<string>(argv + 1, argv + argc);");
 
-	if (iSub->hasRandomNode())
+	if (FUNCT_DEF::RANDOM.isNeeded)
 		printLine("srand(time(NULL)); rand();");
 
-	if (iSub->needsInputFile())
+	if (VAR_DEF::I_FILE.isNeeded)
 		printLine("in_file = ifstream();");
 
-	if (iSub->needsOutputFile())
+	if (VAR_DEF::O_FILE.isNeeded)
 		printLine("out_file = ofstream();");
 
 	printEmptyLine();
@@ -117,17 +119,181 @@ void CodeGenerationPhase::printMainFunction(string PEFName, IncludesSubPhase * i
 }
 
 // ----------------------------------------------------------
+// This function emits the using statement.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitUsingStatement()
+{
+	importIOStream();
+	importMath();
+	importStdLib();
+	importTime();
+	importFStream();
+
+	*out << IMPORT_STMT::STRING.getText() << "\n"
+		<< IMPORT_STMT::VECTOR.getText() << "\n"
+		<< IMPORT_STMT::USING.getText() << "\n\n";
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the iostream
+// library.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::importIOStream()
+{
+	if (IMPORT_STMT::IO_STREAM.isNeeded && !IMPORT_STMT::IO_STREAM.isDefined)
+	{
+		*out << IMPORT_STMT::IO_STREAM.getText() + "\n";
+		IMPORT_STMT::IO_STREAM.isDefined = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the math
+// library.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::importMath()
+{
+	if (IMPORT_STMT::MATH.isNeeded && !IMPORT_STMT::MATH.isDefined)
+	{
+		*out << IMPORT_STMT::MATH.getText() + "\n";
+		IMPORT_STMT::MATH.isDefined = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the stdlib
+// library.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::importStdLib()
+{
+	if (IMPORT_STMT::STD_LIB.isNeeded && !IMPORT_STMT::STD_LIB.isDefined)
+	{
+		*out << IMPORT_STMT::STD_LIB.getText() + "\n";
+		IMPORT_STMT::STD_LIB.isDefined = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the time
+// library.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::importTime()
+{
+	if (IMPORT_STMT::TIME.isNeeded && !IMPORT_STMT::TIME.isDefined)
+	{
+		*out << IMPORT_STMT::TIME.getText() + "\n";
+		IMPORT_STMT::TIME.isDefined = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function writes the include statment for the fstream
+// library.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::importFStream()
+{
+	if (IMPORT_STMT::F_STREAM.isNeeded && !IMPORT_STMT::F_STREAM.isDefined)
+	{
+		*out << IMPORT_STMT::F_STREAM.getText() + "\n";
+		IMPORT_STMT::F_STREAM.isDefined = true;
+	}
+}
+
+// ----------------------------------------------------------
+// This function emits the global support code (constants and
+// functions).
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitSupportCode()
+{
+	emitArgVector();
+	emitFileStreams();
+	emitEmptyString();
+
+	emitRoundFunction();
+	emitRtFunction();
+}
+
+// ----------------------------------------------------------
+// This function emits the vector of argument strings.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitArgVector()
+{
+	*out << VAR_DEF::ARGS.getText() << "\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the in_file and out_file objects.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitFileStreams()
+{
+	if (VAR_DEF::I_FILE.isNeeded)
+		*out << VAR_DEF::I_FILE.getText() << "\n";
+
+	if (VAR_DEF::O_FILE.isNeeded)
+		*out << VAR_DEF::O_FILE.getText() << "\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the emptyString constant.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitEmptyString()
+{
+	*out << VAR_DEF::EMPTY_STRING.getText() << "\n\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the round function.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitRoundFunction()
+{
+	if (FUNCT_DEF::ROUND.isNeeded)
+		*out << FUNCT_DEF::ROUND.getText() << "\n\n";
+}
+
+// ----------------------------------------------------------
+// This function emits the rt function.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitRtFunction()
+{
+	*out << FUNCT_DEF::RT.getText() << "\n\n";
+}
+
+// ----------------------------------------------------------
 // This function generates the built in functions.
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
+void CodeGenerationPhase::printBuiltInFunctions()
 {
-	if (iSub->needsToStringFunction())
+	if (FUNCT_DEF::TO_STRING.isNeeded)
 		printLine("string toString(double d) { return to_string(d); }");
-	if (iSub->needsToAsciiFunction())
+	if (FUNCT_DEF::TO_ASCII.isNeeded)
 		printLine("char toAscii(double d) { return (char) d; }");
-	if (iSub->needsParseDoubleFunction())
+	if (FUNCT_DEF::PARSE_DOUBLE.isNeeded)
 	{
 		printLine("double parseDouble(string s)"); 
 		printOpenBraceLine();
@@ -138,7 +304,7 @@ void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
 		printLine("return 0;");
 		printCloseBraceLine();
 	}
-	if (iSub->needsAsciiAtFunction())
+	if (FUNCT_DEF::ASCII_AT.isNeeded)
 	{
 		printLine("double asciiAt(string s, int loc)");
 		printOpenBraceLine();
@@ -149,9 +315,9 @@ void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
 		printLine("return s.at(loc);");
 		printCloseBraceLine();
 	}
-	if (iSub->needsLengthFunction())
+	if (FUNCT_DEF::LENGTH.isNeeded)
 		printLine("double length(string s) { return (emptyString + s).size(); }");
-	if (iSub->needsRetrieveDoubleFunction())
+	if (FUNCT_DEF::RETRIEVE_DOUBLE.isNeeded)
 	{
 		printLine("double retrieveDouble()");
 		printOpenBraceLine();
@@ -160,7 +326,7 @@ void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
 		printLine("return d;");
 		printCloseBraceLine();
 	}
-	if (iSub->needsRetrieveStringFunction())
+	if (FUNCT_DEF::RETRIEVE_STRING.isNeeded)
 	{
 		printLine("string retrieveString()");
 		printOpenBraceLine();
@@ -169,11 +335,11 @@ void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
 		printLine("return s;");
 		printCloseBraceLine();
 	}
-	if (iSub->needsRandomFunction())
+	if (FUNCT_DEF::RANDOM.isNeeded)
 		printLine("double random() { return ((double) rand() / (RAND_MAX)); }");
-	if (iSub->needsReadFunction())
+	if (FUNCT_DEF::READ.isNeeded)
 		printLine("char read() { return (char)(in_file.get()); }");
-	if (iSub->needsElementAtFunction())
+	if (FUNCT_DEF::ELEMENT_AT.isNeeded)
 	{
 		printLine("string elementAt(vector<string> v, int index)");
 		printOpenBraceLine();
@@ -184,7 +350,7 @@ void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
 		printLine("return v[index];");
 		printCloseBraceLine();
 	}
-	if (iSub->needsSizeFunction())
+	if (FUNCT_DEF::SIZE.isNeeded)
 		printLine("double size(vector<string> v) { return v.size(); }");
 }
 
@@ -193,22 +359,22 @@ void CodeGenerationPhase::printBuiltInFunctions(IncludesSubPhase * iSub)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printBuiltInCommands(IncludesSubPhase * iSub)
+void CodeGenerationPhase::printBuiltInCommands()
 {
-	if (iSub->needsDisplayCommand())
+	if (FUNCT_DEF::DISPLAY.isNeeded)
 	{
 		printLine("void display(double d) { cout << d; }");
 		printLine("void display(string s) { cout << s; }");
 	}
-	if (iSub->needsOpenICommand())
+	if (FUNCT_DEF::OPEN_I.isNeeded)
 		printLine("void openI(string s) { in_file.open(s); }");
-	if (iSub->needsOpenOCommand())
+	if (FUNCT_DEF::OPEN_O.isNeeded)
 		printLine("void openO(string s) { out_file.open(s); }");
-	if (iSub->needsWriteCommand())
+	if (FUNCT_DEF::WRITE.isNeeded)
 		printLine("void write(string s) { out_file << s; }");
-	if (iSub->needsCloseICommand())
+	if (FUNCT_DEF::CLOSE_I.isNeeded)
 		printLine("void closeI() { in_file.close(); }");
-	if (iSub->needsCloseOCommand())
+	if (FUNCT_DEF::CLOSE_O.isNeeded)
 		printLine("void closeO() { out_file.close(); }");
 }
 
