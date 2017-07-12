@@ -7,6 +7,7 @@
 // -----------------------------------------------------------------
 #include "codeGenerationPhase.h"
 #include "SubPhases\varDecSubPhase.h"
+#include "SubPhases\supportReqsSubPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -99,18 +100,13 @@ void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 // ----------------------------------------------------------
 void CodeGenerationPhase::printMainFunction(string PEFName)
 {
-	printLine("int main(int argc, char* argv[])");
+	printSupportText(STATIC_SUPPORT::MAIN_DEC);
 	printOpenBraceLine();
-	printLine("args = vector<string>(argv + 1, argv + argc);");
 
-	if (FUNCT_DEF::RANDOM.isNeeded)
-		printLine("srand(time(NULL)); rand();");
-
-	if (VAR_DEF::I_FILE.isNeeded)
-		printLine("in_file = ifstream();");
-
-	if (VAR_DEF::O_FILE.isNeeded)
-		printLine("out_file = ofstream();");
+	printSupportText(INIT_STMT::ARGS);
+	printSupportText(INIT_STMT::RANDOM);
+	printSupportText(INIT_STMT::I_FILE);
+	printSupportText(INIT_STMT::O_FILE);
 
 	printEmptyLine();
 	printLine(PEFName + "();");
@@ -125,89 +121,29 @@ void CodeGenerationPhase::printMainFunction(string PEFName)
 // ----------------------------------------------------------
 void CodeGenerationPhase::emitUsingStatement()
 {
-	importIOStream();
-	importMath();
-	importStdLib();
-	importTime();
-	importFStream();
-
-	*out << IMPORT_STMT::STRING.getText() << "\n"
-		<< IMPORT_STMT::VECTOR.getText() << "\n"
-		<< IMPORT_STMT::USING.getText() << "\n\n";
+	printSupportText(IMPORT_STMT::IO_STREAM);
+	printSupportText(IMPORT_STMT::MATH);
+	printSupportText(IMPORT_STMT::STD_LIB);
+	printSupportText(IMPORT_STMT::TIME);
+	printSupportText(IMPORT_STMT::F_STREAM);
+	printSupportText(IMPORT_STMT::STRING);
+	printSupportText(IMPORT_STMT::VECTOR);
+	printSupportText(STATIC_SUPPORT::USING);
+	printEmptyLine();
 }
 
 // ----------------------------------------------------------
-// This function writes the include statment for the iostream
-// library.
+// This function writes the given support text.
+// @text: The support text to write.
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::importIOStream()
+void CodeGenerationPhase::printSupportText(SUPPORT_TEXT& text)
 {
-	if (IMPORT_STMT::IO_STREAM.isNeeded && !IMPORT_STMT::IO_STREAM.isDefined)
+	if (text.isNeeded && !text.isDefined)
 	{
-		*out << IMPORT_STMT::IO_STREAM.getText() + "\n";
-		IMPORT_STMT::IO_STREAM.isDefined = true;
-	}
-}
-
-// ----------------------------------------------------------
-// This function writes the include statment for the math
-// library.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::importMath()
-{
-	if (IMPORT_STMT::MATH.isNeeded && !IMPORT_STMT::MATH.isDefined)
-	{
-		*out << IMPORT_STMT::MATH.getText() + "\n";
-		IMPORT_STMT::MATH.isDefined = true;
-	}
-}
-
-// ----------------------------------------------------------
-// This function writes the include statment for the stdlib
-// library.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::importStdLib()
-{
-	if (IMPORT_STMT::STD_LIB.isNeeded && !IMPORT_STMT::STD_LIB.isDefined)
-	{
-		*out << IMPORT_STMT::STD_LIB.getText() + "\n";
-		IMPORT_STMT::STD_LIB.isDefined = true;
-	}
-}
-
-// ----------------------------------------------------------
-// This function writes the include statment for the time
-// library.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::importTime()
-{
-	if (IMPORT_STMT::TIME.isNeeded && !IMPORT_STMT::TIME.isDefined)
-	{
-		*out << IMPORT_STMT::TIME.getText() + "\n";
-		IMPORT_STMT::TIME.isDefined = true;
-	}
-}
-
-// ----------------------------------------------------------
-// This function writes the include statment for the fstream
-// library.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::importFStream()
-{
-	if (IMPORT_STMT::F_STREAM.isNeeded && !IMPORT_STMT::F_STREAM.isDefined)
-	{
-		*out << IMPORT_STMT::F_STREAM.getText() + "\n";
-		IMPORT_STMT::F_STREAM.isDefined = true;
+		printLine(text.getText());
+		text.isDefined = true;
 	}
 }
 
@@ -219,67 +155,16 @@ void CodeGenerationPhase::importFStream()
 // ----------------------------------------------------------
 void CodeGenerationPhase::emitSupportCode()
 {
-	emitArgVector();
-	emitFileStreams();
-	emitEmptyString();
+	printSupportText(VAR_DEF::ARGS);
+	printSupportText(VAR_DEF::I_FILE);
+	printSupportText(VAR_DEF::O_FILE);
+	printSupportText(VAR_DEF::EMPTY_STRING);
+	printEmptyLine();
 
-	emitRoundFunction();
-	emitRtFunction();
-}
-
-// ----------------------------------------------------------
-// This function emits the vector of argument strings.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitArgVector()
-{
-	*out << VAR_DEF::ARGS.getText() << "\n";
-}
-
-// ----------------------------------------------------------
-// This function emits the in_file and out_file objects.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitFileStreams()
-{
-	if (VAR_DEF::I_FILE.isNeeded)
-		*out << VAR_DEF::I_FILE.getText() << "\n";
-
-	if (VAR_DEF::O_FILE.isNeeded)
-		*out << VAR_DEF::O_FILE.getText() << "\n";
-}
-
-// ----------------------------------------------------------
-// This function emits the emptyString constant.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitEmptyString()
-{
-	*out << VAR_DEF::EMPTY_STRING.getText() << "\n\n";
-}
-
-// ----------------------------------------------------------
-// This function emits the round function.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitRoundFunction()
-{
-	if (FUNCT_DEF::ROUND.isNeeded)
-		*out << FUNCT_DEF::ROUND.getText() << "\n\n";
-}
-
-// ----------------------------------------------------------
-// This function emits the rt function.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitRtFunction()
-{
-	*out << FUNCT_DEF::RT.getText() << "\n\n";
+	printSupportText(FUNCT_DEF::ROUND);
+	printEmptyLine();
+	printSupportText(FUNCT_DEF::RT);
+	printEmptyLine();
 }
 
 // ----------------------------------------------------------
@@ -289,69 +174,17 @@ void CodeGenerationPhase::emitRtFunction()
 // ----------------------------------------------------------
 void CodeGenerationPhase::printBuiltInFunctions()
 {
-	if (FUNCT_DEF::TO_STRING.isNeeded)
-		printLine("string toString(double d) { return to_string(d); }");
-	if (FUNCT_DEF::TO_ASCII.isNeeded)
-		printLine("char toAscii(double d) { return (char) d; }");
-	if (FUNCT_DEF::PARSE_DOUBLE.isNeeded)
-	{
-		printLine("double parseDouble(string s)"); 
-		printOpenBraceLine();
-		printLine("if (isdigit(s[0]) || s[0] == '-')");
-		printOpenBraceLine();
-		printLine("return stod(s, NULL);"); 
-		printCloseBraceLine();
-		printLine("return 0;");
-		printCloseBraceLine();
-	}
-	if (FUNCT_DEF::ASCII_AT.isNeeded)
-	{
-		printLine("double asciiAt(string s, int loc)");
-		printOpenBraceLine();
-		printLine("if (loc < 0 || loc >= s.length())");
-		printOpenBraceLine();
-		printLine("return 0;");
-		printCloseBraceLine();
-		printLine("return s.at(loc);");
-		printCloseBraceLine();
-	}
-	if (FUNCT_DEF::LENGTH.isNeeded)
-		printLine("double length(string s) { return (emptyString + s).size(); }");
-	if (FUNCT_DEF::RETRIEVE_DOUBLE.isNeeded)
-	{
-		printLine("double retrieveDouble()");
-		printOpenBraceLine();
-		printLine("double d = 0;");
-		printLine("cin >> d;");
-		printLine("return d;");
-		printCloseBraceLine();
-	}
-	if (FUNCT_DEF::RETRIEVE_STRING.isNeeded)
-	{
-		printLine("string retrieveString()");
-		printOpenBraceLine();
-		printLine("string s = "";");
-		printLine("cin >> s;");
-		printLine("return s;");
-		printCloseBraceLine();
-	}
-	if (FUNCT_DEF::RANDOM.isNeeded)
-		printLine("double random() { return ((double) rand() / (RAND_MAX)); }");
-	if (FUNCT_DEF::READ.isNeeded)
-		printLine("char read() { return (char)(in_file.get()); }");
-	if (FUNCT_DEF::ELEMENT_AT.isNeeded)
-	{
-		printLine("string elementAt(vector<string> v, int index)");
-		printOpenBraceLine();
-		printLine("if (index < 0 || index >= v.size())");
-		printOpenBraceLine();
-		printLine("return \"\";");
-		printCloseBraceLine();
-		printLine("return v[index];");
-		printCloseBraceLine();
-	}
-	if (FUNCT_DEF::SIZE.isNeeded)
-		printLine("double size(vector<string> v) { return v.size(); }");
+	printSupportText(FUNCT_DEF::TO_STRING);
+	printSupportText(FUNCT_DEF::TO_ASCII);
+	printSupportText(FUNCT_DEF::PARSE_DOUBLE);
+	printSupportText(FUNCT_DEF::ASCII_AT);
+	printSupportText(FUNCT_DEF::LENGTH);
+	printSupportText(FUNCT_DEF::RETRIEVE_DOUBLE);
+	printSupportText(FUNCT_DEF::RETRIEVE_STRING);
+	printSupportText(FUNCT_DEF::RANDOM);
+	printSupportText(FUNCT_DEF::READ);
+	printSupportText(FUNCT_DEF::ELEMENT_AT);
+	printSupportText(FUNCT_DEF::SIZE);
 }
 
 // ----------------------------------------------------------
@@ -361,21 +194,13 @@ void CodeGenerationPhase::printBuiltInFunctions()
 // ----------------------------------------------------------
 void CodeGenerationPhase::printBuiltInCommands()
 {
-	if (FUNCT_DEF::DISPLAY.isNeeded)
-	{
-		printLine("void display(double d) { cout << d; }");
-		printLine("void display(string s) { cout << s; }");
-	}
-	if (FUNCT_DEF::OPEN_I.isNeeded)
-		printLine("void openI(string s) { in_file.open(s); }");
-	if (FUNCT_DEF::OPEN_O.isNeeded)
-		printLine("void openO(string s) { out_file.open(s); }");
-	if (FUNCT_DEF::WRITE.isNeeded)
-		printLine("void write(string s) { out_file << s; }");
-	if (FUNCT_DEF::CLOSE_I.isNeeded)
-		printLine("void closeI() { in_file.close(); }");
-	if (FUNCT_DEF::CLOSE_O.isNeeded)
-		printLine("void closeO() { out_file.close(); }");
+	printSupportText(FUNCT_DEF::DISPLAY_DBL);
+	printSupportText(FUNCT_DEF::DISPLAY_STR);
+	printSupportText(FUNCT_DEF::OPEN_I);
+	printSupportText(FUNCT_DEF::OPEN_O);
+	printSupportText(FUNCT_DEF::WRITE);
+	printSupportText(FUNCT_DEF::CLOSE_I);
+	printSupportText(FUNCT_DEF::CLOSE_O);
 }
 
 // ----------------------------------------------------------
@@ -414,11 +239,11 @@ string CodeGenerationPhase::typeString(DataType dt)
 	switch (dt)
 	{
 	case DT_DOUBLE:
-		return "double";
+		return DATATYPE_TEXT::DOUBLE.getText();
 	case DT_STRING:
-		return "string";
+		return DATATYPE_TEXT::STRING.getText();
 	case DT_NULL:
-		return "void";
+		return DATATYPE_TEXT::VOID.getText();
 	default:
 		return "UNDEFINED TYPE";
 	}
@@ -553,8 +378,8 @@ void CodeGenerationPhase::visit(IdRefNode * n)
 
 	string id = n->getLexeme();
 
-	if (id == "args")
-		printString("args");
+	if (id == SYMBOL_TEXT::ARGS.getText())
+		printString(SYMBOL_TEXT::ARGS.getText());
 	else
 		//prepend identifiers to avoid c++ keyword conflicts
 		printString("_" + n->getLexeme());
@@ -635,7 +460,7 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 		if (!validBuiltInCommandName(name))
 			semantic_error("Unrecognized command: " + name, n->getLineNo());
 
-		if (name == "end")
+		if (name == CommandTable::CMD_END_NULL->name)
 		{
 			printIndent(); printString("return ");
 			n->visitArgList(this);
@@ -695,7 +520,8 @@ void CodeGenerationPhase::visit(DoubleConstingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(AddingNode * n)
 {
-	string pretext = (n->getDataType() == DT_STRING) ? "emptyString + " : "";
+	string pretext = (n->getDataType() == DT_STRING) ? 
+		SYMBOL_TEXT::EMPTY_STRING.getText() + " + " : "";
 	processBinaryOpNode(n, pretext, " + ", "");
 }
 
@@ -721,17 +547,17 @@ void CodeGenerationPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 {
-	return name == "toString" ||
-		   name == "toAscii" ||
-		   name == "parseDouble" ||
-		   name == "asciiAt" ||
-		   name == "length" ||
-		   name == "retrieveDouble" ||
-		   name == "retrieveString" ||
-		   name == "random" ||
-		   name == "read" ||
-		   name == "elementAt" ||
-		   name == "size";
+	return name == FunctionTable::FUNCT_TO_STRING->name ||
+		   name == FunctionTable::FUNCT_TO_ASCII->name ||
+		   name == FunctionTable::FUNCT_PARSE_DOUBLE->name ||
+		   name == FunctionTable::FUNCT_ASCII_AT->name ||
+		   name == FunctionTable::FUNCT_LENGTH->name ||
+		   name == FunctionTable::FUNCT_RETRIEVE_DOUBLE->name ||
+		   name == FunctionTable::FUNCT_RETRIEVE_STRING->name ||
+		   name == FunctionTable::FUNCT_RANDOM->name ||
+		   name == FunctionTable::FUNCT_READ->name ||
+		   name == FunctionTable::FUNCT_ELEMENT_AT->name ||
+		   name == FunctionTable::FUNCT_SIZE->name;
 }
 
 // ----------------------------------------------------------
@@ -743,11 +569,11 @@ bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 // ----------------------------------------------------------
 bool CodeGenerationPhase::validBuiltInCommandName(string name)
 {
-	return name == "end" ||
-		   name == "display" ||
-		   name == "openI" ||
-		   name == "openO" ||
-		   name == "write" ||
-		   name == "closeI" ||
-		   name == "closeO";
+	return name == CommandTable::CMD_END_NULL->name ||
+		   name == CommandTable::CMD_DISPLAY_STR->name ||
+		   name == CommandTable::CMD_OPEN_INPUT->name ||
+		   name == CommandTable::CMD_OPEN_OUTPUT->name ||
+		   name == CommandTable::CMD_WRITE->name ||
+		   name == CommandTable::CMD_CLOSE_INPUT->name ||
+		   name == CommandTable::CMD_CLOSE_OUTPUT->name;
 }

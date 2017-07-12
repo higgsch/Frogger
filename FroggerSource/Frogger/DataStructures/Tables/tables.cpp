@@ -1,11 +1,12 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.2
 // -----------------------------------------------------------------
 // This program provides the SymbolTable, FunctionTable, and 
 // CommandTable.
 // -----------------------------------------------------------------
 #include "tables.h"
+#include "..\OutputText\outputText.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -221,25 +222,25 @@ DataType FunctionTable::getFunctionReturnType(Function* funct)
 	return DT_NOT_DEFINED;
 }
 
-Command* CommandTable::CMD_END_NULL		= new Command("end");
-Command* CommandTable::CMD_END_STR		= new Command("end");
-Command* CommandTable::CMD_END_DBL		= new Command("end");
-Command* CommandTable::CMD_DISPLAY_STR	= new Command("display");
-Command* CommandTable::CMD_DISPLAY_DBL	= new Command("display");
-Command* CommandTable::CMD_OPEN_INPUT	= new Command("openI");
-Command* CommandTable::CMD_CLOSE_INPUT	= new Command("closeI");
-Command* CommandTable::CMD_WRITE		= new Command("write");
-Command* CommandTable::CMD_OPEN_OUTPUT	= new Command("openO");
-Command* CommandTable::CMD_CLOSE_OUTPUT	= new Command("closeO");
+Command* CommandTable::CMD_END_NULL		= new Command(CMD_NAME::END_NULL.getText());
+Command* CommandTable::CMD_END_STR		= new Command(CMD_NAME::END_STR.getText());
+Command* CommandTable::CMD_END_DBL		= new Command(CMD_NAME::END_DBL.getText());
+Command* CommandTable::CMD_DISPLAY_STR	= new Command(CMD_NAME::DISPLAY_STR.getText());
+Command* CommandTable::CMD_DISPLAY_DBL	= new Command(CMD_NAME::DISPLAY_DBL.getText());
+Command* CommandTable::CMD_OPEN_INPUT	= new Command(CMD_NAME::OPEN_INPUT.getText());
+Command* CommandTable::CMD_CLOSE_INPUT	= new Command(CMD_NAME::CLOSE_INPUT.getText());
+Command* CommandTable::CMD_WRITE		= new Command(CMD_NAME::WRITE.getText());
+Command* CommandTable::CMD_OPEN_OUTPUT	= new Command(CMD_NAME::OPEN_OUTPUT.getText());
+Command* CommandTable::CMD_CLOSE_OUTPUT	= new Command(CMD_NAME::CLOSE_OUTPUT.getText());
 
-Function* FunctionTable::FUNCT_TO_STRING		= new Function(DT_DOUBLE, "toString", DT_STRING);
-Function* FunctionTable::FUNCT_TO_ASCII			= new Function(DT_DOUBLE, "toAscii", DT_STRING);
-Function* FunctionTable::FUNCT_PARSE_DOUBLE		= new Function(DT_STRING, "parseDouble", DT_DOUBLE);
-Function* FunctionTable::FUNCT_ASCII_AT			= new Function(DT_STRING, "asciiAt", DT_DOUBLE);
-Function* FunctionTable::FUNCT_LENGTH			= new Function(DT_STRING, "length", DT_DOUBLE);
-Function* FunctionTable::FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, "retrieveDouble", DT_DOUBLE);
-Function* FunctionTable::FUNCT_RANDOM			= new Function(DT_NULL, "random", DT_DOUBLE);
-Function* FunctionTable::FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, "retrieveString", DT_STRING);
-Function* FunctionTable::FUNCT_READ				= new Function(DT_NULL, "read", DT_STRING);
-Function* FunctionTable::FUNCT_ELEMENT_AT		= new Function(DT_ARGS, "elementAt", DT_STRING);
-Function* FunctionTable::FUNCT_SIZE				= new Function(DT_ARGS, "size", DT_DOUBLE);
+Function* FunctionTable::FUNCT_TO_STRING		= new Function(DT_DOUBLE, FUNCT_NAME::TO_STRING.getText(), DT_STRING);
+Function* FunctionTable::FUNCT_TO_ASCII			= new Function(DT_DOUBLE, FUNCT_NAME::TO_ASCII.getText(), DT_STRING);
+Function* FunctionTable::FUNCT_PARSE_DOUBLE		= new Function(DT_STRING, FUNCT_NAME::PARSE_DOUBLE.getText(), DT_DOUBLE);
+Function* FunctionTable::FUNCT_ASCII_AT			= new Function(DT_STRING, FUNCT_NAME::ASCII_AT.getText(), DT_DOUBLE);
+Function* FunctionTable::FUNCT_LENGTH			= new Function(DT_STRING, FUNCT_NAME::LENGTH.getText(), DT_DOUBLE);
+Function* FunctionTable::FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, FUNCT_NAME::RETRIEVE_DOUBLE.getText(), DT_DOUBLE);
+Function* FunctionTable::FUNCT_RANDOM			= new Function(DT_NULL, FUNCT_NAME::RANDOM.getText(), DT_DOUBLE);
+Function* FunctionTable::FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, FUNCT_NAME::RETRIEVE_STRING.getText(), DT_STRING);
+Function* FunctionTable::FUNCT_READ				= new Function(DT_NULL, FUNCT_NAME::READ.getText(), DT_STRING);
+Function* FunctionTable::FUNCT_ELEMENT_AT		= new Function(DT_ARGS, FUNCT_NAME::ELEMENT_AT.getText(), DT_STRING);
+Function* FunctionTable::FUNCT_SIZE				= new Function(DT_ARGS, FUNCT_NAME::SIZE.getText(), DT_DOUBLE);

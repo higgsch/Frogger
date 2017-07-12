@@ -27,14 +27,14 @@ public:
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }
 	void visit(IfNode * n) { n->visitAllChildren(this); }
-	void visit(IdRefNode * n){}
+	void visit(IdRefNode * n);
 	void visit(AssigningNode * n) { n->visitAllChildren(this); }
 	void visit(FunctionCallNode * n);
 	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n) { n->visitAllChildren(this); }
 	void visit(StringConstingNode * n){}
 	void visit(DoubleConstingNode * n){}
-	void visit(AddingNode * n) { n->visitAllChildren(this); }
+	void visit(AddingNode * n);
 	void visit(SubingNode * n) { n->visitAllChildren(this); }
 	void visit(MulingNode * n) { n->visitAllChildren(this); }
 	void visit(DivingNode * n) { n->visitAllChildren(this); }

@@ -8,7 +8,7 @@
 #include "phase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
-#include "SubPhases\supportReqsSubPhase.h"
+#include "..\DataStructures\OutputText\outputText.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -25,30 +25,21 @@ private:
 	string currUDFName;
 
 	void emitUsingStatement();
-	void importIOStream();
-	void importMath();
-	void importStdLib();
-	void importTime();
-	void importFStream();
-
 	void emitSupportCode();
-	void emitArgVector();
-	void emitFileStreams();
-	void emitEmptyString();
-	void emitRoundFunction();
-	void emitRtFunction();
 
 	void printBuiltInFunctions();
 	void printBuiltInCommands();
 	void printForwardDeclarations(ProgramStruct * prog);
 	void printMainFunction(string PEFName);
 
+	void printSupportText(SUPPORT_TEXT& text);
+
 	void printIndent() { *out << indent(); }
 	void printString(string s) { *out << s; }
 	void printEmptyLine() { *out << endl; }
 	void printLine(string s) { *out << indent() << s << endl; }
 	void printOpenBraceLine() { printLine("{"); indentDepth++; }
-	void printCloseBraceLine() { printLine("}"); indentDepth--; }
+	void printCloseBraceLine() { indentDepth--; printLine("}"); }
 
 	string getFunctionPrototype(UDFRecord * rec);
 	string getLabelText(int labelIndex);

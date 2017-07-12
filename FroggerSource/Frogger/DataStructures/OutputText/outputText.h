@@ -8,7 +8,7 @@ using namespace std;
 
 // set of Output types
 typedef enum output_types {
-	OUTTYPE_KEYWORD, OUTTYPE_SYMBOL, OUTTYPE_SUPPORTCODE
+	OUTTYPE_DATATYPE, OUTTYPE_SYMBOL, OUTTYPE_SUPPORTCODE
 } output_type;
 
 
@@ -30,13 +30,90 @@ public:
 	output_type getOutputType() { return type; }
 };
 
+// ----------------------------------------------------------
+// This class represents a datatype for output
+//
+// Version 4.2
+// ----------------------------------------------------------
+class DATATYPE_TEXT : public OUTPUT_TEXT
+{
+public:
+	DATATYPE_TEXT(string text) : OUTPUT_TEXT(text, OUTTYPE_DATATYPE) {}
+
+	static DATATYPE_TEXT DOUBLE;
+	static DATATYPE_TEXT STRING;
+	static DATATYPE_TEXT VOID;
+};
+
+// ----------------------------------------------------------
+// This class represents a variable name for output
+//
+// Version 4.2
+// ----------------------------------------------------------
+class SYMBOL_TEXT : public OUTPUT_TEXT
+{
+public:
+	SYMBOL_TEXT(string text) : OUTPUT_TEXT(text, OUTTYPE_SYMBOL) {}
+
+	static SYMBOL_TEXT ARGS;
+	static SYMBOL_TEXT I_FILE;
+	static SYMBOL_TEXT O_FILE;
+	static SYMBOL_TEXT EMPTY_STRING;
+};
+
+// ----------------------------------------------------------
+// This class represents a function name for output
+//
+// Version 4.2
+// ----------------------------------------------------------
+class FUNCT_NAME : public OUTPUT_TEXT
+{
+public:
+	FUNCT_NAME(string text) : OUTPUT_TEXT(text, OUTTYPE_SYMBOL) {}
+
+	static FUNCT_NAME TO_STRING;
+	static FUNCT_NAME TO_ASCII;
+	static FUNCT_NAME PARSE_DOUBLE;
+	static FUNCT_NAME ASCII_AT;
+	static FUNCT_NAME LENGTH;
+	static FUNCT_NAME RETRIEVE_DOUBLE;
+	static FUNCT_NAME RANDOM;
+	static FUNCT_NAME RETRIEVE_STRING;
+	static FUNCT_NAME READ;
+	static FUNCT_NAME ELEMENT_AT;
+	static FUNCT_NAME SIZE;
+};
+
+// ----------------------------------------------------------
+// This class represents a command name for output
+//
+// Version 4.2
+// ----------------------------------------------------------
+class CMD_NAME : public OUTPUT_TEXT
+{
+public:
+	CMD_NAME(string text) : OUTPUT_TEXT(text, OUTTYPE_SYMBOL) {}
+
+	static CMD_NAME END_NULL;
+	static CMD_NAME END_STR;
+	static CMD_NAME END_DBL;
+	static CMD_NAME DISPLAY_STR;
+	static CMD_NAME DISPLAY_DBL;
+	static CMD_NAME OPEN_INPUT;
+	static CMD_NAME CLOSE_INPUT;
+	static CMD_NAME WRITE;
+	static CMD_NAME OPEN_OUTPUT;
+	static CMD_NAME CLOSE_OUTPUT;
+};
+
 // set of Support Code Types
 typedef enum support_code_types {
-	SCT_IMPORT, SCT_VARIABLE, SCT_FUNCTION
+	SCT_IMPORT, SCT_VARIABLE, SCT_FUNCTION, SCT_INIT, SCT_STATIC
 } support_code_type;
 
 // ----------------------------------------------------------
-// This class represents a supporting piece of text for output
+// This class represents a generic supporting piece of text 
+// for output
 //
 // Version 4.2
 // ----------------------------------------------------------
@@ -57,7 +134,7 @@ public:
 };
 
 // ----------------------------------------------------------
-// This class represents a supporting piece of text for output
+// This class represents an import statement for output
 //
 // Version 4.2
 // ----------------------------------------------------------
@@ -74,12 +151,11 @@ public:
 	static IMPORT_STMT F_STREAM;
 	static IMPORT_STMT STRING;
 	static IMPORT_STMT VECTOR;
-	static IMPORT_STMT USING;
 };
 
 
 // ----------------------------------------------------------
-// This class represents a supporting piece of text for output
+// This class represents a variable definition for output
 //
 // Version 4.2
 // ----------------------------------------------------------
@@ -96,7 +172,7 @@ public:
 };
 
 // ----------------------------------------------------------
-// This class represents a supporting piece of text for output
+// This class represents a function definition for output
 //
 // Version 4.2
 // ----------------------------------------------------------
@@ -119,10 +195,44 @@ public:
 	static FUNCT_DEF READ;
 	static FUNCT_DEF ELEMENT_AT;
 	static FUNCT_DEF SIZE;
-	static FUNCT_DEF DISPLAY;
+	static FUNCT_DEF DISPLAY_DBL;
+	static FUNCT_DEF DISPLAY_STR;
 	static FUNCT_DEF OPEN_I;
 	static FUNCT_DEF OPEN_O;
 	static FUNCT_DEF WRITE;
 	static FUNCT_DEF CLOSE_I;
 	static FUNCT_DEF CLOSE_O;
+};
+
+// ----------------------------------------------------------
+// This class represents an initialization statement for output
+//
+// Version 4.2
+// ----------------------------------------------------------
+class INIT_STMT : public SUPPORT_TEXT
+{
+public:
+	INIT_STMT(string text) 
+		: SUPPORT_TEXT(text, SCT_INIT) {}
+
+	static INIT_STMT ARGS;
+	static INIT_STMT RANDOM;
+	static INIT_STMT I_FILE;
+	static INIT_STMT O_FILE;
+};
+
+// ----------------------------------------------------------
+// This class represents a piece of text that is neccessary 
+// for any output
+//
+// Version 4.2
+// ----------------------------------------------------------
+class STATIC_SUPPORT : public SUPPORT_TEXT
+{
+public:
+	STATIC_SUPPORT(string text) 
+		: SUPPORT_TEXT(text, SCT_STATIC) { isNeeded = true; }
+
+	static STATIC_SUPPORT USING;
+	static STATIC_SUPPORT MAIN_DEC;
 };
