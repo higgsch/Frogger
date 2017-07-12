@@ -5,7 +5,6 @@
 // This program represents a visitor for gathering support code reqs.
 // -----------------------------------------------------------------
 #include "supportReqsSubPhase.h"
-#include "..\..\DataStructures\Tables\tables.h"
 using namespace std;
 
 // ----------------------------------------------------------
