@@ -51,6 +51,20 @@ VAR_DEF VAR_DEF::ARGS				= VAR_DEF("vector<string> " + SYMBOL_TEXT::ARGS.getText
 VAR_DEF VAR_DEF::I_FILE				= VAR_DEF("ifstream " + SYMBOL_TEXT::I_FILE.getText() + ";");
 VAR_DEF VAR_DEF::O_FILE				= VAR_DEF("ofstream " + SYMBOL_TEXT::O_FILE.getText() + ";");
 VAR_DEF VAR_DEF::EMPTY_STRING		= VAR_DEF("const string " + SYMBOL_TEXT::EMPTY_STRING.getText() + " = \"\";");
+VAR_DEF::VAR_DEF(string text) : SUPPORT_TEXT(text, SCT_VARIABLE)
+{
+	ARGS.addDependency(&IMPORT_STMT::VECTOR);
+	ARGS.addDependency(&IMPORT_STMT::STRING);
+	ARGS.addDependency(&INIT_STMT::ARGS);
+
+	I_FILE.addDependency(&IMPORT_STMT::F_STREAM);
+	I_FILE.addDependency(&INIT_STMT::I_FILE);
+
+	O_FILE.addDependency(&IMPORT_STMT::F_STREAM);
+	O_FILE.addDependency(&INIT_STMT::O_FILE);
+
+	EMPTY_STRING.addDependency(&IMPORT_STMT::STRING);
+}
 
 FUNCT_DEF FUNCT_DEF::ROUND				= FUNCT_DEF("double round(double num) {\n\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n}");
 FUNCT_DEF FUNCT_DEF::RT					= FUNCT_DEF("double rt(double l, double r) {\n\t return pow(r, 1.0 / l);\n}");
@@ -72,6 +86,48 @@ FUNCT_DEF FUNCT_DEF::OPEN_O				= FUNCT_DEF("void " + CMD_NAME::OPEN_OUTPUT.getTe
 FUNCT_DEF FUNCT_DEF::WRITE				= FUNCT_DEF("void " + CMD_NAME::WRITE.getText() + "(string s) { " + SYMBOL_TEXT::O_FILE.getText() + " << s; }");
 FUNCT_DEF FUNCT_DEF::CLOSE_I			= FUNCT_DEF("void " + CMD_NAME::CLOSE_INPUT.getText() + "() { " + SYMBOL_TEXT::I_FILE.getText() + ".close(); }");
 FUNCT_DEF FUNCT_DEF::CLOSE_O			= FUNCT_DEF("void " + CMD_NAME::CLOSE_OUTPUT.getText() + "() { " + SYMBOL_TEXT::O_FILE.getText() + ".close(); }");
+FUNCT_DEF::FUNCT_DEF(string text) : SUPPORT_TEXT(text, SCT_FUNCTION)
+{
+	ROUND.addDependency(&IMPORT_STMT::MATH);
+	RT.addDependency(&IMPORT_STMT::MATH);
+
+	//TO_ASCII has no dependencies
+
+	TO_STRING.addDependency(&IMPORT_STMT::STRING);
+	PARSE_DOUBLE.addDependency(&IMPORT_STMT::STRING);
+	ASCII_AT.addDependency(&IMPORT_STMT::STRING);
+	LENGTH.addDependency(&IMPORT_STMT::STRING);
+
+	RETRIEVE_DOUBLE.addDependency(&IMPORT_STMT::IO_STREAM);
+	RETRIEVE_STRING.addDependency(&IMPORT_STMT::IO_STREAM);
+	RETRIEVE_STRING.addDependency(&IMPORT_STMT::STRING);
+
+	RANDOM.addDependency(&IMPORT_STMT::STD_LIB);
+	RANDOM.addDependency(&IMPORT_STMT::TIME);
+	RANDOM.addDependency(&INIT_STMT::RANDOM);
+
+	READ.addDependency(&VAR_DEF::I_FILE);
+
+	ELEMENT_AT.addDependency(&IMPORT_STMT::VECTOR);
+	ELEMENT_AT.addDependency(&IMPORT_STMT::STRING);
+	SIZE.addDependency(&IMPORT_STMT::VECTOR);
+	SIZE.addDependency(&IMPORT_STMT::STRING);
+
+	DISPLAY_DBL.addDependency(&IMPORT_STMT::IO_STREAM);
+	DISPLAY_STR.addDependency(&IMPORT_STMT::IO_STREAM);
+	DISPLAY_STR.addDependency(&IMPORT_STMT::STRING);
+
+	OPEN_I.addDependency(&IMPORT_STMT::STRING);
+	OPEN_I.addDependency(&VAR_DEF::I_FILE);
+	OPEN_O.addDependency(&IMPORT_STMT::STRING);
+	OPEN_O.addDependency(&VAR_DEF::O_FILE);
+
+	WRITE.addDependency(&IMPORT_STMT::STRING);
+	WRITE.addDependency(&VAR_DEF::O_FILE);
+
+	CLOSE_I.addDependency(&VAR_DEF::I_FILE);
+	CLOSE_O.addDependency(&VAR_DEF::O_FILE);
+}
 
 INIT_STMT INIT_STMT::ARGS			= INIT_STMT(SYMBOL_TEXT::ARGS.getText() + " = vector<string>(argv + 1, argv + argc);");
 INIT_STMT INIT_STMT::RANDOM			= INIT_STMT("srand(time(NULL)); rand();");

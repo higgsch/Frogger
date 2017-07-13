@@ -4,6 +4,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 using namespace std;
 
 // set of Output types
@@ -120,10 +121,22 @@ typedef enum support_code_types {
 class SUPPORT_TEXT : public OUTPUT_TEXT
 {
 private:
+	class DependencyList : vector<SUPPORT_TEXT *>
+	{
+	public:
+		void add(SUPPORT_TEXT* dep) { push_back(dep); }
+		void setAllAsNeeded()
+		{
+			for (unsigned i = 0; i < size(); i++)
+				at(i)->needed();
+		}
+	};
+
 	support_code_type type;
+	DependencyList dependencies;
+	bool isNeeded;
 
 public:
-	bool isNeeded;
 	bool isDefined;
 
 	SUPPORT_TEXT(string text, support_code_type type) 
@@ -131,6 +144,14 @@ public:
 		type(type), isNeeded(false), isDefined(false) {}
 
 	support_code_type getSupportCodeType() { return type; }
+
+	void addDependency(SUPPORT_TEXT* dep) { dependencies.add(dep); }
+	void needed()
+	{
+		isNeeded = true;
+		dependencies.setAllAsNeeded();
+	}
+	bool isNeeded() { return isNeeded; }
 };
 
 // ----------------------------------------------------------
@@ -162,8 +183,7 @@ public:
 class VAR_DEF : public SUPPORT_TEXT
 {
 public:
-	VAR_DEF(string text) 
-		: SUPPORT_TEXT(text, SCT_FUNCTION) {}
+	VAR_DEF(string text);
 
 	static VAR_DEF ARGS;
 	static VAR_DEF I_FILE;
@@ -179,8 +199,7 @@ public:
 class FUNCT_DEF : public SUPPORT_TEXT
 {
 public:
-	FUNCT_DEF(string text) 
-		: SUPPORT_TEXT(text, SCT_FUNCTION) {}
+	FUNCT_DEF(string text);
 
 	static FUNCT_DEF ROUND;
 	static FUNCT_DEF RT;
@@ -212,8 +231,7 @@ public:
 class INIT_STMT : public SUPPORT_TEXT
 {
 public:
-	INIT_STMT(string text) 
-		: SUPPORT_TEXT(text, SCT_INIT) {}
+	INIT_STMT(string text) : SUPPORT_TEXT(text, SCT_INIT) {}
 
 	static INIT_STMT ARGS;
 	static INIT_STMT RANDOM;
@@ -231,7 +249,7 @@ class STATIC_SUPPORT : public SUPPORT_TEXT
 {
 public:
 	STATIC_SUPPORT(string text) 
-		: SUPPORT_TEXT(text, SCT_STATIC) { isNeeded = true; }
+		: SUPPORT_TEXT(text, SCT_STATIC) { isNeeded(); }
 
 	static STATIC_SUPPORT USING;
 	static STATIC_SUPPORT MAIN_DEC;

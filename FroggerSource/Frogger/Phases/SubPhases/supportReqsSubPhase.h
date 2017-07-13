@@ -18,8 +18,6 @@ using namespace std;
 // ----------------------------------------------------------
 class SupportReqsSubPhase : public Phase
 {
-private:
-	void setAsNeeded(SUPPORT_TEXT& text) { text.isNeeded = true; }
 
 public:
 	void gatherRequirements(ProgramAST * progAST);
