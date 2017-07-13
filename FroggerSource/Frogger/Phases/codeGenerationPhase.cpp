@@ -50,7 +50,6 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 	printLine(getFunctionPrototype(rec));
 	printOpenBraceLine();
 
-	localizeSymbolTable(UDF->symbols, rec);
 	emitSymbolTable(UDF->symbols);
 
 	printEmptyLine();
@@ -180,36 +179,6 @@ void CodeGenerationPhase::emitSymbolTable(SymbolTable * symbols)
 			printLine(DATATYPE_TEXT::STRING.getText() + " _" + s->id + " = \"\";");
 		else
 			printLine("Not_Defined _" + s->id + " = NULL;");
-	}
-}
-
-// ----------------------------------------------------------
-// This function marks symbols in the symbol table as local
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::localizeSymbolTable(SymbolTable *symbols, UDFRecord *currRec)
-{
-	for (int i = 0; i < symbols->size(); i++)
-	{
-		Symbol* s = (*symbols)[i];
-		s->isLocal = true;
-
-		if (s->id == SYMBOL_TEXT::ARGS.getText())
-		{
-			s->isLocal = false;
-			continue;
-		}
-
-		for (int j = 0; j < currRec->args->size(); j++)
-		{
-			string argId = currRec->args->at(j)->name;
-			if (s->id == argId)
-			{
-				s->isLocal = false;
-				break;
-			}
-		}
 	}
 }
 

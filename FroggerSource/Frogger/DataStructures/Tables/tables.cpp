@@ -71,16 +71,20 @@ bool FunctionRecord::isAddable()
 // the argument list in the given UDFRecord.
 // @rec: The UDFRecord to copy symbols from.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 SymbolTable::SymbolTable(UDFRecord * rec)
 {
-	add(new SymbolRecord(new Symbol("args",DT_ARGS)));
+	Symbol* argsSym = new Symbol(SYMBOL_TEXT::ARGS.getText(),DT_ARGS);
+	argsSym->isLocal = false;
+	add(new SymbolRecord(argsSym));
 	int index = 0;
 	while (index < rec->args->size())
 	{
 		argPair * pair = (*(rec->args))[index];
-		add(new SymbolRecord(new Symbol(pair->name, pair->type)));
+		Symbol * sym = new Symbol(pair->name, pair->type);
+		sym->isLocal = false;
+		add(new SymbolRecord(sym));
 		index++;
 	}
 }
