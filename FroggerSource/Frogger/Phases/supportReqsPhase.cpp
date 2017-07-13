@@ -4,7 +4,7 @@
 // -----------------------------------------------------------------
 // This program represents a visitor for gathering support code reqs.
 // -----------------------------------------------------------------
-#include "supportReqsSubPhase.h"
+#include "supportReqsPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -13,7 +13,7 @@ using namespace std;
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::gatherRequirements(ProgramAST * ast)
+void SupportReqsPhase::gatherRequirements(ProgramAST * ast)
 {
 	ast->getPEFNode()->accept(this);
 
@@ -28,7 +28,7 @@ void SupportReqsSubPhase::gatherRequirements(ProgramAST * ast)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(IdRefNode * n)
+void SupportReqsPhase::visit(IdRefNode * n)
 {
 	if (n->getLexeme() == SYMBOL_TEXT::ARGS.getText())
 		VAR_DEF::ARGS.needed();
@@ -40,7 +40,7 @@ void SupportReqsSubPhase::visit(IdRefNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(FunctionCallNode * n)
+void SupportReqsPhase::visit(FunctionCallNode * n)
 {
 	n->visitAllChildren(this);
 
@@ -85,7 +85,7 @@ void SupportReqsSubPhase::visit(FunctionCallNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(CommandCallNode * n)
+void SupportReqsPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 
@@ -119,7 +119,7 @@ void SupportReqsSubPhase::visit(CommandCallNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(AddingNode * n)	
+void SupportReqsPhase::visit(AddingNode * n)	
 { 
 	n->visitAllChildren(this); 
 
@@ -133,7 +133,7 @@ void SupportReqsSubPhase::visit(AddingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(ModDivingNode * n)		
+void SupportReqsPhase::visit(ModDivingNode * n)		
 {	
 	n->visitAllChildren(this);
 
@@ -147,7 +147,7 @@ void SupportReqsSubPhase::visit(ModDivingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(IDivingNode * n)		
+void SupportReqsPhase::visit(IDivingNode * n)		
 {
 	n->visitAllChildren(this);
 
@@ -161,7 +161,7 @@ void SupportReqsSubPhase::visit(IDivingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(RootingNode * n)		
+void SupportReqsPhase::visit(RootingNode * n)		
 {
 	n->visitAllChildren(this);
 
@@ -175,7 +175,7 @@ void SupportReqsSubPhase::visit(RootingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsSubPhase::visit(ExpingNode * n)		
+void SupportReqsPhase::visit(ExpingNode * n)		
 {
 	n->visitAllChildren(this);
 

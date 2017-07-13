@@ -18,13 +18,15 @@ bool quietMode;
 // It can be used to compile a Frogger Program Entry Function 
 // File or Frogger Project Folder to c++ output.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class FroggerC
 {
 private:
 	ProgramAST progAST;
 	ProgramStruct progStruct;
+
+	void computeRequiredSupportCode(ProgramAST * progAST);
 
 	void emitInputFileCode(string outFile);
 	void emitInputProjectCode(string outFile);

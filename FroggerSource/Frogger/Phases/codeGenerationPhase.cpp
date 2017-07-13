@@ -6,7 +6,6 @@
 // that reflects the current AST.
 // -----------------------------------------------------------------
 #include "codeGenerationPhase.h"
-#include "SubPhases\supportReqsSubPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -28,11 +27,6 @@ CodeGenerationPhase::CodeGenerationPhase()
 // ----------------------------------------------------------
 void CodeGenerationPhase::printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct)
 {
-	//emit the include statements code
-	SupportReqsSubPhase * reqs = new SupportReqsSubPhase();
-	reqs->gatherRequirements(progAST);
-	delete reqs; reqs = NULL;
-
 	emitUsingStatement();
 	emitSupportCode();
 

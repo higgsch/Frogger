@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.2
 // -----------------------------------------------------------------
 // This program compiles a Frogger source to c++ output.
 // -----------------------------------------------------------------
@@ -17,7 +17,7 @@ using namespace std;
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void FroggerC::compileInputFile(string inFile, string outFile)
 {
@@ -33,6 +33,8 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 
 	FgrFunctionC funcComp;
 	progAST.PEF = funcComp.compileFunctionToAST(inFile, new FunctionTable(), progStruct.PEF);
+
+	computeRequiredSupportCode(&progAST);
 	
 	emitInputFileCode(outFile);
 
@@ -44,7 +46,7 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 // @inProject: The PF path.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void FroggerC::compileInputProject(string projectDir, string projectName, string outFile)
 {
@@ -93,10 +95,24 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 		index++;
 	}
 
+	computeRequiredSupportCode(&progAST);
+
 	//emit project code
 	emitInputProjectCode(outFile);
 
 	cout << "Program successfully compiled" << endl;
+}
+
+// ----------------------------------------------------------
+// This function drives support code requirements checking.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void FroggerC::computeRequiredSupportCode(ProgramAST * progAST)
+{
+	SupportReqsPhase * reqs = new SupportReqsPhase();
+	reqs->gatherRequirements(progAST);
+	delete reqs;
 }
 
 // ----------------------------------------------------------

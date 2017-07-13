@@ -8,6 +8,7 @@
 #include "summationPhase.h"
 #include "stringConversionPhase.h"
 #include "dataTypingPhase.h"
+#include "supportReqsPhase.h"
 #include "codeGenerationPhase.h"
 
 #include "printingPhase.h"

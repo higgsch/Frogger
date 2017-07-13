@@ -1,22 +1,22 @@
 // -----------------------------------------------------------------
-// This is the header for the SupportReqsSubPhase class.
+// This is the header for the SupportReqsPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
 #include <iostream>
-#include "..\phase.h"
-#include "..\..\DataStructures\Nodes\nodes.h"
-#include "..\..\DataStructures\Tables\tables.h"
-#include "..\..\DataStructures\OutputText\outputText.h"
+#include "phase.h"
+#include "..\DataStructures\Nodes\nodes.h"
+#include "..\DataStructures\Tables\tables.h"
+#include "..\DataStructures\OutputText\outputText.h"
 using namespace std;
 
 // ----------------------------------------------------------
 // This class represents a visitor for gathering support code
-// requirements as a subphase of the CodeGenerationPhase.
+// requirements.
 //
 // Version 4.2
 // ----------------------------------------------------------
-class SupportReqsSubPhase : public Phase
+class SupportReqsPhase : public Phase
 {
 
 public:
