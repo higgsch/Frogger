@@ -17,6 +17,7 @@ struct Symbol
 {
 	string id;
 	DataType type;
+	bool isLocal; //flag for a symbol defined within a user-defined function
 
 	Symbol(string i_id, DataType i_type) { id = i_id; type = i_type;}
 	bool equals(Symbol* s) { return id == s->id; }

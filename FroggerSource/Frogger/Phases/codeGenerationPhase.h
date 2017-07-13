@@ -26,6 +26,8 @@ private:
 
 	void emitUsingStatement();
 	void emitSupportCode();
+	void emitSymbolTable(SymbolTable * symbols);
+	void localizeSymbolTable(SymbolTable * symbols, UDFRecord * currRec);
 
 	void printBuiltInFunctions();
 	void printBuiltInCommands();

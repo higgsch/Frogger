@@ -6,7 +6,6 @@
 // that reflects the current AST.
 // -----------------------------------------------------------------
 #include "codeGenerationPhase.h"
-#include "SubPhases\varDecSubPhase.h"
 #include "SubPhases\supportReqsSubPhase.h"
 using namespace std;
 
@@ -57,11 +56,8 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 	printLine(getFunctionPrototype(rec));
 	printOpenBraceLine();
 
-	//emit the variable declarations
-	VarDecSubPhase * sub = new VarDecSubPhase(out, indentDepth, UDF->symbols, rec);
-	UDF->root->accept(sub);
-	sub->emitSymbolTable();
-	delete sub; sub = NULL;
+	localizeSymbolTable(UDF->symbols, rec);
+	emitSymbolTable(UDF->symbols);
 
 	printEmptyLine();
 	printEmptyLine();
@@ -165,6 +161,62 @@ void CodeGenerationPhase::emitSupportCode()
 	printEmptyLine();
 	printSupportText(FUNCT_DEF::RT);
 	printEmptyLine();
+}
+
+// ----------------------------------------------------------
+// This function adds declarations for each symbol in the 
+// given symbol table.
+// @symbols: The SymbolTable to emit.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::emitSymbolTable(SymbolTable * symbols)
+{
+	for (int i = 0; i < symbols->size(); i++)
+	{
+		Symbol* s = (*symbols)[i];
+
+		if (!s->isLocal)
+			continue;
+		
+		//emit variable declaration and initialization
+		if (s->type == DT_DOUBLE)
+			printLine(DATATYPE_TEXT::DOUBLE.getText() + " _" + s->id + " = 0;");
+		else if (s->type == DT_STRING)
+			printLine(DATATYPE_TEXT::STRING.getText() + " _" + s->id + " = \"\";");
+		else
+			printLine("Not_Defined _" + s->id + " = NULL;");
+	}
+}
+
+// ----------------------------------------------------------
+// This function marks symbols in the symbol table as local
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::localizeSymbolTable(SymbolTable *symbols, UDFRecord *currRec)
+{
+	for (int i = 0; i < symbols->size(); i++)
+	{
+		Symbol* s = (*symbols)[i];
+		s->isLocal = true;
+
+		if (s->id == SYMBOL_TEXT::ARGS.getText())
+		{
+			s->isLocal = false;
+			continue;
+		}
+
+		for (int j = 0; j < currRec->args->size(); j++)
+		{
+			string argId = currRec->args->at(j)->name;
+			if (s->id == argId)
+			{
+				s->isLocal = false;
+				break;
+			}
+		}
+	}
 }
 
 // ----------------------------------------------------------
