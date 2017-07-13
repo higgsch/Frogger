@@ -83,9 +83,9 @@ void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
 {
 	printLine(getFunctionPrototype(prog->PEF) + ";");
 
-	for (int index = 0; index < prog->UDFs->size(); index++)
+	for (int index = 0; index < prog->getNumberOfUDFs(); index++)
 	{
-		UDFRecord * currFunct = (*(prog->UDFs))[index];
+		UDFRecord * currFunct = prog->getUDF(index);
 		printLine(getFunctionPrototype(currFunct) + ";");
 	}
 
@@ -140,7 +140,7 @@ void CodeGenerationPhase::emitUsingStatement()
 // ----------------------------------------------------------
 void CodeGenerationPhase::printSupportText(SUPPORT_TEXT& text)
 {
-	if (text.isNeeded && !text.isDefined)
+	if (text.isNeeded() && !text.isDefined)
 	{
 		printLine(text.getText());
 		text.isDefined = true;

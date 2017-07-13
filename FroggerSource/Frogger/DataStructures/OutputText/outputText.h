@@ -134,24 +134,24 @@ private:
 
 	support_code_type type;
 	DependencyList dependencies;
-	bool isNeeded;
+	bool required;
 
 public:
 	bool isDefined;
 
 	SUPPORT_TEXT(string text, support_code_type type) 
 		: OUTPUT_TEXT(text, OUTTYPE_SUPPORTCODE), 
-		type(type), isNeeded(false), isDefined(false) {}
+		type(type), required(false), isDefined(false) {}
 
 	support_code_type getSupportCodeType() { return type; }
 
 	void addDependency(SUPPORT_TEXT* dep) { dependencies.add(dep); }
 	void needed()
 	{
-		isNeeded = true;
+		required = true;
 		dependencies.setAllAsNeeded();
 	}
-	bool isNeeded() { return isNeeded; }
+	bool isNeeded() { return required; }
 };
 
 // ----------------------------------------------------------
@@ -249,7 +249,7 @@ class STATIC_SUPPORT : public SUPPORT_TEXT
 {
 public:
 	STATIC_SUPPORT(string text) 
-		: SUPPORT_TEXT(text, SCT_STATIC) { isNeeded(); }
+		: SUPPORT_TEXT(text, SCT_STATIC) { needed(); }
 
 	static STATIC_SUPPORT USING;
 	static STATIC_SUPPORT MAIN_DEC;

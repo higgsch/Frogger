@@ -15,13 +15,11 @@ using namespace std;
 // ----------------------------------------------------------
 void SupportReqsSubPhase::gatherRequirements(ProgramAST * ast)
 {
-	ast->PEF->root->accept(this);
+	ast->getPEFNode()->accept(this);
 
-	int UDFCount = ast->UDFs->size();
+	int UDFCount = ast->getNumberOfUDFs();
 	for (int index = 0; index < UDFCount; index++)
-	{
-		(*(ast->UDFs))[index]->root->accept(this);
-	}
+		ast->getUDFNode(index)->accept(this);
 }
 
 // ----------------------------------------------------------

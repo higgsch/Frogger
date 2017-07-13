@@ -40,12 +40,15 @@ struct UDFRecord
 // This class represents the data known about a Frogger
 // Program. Generated from the .struct file.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 struct ProgramStruct
 {
 	UDFRecord * PEF;
 	vector<UDFRecord *> * UDFs;
+
+	int getNumberOfUDFs() { return UDFs->size(); }
+	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }
 };
 
 // ----------------------------------------------------------
@@ -165,10 +168,15 @@ struct FunctionAST
 // ----------------------------------------------------------
 // This class wraps the PEF and all UDFs in a Frogger program.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 struct ProgramAST
 {
 	FunctionAST * PEF;
 	vector<FunctionAST *> * UDFs;
+
+	int getNumberOfUDFs() { return UDFs->size(); }
+
+	ProgramNode* getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
+	ProgramNode* getPEFNode() { return PEF->root; }
 };
