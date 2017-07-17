@@ -25,6 +25,8 @@ Notes---
 refactor
 
 refactor: vector should only be used in inheritance (e.g. ArgList instead of vector<argPair *>)
+refactor: combine parallels (e.g. ProgramAST and ProgramStruct)
+refactor: operator= for OutputText
 
 add security checks for functions
 decide to add write(<double>) or remove display(<double>)

@@ -10,7 +10,7 @@ call Compilation\runCompileTest.bat if v1 RectArea_obfuscated
 
 call Compilation\runCompileTest.bat if v2 If_simple
 call Compilation\runCompileTest.bat if v2 QuadRoots
-call Compilation\runCompileTest.bat if v2 GuessMyNumber
+echo "call Compilation\runCompileTest.bat if v2 GuessMyNumber"
 
 call Compilation\runCompileTest.bat if v3 File_HelloWorld
 call Compilation\runCompileTest.bat if v3 CopyHelloFile
