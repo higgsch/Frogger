@@ -9,6 +9,8 @@
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\DataStructures\OutputText\outputText.h"
+#include "..\Printing\printer.h"
+#include "..\DataStructures\OutputLanguage\cppLanguage.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -20,48 +22,28 @@ using namespace std;
 class CodeGenerationPhase : public Phase
 {
 private:
-	ofstream* out; // the output stream to print to
-	int indentDepth; // the number of tabs to insert
+	Printer * p;
+	CPPLanguage * lang;
+
 	string currUDFName;
 
-	void emitUsingStatement();
-	void emitSupportCode();
-	void emitSymbolTable(SymbolTable * symbols);
-
-	void printBuiltInFunctions();
-	void printBuiltInCommands();
-	void printForwardDeclarations(ProgramStruct * prog);
-	void printMainFunction(string PEFName);
-
-	void printSupportText(SUPPORT_TEXT& text);
-
-	void printIndent() { *out << indent(); }
-	void printString(string s) { *out << s; }
-	void printEmptyLine() { *out << endl; }
-	void printLine(string s) { *out << indent() << s << endl; }
-	void printOpenBraceLine() { printLine("{"); indentDepth++; }
-	void printCloseBraceLine() { indentDepth--; printLine("}"); }
-
-	string getFunctionPrototype(UDFRecord * rec);
-	string getLabelText(int labelIndex);
-	string typeString(DataType dt);
-	string argsString(vector<argPair *> *);
-
-	void processBinaryOpNode(BinaryOpNode * n, string pretext, string midtext, string posttext);
+	bool isNested(BinaryOpNode * n) { return n->getParenNesting() > 0; }
+	string leftText(BinaryOpNode * n) { return n->getLeftOperand()->outputText; }
+	string rightText(BinaryOpNode * n) { return n->getRightOperand()->outputText; }
 
 	bool validBuiltInFunctionName(string name);
 	bool validBuiltInCommandName(string name);
 public:
-	CodeGenerationPhase();
+	CodeGenerationPhase() : p(new Printer()), lang(new CPPLanguage()), currUDFName("<META>") {}
 
-	void open(string filename) { out->open(filename); }
-	void close() { out->close(); }
+	void open(string filename) { p->open(filename); }
+	void close() { p->close(); }
 
-	void printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct);
+	void printMetaCode(ProgramStruct * progStruct);
 	void printUDFCode(FunctionAST * UDF, UDFRecord * rec);
-	void printPEFCode(FunctionAST * PEF, UDFRecord * rec) { printUDFCode(PEF, rec); }
+	void printPEFCode(FunctionAST * PEF, UDFRecord * rec);
 
-	void visit(ProgramNode * n) { n->visitAllChildren(this); }
+	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);
 	void visit(IfNode * n);
 	void visit(IdRefNode * n);
@@ -69,35 +51,20 @@ public:
 	void visit(FunctionCallNode * n);
 	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n);
-	void visit(StringConstingNode * n) { *out << n->getLexeme(); }
+	void visit(StringConstingNode * n) { n->outputText = lang->getStringLiteralText(n->getLexeme()); }
 	void visit(DoubleConstingNode * n);
 	void visit(AddingNode * n);
-	void visit(SubingNode * n) { processBinaryOpNode(n, "", " - ", ""); }
-	void visit(MulingNode * n) { processBinaryOpNode(n, "", " * ", ""); }
-	void visit(DivingNode * n) { processBinaryOpNode(n, "", " / ", ""); }
-	void visit(ModDivingNode * n) { processBinaryOpNode(n, "fmod( ", ", ", ")"); }
-	void visit(IDivingNode * n) { processBinaryOpNode(n, "((int)round(",")) / ((int)round(","))"); }
-	void visit(RootingNode * n) { processBinaryOpNode(n, "rt(", ", ", ")"); }
-	void visit(ExpingNode * n) { processBinaryOpNode(n, "pow(", ", ", ")"); }
+	void visit(SubingNode * n);
+	void visit(MulingNode * n);
+	void visit(DivingNode * n);
+	void visit(ModDivingNode * n);
+	void visit(IDivingNode * n);
+	void visit(RootingNode * n);
+	void visit(ExpingNode * n);
 	void visit(NotingNode * n);
-	void visit(LTingNode * n) { processBinaryOpNode(n, "", " < ", ""); }
-	void visit(GTingNode * n) { processBinaryOpNode(n, "", " > ", ""); }
-	void visit(EQingNode * n) { processBinaryOpNode(n, "", " == ", ""); }
-	void visit(LTEingNode * n) { processBinaryOpNode(n, "", " <= ", ""); }
-	void visit(GTEingNode * n) { processBinaryOpNode(n, "", " >= ", ""); }
-	
-	// ----------------------------------------------------------
-	// This function returns a string containing the current tab
-	// indentation.
-	//
-	// Version 3.0
-	// ----------------------------------------------------------
-	string indent()
-	{
-		string result = "";
-		for (int i = 0; i < indentDepth; i++)
-			result = result + "\t";
-
-		return result;
-	}
+	void visit(LTingNode * n);
+	void visit(GTingNode * n);
+	void visit(EQingNode * n);
+	void visit(LTEingNode * n);
+	void visit(GTEingNode * n);
 };

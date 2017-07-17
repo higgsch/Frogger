@@ -14,7 +14,7 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This class provides the error function for all AST nodes.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class Node : public DataTyped
 {
@@ -52,6 +52,8 @@ protected:
 	}
 
 public:
+	string outputText;
+
 	virtual bool isTreeTyped() =0;
 
 	virtual void visitAllChildren(Phase* p) =0;

@@ -9,32 +9,30 @@
 using namespace std;
 
 // ----------------------------------------------------------
-// Default constructor.
+// This function generates the pre-program code.
+// @progStruct: The structure of the program
 //
 // Version 4.2
 // ----------------------------------------------------------
-CodeGenerationPhase::CodeGenerationPhase()
-{	
-	out = new ofstream();
-	indentDepth = 0;
-	currUDFName = "<META>";
+void CodeGenerationPhase::printMetaCode(ProgramStruct * progStruct)
+{
+	p->printString(lang->getMetaCode(progStruct));
 }
 
 // ----------------------------------------------------------
-// This function generates the pre-program code.
+// This function generates the PEF code.
+// @PEF: The AST for the PEF
+// @rec: The record of the PEF
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printMetaCode(ProgramAST * progAST, ProgramStruct * progStruct)
+void CodeGenerationPhase::printPEFCode(FunctionAST * PEF, UDFRecord * rec)
 {
-	emitUsingStatement();
-	emitSupportCode();
+	currUDFName = rec->UDFName;
 
-	printBuiltInFunctions();
-	printBuiltInCommands();
-
-	printForwardDeclarations(progStruct);
-	printMainFunction(progStruct->PEF->UDFName);
+	PEF->root->accept(this);
+	string pefText = PEF->root->outputText;
+	p->printString(lang->getPEFCode(rec, PEF->symbols, pefText));
 }
 
 // ----------------------------------------------------------
@@ -47,270 +45,21 @@ void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec)
 {
 	currUDFName = rec->UDFName;
 
-	printLine(getFunctionPrototype(rec));
-	printOpenBraceLine();
-
-	emitSymbolTable(UDF->symbols);
-
-	printEmptyLine();
-	printEmptyLine();
-
 	UDF->root->accept(this);
-
-	printEmptyLine();
-	printCloseBraceLine();
-	printEmptyLine();
+	string udfText = UDF->root->outputText;
+	p->printString(lang->getUDFCode(rec, UDF->symbols, udfText));
 }
 
 // ----------------------------------------------------------
-// This function generates the forward function declarations.
-// @prog: The structure table for the program.
+// This function processes a user-defined routine.
+// @n: The node representing the routine.
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printForwardDeclarations(ProgramStruct * prog)
+void CodeGenerationPhase::visit(ProgramNode* n)
 {
-	printLine(getFunctionPrototype(prog->PEF) + ";");
-
-	for (int index = 0; index < prog->getNumberOfUDFs(); index++)
-	{
-		UDFRecord * currFunct = prog->getUDF(index);
-		printLine(getFunctionPrototype(currFunct) + ";");
-	}
-
-	printEmptyLine();
-}
-
-// ----------------------------------------------------------
-// This function generates the code for main.
-// @PEFName: The name of the PEF function.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::printMainFunction(string PEFName)
-{
-	printSupportText(STATIC_SUPPORT::MAIN_DEC);
-	printOpenBraceLine();
-
-	printSupportText(INIT_STMT::ARGS);
-	printSupportText(INIT_STMT::RANDOM);
-	printSupportText(INIT_STMT::I_FILE);
-	printSupportText(INIT_STMT::O_FILE);
-
-	printEmptyLine();
-	printLine(PEFName + "();");
-	printCloseBraceLine();
-	printEmptyLine();
-}
-
-// ----------------------------------------------------------
-// This function emits the using statement.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitUsingStatement()
-{
-	printSupportText(IMPORT_STMT::IO_STREAM);
-	printSupportText(IMPORT_STMT::MATH);
-	printSupportText(IMPORT_STMT::STD_LIB);
-	printSupportText(IMPORT_STMT::TIME);
-	printSupportText(IMPORT_STMT::F_STREAM);
-	printSupportText(IMPORT_STMT::STRING);
-	printSupportText(IMPORT_STMT::VECTOR);
-	printSupportText(STATIC_SUPPORT::USING);
-	printEmptyLine();
-}
-
-// ----------------------------------------------------------
-// This function writes the given support text.
-// @text: The support text to write.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::printSupportText(SUPPORT_TEXT& text)
-{
-	if (text.isNeeded() && !text.isDefined)
-	{
-		printLine(text.getText());
-		text.isDefined = true;
-	}
-}
-
-// ----------------------------------------------------------
-// This function emits the global support code (constants and
-// functions).
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitSupportCode()
-{
-	printSupportText(VAR_DEF::ARGS);
-	printSupportText(VAR_DEF::I_FILE);
-	printSupportText(VAR_DEF::O_FILE);
-	printSupportText(VAR_DEF::EMPTY_STRING);
-	printEmptyLine();
-
-	printSupportText(FUNCT_DEF::ROUND);
-	printEmptyLine();
-	printSupportText(FUNCT_DEF::RT);
-	printEmptyLine();
-}
-
-// ----------------------------------------------------------
-// This function adds declarations for each symbol in the 
-// given symbol table.
-// @symbols: The SymbolTable to emit.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::emitSymbolTable(SymbolTable * symbols)
-{
-	for (int i = 0; i < symbols->size(); i++)
-	{
-		Symbol* s = (*symbols)[i];
-
-		if (!s->isLocal)
-			continue;
-		
-		//emit variable declaration and initialization
-		if (s->type == DT_DOUBLE)
-			printLine(DATATYPE_TEXT::DOUBLE.getText() + " _" + s->id + " = 0;");
-		else if (s->type == DT_STRING)
-			printLine(DATATYPE_TEXT::STRING.getText() + " _" + s->id + " = \"\";");
-		else
-			printLine("Not_Defined _" + s->id + " = NULL;");
-	}
-}
-
-// ----------------------------------------------------------
-// This function generates the built in functions.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::printBuiltInFunctions()
-{
-	printSupportText(FUNCT_DEF::TO_STRING);
-	printSupportText(FUNCT_DEF::TO_ASCII);
-	printSupportText(FUNCT_DEF::PARSE_DOUBLE);
-	printSupportText(FUNCT_DEF::ASCII_AT);
-	printSupportText(FUNCT_DEF::LENGTH);
-	printSupportText(FUNCT_DEF::RETRIEVE_DOUBLE);
-	printSupportText(FUNCT_DEF::RETRIEVE_STRING);
-	printSupportText(FUNCT_DEF::RANDOM);
-	printSupportText(FUNCT_DEF::READ);
-	printSupportText(FUNCT_DEF::ELEMENT_AT);
-	printSupportText(FUNCT_DEF::SIZE);
-}
-
-// ----------------------------------------------------------
-// This function generates the built in commands.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::printBuiltInCommands()
-{
-	printSupportText(FUNCT_DEF::DISPLAY_DBL);
-	printSupportText(FUNCT_DEF::DISPLAY_STR);
-	printSupportText(FUNCT_DEF::OPEN_I);
-	printSupportText(FUNCT_DEF::OPEN_O);
-	printSupportText(FUNCT_DEF::WRITE);
-	printSupportText(FUNCT_DEF::CLOSE_I);
-	printSupportText(FUNCT_DEF::CLOSE_O);
-}
-
-// ----------------------------------------------------------
-// This function generates the function prototype of the given
-// UDFRecord.
-// @rec: The function to print.
-//
-// Version 4.2
-// ----------------------------------------------------------
-string CodeGenerationPhase::getFunctionPrototype(UDFRecord * rec)
-{
-	return typeString(rec->returnType) + " " + rec->UDFName + "(" + argsString(rec->args) + ")";
-}
-
-// ----------------------------------------------------------
-// This function generates the label text for the given index
-// in the current UDF.
-// @labelIndex: The index of the label to print.
-//
-// Version 4.2
-// ----------------------------------------------------------
-string CodeGenerationPhase::getLabelText(int labelIndex)
-{
-	return "__LABEL_" + currUDFName + "_" + to_string(labelIndex);
-}
-
-// ----------------------------------------------------------
-// This function returns the output string corresponding to
-// the given DataType.
-// @dt: The DataType to print.
-//
-// Version 4.0
-// ----------------------------------------------------------
-string CodeGenerationPhase::typeString(DataType dt)
-{
-	switch (dt)
-	{
-	case DT_DOUBLE:
-		return DATATYPE_TEXT::DOUBLE.getText();
-	case DT_STRING:
-		return DATATYPE_TEXT::STRING.getText();
-	case DT_NULL:
-		return DATATYPE_TEXT::VOID.getText();
-	default:
-		return "UNDEFINED TYPE";
-	}
-}
-
-// ----------------------------------------------------------
-// This function returns a string representation of the
-// argument list.
-// @args: The argument list to convert.
-//
-// Version 4.2
-// ----------------------------------------------------------
-string CodeGenerationPhase::argsString(vector<argPair *> * args)
-{
-	string result = "";
-	int index = 0;
-
-	while (index < args->size())
-	{
-		argPair * arg = (*args)[index];
-		result = result + typeString(arg->type) + " _" + arg->name;
-		index++;
-
-		if (index != args->size())
-			result = result + ", ";
-	}
-
-	return result;
-}
-
-// ----------------------------------------------------------
-// This function emits the code for a BinaryOpNode.
-// @n: The BinaryOpNode to process.
-// @pretext: The text to emit before the left operand.
-// @midtext: The text to emit between left and right operands.
-// @posttext: The text to emit after the right operand.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::processBinaryOpNode(BinaryOpNode * n, string pretext, string midtext, string posttext)
-{
-	if (n->getParenNesting() > 0)
-		printString("(");
-
-	printString(pretext);
-	n->visitLeftOperand(this);
-	printString(midtext);
-	n->visitRightOperand(this);
-	printString(posttext);
-	
-	if (n->getParenNesting() > 0)
-		printString(")");
+	n->visitAllChildren(this); 
+	n->outputText = n->getFirstStmt()->outputText;
 }
 
 // ----------------------------------------------------------
@@ -321,27 +70,20 @@ void CodeGenerationPhase::processBinaryOpNode(BinaryOpNode * n, string pretext, 
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(JmpStmtNode * n)
 {
+	n->visitThisStmt(this);
+	string thisStmtText = n->getStmt()->outputText;
+
+	int stmtNo = n->getStmtNo();
+	int jmpNo = n->getJump();
 	bool isOwnLine = (!n->isNested());
 
-	if (isOwnLine) 
-	{
-		//emit this line's label
-		printLine(getLabelText(n->getStmtNo()) + ":");
-		indentDepth++;
-	}
+	string currStmtText = lang->getJmpStmtText(currUDFName, stmtNo, jmpNo, isOwnLine, thisStmtText);
 
-	//emit the line's code
-	n->visitThisStmt(this);
-	
-	//emit this line's goto statement
-	printLine("goto " + getLabelText(n->getJump()) + ";");
+	n->visitNextStmt(this);
+	ControlFlowNode * nextStmt = n->getNextStmt();
+	string stmtTailText = (nextStmt == NULL) ? "" : nextStmt->outputText;
 
-	if (isOwnLine)
-	{
-		printEmptyLine();
-		indentDepth--;
-		n->visitNextStmt(this);
-	}
+	n->outputText = currStmtText + stmtTailText;
 }
 
 // ----------------------------------------------------------
@@ -352,32 +94,24 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IfNode * n)
 {
-	bool isOwnLine = (!n->isNested());
-
-	if (isOwnLine)
-	{
-		//emit this line's label
-		printLine(getLabelText(n->getStmtNo()) + ":");
-		indentDepth++;
-	}
-
-	printIndent(); printString("if ("); n->visitBoolExp(this); printString(")\n");
-	printOpenBraceLine();
-
+	n->visitBoolExp(this);
 	n->visitTrueStmt(this);
-
-	printCloseBraceLine();
-	printLine("else");
-	printOpenBraceLine();
-
 	n->visitFalseStmt(this);
+	string boolExpText = n->getBoolExp()->outputText;
+	string trueStmtText = n->getTrueStmt()->outputText;
+	string falseStmtText = n->getFalseStmt()->outputText;
 
-	printCloseBraceLine();
+	bool isOwnLine = (!n->isNested());
+	int stmtNo = n->getStmtNo();
 
-	if (isOwnLine)
-		indentDepth--;
+	string currStmtText = lang->getIfStmtText(currUDFName, stmtNo, isOwnLine,
+										boolExpText, trueStmtText, falseStmtText);
 
 	n->visitNextStmt(this);
+	ControlFlowNode * nextStmt = n->getNextStmt();
+	string stmtTailText = (nextStmt == NULL) ? "" : nextStmt->outputText;
+
+	n->outputText = currStmtText + stmtTailText;
 }
 
 // ----------------------------------------------------------
@@ -388,19 +122,10 @@ void CodeGenerationPhase::visit(IfNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(IdRefNode * n)
 {
-	if (n->getParenNesting() > 0)
-		printString("(");
-
+	bool nested = n->getParenNesting() > 0;
 	string id = n->getLexeme();
 
-	if (id == SYMBOL_TEXT::ARGS.getText())
-		printString(SYMBOL_TEXT::ARGS.getText());
-	else
-		//prepend identifiers to avoid c++ keyword conflicts
-		printString("_" + n->getLexeme());
-	
-	if (n->getParenNesting() > 0)
-		printString(")");
+	n->outputText = lang->getIdentifierText(nested, id);
 }
 
 // ----------------------------------------------------------
@@ -411,11 +136,12 @@ void CodeGenerationPhase::visit(IdRefNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(AssigningNode * n)
 {
-	printIndent();
 	n->visitAssignee(this);
-	printString(" = (");
 	n->visitAssignor(this);
-	printString(");\n");
+	string assigneeText = n->getAssignee()->outputText;
+	string assignorText = n->getAssignor()->outputText;
+
+	n->outputText = lang->getAssignmentText(assigneeText, assignorText);
 }
 
 // ----------------------------------------------------------
@@ -427,36 +153,24 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
 	Function* funct = n->getFunct();
-	string name = funct->name;
 
-	if (!(funct->isUserDefined()))
+	string name = funct->name;
+	bool isBuiltIn = !(funct->isUserDefined());
+
+	if (isBuiltIn)
 	{
 		if (!validBuiltInFunctionName(name))
 			semantic_error("Unrecognized function: " + name, n->getLineNo());
 	}
 
-	/* For User Defined
-	if (funct->parentType != DT_NULL)
-	{
-		printString("(");
-		n->visitPrimary(this);
-		printString(").");
-	}*/
+	n->visitPrimary(this);
+	AsciiNode* primary = n->getPrimary();
+	n->visitArgList(this);
+	AsciiNode* argList = n->getArgList();
+	string primaryText = (primary == NULL) ? "" : primary->outputText;
+	string argListText = (argList == NULL) ? "" : argList->outputText;
 
-	printString(name + "(");
-
-	if (n->getPrimary() == NULL)
-		n->visitArgList(this);
-	else
-	{
-		n->visitPrimary(this);
-		if (n->getArgListLength() > 0)
-		{
-			printString(", ");
-			n->visitArgList(this);
-		}
-	}
-	printString(")");
+	n->outputText = lang->getFunctionCallText(isBuiltIn, primaryText, name, argListText);
 }
 
 // ----------------------------------------------------------
@@ -468,29 +182,21 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 void CodeGenerationPhase::visit(CommandCallNode * n)
 {
 	Command* cmd = n->getCmd();
+
 	string name = cmd->name;
+	bool isBuiltIn = !(cmd->isUserDefined());
 
-	if (!cmd->isUserDefined())
-	{
-		if (!validBuiltInCommandName(name))
-			semantic_error("Unrecognized command: " + name, n->getLineNo());
+	if (isBuiltIn && !validBuiltInCommandName(name))
+		semantic_error("Unrecognized command: " + name, n->getLineNo());
 
-		if (name == CommandTable::CMD_END_NULL->name)
-		{
-			printIndent(); printString("return ");
-			n->visitArgList(this);
-			printString(";\n");
-			return;
-		}
-	}
-
-	//printString("(");
-	//n->visitPrimary(this);
-	//printString(").");
-
-	printIndent(); printString(name + "(");
+	n->visitPrimary(this);
+	AsciiNode* primary = n->getPrimary();
 	n->visitArgList(this);
-	printString(");\n");
+	AsciiNode* argList = n->getArgList();
+	string primaryText = (primary == NULL) ? "" : primary->outputText;
+	string argListText = (argList == NULL) ? "" : argList->outputText;
+
+	n->outputText = lang->getCommandCallText(isBuiltIn, primaryText, name, argListText);
 }
 
 // ----------------------------------------------------------
@@ -502,12 +208,14 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 void CodeGenerationPhase::visit(ArgListNode * n)
 {
 	n->visitThisArg(this);
-	
-	if (n->hasNextArg())
-	{
-		printString(", ");
-		n->visitNextArg(this);
-	}
+	AsciiNode* thisArg = n->getThisArg();
+	n->visitNextArg(this);
+	AsciiNode* nextArg = n->getNextArg();
+
+	string thisArgText = (thisArg == NULL) ? "" : thisArg->outputText;
+	string nextArgText = (nextArg == NULL) ? "" : nextArg->outputText;
+
+	n->outputText = lang->getArgumentListText(thisArgText, nextArgText);
 }
 
 // ----------------------------------------------------------
@@ -518,26 +226,10 @@ void CodeGenerationPhase::visit(ArgListNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(DoubleConstingNode * n)
 {
-	if (n->getParenNesting() > 0)
-		printString("(");
+	bool isNested = n->getParenNesting() > 0;
+	string dbl = n->getLexeme();
 
-	printString(n->getLexeme());
-	
-	if (n->getParenNesting() > 0)
-		printString(")");
-}
-
-// ----------------------------------------------------------
-// This function processes an addition operation.
-// @n: The node representing the operation.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void CodeGenerationPhase::visit(AddingNode * n)
-{
-	string pretext = (n->getDataType() == DT_STRING) ? 
-		SYMBOL_TEXT::EMPTY_STRING.getText() + " + " : "";
-	processBinaryOpNode(n, pretext, " + ", "");
+	n->outputText = lang->getDoubleLiteralText(isNested, dbl);
 }
 
 // ----------------------------------------------------------
@@ -548,9 +240,10 @@ void CodeGenerationPhase::visit(AddingNode * n)
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(NotingNode * n) 
 {
-	printString("!( ");
 	n->visitOperand(this);
-	printString(" )");
+	string notText = n->getOperand()->outputText;
+
+	n->outputText = lang->getNotOperationText(notText);
 }
 
 // ----------------------------------------------------------
@@ -591,4 +284,161 @@ bool CodeGenerationPhase::validBuiltInCommandName(string name)
 		   name == CommandTable::CMD_WRITE->name ||
 		   name == CommandTable::CMD_CLOSE_INPUT->name ||
 		   name == CommandTable::CMD_CLOSE_OUTPUT->name;
+}
+
+// ----------------------------------------------------------
+// This function processes an addition operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(AddingNode * n) 
+{ 
+	n->visitAllChildren(this);
+	bool isStringCat = n->getDataType() == DT_STRING;
+	n->outputText = lang->getAddOperationText(isNested(n), isStringCat, leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a subtraction operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(SubingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getSubOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a multiplication operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(MulingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getMulOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a division operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(DivingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getDivOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a modulus division operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(ModDivingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getModDivOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes an integer division operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(IDivingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getIDivOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a rootation operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(RootingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getRootOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes an exponentiation operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(ExpingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getExpOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a < operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(LTingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getLTOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a > operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(GTingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getGTOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes an equation operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(EQingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getEQOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a <= operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(LTEingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getLTEOperationText(isNested(n), leftText(n), rightText(n));
+}
+
+// ----------------------------------------------------------
+// This function processes a >= operation.
+// @n: The node representing the operation.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CodeGenerationPhase::visit(GTEingNode * n)
+{ 
+	n->visitAllChildren(this);
+	n->outputText = lang->getGTEOperationText(isNested(n), leftText(n), rightText(n));
 }

@@ -119,14 +119,14 @@ void FroggerC::computeRequiredSupportCode(ProgramAST * progAST)
 // This function drives code generation for a single file input.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void FroggerC::emitInputFileCode(string outFile)
 {
 	CodeGenerationPhase *cgp = new CodeGenerationPhase();
 
 	cgp->open(outFile);
-	cgp->printMetaCode(&progAST, &progStruct);
+	cgp->printMetaCode(&progStruct);
 	cgp->printPEFCode(progAST.PEF, progStruct.PEF);
 	cgp->close();
 
@@ -137,14 +137,14 @@ void FroggerC::emitInputFileCode(string outFile)
 // This function drives code generation for a project input.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void FroggerC::emitInputProjectCode(string outFile)
 {
 	CodeGenerationPhase *cgp = new CodeGenerationPhase();
 
 	cgp->open(outFile);
-	cgp->printMetaCode(&progAST, &progStruct);
+	cgp->printMetaCode(&progStruct);
 	cgp->printPEFCode(progAST.PEF,progStruct.PEF);
 
 	int index = 0;
