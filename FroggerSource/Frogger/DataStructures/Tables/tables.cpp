@@ -76,7 +76,7 @@ bool FunctionRecord::isAddable()
 SymbolTable::SymbolTable(Language * language, UDFRecord * rec)
 {
 	lang = language;
-	Symbol* argsSym = new Symbol(lang->SYM_ARGS.getText(),DT_ARGS);
+	Symbol* argsSym = new Symbol(lang->SYM_ARGS, DT_ARGS);
 	argsSym->isLocal = false;
 	add(new SymbolRecord(argsSym));
 	int index = 0;
@@ -101,7 +101,7 @@ SymbolTable::SymbolTable(Language * language, UDFRecord * rec)
 SymbolTable::SymbolTable(Language * language)
 {
 	lang = language;
-	Symbol* argsSym = new Symbol(lang->SYM_ARGS.getText(),DT_ARGS);
+	Symbol* argsSym = new Symbol(lang->SYM_ARGS, DT_ARGS);
 	argsSym->isLocal = false;
 	add(new SymbolRecord(argsSym));
 }
@@ -134,16 +134,16 @@ CommandTable::CommandTable(Language * language)
 {
 	lang = language;
 
-	CMD_END_NULL		= new Command(lang->CMDNAME_END_NULL.getText());
-	CMD_END_STR		= new Command(lang->CMDNAME_END_STR.getText());
-	CMD_END_DBL		= new Command(lang->CMDNAME_END_DBL.getText());
-	CMD_DISPLAY_STR	= new Command(lang->CMDNAME_DISPLAY_STR.getText());
-	CMD_DISPLAY_DBL	= new Command(lang->CMDNAME_DISPLAY_DBL.getText());
-	CMD_OPEN_INPUT	= new Command(lang->CMDNAME_OPEN_INPUT.getText());
-	CMD_CLOSE_INPUT	= new Command(lang->CMDNAME_CLOSE_INPUT.getText());
-	CMD_WRITE		= new Command(lang->CMDNAME_WRITE.getText());
-	CMD_OPEN_OUTPUT	= new Command(lang->CMDNAME_OPEN_OUTPUT.getText());
-	CMD_CLOSE_OUTPUT	= new Command(lang->CMDNAME_CLOSE_OUTPUT.getText());
+	CMD_END_NULL = new Command(lang->CMDNAME_END_NULL);
+	CMD_END_STR = new Command(lang->CMDNAME_END_STR);
+	CMD_END_DBL = new Command(lang->CMDNAME_END_DBL);
+	CMD_DISPLAY_STR = new Command(lang->CMDNAME_DISPLAY_STR);
+	CMD_DISPLAY_DBL = new Command(lang->CMDNAME_DISPLAY_DBL);
+	CMD_OPEN_INPUT = new Command(lang->CMDNAME_OPEN_INPUT);
+	CMD_CLOSE_INPUT = new Command(lang->CMDNAME_CLOSE_INPUT);
+	CMD_WRITE = new Command(lang->CMDNAME_WRITE);
+	CMD_OPEN_OUTPUT = new Command(lang->CMDNAME_OPEN_OUTPUT);
+	CMD_CLOSE_OUTPUT = new Command(lang->CMDNAME_CLOSE_OUTPUT);
 
 	//Add built-in commands
 	CMD_END_NULL->builtIn = true;
@@ -200,17 +200,17 @@ FunctionTable::FunctionTable(Language * language)
 {
 	lang = language;
 
-	FUNCT_TO_STRING		= new Function(DT_DOUBLE, lang->FUNCTNAME_TO_STRING.getText(), DT_STRING);
-	FUNCT_TO_ASCII			= new Function(DT_DOUBLE, lang->FUNCTNAME_TO_ASCII.getText(), DT_STRING);
-	FUNCT_PARSE_DOUBLE		= new Function(DT_STRING, lang->FUNCTNAME_PARSE_DOUBLE.getText(), DT_DOUBLE);
-	FUNCT_ASCII_AT			= new Function(DT_STRING, lang->FUNCTNAME_ASCII_AT.getText(), DT_DOUBLE);
-	FUNCT_LENGTH			= new Function(DT_STRING, lang->FUNCTNAME_LENGTH.getText(), DT_DOUBLE);
-	FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_DOUBLE.getText(), DT_DOUBLE);
-	FUNCT_RANDOM			= new Function(DT_NULL, lang->FUNCTNAME_RANDOM.getText(), DT_DOUBLE);
-	FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_STRING.getText(), DT_STRING);
-	FUNCT_READ				= new Function(DT_NULL, lang->FUNCTNAME_READ.getText(), DT_STRING);
-	FUNCT_ELEMENT_AT		= new Function(DT_ARGS, lang->FUNCTNAME_ELEMENT_AT.getText(), DT_STRING);
-	FUNCT_SIZE				= new Function(DT_ARGS, lang->FUNCTNAME_SIZE.getText(), DT_DOUBLE);
+	FUNCT_TO_STRING = new Function(DT_DOUBLE, lang->FUNCTNAME_TO_STRING, DT_STRING);
+	FUNCT_TO_ASCII = new Function(DT_DOUBLE, lang->FUNCTNAME_TO_ASCII, DT_STRING);
+	FUNCT_PARSE_DOUBLE = new Function(DT_STRING, lang->FUNCTNAME_PARSE_DOUBLE, DT_DOUBLE);
+	FUNCT_ASCII_AT = new Function(DT_STRING, lang->FUNCTNAME_ASCII_AT, DT_DOUBLE);
+	FUNCT_LENGTH = new Function(DT_STRING, lang->FUNCTNAME_LENGTH, DT_DOUBLE);
+	FUNCT_RETRIEVE_DOUBLE = new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_DOUBLE, DT_DOUBLE);
+	FUNCT_RANDOM = new Function(DT_NULL, lang->FUNCTNAME_RANDOM, DT_DOUBLE);
+	FUNCT_RETRIEVE_STRING = new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_STRING, DT_STRING);
+	FUNCT_READ = new Function(DT_NULL, lang->FUNCTNAME_READ, DT_STRING);
+	FUNCT_ELEMENT_AT = new Function(DT_ARGS, lang->FUNCTNAME_ELEMENT_AT, DT_STRING);
+	FUNCT_SIZE = new Function(DT_ARGS, lang->FUNCTNAME_SIZE, DT_DOUBLE);
 
 	//Add built-in functions
 	FUNCT_TO_STRING->builtIn = true;

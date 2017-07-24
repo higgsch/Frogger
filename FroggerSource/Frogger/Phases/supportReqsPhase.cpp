@@ -32,7 +32,7 @@ void SupportReqsPhase::gatherRequirements(Language * language, ProgramAST * ast)
 // ----------------------------------------------------------
 void SupportReqsPhase::visit(IdRefNode * n)
 {
-	if (n->getLexeme() == lang->SYM_ARGS.getText())
+	if (n->getLexeme() == lang->SYM_ARGS)
 		lang->argsUsed();
 }
 

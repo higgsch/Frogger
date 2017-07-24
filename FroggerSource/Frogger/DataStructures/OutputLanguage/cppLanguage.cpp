@@ -20,37 +20,37 @@ const string CPPLanguage::INDENT = "\t";
 // ----------------------------------------------------------
 void CPPLanguage::initOutputTexts()
 {
-	DT_DOUBLE = DATATYPE_TEXT("double");
-	DT_STRING = DATATYPE_TEXT("string");
-	DT_VOID = DATATYPE_TEXT("void");
+	DT_DOUBLE = OUTPUT_TEXT("double");
+	DT_STRING = OUTPUT_TEXT("string");
+	DT_VOID = OUTPUT_TEXT("void");
 
-	SYM_ARGS = SYMBOL_TEXT("args");
-	SYM_I_FILE = SYMBOL_TEXT("in_file");
-	SYM_O_FILE = SYMBOL_TEXT("out_file");
-	SYM_EMPTY_STRING = SYMBOL_TEXT("emptyString");
+	SYM_ARGS = OUTPUT_TEXT("args");
+	SYM_I_FILE = OUTPUT_TEXT("in_file");
+	SYM_O_FILE = OUTPUT_TEXT("out_file");
+	SYM_EMPTY_STRING = OUTPUT_TEXT("emptyString");
 
-	FUNCTNAME_TO_STRING = FUNCT_NAME("toString");
-	FUNCTNAME_TO_ASCII = FUNCT_NAME("toAscii");
-	FUNCTNAME_PARSE_DOUBLE = FUNCT_NAME("parseDouble");
-	FUNCTNAME_ASCII_AT = FUNCT_NAME("asciiAt");
-	FUNCTNAME_LENGTH = FUNCT_NAME("length");
-	FUNCTNAME_RETRIEVE_DOUBLE = FUNCT_NAME("retrieveDouble");
-	FUNCTNAME_RANDOM = FUNCT_NAME("random");
-	FUNCTNAME_RETRIEVE_STRING = FUNCT_NAME("retrieveString");
-	FUNCTNAME_READ = FUNCT_NAME("read");
-	FUNCTNAME_ELEMENT_AT = FUNCT_NAME("elementAt");
-	FUNCTNAME_SIZE = FUNCT_NAME("size");
+	FUNCTNAME_TO_STRING = OUTPUT_TEXT("toString");
+	FUNCTNAME_TO_ASCII = OUTPUT_TEXT("toAscii");
+	FUNCTNAME_PARSE_DOUBLE = OUTPUT_TEXT("parseDouble");
+	FUNCTNAME_ASCII_AT = OUTPUT_TEXT("asciiAt");
+	FUNCTNAME_LENGTH = OUTPUT_TEXT("length");
+	FUNCTNAME_RETRIEVE_DOUBLE = OUTPUT_TEXT("retrieveDouble");
+	FUNCTNAME_RANDOM = OUTPUT_TEXT("random");
+	FUNCTNAME_RETRIEVE_STRING = OUTPUT_TEXT("retrieveString");
+	FUNCTNAME_READ = OUTPUT_TEXT("read");
+	FUNCTNAME_ELEMENT_AT = OUTPUT_TEXT("elementAt");
+	FUNCTNAME_SIZE = OUTPUT_TEXT("size");
 
-	CMDNAME_END_NULL = CMD_NAME("end");
-	CMDNAME_END_STR = CMD_NAME("end");
-	CMDNAME_END_DBL = CMD_NAME("end");
-	CMDNAME_DISPLAY_STR = CMD_NAME("display");
-	CMDNAME_DISPLAY_DBL = CMD_NAME("display");
-	CMDNAME_OPEN_INPUT = CMD_NAME("openI");
-	CMDNAME_CLOSE_INPUT = CMD_NAME("closeI");
-	CMDNAME_WRITE = CMD_NAME("write");
-	CMDNAME_OPEN_OUTPUT = CMD_NAME("openO");
-	CMDNAME_CLOSE_OUTPUT = CMD_NAME("closeO");
+	CMDNAME_END_NULL = OUTPUT_TEXT("end");
+	CMDNAME_END_STR = OUTPUT_TEXT("end");
+	CMDNAME_END_DBL = OUTPUT_TEXT("end");
+	CMDNAME_DISPLAY_STR = OUTPUT_TEXT("display");
+	CMDNAME_DISPLAY_DBL = OUTPUT_TEXT("display");
+	CMDNAME_OPEN_INPUT = OUTPUT_TEXT("openI");
+	CMDNAME_CLOSE_INPUT = OUTPUT_TEXT("closeI");
+	CMDNAME_WRITE = OUTPUT_TEXT("write");
+	CMDNAME_OPEN_OUTPUT = OUTPUT_TEXT("openO");
+	CMDNAME_CLOSE_OUTPUT = OUTPUT_TEXT("closeO");
 
 	IMP_IO_STREAM = IMPORT_STMT("#include <iostream>");
 	IMP_MATH = IMPORT_STMT("#include <math.h>");
@@ -60,36 +60,36 @@ void CPPLanguage::initOutputTexts()
 	IMP_STRING = IMPORT_STMT("#include <string>");
 	IMP_VECTOR = IMPORT_STMT("#include <vector>");
 
-	SYMDEF_ARGS = VAR_DEF("vector<string> " + SYM_ARGS.getText() + ";");
-	SYMDEF_I_FILE = VAR_DEF("ifstream " + SYM_I_FILE.getText() + ";");
-	SYMDEF_O_FILE = VAR_DEF("ofstream " + SYM_O_FILE.getText() + ";");
-	SYMDEF_EMPTY_STRING = VAR_DEF("const string " + SYM_EMPTY_STRING.getText() + " = \"\";");
+	SYMDEF_ARGS = VAR_DEF("vector<string> " + SYM_ARGS + ";");
+	SYMDEF_I_FILE = VAR_DEF("ifstream " + SYM_I_FILE + ";");
+	SYMDEF_O_FILE = VAR_DEF("ofstream " + SYM_O_FILE + ";");
+	SYMDEF_EMPTY_STRING = VAR_DEF("const string " + SYM_EMPTY_STRING + " = \"\";");
 
 	FUNCTDEF_ROUND = FUNCT_DEF("double round(double num) {\n\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n}");
 	FUNCTDEF_RT = FUNCT_DEF("double rt(double l, double r) {\n\t return pow(r, 1.0 / l);\n}");
-	FUNCTDEF_TO_STRING = FUNCT_DEF("string " + FUNCTNAME_TO_STRING.getText() + "(double d) { return to_string(d); }");
-	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + FUNCTNAME_TO_ASCII.getText() + "(double d) { return (char) d; }");
-	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_PARSE_DOUBLE.getText() + "(string s)\n{\n\tif (isdigit(s[0]) || s[0] == '-')\n\t{\n\t\treturn stod(s, NULL);\n\t}\n\treturn 0;\n}");
-	FUNCTDEF_ASCII_AT = FUNCT_DEF("double " + FUNCTNAME_ASCII_AT.getText() + "(string s, int loc)\n{\n\tif (loc < 0 || loc >= s.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn s.at(loc);\n}");
-	FUNCTDEF_LENGTH = FUNCT_DEF("double " + FUNCTNAME_LENGTH.getText() + "(string s) { return (emptyString + s).size(); }");
-	FUNCTDEF_RETRIEVE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_RETRIEVE_DOUBLE.getText() + "()\n{\n\tdouble d = 0;\n\tcin >> d;\n\treturn d;\n}");
-	FUNCTDEF_RETRIEVE_STRING = FUNCT_DEF("string " + FUNCTNAME_RETRIEVE_STRING.getText() + "()\n{\n\tstring s = "";\n\tcin >> s;\n\treturn s;\n}");
-	FUNCTDEF_RANDOM = FUNCT_DEF("double " + FUNCTNAME_RANDOM.getText() + "() { return ((double) rand() / (RAND_MAX)); }");
-	FUNCTDEF_READ = FUNCT_DEF("char " + FUNCTNAME_READ.getText() + "() { return (char)(in_file.get()); }");
-	FUNCTDEF_ELEMENT_AT = FUNCT_DEF("string " + FUNCTNAME_ELEMENT_AT.getText() + "(vector<string> v, int index)\n{\n\tif (index < 0 || index >= v.size())\n\t{\n\t\treturn \"\";\n\t}\n\treturn v[index];\n}");
-	FUNCTDEF_SIZE = FUNCT_DEF("double " + FUNCTNAME_SIZE.getText() + "(vector<string> v) { return v.size(); }");
-	FUNCTDEF_DISPLAY_DBL = FUNCT_DEF("void " + CMDNAME_DISPLAY_DBL.getText() + "(double d) { cout << d; }");
-	FUNCTDEF_DISPLAY_STR = FUNCT_DEF("void " + CMDNAME_DISPLAY_STR.getText() + "(string s) { cout << s; }");
-	FUNCTDEF_OPEN_I = FUNCT_DEF("void " + CMDNAME_OPEN_INPUT.getText() + "(string s) { " + SYM_I_FILE.getText() + ".open(s); }");
-	FUNCTDEF_OPEN_O = FUNCT_DEF("void " + CMDNAME_OPEN_OUTPUT.getText() + "(string s) { " + SYM_O_FILE.getText() + ".open(s); }");
-	FUNCTDEF_WRITE = FUNCT_DEF("void " + CMDNAME_WRITE.getText() + "(string s) { " + SYM_O_FILE.getText() + " << s; }");
-	FUNCTDEF_CLOSE_I = FUNCT_DEF("void " + CMDNAME_CLOSE_INPUT.getText() + "() { " + SYM_I_FILE.getText() + ".close(); }");
-	FUNCTDEF_CLOSE_O = FUNCT_DEF("void " + CMDNAME_CLOSE_OUTPUT.getText() + "() { " + SYM_O_FILE.getText() + ".close(); }");
+	FUNCTDEF_TO_STRING = FUNCT_DEF("string " + FUNCTNAME_TO_STRING + "(double d) { return to_string(d); }");
+	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + FUNCTNAME_TO_ASCII + "(double d) { return (char) d; }");
+	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_PARSE_DOUBLE + "(string s)\n{\n\tif (isdigit(s[0]) || s[0] == '-')\n\t{\n\t\treturn stod(s, NULL);\n\t}\n\treturn 0;\n}");
+	FUNCTDEF_ASCII_AT = FUNCT_DEF("double " + FUNCTNAME_ASCII_AT + "(string s, int loc)\n{\n\tif (loc < 0 || loc >= s.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn s.at(loc);\n}");
+	FUNCTDEF_LENGTH = FUNCT_DEF("double " + FUNCTNAME_LENGTH + "(string s) { return (emptyString + s).size(); }");
+	FUNCTDEF_RETRIEVE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_RETRIEVE_DOUBLE + "()\n{\n\tdouble d = 0;\n\tcin >> d;\n\treturn d;\n}");
+	FUNCTDEF_RETRIEVE_STRING = FUNCT_DEF("string " + FUNCTNAME_RETRIEVE_STRING + "()\n{\n\tstring s = "";\n\tcin >> s;\n\treturn s;\n}");
+	FUNCTDEF_RANDOM = FUNCT_DEF("double " + FUNCTNAME_RANDOM + "() { return ((double) rand() / (RAND_MAX)); }");
+	FUNCTDEF_READ = FUNCT_DEF("char " + FUNCTNAME_READ + "() { return (char)(in_file.get()); }");
+	FUNCTDEF_ELEMENT_AT = FUNCT_DEF("string " + FUNCTNAME_ELEMENT_AT + "(vector<string> v, int index)\n{\n\tif (index < 0 || index >= v.size())\n\t{\n\t\treturn \"\";\n\t}\n\treturn v[index];\n}");
+	FUNCTDEF_SIZE = FUNCT_DEF("double " + FUNCTNAME_SIZE + "(vector<string> v) { return v.size(); }");
+	FUNCTDEF_DISPLAY_DBL = FUNCT_DEF("void " + CMDNAME_DISPLAY_DBL + "(double d) { cout << d; }");
+	FUNCTDEF_DISPLAY_STR = FUNCT_DEF("void " + CMDNAME_DISPLAY_STR + "(string s) { cout << s; }");
+	FUNCTDEF_OPEN_I = FUNCT_DEF("void " + CMDNAME_OPEN_INPUT + "(string s) { " + SYM_I_FILE + ".open(s); }");
+	FUNCTDEF_OPEN_O = FUNCT_DEF("void " + CMDNAME_OPEN_OUTPUT + "(string s) { " + SYM_O_FILE + ".open(s); }");
+	FUNCTDEF_WRITE = FUNCT_DEF("void " + CMDNAME_WRITE + "(string s) { " + SYM_O_FILE + " << s; }");
+	FUNCTDEF_CLOSE_I = FUNCT_DEF("void " + CMDNAME_CLOSE_INPUT + "() { " + SYM_I_FILE + ".close(); }");
+	FUNCTDEF_CLOSE_O = FUNCT_DEF("void " + CMDNAME_CLOSE_OUTPUT + "() { " + SYM_O_FILE + ".close(); }");
 
-	INIT_ARGS = INIT_STMT(SYM_ARGS.getText() + " = vector<string>(argv + 1, argv + argc);");
+	INIT_ARGS = INIT_STMT(SYM_ARGS + " = vector<string>(argv + 1, argv + argc);");
 	INIT_RANDOM = INIT_STMT("srand(time(NULL)); rand();");
-	INIT_I_FILE = INIT_STMT(SYM_I_FILE.getText() + " = ifstream();");
-	INIT_O_FILE = INIT_STMT(SYM_O_FILE.getText() + " = ofstream();");
+	INIT_I_FILE = INIT_STMT(SYM_I_FILE + " = ifstream();");
+	INIT_O_FILE = INIT_STMT(SYM_O_FILE + " = ofstream();");
 
 	USING = STATIC_SUPPORT("using namespace std;");
 	MAIN_DEC = STATIC_SUPPORT("int main(int argc, char* argv[])");
@@ -280,7 +280,7 @@ string CPPLanguage::getCommandCallText(bool isBuiltIn, string primaryText, strin
 {
 	string result = "";
 
-	if (isBuiltIn && name == CMDNAME_END_NULL.getText())
+	if (isBuiltIn && name == CMDNAME_END_NULL)
 		return line("return " + argListText + ";");
 
 	//For Built-In
@@ -304,7 +304,7 @@ string CPPLanguage::getArgumentListText(string thisArgText, string argTailText)
 //Arithmetic Operation Output Texts
 string CPPLanguage::getAddOperationText(bool isNested, bool isString, string leftOperandText, string rightOperandText)
 {
-	string pretext = (isString) ? SYM_EMPTY_STRING.getText() + " + " : "";
+	string pretext = (isString) ? SYM_EMPTY_STRING + " + " : "";
 	return getBinaryOperationText(isNested, pretext, " + ", "", leftOperandText, rightOperandText);
 }
 string CPPLanguage::getSubOperationText(bool isNested, string leftOperandText, string rightOperandText)
@@ -347,7 +347,7 @@ string CPPLanguage::getIdentifierText(bool nested, string id)
 {
 	string result = "";
 
-	if (id == SYM_ARGS.getText())
+	if (id == SYM_ARGS)
 		result += id;
 	else
 		//prepend identifiers to avoid c++ keyword conflicts
@@ -546,9 +546,9 @@ string CPPLanguage::getSymbolTableCode(SymbolTable * symbols)
 		
 		//emit variable declaration and initialization
 		if (s->type == DataType::DT_DOUBLE)
-			result += line(DT_DOUBLE.getText() + " _" + s->id + " = 0;");
+			result += line(DT_DOUBLE + " _" + s->id + " = 0;");
 		else if (s->type == DataType::DT_STRING)
-			result += line(DT_STRING.getText() + " _" + s->id + " = \"\";");
+			result += line(DT_STRING + " _" + s->id + " = \"\";");
 		else
 			result += line("Not_Defined _" + s->id + " = NULL;");
 	}
@@ -565,7 +565,7 @@ string CPPLanguage::getSupportText(SUPPORT_TEXT& text)
 	string result = "";
 	if (text.isNeeded() && !text.isDefined)
 	{
-		result += line(text.getText());
+		result += line(text);
 		text.isDefined = true;
 	}
 	return result;
@@ -605,11 +605,11 @@ string CPPLanguage::getTypeString(DataType dt)
 	switch (dt)
 	{
 	case DataType::DT_DOUBLE:
-		return DT_DOUBLE.getText();
+		return DT_DOUBLE;
 	case DataType::DT_STRING:
-		return DT_STRING.getText();
+		return DT_STRING;
 	case DataType::DT_NULL:
-		return DT_VOID.getText();
+		return DT_VOID;
 	default:
 		return "UNDEFINED TYPE";
 	}

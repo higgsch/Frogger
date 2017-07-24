@@ -7,76 +7,16 @@
 #include <vector>
 using namespace std;
 
-// set of Output types
-typedef enum output_types {
-	OUTTYPE_DATATYPE, OUTTYPE_SYMBOL, OUTTYPE_SUPPORTCODE, OUTTYPE_UNINIT
-} output_type;
-
 // ----------------------------------------------------------
 // This class represents a generic piece of text for output
 //
 // Version 4.2
 // ----------------------------------------------------------
-class OUTPUT_TEXT
-{
-private:
-	string text;
-	output_type type;
-
-public:
-	OUTPUT_TEXT(string text, output_type type) : text(text), type(type) {}
-	OUTPUT_TEXT() : text(""), type(OUTTYPE_UNINIT) {}
-
-	string getText() { return text; }
-	output_type getOutputType() { return type; }
-};
-
-// ----------------------------------------------------------
-// This class represents a datatype for output
-//
-// Version 4.2
-// ----------------------------------------------------------
-class DATATYPE_TEXT : public OUTPUT_TEXT
+class OUTPUT_TEXT : public string
 {
 public:
-	DATATYPE_TEXT(string text) : OUTPUT_TEXT(text, OUTTYPE_DATATYPE) {}
-	DATATYPE_TEXT() {}
-};
-
-// ----------------------------------------------------------
-// This class represents a variable name for output
-//
-// Version 4.2
-// ----------------------------------------------------------
-class SYMBOL_TEXT : public OUTPUT_TEXT
-{
-public:
-	SYMBOL_TEXT(string text) : OUTPUT_TEXT(text, OUTTYPE_SYMBOL) {}
-	SYMBOL_TEXT() {}
-};
-
-// ----------------------------------------------------------
-// This class represents a function name for output
-//
-// Version 4.2
-// ----------------------------------------------------------
-class FUNCT_NAME : public OUTPUT_TEXT
-{
-public:
-	FUNCT_NAME(string text) : OUTPUT_TEXT(text, OUTTYPE_SYMBOL) {}
-	FUNCT_NAME() {}
-};
-
-// ----------------------------------------------------------
-// This class represents a command name for output
-//
-// Version 4.2
-// ----------------------------------------------------------
-class CMD_NAME : public OUTPUT_TEXT
-{
-public:
-	CMD_NAME(string text) : OUTPUT_TEXT(text, OUTTYPE_SYMBOL) {}
-	CMD_NAME() {}
+	OUTPUT_TEXT(string text) : string(text) {}
+	OUTPUT_TEXT() : string("") {}
 };
 
 // ----------------------------------------------------------
@@ -190,34 +130,34 @@ public:
 	virtual void expOpUsed() =0;
 	
 	//Output Texts
-	DATATYPE_TEXT DT_DOUBLE;
-	DATATYPE_TEXT DT_STRING;
-	DATATYPE_TEXT DT_VOID;
+	OUTPUT_TEXT DT_DOUBLE;
+	OUTPUT_TEXT DT_STRING;
+	OUTPUT_TEXT DT_VOID;
 
-	SYMBOL_TEXT SYM_ARGS;
-	SYMBOL_TEXT SYM_I_FILE;
-	SYMBOL_TEXT SYM_O_FILE;
+	OUTPUT_TEXT SYM_ARGS;
+	OUTPUT_TEXT SYM_I_FILE;
+	OUTPUT_TEXT SYM_O_FILE;
 
-	FUNCT_NAME FUNCTNAME_TO_STRING;
-	FUNCT_NAME FUNCTNAME_TO_ASCII;
-	FUNCT_NAME FUNCTNAME_PARSE_DOUBLE;
-	FUNCT_NAME FUNCTNAME_ASCII_AT;
-	FUNCT_NAME FUNCTNAME_LENGTH;
-	FUNCT_NAME FUNCTNAME_RETRIEVE_DOUBLE;
-	FUNCT_NAME FUNCTNAME_RANDOM;
-	FUNCT_NAME FUNCTNAME_RETRIEVE_STRING;
-	FUNCT_NAME FUNCTNAME_READ;
-	FUNCT_NAME FUNCTNAME_ELEMENT_AT;
-	FUNCT_NAME FUNCTNAME_SIZE;
+	OUTPUT_TEXT FUNCTNAME_TO_STRING;
+	OUTPUT_TEXT FUNCTNAME_TO_ASCII;
+	OUTPUT_TEXT FUNCTNAME_PARSE_DOUBLE;
+	OUTPUT_TEXT FUNCTNAME_ASCII_AT;
+	OUTPUT_TEXT FUNCTNAME_LENGTH;
+	OUTPUT_TEXT FUNCTNAME_RETRIEVE_DOUBLE;
+	OUTPUT_TEXT FUNCTNAME_RANDOM;
+	OUTPUT_TEXT FUNCTNAME_RETRIEVE_STRING;
+	OUTPUT_TEXT FUNCTNAME_READ;
+	OUTPUT_TEXT FUNCTNAME_ELEMENT_AT;
+	OUTPUT_TEXT FUNCTNAME_SIZE;
 	
-	CMD_NAME CMDNAME_END_NULL;
-	CMD_NAME CMDNAME_END_STR;
-	CMD_NAME CMDNAME_END_DBL;
-	CMD_NAME CMDNAME_DISPLAY_STR;
-	CMD_NAME CMDNAME_DISPLAY_DBL;
-	CMD_NAME CMDNAME_OPEN_INPUT;
-	CMD_NAME CMDNAME_CLOSE_INPUT;
-	CMD_NAME CMDNAME_WRITE;
-	CMD_NAME CMDNAME_OPEN_OUTPUT;
-	CMD_NAME CMDNAME_CLOSE_OUTPUT;
+	OUTPUT_TEXT CMDNAME_END_NULL;
+	OUTPUT_TEXT CMDNAME_END_STR;
+	OUTPUT_TEXT CMDNAME_END_DBL;
+	OUTPUT_TEXT CMDNAME_DISPLAY_STR;
+	OUTPUT_TEXT CMDNAME_DISPLAY_DBL;
+	OUTPUT_TEXT CMDNAME_OPEN_INPUT;
+	OUTPUT_TEXT CMDNAME_CLOSE_INPUT;
+	OUTPUT_TEXT CMDNAME_WRITE;
+	OUTPUT_TEXT CMDNAME_OPEN_OUTPUT;
+	OUTPUT_TEXT CMDNAME_CLOSE_OUTPUT;
 };

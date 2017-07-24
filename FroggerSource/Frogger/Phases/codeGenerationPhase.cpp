@@ -255,17 +255,17 @@ void CodeGenerationPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 {
-	return name == lang->FUNCTNAME_TO_STRING.getText() ||
-		   name == lang->FUNCTNAME_TO_ASCII.getText() ||
-		   name == lang->FUNCTNAME_PARSE_DOUBLE.getText() ||
-		   name == lang->FUNCTNAME_ASCII_AT.getText() ||
-		   name == lang->FUNCTNAME_LENGTH.getText() ||
-		   name == lang->FUNCTNAME_RETRIEVE_DOUBLE.getText() ||
-		   name == lang->FUNCTNAME_RETRIEVE_STRING.getText() ||
-		   name == lang->FUNCTNAME_RANDOM.getText() ||
-		   name == lang->FUNCTNAME_READ.getText() ||
-		   name == lang->FUNCTNAME_ELEMENT_AT.getText() ||
-		   name == lang->FUNCTNAME_SIZE.getText();
+	return name == lang->FUNCTNAME_TO_STRING ||
+		   name == lang->FUNCTNAME_TO_ASCII ||
+		   name == lang->FUNCTNAME_PARSE_DOUBLE ||
+		   name == lang->FUNCTNAME_ASCII_AT ||
+		   name == lang->FUNCTNAME_LENGTH ||
+		   name == lang->FUNCTNAME_RETRIEVE_DOUBLE ||
+		   name == lang->FUNCTNAME_RETRIEVE_STRING ||
+		   name == lang->FUNCTNAME_RANDOM ||
+		   name == lang->FUNCTNAME_READ ||
+		   name == lang->FUNCTNAME_ELEMENT_AT ||
+		   name == lang->FUNCTNAME_SIZE;
 }
 
 // ----------------------------------------------------------
@@ -277,13 +277,13 @@ bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 // ----------------------------------------------------------
 bool CodeGenerationPhase::validBuiltInCommandName(string name)
 {
-	return name == lang->CMDNAME_END_NULL.getText() ||
-		   name == lang->CMDNAME_DISPLAY_STR.getText() ||
-		   name == lang->CMDNAME_OPEN_INPUT.getText() ||
-		   name == lang->CMDNAME_OPEN_OUTPUT.getText() ||
-		   name == lang->CMDNAME_WRITE.getText() ||
-		   name == lang->CMDNAME_CLOSE_INPUT.getText() ||
-		   name == lang->CMDNAME_CLOSE_OUTPUT.getText();
+	return name == lang->CMDNAME_END_NULL ||
+		   name == lang->CMDNAME_DISPLAY_STR ||
+		   name == lang->CMDNAME_OPEN_INPUT ||
+		   name == lang->CMDNAME_OPEN_OUTPUT ||
+		   name == lang->CMDNAME_WRITE ||
+		   name == lang->CMDNAME_CLOSE_INPUT ||
+		   name == lang->CMDNAME_CLOSE_OUTPUT;
 }
 
 // ----------------------------------------------------------

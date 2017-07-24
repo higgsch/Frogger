@@ -40,7 +40,7 @@ public:
 	bool isDefined;
 
 	SUPPORT_TEXT(string text, support_code_type type) 
-		: OUTPUT_TEXT(text, OUTTYPE_SUPPORTCODE), 
+		: OUTPUT_TEXT(text), 
 		type(type), required(false), isDefined(false) {}
 	SUPPORT_TEXT() : type(SCT_UNINIT) {}
 
@@ -265,7 +265,7 @@ public:
 	void expOpUsed();
 
 	//Output Text
-	SYMBOL_TEXT SYM_EMPTY_STRING;
+	OUTPUT_TEXT SYM_EMPTY_STRING;
 
 	IMPORT_STMT IMP_IO_STREAM;
 	IMPORT_STMT IMP_MATH;
