@@ -11,6 +11,7 @@ using namespace std;
 
 //forward declaration
 class ProgramNode;
+class Language;
 
 // ----------------------------------------------------------
 // This class represents the data known about an argument.
@@ -96,12 +97,15 @@ struct FunctionRecord : public Record<Function>
 // ----------------------------------------------------------
 // This class represents a collection of variables
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class SymbolTable : public Table<Symbol>
 {
+private:
+	Language * lang;
 public:
-	SymbolTable(UDFRecord * rec);
+	SymbolTable(Language * language, UDFRecord * rec);
+	SymbolTable(Language * language);
 
 	DataType symbolType(string id);
 };
@@ -109,49 +113,52 @@ public:
 // ----------------------------------------------------------
 // This class represents a collection of commands
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class CommandTable : public Table<Command>
 {
+private:
+	Language * lang;
 public:
-	CommandTable();
+	CommandTable(Language * language);
 
-	static Command* CMD_END_NULL;
-	static Command* CMD_END_STR;
-	static Command* CMD_END_DBL;
-	static Command* CMD_DISPLAY_STR;
-	static Command* CMD_DISPLAY_DBL;
-	static Command* CMD_OPEN_INPUT;
-	static Command* CMD_CLOSE_INPUT;
-	static Command* CMD_WRITE;
-	static Command* CMD_OPEN_OUTPUT;
-	static Command* CMD_CLOSE_OUTPUT;
-
+	Command* CMD_END_NULL;
+	Command* CMD_END_STR;
+	Command* CMD_END_DBL;
+	Command* CMD_DISPLAY_STR;
+	Command* CMD_DISPLAY_DBL;
+	Command* CMD_OPEN_INPUT;
+	Command* CMD_CLOSE_INPUT;
+	Command* CMD_WRITE;
+	Command* CMD_OPEN_OUTPUT;
+	Command* CMD_CLOSE_OUTPUT;
 };
 
 // ----------------------------------------------------------
 // This class represents a collection of functions
 //
-// Version 3.3
+// Version 4.2
 // ----------------------------------------------------------
 class FunctionTable : public Table<Function>
 {
+private:
+	Language * lang;
 public:
-	FunctionTable();
+	FunctionTable(Language * language);
 
 	DataType getFunctionReturnType(Function* funct);
 
-	static Function* FUNCT_TO_STRING;
-	static Function* FUNCT_TO_ASCII;
-	static Function* FUNCT_PARSE_DOUBLE;
-	static Function* FUNCT_ASCII_AT;
-	static Function* FUNCT_LENGTH;
-	static Function* FUNCT_RETRIEVE_DOUBLE;
-	static Function* FUNCT_RANDOM;
-	static Function* FUNCT_RETRIEVE_STRING;
-	static Function* FUNCT_READ;
-	static Function* FUNCT_ELEMENT_AT;
-	static Function* FUNCT_SIZE;
+	Function* FUNCT_TO_STRING;
+	Function* FUNCT_TO_ASCII;
+	Function* FUNCT_PARSE_DOUBLE;
+	Function* FUNCT_ASCII_AT;
+	Function* FUNCT_LENGTH;
+	Function* FUNCT_RETRIEVE_DOUBLE;
+	Function* FUNCT_RANDOM;
+	Function* FUNCT_RETRIEVE_STRING;
+	Function* FUNCT_READ;
+	Function* FUNCT_ELEMENT_AT;
+	Function* FUNCT_SIZE;
 };
 
 // ----------------------------------------------------------

@@ -14,6 +14,90 @@ const string CPPLanguage::CLOSE_NEST = ")";
 const string CPPLanguage::INDENT = "\t";
 
 // ----------------------------------------------------------
+// This function initializes the language elements.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CPPLanguage::initOutputTexts()
+{
+	DT_DOUBLE = DATATYPE_TEXT("double");
+	DT_STRING = DATATYPE_TEXT("string");
+	DT_VOID = DATATYPE_TEXT("void");
+
+	SYM_ARGS = SYMBOL_TEXT("args");
+	SYM_I_FILE = SYMBOL_TEXT("in_file");
+	SYM_O_FILE = SYMBOL_TEXT("out_file");
+	SYM_EMPTY_STRING = SYMBOL_TEXT("emptyString");
+
+	FUNCTNAME_TO_STRING = FUNCT_NAME("toString");
+	FUNCTNAME_TO_ASCII = FUNCT_NAME("toAscii");
+	FUNCTNAME_PARSE_DOUBLE = FUNCT_NAME("parseDouble");
+	FUNCTNAME_ASCII_AT = FUNCT_NAME("asciiAt");
+	FUNCTNAME_LENGTH = FUNCT_NAME("length");
+	FUNCTNAME_RETRIEVE_DOUBLE = FUNCT_NAME("retrieveDouble");
+	FUNCTNAME_RANDOM = FUNCT_NAME("random");
+	FUNCTNAME_RETRIEVE_STRING = FUNCT_NAME("retrieveString");
+	FUNCTNAME_READ = FUNCT_NAME("read");
+	FUNCTNAME_ELEMENT_AT = FUNCT_NAME("elementAt");
+	FUNCTNAME_SIZE = FUNCT_NAME("size");
+
+	CMDNAME_END_NULL = CMD_NAME("end");
+	CMDNAME_END_STR = CMD_NAME("end");
+	CMDNAME_END_DBL = CMD_NAME("end");
+	CMDNAME_DISPLAY_STR = CMD_NAME("display");
+	CMDNAME_DISPLAY_DBL = CMD_NAME("display");
+	CMDNAME_OPEN_INPUT = CMD_NAME("openI");
+	CMDNAME_CLOSE_INPUT = CMD_NAME("closeI");
+	CMDNAME_WRITE = CMD_NAME("write");
+	CMDNAME_OPEN_OUTPUT = CMD_NAME("openO");
+	CMDNAME_CLOSE_OUTPUT = CMD_NAME("closeO");
+
+	IMP_IO_STREAM = IMPORT_STMT("#include <iostream>");
+	IMP_MATH = IMPORT_STMT("#include <math.h>");
+	IMP_STD_LIB = IMPORT_STMT("#include <stdlib.h>");
+	IMP_TIME = IMPORT_STMT("#include <time.h>");
+	IMP_F_STREAM = IMPORT_STMT("#include <fstream>");
+	IMP_STRING = IMPORT_STMT("#include <string>");
+	IMP_VECTOR = IMPORT_STMT("#include <vector>");
+
+	SYMDEF_ARGS = VAR_DEF("vector<string> " + SYM_ARGS.getText() + ";");
+	SYMDEF_I_FILE = VAR_DEF("ifstream " + SYM_I_FILE.getText() + ";");
+	SYMDEF_O_FILE = VAR_DEF("ofstream " + SYM_O_FILE.getText() + ";");
+	SYMDEF_EMPTY_STRING = VAR_DEF("const string " + SYM_EMPTY_STRING.getText() + " = \"\";");
+
+	FUNCTDEF_ROUND = FUNCT_DEF("double round(double num) {\n\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n}");
+	FUNCTDEF_RT = FUNCT_DEF("double rt(double l, double r) {\n\t return pow(r, 1.0 / l);\n}");
+	FUNCTDEF_TO_STRING = FUNCT_DEF("string " + FUNCTNAME_TO_STRING.getText() + "(double d) { return to_string(d); }");
+	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + FUNCTNAME_TO_ASCII.getText() + "(double d) { return (char) d; }");
+	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_PARSE_DOUBLE.getText() + "(string s)\n{\n\tif (isdigit(s[0]) || s[0] == '-')\n\t{\n\t\treturn stod(s, NULL);\n\t}\n\treturn 0;\n}");
+	FUNCTDEF_ASCII_AT = FUNCT_DEF("double " + FUNCTNAME_ASCII_AT.getText() + "(string s, int loc)\n{\n\tif (loc < 0 || loc >= s.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn s.at(loc);\n}");
+	FUNCTDEF_LENGTH = FUNCT_DEF("double " + FUNCTNAME_LENGTH.getText() + "(string s) { return (emptyString + s).size(); }");
+	FUNCTDEF_RETRIEVE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_RETRIEVE_DOUBLE.getText() + "()\n{\n\tdouble d = 0;\n\tcin >> d;\n\treturn d;\n}");
+	FUNCTDEF_RETRIEVE_STRING = FUNCT_DEF("string " + FUNCTNAME_RETRIEVE_STRING.getText() + "()\n{\n\tstring s = "";\n\tcin >> s;\n\treturn s;\n}");
+	FUNCTDEF_RANDOM = FUNCT_DEF("double " + FUNCTNAME_RANDOM.getText() + "() { return ((double) rand() / (RAND_MAX)); }");
+	FUNCTDEF_READ = FUNCT_DEF("char " + FUNCTNAME_READ.getText() + "() { return (char)(in_file.get()); }");
+	FUNCTDEF_ELEMENT_AT = FUNCT_DEF("string " + FUNCTNAME_ELEMENT_AT.getText() + "(vector<string> v, int index)\n{\n\tif (index < 0 || index >= v.size())\n\t{\n\t\treturn \"\";\n\t}\n\treturn v[index];\n}");
+	FUNCTDEF_SIZE = FUNCT_DEF("double " + FUNCTNAME_SIZE.getText() + "(vector<string> v) { return v.size(); }");
+	FUNCTDEF_DISPLAY_DBL = FUNCT_DEF("void " + CMDNAME_DISPLAY_DBL.getText() + "(double d) { cout << d; }");
+	FUNCTDEF_DISPLAY_STR = FUNCT_DEF("void " + CMDNAME_DISPLAY_STR.getText() + "(string s) { cout << s; }");
+	FUNCTDEF_OPEN_I = FUNCT_DEF("void " + CMDNAME_OPEN_INPUT.getText() + "(string s) { " + SYM_I_FILE.getText() + ".open(s); }");
+	FUNCTDEF_OPEN_O = FUNCT_DEF("void " + CMDNAME_OPEN_OUTPUT.getText() + "(string s) { " + SYM_O_FILE.getText() + ".open(s); }");
+	FUNCTDEF_WRITE = FUNCT_DEF("void " + CMDNAME_WRITE.getText() + "(string s) { " + SYM_O_FILE.getText() + " << s; }");
+	FUNCTDEF_CLOSE_I = FUNCT_DEF("void " + CMDNAME_CLOSE_INPUT.getText() + "() { " + SYM_I_FILE.getText() + ".close(); }");
+	FUNCTDEF_CLOSE_O = FUNCT_DEF("void " + CMDNAME_CLOSE_OUTPUT.getText() + "() { " + SYM_O_FILE.getText() + ".close(); }");
+
+	INIT_ARGS = INIT_STMT(SYM_ARGS.getText() + " = vector<string>(argv + 1, argv + argc);");
+	INIT_RANDOM = INIT_STMT("srand(time(NULL)); rand();");
+	INIT_I_FILE = INIT_STMT(SYM_I_FILE.getText() + " = ifstream();");
+	INIT_O_FILE = INIT_STMT(SYM_O_FILE.getText() + " = ofstream();");
+
+	USING = STATIC_SUPPORT("using namespace std;");
+	MAIN_DEC = STATIC_SUPPORT("int main(int argc, char* argv[])");
+
+	initDependencies();
+}
+
+// ----------------------------------------------------------
 // This function returns the pre-program code
 // @structure: the program's structure
 //
@@ -94,7 +178,6 @@ string CPPLanguage::getJmpStmtText(string udfName, int stmtNo, int jmpNo, bool i
 				
 	}
 	result += stmtText;
-	//result += buffer.getNext();
 			
 	result += line("goto " + getLabelText(udfName, jmpNo) + ";");
 	if (isOwnLine)
@@ -197,7 +280,7 @@ string CPPLanguage::getCommandCallText(bool isBuiltIn, string primaryText, strin
 {
 	string result = "";
 
-	if (isBuiltIn && name == CommandTable::CMD_END_NULL->name)
+	if (isBuiltIn && name == CMDNAME_END_NULL.getText())
 		return line("return " + argListText + ";");
 
 	//For Built-In
@@ -221,7 +304,7 @@ string CPPLanguage::getArgumentListText(string thisArgText, string argTailText)
 //Arithmetic Operation Output Texts
 string CPPLanguage::getAddOperationText(bool isNested, bool isString, string leftOperandText, string rightOperandText)
 {
-	string pretext = (isString) ? SYMBOL_TEXT::EMPTY_STRING.getText() + " + " : "";
+	string pretext = (isString) ? SYM_EMPTY_STRING.getText() + " + " : "";
 	return getBinaryOperationText(isNested, pretext, " + ", "", leftOperandText, rightOperandText);
 }
 string CPPLanguage::getSubOperationText(bool isNested, string leftOperandText, string rightOperandText)
@@ -264,7 +347,7 @@ string CPPLanguage::getIdentifierText(bool nested, string id)
 {
 	string result = "";
 
-	if (id == SYMBOL_TEXT::ARGS.getText())
+	if (id == SYM_ARGS.getText())
 		result += id;
 	else
 		//prepend identifiers to avoid c++ keyword conflicts
@@ -278,6 +361,32 @@ string CPPLanguage::getStringLiteralText(string str)
 { 	return str; }
 string CPPLanguage::getDoubleLiteralText(bool isNested, string dbl)
 {	return nest(isNested, dbl); }
+
+//SupportReqsPhase Accessors
+void CPPLanguage::argsUsed() { SYMDEF_ARGS.needed(); }
+void CPPLanguage::toStringUsed() { FUNCTDEF_TO_STRING.needed(); }
+void CPPLanguage::toAsciiUsed() { FUNCTDEF_TO_ASCII.needed(); }
+void CPPLanguage::parseDoubleUsed() { FUNCTDEF_PARSE_DOUBLE.needed(); }
+void CPPLanguage::asciiAtUsed() { FUNCTDEF_ASCII_AT.needed(); }
+void CPPLanguage::lengthUsed() { FUNCTDEF_LENGTH.needed(); }
+void CPPLanguage::retrieveDoubleUsed() { FUNCTDEF_RETRIEVE_DOUBLE.needed(); }
+void CPPLanguage::retrieveStringUsed() { FUNCTDEF_RETRIEVE_STRING.needed(); }
+void CPPLanguage::randomUsed() { FUNCTDEF_RANDOM.needed(); }
+void CPPLanguage::readUsed() { FUNCTDEF_READ.needed(); }
+void CPPLanguage::elementAtUsed() { FUNCTDEF_ELEMENT_AT.needed(); }
+void CPPLanguage::sizeUsed() { FUNCTDEF_SIZE.needed(); }
+void CPPLanguage::displayDoubleUsed() { FUNCTDEF_DISPLAY_DBL.needed(); }
+void CPPLanguage::displayStringUsed() { FUNCTDEF_DISPLAY_STR.needed(); }
+void CPPLanguage::openInputUsed() { FUNCTDEF_OPEN_I.needed(); }
+void CPPLanguage::closeInputUsed() { FUNCTDEF_CLOSE_I.needed(); }
+void CPPLanguage::openOutputUsed() { FUNCTDEF_OPEN_O.needed(); }
+void CPPLanguage::writeUsed() { FUNCTDEF_WRITE.needed(); }
+void CPPLanguage::closeOutputUsed() { FUNCTDEF_CLOSE_O.needed(); }
+void CPPLanguage::addOpUsed() { SYMDEF_EMPTY_STRING.needed(); }
+void CPPLanguage::modDivOpUsed() { IMP_MATH.needed(); }
+void CPPLanguage::iDivOpUsed() { FUNCTDEF_ROUND.needed(); }
+void CPPLanguage::rootOpUsed() { FUNCTDEF_RT.needed(); }
+void CPPLanguage::expOpUsed() { IMP_MATH.needed(); }
 
 // ----------------------------------------------------------
 // This function returns the output text for a binary operation
@@ -299,14 +408,14 @@ string CPPLanguage::getBinaryOperationText(bool nested, string pretext, string m
 string CPPLanguage::getUsingStatementText()
 {
 	string result = "";
-	result += getSupportText(IMPORT_STMT::IO_STREAM);
-	result += getSupportText(IMPORT_STMT::MATH);
-	result += getSupportText(IMPORT_STMT::STD_LIB);
-	result += getSupportText(IMPORT_STMT::TIME);
-	result += getSupportText(IMPORT_STMT::F_STREAM);
-	result += getSupportText(IMPORT_STMT::STRING);
-	result += getSupportText(IMPORT_STMT::VECTOR);
-	result += getSupportText(STATIC_SUPPORT::USING);
+	result += getSupportText(IMP_IO_STREAM);
+	result += getSupportText(IMP_MATH);
+	result += getSupportText(IMP_STD_LIB);
+	result += getSupportText(IMP_TIME);
+	result += getSupportText(IMP_F_STREAM);
+	result += getSupportText(IMP_STRING);
+	result += getSupportText(IMP_VECTOR);
+	result += getSupportText(USING);
 	result += emptyLine();
 	return result;
 }
@@ -320,15 +429,15 @@ string CPPLanguage::getUsingStatementText()
 string CPPLanguage::getSupportCode()
 {
 	string result = "";
-	result += getSupportText(VAR_DEF::ARGS);
-	result += getSupportText(VAR_DEF::I_FILE);
-	result += getSupportText(VAR_DEF::O_FILE);
-	result += getSupportText(VAR_DEF::EMPTY_STRING);
+	result += getSupportText(SYMDEF_ARGS);
+	result += getSupportText(SYMDEF_I_FILE);
+	result += getSupportText(SYMDEF_O_FILE);
+	result += getSupportText(SYMDEF_EMPTY_STRING);
 	result += emptyLine();
 
-	result += getSupportText(FUNCT_DEF::ROUND);
+	result += getSupportText(FUNCTDEF_ROUND);
 	result += emptyLine();
-	result += getSupportText(FUNCT_DEF::RT);
+	result += getSupportText(FUNCTDEF_RT);
 	result += emptyLine();
 	return result;
 }
@@ -341,17 +450,17 @@ string CPPLanguage::getSupportCode()
 string CPPLanguage::getBuiltInFunctionCode()
 {
 	string result = "";
-	result += getSupportText(FUNCT_DEF::TO_STRING);
-	result += getSupportText(FUNCT_DEF::TO_ASCII);
-	result += getSupportText(FUNCT_DEF::PARSE_DOUBLE);
-	result += getSupportText(FUNCT_DEF::ASCII_AT);
-	result += getSupportText(FUNCT_DEF::LENGTH);
-	result += getSupportText(FUNCT_DEF::RETRIEVE_DOUBLE);
-	result += getSupportText(FUNCT_DEF::RETRIEVE_STRING);
-	result += getSupportText(FUNCT_DEF::RANDOM);
-	result += getSupportText(FUNCT_DEF::READ);
-	result += getSupportText(FUNCT_DEF::ELEMENT_AT);
-	result += getSupportText(FUNCT_DEF::SIZE);
+	result += getSupportText(FUNCTDEF_TO_STRING);
+	result += getSupportText(FUNCTDEF_TO_ASCII);
+	result += getSupportText(FUNCTDEF_PARSE_DOUBLE);
+	result += getSupportText(FUNCTDEF_ASCII_AT);
+	result += getSupportText(FUNCTDEF_LENGTH);
+	result += getSupportText(FUNCTDEF_RETRIEVE_DOUBLE);
+	result += getSupportText(FUNCTDEF_RETRIEVE_STRING);
+	result += getSupportText(FUNCTDEF_RANDOM);
+	result += getSupportText(FUNCTDEF_READ);
+	result += getSupportText(FUNCTDEF_ELEMENT_AT);
+	result += getSupportText(FUNCTDEF_SIZE);
 	return result;
 }
 
@@ -363,13 +472,13 @@ string CPPLanguage::getBuiltInFunctionCode()
 string CPPLanguage::getBuiltInCommandCode()
 {
 	string result = "";
-	result += getSupportText(FUNCT_DEF::DISPLAY_DBL);
-	result += getSupportText(FUNCT_DEF::DISPLAY_STR);
-	result += getSupportText(FUNCT_DEF::OPEN_I);
-	result += getSupportText(FUNCT_DEF::OPEN_O);
-	result += getSupportText(FUNCT_DEF::WRITE);
-	result += getSupportText(FUNCT_DEF::CLOSE_I);
-	result += getSupportText(FUNCT_DEF::CLOSE_O);
+	result += getSupportText(FUNCTDEF_DISPLAY_DBL);
+	result += getSupportText(FUNCTDEF_DISPLAY_STR);
+	result += getSupportText(FUNCTDEF_OPEN_I);
+	result += getSupportText(FUNCTDEF_OPEN_O);
+	result += getSupportText(FUNCTDEF_WRITE);
+	result += getSupportText(FUNCTDEF_CLOSE_I);
+	result += getSupportText(FUNCTDEF_CLOSE_O);
 	return result;
 }
 
@@ -404,16 +513,16 @@ string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 string CPPLanguage::getMainFunctionText(string PEFName)
 {
 	string result = "";
-	result += getSupportText(STATIC_SUPPORT::MAIN_DEC);
+	result += getSupportText(MAIN_DEC);
 	result += openBraceLine();
 
-	result += getSupportText(INIT_STMT::ARGS);
-	result += getSupportText(INIT_STMT::RANDOM);
-	result += getSupportText(INIT_STMT::I_FILE);
-	result += getSupportText(INIT_STMT::O_FILE);
+	result += getSupportText(INIT_ARGS);
+	result += getSupportText(INIT_RANDOM);
+	result += getSupportText(INIT_I_FILE);
+	result += getSupportText(INIT_O_FILE);
 
 	result += emptyLine();
-	result += line(PEFName + "();");
+	result += line(PEFName + nest(true, "") + ";");
 	result += closeBraceLine();
 	result += emptyLine();
 	return result;
@@ -436,10 +545,10 @@ string CPPLanguage::getSymbolTableCode(SymbolTable * symbols)
 			continue;
 		
 		//emit variable declaration and initialization
-		if (s->type == DT_DOUBLE)
-			result += line(DATATYPE_TEXT::DOUBLE.getText() + " _" + s->id + " = 0;");
-		else if (s->type == DT_STRING)
-			result += line(DATATYPE_TEXT::STRING.getText() + " _" + s->id + " = \"\";");
+		if (s->type == DataType::DT_DOUBLE)
+			result += line(DT_DOUBLE.getText() + " _" + s->id + " = 0;");
+		else if (s->type == DataType::DT_STRING)
+			result += line(DT_STRING.getText() + " _" + s->id + " = \"\";");
 		else
 			result += line("Not_Defined _" + s->id + " = NULL;");
 	}
@@ -482,25 +591,25 @@ string CPPLanguage::getLabelText(string udfName, int labelIndex)
 // ----------------------------------------------------------
 string CPPLanguage::getFunctionPrototype(DataType returnType, string udfName, vector<argPair*>* args)
 {
-	return getTypeString(returnType) + " " + udfName + "(" + getArgsString(args) + ")";
+	return getTypeString(returnType) + " " + udfName + nest(true, getArgsString(args));
 }
 
 // ----------------------------------------------------------
 // This function returns the output text corresponding to
 // the given DataType.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 string CPPLanguage::getTypeString(DataType dt)
 {
 	switch (dt)
 	{
-	case DT_DOUBLE:
-		return DATATYPE_TEXT::DOUBLE.getText();
-	case DT_STRING:
-		return DATATYPE_TEXT::STRING.getText();
-	case DT_NULL:
-		return DATATYPE_TEXT::VOID.getText();
+	case DataType::DT_DOUBLE:
+		return DT_DOUBLE.getText();
+	case DataType::DT_STRING:
+		return DT_STRING.getText();
+	case DataType::DT_NULL:
+		return DT_VOID.getText();
 	default:
 		return "UNDEFINED TYPE";
 	}
@@ -528,4 +637,65 @@ string CPPLanguage::getArgsString(vector<argPair *> * args)
 	}
 
 	return result;
+}
+
+// ----------------------------------------------------------
+// This function initializes the language element dependencies.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void CPPLanguage::initDependencies()
+{
+	SYMDEF_ARGS.addDependency(&IMP_VECTOR);
+	SYMDEF_ARGS.addDependency(&IMP_STRING);
+	SYMDEF_ARGS.addDependency(&INIT_ARGS);
+
+	SYMDEF_I_FILE.addDependency(&IMP_F_STREAM);
+	SYMDEF_I_FILE.addDependency(&INIT_I_FILE);
+
+	SYMDEF_O_FILE.addDependency(&IMP_F_STREAM);
+	SYMDEF_O_FILE.addDependency(&INIT_O_FILE);
+
+	SYMDEF_EMPTY_STRING.addDependency(&IMP_STRING);
+
+	FUNCTDEF_ROUND.addDependency(&IMP_MATH);
+
+	FUNCTDEF_RT.addDependency(&IMP_MATH);
+
+	//TO_ASCII has no dependencies
+
+	FUNCTDEF_TO_STRING.addDependency(&IMP_STRING);
+	FUNCTDEF_PARSE_DOUBLE.addDependency(&IMP_STRING);
+	FUNCTDEF_ASCII_AT.addDependency(&IMP_STRING);
+	FUNCTDEF_LENGTH.addDependency(&IMP_STRING);
+
+	FUNCTDEF_RETRIEVE_DOUBLE.addDependency(&IMP_IO_STREAM);
+	FUNCTDEF_RETRIEVE_STRING.addDependency(&IMP_IO_STREAM);
+	FUNCTDEF_RETRIEVE_STRING.addDependency(&IMP_STRING);
+	
+	FUNCTDEF_RANDOM.addDependency(&IMP_STD_LIB);
+	FUNCTDEF_RANDOM.addDependency(&IMP_TIME);
+	FUNCTDEF_RANDOM.addDependency(&INIT_RANDOM);
+	
+	FUNCTDEF_READ.addDependency(&SYMDEF_I_FILE);
+	
+	FUNCTDEF_ELEMENT_AT.addDependency(&IMP_VECTOR);
+	FUNCTDEF_ELEMENT_AT.addDependency(&IMP_STRING);
+	FUNCTDEF_SIZE.addDependency(&IMP_VECTOR);
+	FUNCTDEF_SIZE.addDependency(&IMP_STRING);
+	
+	FUNCTDEF_DISPLAY_DBL.addDependency(&IMP_IO_STREAM);
+	FUNCTDEF_DISPLAY_STR.addDependency(&IMP_IO_STREAM);
+	FUNCTDEF_DISPLAY_STR.addDependency(&IMP_STRING);
+	
+	FUNCTDEF_OPEN_I.addDependency(&IMP_STRING);
+	FUNCTDEF_OPEN_I.addDependency(&SYMDEF_I_FILE);
+	FUNCTDEF_OPEN_O.addDependency(&IMP_STRING);
+	FUNCTDEF_OPEN_O.addDependency(&SYMDEF_O_FILE);
+	
+	FUNCTDEF_WRITE.addDependency(&IMP_STRING);
+	FUNCTDEF_WRITE.addDependency(&SYMDEF_O_FILE);
+	
+	FUNCTDEF_CLOSE_I.addDependency(&SYMDEF_I_FILE);
+	FUNCTDEF_CLOSE_O.addDependency(&SYMDEF_O_FILE);
 }

@@ -31,8 +31,8 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 	progStruct.PEF->UDFName = inFile.substr(start, end - start);
 	progStruct.PEF->args = new vector<argPair *>();
 
-	FgrFunctionC funcComp;
-	progAST.PEF = funcComp.compileFunctionToAST(inFile, new FunctionTable(), progStruct.PEF);
+	FgrFunctionC funcComp(lang);
+	progAST.PEF = funcComp.compileFunctionToAST(inFile, new FunctionTable(lang), progStruct.PEF);
 
 	computeRequiredSupportCode(&progAST);
 	
@@ -52,7 +52,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 {
 	SCFParser p;
 	progStruct.UDFs = p.parseSCF(projectDir + projectName + ".struct", projectName);
-	FunctionTable * table = new FunctionTable();
+	FunctionTable * table = new FunctionTable(lang);
 
 	//verify all referenced files exist
 	int index = 0;
@@ -84,7 +84,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	progStruct.PEF->UDFName = projectName;
 	progStruct.PEF->returnType = DT_NULL;
 	progStruct.PEF->args = new vector<argPair *>();
-	FgrFunctionC funcComp;
+	FgrFunctionC funcComp(lang);
 	progAST.PEF = funcComp.compileFunctionToAST(projectDir + projectName + ".fgr", table, progStruct.PEF);
 
 	//compile all referenced files
@@ -111,7 +111,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 void FroggerC::computeRequiredSupportCode(ProgramAST * progAST)
 {
 	SupportReqsPhase * reqs = new SupportReqsPhase();
-	reqs->gatherRequirements(progAST);
+	reqs->gatherRequirements(lang, progAST);
 	delete reqs;
 }
 
@@ -123,7 +123,7 @@ void FroggerC::computeRequiredSupportCode(ProgramAST * progAST)
 // ----------------------------------------------------------
 void FroggerC::emitInputFileCode(string outFile)
 {
-	CodeGenerationPhase *cgp = new CodeGenerationPhase();
+	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
 	cgp->open(outFile);
 	cgp->printMetaCode(&progStruct);
@@ -141,7 +141,7 @@ void FroggerC::emitInputFileCode(string outFile)
 // ----------------------------------------------------------
 void FroggerC::emitInputProjectCode(string outFile)
 {
-	CodeGenerationPhase *cgp = new CodeGenerationPhase();
+	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
 	cgp->open(outFile);
 	cgp->printMetaCode(&progStruct);

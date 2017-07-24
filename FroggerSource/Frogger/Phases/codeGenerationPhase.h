@@ -8,9 +8,8 @@
 #include "phase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
-#include "..\DataStructures\OutputText\outputText.h"
 #include "..\Printing\printer.h"
-#include "..\DataStructures\OutputLanguage\cppLanguage.h"
+#include "..\DataStructures\OutputLanguage\language.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -23,7 +22,7 @@ class CodeGenerationPhase : public Phase
 {
 private:
 	Printer * p;
-	CPPLanguage * lang;
+	Language * lang;
 
 	string currUDFName;
 
@@ -34,7 +33,7 @@ private:
 	bool validBuiltInFunctionName(string name);
 	bool validBuiltInCommandName(string name);
 public:
-	CodeGenerationPhase() : p(new Printer()), lang(new CPPLanguage()), currUDFName("<META>") {}
+	CodeGenerationPhase(Language * lang) : p(new Printer()), lang(lang), currUDFName("<META>") {}
 
 	void open(string filename) { p->open(filename); }
 	void close() { p->close(); }

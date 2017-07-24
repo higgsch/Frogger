@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.2
 // ----------------------------------------------------------------
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
@@ -12,13 +12,15 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-DataTypingPhase::DataTypingPhase(FunctionTable * functs, SymbolTable * syms) 
+DataTypingPhase::DataTypingPhase(Language * language, FunctionTable * functs, SymbolTable * syms) 
 { 
+	lang = language;
+
 	symbols = syms; 
 	functions = functs;
-	commands = new CommandTable();
+	commands = new CommandTable(lang);
 	changeMadeThisRound = false; 
 	setUnknownTypeNodesToDefault = false;
 }

@@ -13,8 +13,10 @@ using namespace std;
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::gatherRequirements(ProgramAST * ast)
+void SupportReqsPhase::gatherRequirements(Language * language, ProgramAST * ast)
 {
+	lang = language;
+
 	ast->getPEFNode()->accept(this);
 
 	int UDFCount = ast->getNumberOfUDFs();
@@ -30,8 +32,8 @@ void SupportReqsPhase::gatherRequirements(ProgramAST * ast)
 // ----------------------------------------------------------
 void SupportReqsPhase::visit(IdRefNode * n)
 {
-	if (n->getLexeme() == SYMBOL_TEXT::ARGS.getText())
-		VAR_DEF::ARGS.needed();
+	if (n->getLexeme() == lang->SYM_ARGS.getText())
+		lang->argsUsed();
 }
 
 // ----------------------------------------------------------
@@ -45,38 +47,38 @@ void SupportReqsPhase::visit(FunctionCallNode * n)
 	n->visitAllChildren(this);
 
 	Function * funct = n->getFunct();
-	if (funct->equals(FunctionTable::FUNCT_TO_STRING))
-		FUNCT_DEF::TO_STRING.needed();
+	if (funct->equals(lang->builtInFunctions->FUNCT_TO_STRING))
+		lang->toStringUsed();
 
-	else if (funct->equals(FunctionTable::FUNCT_TO_ASCII))
-		FUNCT_DEF::TO_ASCII.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_TO_ASCII))
+		lang->toAsciiUsed();
 
-	else if (funct->equals(FunctionTable::FUNCT_PARSE_DOUBLE))
-		FUNCT_DEF::PARSE_DOUBLE.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_PARSE_DOUBLE))
+		lang->parseDoubleUsed();
 
-	else if (funct->equals(FunctionTable::FUNCT_ASCII_AT))
-		FUNCT_DEF::ASCII_AT.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_ASCII_AT))
+		lang->asciiAtUsed();
 	
-	else if (funct->equals(FunctionTable::FUNCT_LENGTH))
-		FUNCT_DEF::LENGTH.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_LENGTH))
+		lang->lengthUsed();
 	
-	else if (funct->equals(FunctionTable::FUNCT_RETRIEVE_DOUBLE))
-		FUNCT_DEF::RETRIEVE_DOUBLE.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_RETRIEVE_DOUBLE))
+		lang->retrieveDoubleUsed();
 
-	else if (funct->equals(FunctionTable::FUNCT_RETRIEVE_STRING))
-		FUNCT_DEF::RETRIEVE_STRING.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_RETRIEVE_STRING))
+		lang->retrieveStringUsed();
 	
-	else if (funct->equals(FunctionTable::FUNCT_RANDOM))
-		FUNCT_DEF::RANDOM.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_RANDOM))
+		lang->randomUsed();
 	
-	else if (funct->equals(FunctionTable::FUNCT_READ))
-		FUNCT_DEF::READ.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_READ))
+		lang->readUsed();
 	
-	else if (funct->equals(FunctionTable::FUNCT_ELEMENT_AT))
-		FUNCT_DEF::ELEMENT_AT.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_ELEMENT_AT))
+		lang->elementAtUsed();
 	
-	else if (funct->equals(FunctionTable::FUNCT_SIZE))
-		FUNCT_DEF::SIZE.needed();
+	else if (funct->equals(lang->builtInFunctions->FUNCT_SIZE))
+		lang->sizeUsed();
 }
 
 // ----------------------------------------------------------
@@ -90,26 +92,26 @@ void SupportReqsPhase::visit(CommandCallNode * n)
 	n->visitAllChildren(this);
 
 	Command * cmd = n->getCmd();
-	if (cmd->equals(CommandTable::CMD_DISPLAY_DBL))
-		FUNCT_DEF::DISPLAY_DBL.needed();
+	if (cmd->equals(lang->builtInCommands->CMD_DISPLAY_DBL))
+		lang->displayDoubleUsed();
 	
-	else if (cmd->equals(CommandTable::CMD_DISPLAY_STR))
-		FUNCT_DEF::DISPLAY_STR.needed();
+	else if (cmd->equals(lang->builtInCommands->CMD_DISPLAY_STR))
+		lang->displayStringUsed();
 	
-	else if (cmd->equals(CommandTable::CMD_OPEN_INPUT))
-		FUNCT_DEF::OPEN_I.needed();
+	else if (cmd->equals(lang->builtInCommands->CMD_OPEN_INPUT))
+		lang->openInputUsed();
 	
-	else if (cmd->equals(CommandTable::CMD_CLOSE_INPUT))
-		FUNCT_DEF::CLOSE_I.needed();
+	else if (cmd->equals(lang->builtInCommands->CMD_CLOSE_INPUT))
+		lang->closeInputUsed();
 
-	else if (cmd->equals(CommandTable::CMD_OPEN_OUTPUT))
-		FUNCT_DEF::OPEN_O.needed();
+	else if (cmd->equals(lang->builtInCommands->CMD_OPEN_OUTPUT))
+		lang->openOutputUsed();
 	
-	else if (cmd->equals(CommandTable::CMD_CLOSE_OUTPUT))
-		FUNCT_DEF::CLOSE_O.needed();
+	else if (cmd->equals(lang->builtInCommands->CMD_CLOSE_OUTPUT))
+		lang->closeOutputUsed();
 	
-	else if (cmd->equals(CommandTable::CMD_WRITE))
-		FUNCT_DEF::WRITE.needed();
+	else if (cmd->equals(lang->builtInCommands->CMD_WRITE))
+		lang->writeUsed();
 }
 
 // ----------------------------------------------------------
@@ -123,7 +125,7 @@ void SupportReqsPhase::visit(AddingNode * n)
 { 
 	n->visitAllChildren(this); 
 
-	VAR_DEF::EMPTY_STRING.needed();
+	lang->addOpUsed();
 }
 
 // ----------------------------------------------------------
@@ -137,7 +139,7 @@ void SupportReqsPhase::visit(ModDivingNode * n)
 {	
 	n->visitAllChildren(this);
 
-	IMPORT_STMT::MATH.needed();
+	lang->modDivOpUsed();
 }
 
 // ----------------------------------------------------------
@@ -151,7 +153,7 @@ void SupportReqsPhase::visit(IDivingNode * n)
 {
 	n->visitAllChildren(this);
 
-	FUNCT_DEF::ROUND.needed();
+	lang->iDivOpUsed();
 }
 
 // ----------------------------------------------------------
@@ -165,7 +167,7 @@ void SupportReqsPhase::visit(RootingNode * n)
 {
 	n->visitAllChildren(this);
 
-	FUNCT_DEF::RT.needed();
+	lang->rootOpUsed();
 }
 
 // ----------------------------------------------------------
@@ -179,5 +181,5 @@ void SupportReqsPhase::visit(ExpingNode * n)
 {
 	n->visitAllChildren(this);
 
-	IMPORT_STMT::MATH.needed();
+	lang->expOpUsed();
 }

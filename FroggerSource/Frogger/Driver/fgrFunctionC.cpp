@@ -1,13 +1,12 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.2
 // -----------------------------------------------------------------
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
 #include "fgrFunctionC.h"
 #include "..\Phases\phases.h"
 #include "..\Parsing\FgrParser.h"
-//#include "..\Parsing\scfParser.h"
 #include <iostream>
 using namespace std;
 
@@ -16,7 +15,7 @@ using namespace std;
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 FunctionAST* FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, UDFRecord * rec)
 {
@@ -29,7 +28,7 @@ FunctionAST* FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * f
 	computeJumpToLineNumbers(ast);
 
 	convertStrings(ast);
-	checkDataTypes(ast, functs, new SymbolTable(rec));
+	checkDataTypes(ast, functs, new SymbolTable(lang, rec));
 
 	return ast;
 }
@@ -86,11 +85,11 @@ void FgrFunctionC::convertStrings(FunctionAST * funct)
 // ----------------------------------------------------------
 // This function drives data typing.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 void FgrFunctionC::checkDataTypes(FunctionAST * ast, FunctionTable * functs, SymbolTable * symbols)
 {
-	DataTypingPhase *dtp = new DataTypingPhase(functs, symbols);
+	DataTypingPhase *dtp = new DataTypingPhase(lang, functs, symbols);
 	ast->root->accept(dtp);
 	ast->symbols = symbols;
 	delete dtp;

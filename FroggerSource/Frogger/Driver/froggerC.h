@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "..\DataStructures\Tables\tables.h"
+#include "..\DataStructures\OutputLanguage\cppLanguage.h"
 using namespace std;
 
 //forward declaration
@@ -23,6 +24,7 @@ bool quietMode;
 class FroggerC
 {
 private:
+	CPPLanguage * lang;
 	ProgramAST progAST;
 	ProgramStruct progStruct;
 
@@ -37,7 +39,9 @@ public:
 	FroggerC::FroggerC() { 
 		progStruct.PEF = new UDFRecord();
 		progStruct.UDFs = new vector<UDFRecord *>();
-		progAST.UDFs = new vector<FunctionAST *>(); }
+		progAST.UDFs = new vector<FunctionAST *>(); 
+		lang = new CPPLanguage();
+	}
 
 	void compileInputFile(string inFile, string outFile);
 	void compileInputProject(string projectDir, string projectName, string outFile);

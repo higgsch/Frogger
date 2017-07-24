@@ -255,17 +255,17 @@ void CodeGenerationPhase::visit(NotingNode * n)
 // ----------------------------------------------------------
 bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 {
-	return name == FunctionTable::FUNCT_TO_STRING->name ||
-		   name == FunctionTable::FUNCT_TO_ASCII->name ||
-		   name == FunctionTable::FUNCT_PARSE_DOUBLE->name ||
-		   name == FunctionTable::FUNCT_ASCII_AT->name ||
-		   name == FunctionTable::FUNCT_LENGTH->name ||
-		   name == FunctionTable::FUNCT_RETRIEVE_DOUBLE->name ||
-		   name == FunctionTable::FUNCT_RETRIEVE_STRING->name ||
-		   name == FunctionTable::FUNCT_RANDOM->name ||
-		   name == FunctionTable::FUNCT_READ->name ||
-		   name == FunctionTable::FUNCT_ELEMENT_AT->name ||
-		   name == FunctionTable::FUNCT_SIZE->name;
+	return name == lang->FUNCTNAME_TO_STRING.getText() ||
+		   name == lang->FUNCTNAME_TO_ASCII.getText() ||
+		   name == lang->FUNCTNAME_PARSE_DOUBLE.getText() ||
+		   name == lang->FUNCTNAME_ASCII_AT.getText() ||
+		   name == lang->FUNCTNAME_LENGTH.getText() ||
+		   name == lang->FUNCTNAME_RETRIEVE_DOUBLE.getText() ||
+		   name == lang->FUNCTNAME_RETRIEVE_STRING.getText() ||
+		   name == lang->FUNCTNAME_RANDOM.getText() ||
+		   name == lang->FUNCTNAME_READ.getText() ||
+		   name == lang->FUNCTNAME_ELEMENT_AT.getText() ||
+		   name == lang->FUNCTNAME_SIZE.getText();
 }
 
 // ----------------------------------------------------------
@@ -277,13 +277,13 @@ bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 // ----------------------------------------------------------
 bool CodeGenerationPhase::validBuiltInCommandName(string name)
 {
-	return name == CommandTable::CMD_END_NULL->name ||
-		   name == CommandTable::CMD_DISPLAY_STR->name ||
-		   name == CommandTable::CMD_OPEN_INPUT->name ||
-		   name == CommandTable::CMD_OPEN_OUTPUT->name ||
-		   name == CommandTable::CMD_WRITE->name ||
-		   name == CommandTable::CMD_CLOSE_INPUT->name ||
-		   name == CommandTable::CMD_CLOSE_OUTPUT->name;
+	return name == lang->CMDNAME_END_NULL.getText() ||
+		   name == lang->CMDNAME_DISPLAY_STR.getText() ||
+		   name == lang->CMDNAME_OPEN_INPUT.getText() ||
+		   name == lang->CMDNAME_OPEN_OUTPUT.getText() ||
+		   name == lang->CMDNAME_WRITE.getText() ||
+		   name == lang->CMDNAME_CLOSE_INPUT.getText() ||
+		   name == lang->CMDNAME_CLOSE_OUTPUT.getText();
 }
 
 // ----------------------------------------------------------

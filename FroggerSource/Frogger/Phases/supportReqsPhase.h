@@ -7,7 +7,7 @@
 #include "phase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
-#include "..\DataStructures\OutputText\outputText.h"
+#include "..\DataStructures\OutputLanguage\language.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -18,9 +18,10 @@ using namespace std;
 // ----------------------------------------------------------
 class SupportReqsPhase : public Phase
 {
-
+private:
+	Language * lang;
 public:
-	void gatherRequirements(ProgramAST * progAST);
+	void gatherRequirements(Language * language, ProgramAST * progAST);
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }

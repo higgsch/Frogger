@@ -6,7 +6,7 @@
 // CommandTable.
 // -----------------------------------------------------------------
 #include "tables.h"
-#include "..\OutputText\outputText.h"
+#include "..\OutputLanguage\language.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -73,12 +73,14 @@ bool FunctionRecord::isAddable()
 //
 // Version 4.2
 // ----------------------------------------------------------
-SymbolTable::SymbolTable(UDFRecord * rec)
+SymbolTable::SymbolTable(Language * language, UDFRecord * rec)
 {
-	Symbol* argsSym = new Symbol(SYMBOL_TEXT::ARGS.getText(),DT_ARGS);
+	lang = language;
+	Symbol* argsSym = new Symbol(lang->SYM_ARGS.getText(),DT_ARGS);
 	argsSym->isLocal = false;
 	add(new SymbolRecord(argsSym));
 	int index = 0;
+
 	while (index < rec->args->size())
 	{
 		argPair * pair = (*(rec->args))[index];
@@ -87,6 +89,21 @@ SymbolTable::SymbolTable(UDFRecord * rec)
 		add(new SymbolRecord(sym));
 		index++;
 	}
+}
+
+// ----------------------------------------------------------
+// This function creates a symbol table prepopulated with
+// args.
+// @language: The Language the symbol table is for.
+//
+// Version 4.2
+// ----------------------------------------------------------
+SymbolTable::SymbolTable(Language * language)
+{
+	lang = language;
+	Symbol* argsSym = new Symbol(lang->SYM_ARGS.getText(),DT_ARGS);
+	argsSym->isLocal = false;
+	add(new SymbolRecord(argsSym));
 }
 
 // ----------------------------------------------------------
@@ -111,10 +128,23 @@ DataType SymbolTable::symbolType(string id)
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-CommandTable::CommandTable()
+CommandTable::CommandTable(Language * language)
 {
+	lang = language;
+
+	CMD_END_NULL		= new Command(lang->CMDNAME_END_NULL.getText());
+	CMD_END_STR		= new Command(lang->CMDNAME_END_STR.getText());
+	CMD_END_DBL		= new Command(lang->CMDNAME_END_DBL.getText());
+	CMD_DISPLAY_STR	= new Command(lang->CMDNAME_DISPLAY_STR.getText());
+	CMD_DISPLAY_DBL	= new Command(lang->CMDNAME_DISPLAY_DBL.getText());
+	CMD_OPEN_INPUT	= new Command(lang->CMDNAME_OPEN_INPUT.getText());
+	CMD_CLOSE_INPUT	= new Command(lang->CMDNAME_CLOSE_INPUT.getText());
+	CMD_WRITE		= new Command(lang->CMDNAME_WRITE.getText());
+	CMD_OPEN_OUTPUT	= new Command(lang->CMDNAME_OPEN_OUTPUT.getText());
+	CMD_CLOSE_OUTPUT	= new Command(lang->CMDNAME_CLOSE_OUTPUT.getText());
+
 	//Add built-in commands
 	CMD_END_NULL->builtIn = true;
 	add(new CommandRecord(CMD_END_NULL));
@@ -164,10 +194,24 @@ CommandTable::CommandTable()
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 3.3
+// Version 4.2
 // ----------------------------------------------------------
-FunctionTable::FunctionTable()
+FunctionTable::FunctionTable(Language * language)
 {
+	lang = language;
+
+	FUNCT_TO_STRING		= new Function(DT_DOUBLE, lang->FUNCTNAME_TO_STRING.getText(), DT_STRING);
+	FUNCT_TO_ASCII			= new Function(DT_DOUBLE, lang->FUNCTNAME_TO_ASCII.getText(), DT_STRING);
+	FUNCT_PARSE_DOUBLE		= new Function(DT_STRING, lang->FUNCTNAME_PARSE_DOUBLE.getText(), DT_DOUBLE);
+	FUNCT_ASCII_AT			= new Function(DT_STRING, lang->FUNCTNAME_ASCII_AT.getText(), DT_DOUBLE);
+	FUNCT_LENGTH			= new Function(DT_STRING, lang->FUNCTNAME_LENGTH.getText(), DT_DOUBLE);
+	FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_DOUBLE.getText(), DT_DOUBLE);
+	FUNCT_RANDOM			= new Function(DT_NULL, lang->FUNCTNAME_RANDOM.getText(), DT_DOUBLE);
+	FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_STRING.getText(), DT_STRING);
+	FUNCT_READ				= new Function(DT_NULL, lang->FUNCTNAME_READ.getText(), DT_STRING);
+	FUNCT_ELEMENT_AT		= new Function(DT_ARGS, lang->FUNCTNAME_ELEMENT_AT.getText(), DT_STRING);
+	FUNCT_SIZE				= new Function(DT_ARGS, lang->FUNCTNAME_SIZE.getText(), DT_DOUBLE);
+
 	//Add built-in functions
 	FUNCT_TO_STRING->builtIn = true;
 	add(new FunctionRecord(FUNCT_TO_STRING));
@@ -225,26 +269,3 @@ DataType FunctionTable::getFunctionReturnType(Function* funct)
 
 	return DT_NOT_DEFINED;
 }
-
-Command* CommandTable::CMD_END_NULL		= new Command(CMD_NAME::END_NULL.getText());
-Command* CommandTable::CMD_END_STR		= new Command(CMD_NAME::END_STR.getText());
-Command* CommandTable::CMD_END_DBL		= new Command(CMD_NAME::END_DBL.getText());
-Command* CommandTable::CMD_DISPLAY_STR	= new Command(CMD_NAME::DISPLAY_STR.getText());
-Command* CommandTable::CMD_DISPLAY_DBL	= new Command(CMD_NAME::DISPLAY_DBL.getText());
-Command* CommandTable::CMD_OPEN_INPUT	= new Command(CMD_NAME::OPEN_INPUT.getText());
-Command* CommandTable::CMD_CLOSE_INPUT	= new Command(CMD_NAME::CLOSE_INPUT.getText());
-Command* CommandTable::CMD_WRITE		= new Command(CMD_NAME::WRITE.getText());
-Command* CommandTable::CMD_OPEN_OUTPUT	= new Command(CMD_NAME::OPEN_OUTPUT.getText());
-Command* CommandTable::CMD_CLOSE_OUTPUT	= new Command(CMD_NAME::CLOSE_OUTPUT.getText());
-
-Function* FunctionTable::FUNCT_TO_STRING		= new Function(DT_DOUBLE, FUNCT_NAME::TO_STRING.getText(), DT_STRING);
-Function* FunctionTable::FUNCT_TO_ASCII			= new Function(DT_DOUBLE, FUNCT_NAME::TO_ASCII.getText(), DT_STRING);
-Function* FunctionTable::FUNCT_PARSE_DOUBLE		= new Function(DT_STRING, FUNCT_NAME::PARSE_DOUBLE.getText(), DT_DOUBLE);
-Function* FunctionTable::FUNCT_ASCII_AT			= new Function(DT_STRING, FUNCT_NAME::ASCII_AT.getText(), DT_DOUBLE);
-Function* FunctionTable::FUNCT_LENGTH			= new Function(DT_STRING, FUNCT_NAME::LENGTH.getText(), DT_DOUBLE);
-Function* FunctionTable::FUNCT_RETRIEVE_DOUBLE	= new Function(DT_NULL, FUNCT_NAME::RETRIEVE_DOUBLE.getText(), DT_DOUBLE);
-Function* FunctionTable::FUNCT_RANDOM			= new Function(DT_NULL, FUNCT_NAME::RANDOM.getText(), DT_DOUBLE);
-Function* FunctionTable::FUNCT_RETRIEVE_STRING	= new Function(DT_NULL, FUNCT_NAME::RETRIEVE_STRING.getText(), DT_STRING);
-Function* FunctionTable::FUNCT_READ				= new Function(DT_NULL, FUNCT_NAME::READ.getText(), DT_STRING);
-Function* FunctionTable::FUNCT_ELEMENT_AT		= new Function(DT_ARGS, FUNCT_NAME::ELEMENT_AT.getText(), DT_STRING);
-Function* FunctionTable::FUNCT_SIZE				= new Function(DT_ARGS, FUNCT_NAME::SIZE.getText(), DT_DOUBLE);
