@@ -301,38 +301,48 @@ string CPPLanguage::getArgumentListText(string thisArgText, string argTailText)
 	return thisArgText + ((argTailText != "") ? ", " + argTailText : "");
 }
 
-//Arithmetic Operation Output Texts
-string CPPLanguage::getAddOperationText(bool isNested, bool isString, string leftOperandText, string rightOperandText)
+// ----------------------------------------------------------
+// This function returns the output text for an operation.
+//
+// Version 4.2
+// ---------------------------------------------------------
+string CPPLanguage::getBinaryOpText(bool isNested, bool isString, string leftOperandText, string rightOperandText, binaryOp op)
 {
-	string pretext = (isString) ? SYM_EMPTY_STRING + " + " : "";
-	return getBinaryOperationText(isNested, pretext, " + ", "", leftOperandText, rightOperandText);
-}
-string CPPLanguage::getSubOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " - ", "", leftOperandText, rightOperandText); }
-string CPPLanguage::getMulOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " * ", "", leftOperandText, rightOperandText); }
-string CPPLanguage::getDivOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " / ", "", leftOperandText, rightOperandText); }
-string CPPLanguage::getModDivOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "fmod( ", ", ", ")", leftOperandText, rightOperandText); }
-string CPPLanguage::getIDivOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "((int)round(",")) / ((int)round(","))", leftOperandText, rightOperandText); }
-string CPPLanguage::getRootOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "rt(", ", ", ")", leftOperandText, rightOperandText); }
-string CPPLanguage::getExpOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "pow(", ", ", ")", leftOperandText, rightOperandText); }
+	string pretext = "";
+	switch (op)
+	{
+	case ADD:
+		pretext = (isString) ? SYM_EMPTY_STRING + " + " : "";
+		return getBinaryOperationText(isNested, pretext, " + ", "", leftOperandText, rightOperandText);
+	case SUB:
+		return getBinaryOperationText(isNested, "", " - ", "", leftOperandText, rightOperandText);
+	case MUL:
+		return getBinaryOperationText(isNested, "", " * ", "", leftOperandText, rightOperandText);
+	case DIV:
+		return getBinaryOperationText(isNested, "", " / ", "", leftOperandText, rightOperandText);
+	case MODDIV:
+		return getBinaryOperationText(isNested, "fmod( ", ", ", ")", leftOperandText, rightOperandText);
+	case IDIV:
+		return getBinaryOperationText(isNested, "((int)round(",")) / ((int)round(","))", leftOperandText, rightOperandText);
+	case ROOT:
+		return getBinaryOperationText(isNested, "rt(", ", ", ")", leftOperandText, rightOperandText);
+	case EXP:
+		return getBinaryOperationText(isNested, "pow(", ", ", ")", leftOperandText, rightOperandText);
+	case LT:
+		return getBinaryOperationText(isNested, "", " < ", "", leftOperandText, rightOperandText);
+	case GT:
+		return getBinaryOperationText(isNested, "", " > ", "", leftOperandText, rightOperandText);
+	case EQ:
+		return getBinaryOperationText(isNested, "", " == ", "", leftOperandText, rightOperandText);
+	case LTE:
+		return getBinaryOperationText(isNested, "", " <= ", "", leftOperandText, rightOperandText);
+	case GTE:
+		return getBinaryOperationText(isNested, "", " >= ", "", leftOperandText, rightOperandText);
+	}
 
-//Boolean Operation Output Texts
-string CPPLanguage::getLTOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " < ", "", leftOperandText, rightOperandText); }
-string CPPLanguage::getGTOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " > ", "", leftOperandText, rightOperandText); }
-string CPPLanguage::getEQOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " == ", "", leftOperandText, rightOperandText); }
-string CPPLanguage::getLTEOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " <= ", "", leftOperandText, rightOperandText); }
-string CPPLanguage::getGTEOperationText(bool isNested, string leftOperandText, string rightOperandText)
-{	return getBinaryOperationText(isNested, "", " >= ", "", leftOperandText, rightOperandText); }
+	return "";
+}
+
 string CPPLanguage::getNotOperationText(string notText)
 {	return "!" + nest(true, notText); }
 

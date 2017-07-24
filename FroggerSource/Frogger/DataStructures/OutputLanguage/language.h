@@ -4,6 +4,7 @@
 #pragma once
 
 #include "..\Tables\tables.h"
+#include "..\Nodes\AsciiNodes\BinaryNodes\BinaryOpNodes\binaryOpNode.h"
 #include <vector>
 using namespace std;
 
@@ -80,22 +81,7 @@ public:
 	virtual string getCommandCallText(bool isBuiltIn, string primaryText, string name, string argListText) =0;
 	virtual string getArgumentListText(string thisArgText, string argTailText) =0;
 
-	//Operations
-	virtual string getAddOperationText(bool isNested, bool isString, string leftOperandText, string rightOperandText) =0;
-	virtual string getSubOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getMulOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getDivOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getModDivOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getIDivOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getRootOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getExpOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-
-	//Boolean Comparisons
-	virtual string getLTOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getGTOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getEQOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getLTEOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
-	virtual string getGTEOperationText(bool isNested, string leftOperandText, string rightOperandText) =0;
+	virtual string getBinaryOpText(bool isNested, bool isString, string leftOperandText, string rightOperandText, binaryOp op) =0;
 	virtual string getNotOperationText(string notText) =0;
 
 	//Terminals

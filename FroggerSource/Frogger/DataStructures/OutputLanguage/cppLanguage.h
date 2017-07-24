@@ -216,22 +216,7 @@ public:
 	string getCommandCallText(bool isBuiltIn, string primaryText, string name, string argListText);
 	string getArgumentListText(string thisArgText, string argTailText);
 
-	//Operations
-	string getAddOperationText(bool isNested, bool isString, string leftOperandText, string rightOperandText);
-	string getSubOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getMulOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getDivOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getModDivOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getIDivOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getRootOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getExpOperationText(bool isNested, string leftOperandText, string rightOperandText);
-
-	//Boolean Comparisons
-	string getLTOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getGTOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getEQOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getLTEOperationText(bool isNested, string leftOperandText, string rightOperandText);
-	string getGTEOperationText(bool isNested, string leftOperandText, string rightOperandText);
+	string getBinaryOpText(bool isNested, bool isString, string leftOperandText, string rightOperandText, binaryOp op);
 	string getNotOperationText(string notText);
 
 	//Terminals

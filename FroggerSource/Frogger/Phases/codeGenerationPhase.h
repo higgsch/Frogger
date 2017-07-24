@@ -26,6 +26,8 @@ private:
 
 	string currUDFName;
 
+	void visitBinaryOpNode(BinaryOpNode * n);
+
 	bool isNested(BinaryOpNode * n) { return n->getParenNesting() > 0; }
 	string leftText(BinaryOpNode * n) { return n->getLeftOperand()->outputText; }
 	string rightText(BinaryOpNode * n) { return n->getRightOperand()->outputText; }
@@ -52,18 +54,18 @@ public:
 	void visit(ArgListNode * n);
 	void visit(StringConstingNode * n) { n->outputText = lang->getStringLiteralText(n->getLexeme()); }
 	void visit(DoubleConstingNode * n);
-	void visit(AddingNode * n);
-	void visit(SubingNode * n);
-	void visit(MulingNode * n);
-	void visit(DivingNode * n);
-	void visit(ModDivingNode * n);
-	void visit(IDivingNode * n);
-	void visit(RootingNode * n);
-	void visit(ExpingNode * n);
+	void visit(AddingNode * n) { visitBinaryOpNode(n); }
+	void visit(SubingNode * n) { visitBinaryOpNode(n); }
+	void visit(MulingNode * n) { visitBinaryOpNode(n); }
+	void visit(DivingNode * n) { visitBinaryOpNode(n); }
+	void visit(ModDivingNode * n) { visitBinaryOpNode(n); }
+	void visit(IDivingNode * n) { visitBinaryOpNode(n); }
+	void visit(RootingNode * n) { visitBinaryOpNode(n); }
+	void visit(ExpingNode * n) { visitBinaryOpNode(n); }
 	void visit(NotingNode * n);
-	void visit(LTingNode * n);
-	void visit(GTingNode * n);
-	void visit(EQingNode * n);
-	void visit(LTEingNode * n);
-	void visit(GTEingNode * n);
+	void visit(LTingNode * n) { visitBinaryOpNode(n); }
+	void visit(GTingNode * n) { visitBinaryOpNode(n); }
+	void visit(EQingNode * n) { visitBinaryOpNode(n); }
+	void visit(LTEingNode * n) { visitBinaryOpNode(n); }
+	void visit(GTEingNode * n) { visitBinaryOpNode(n); }
 };
