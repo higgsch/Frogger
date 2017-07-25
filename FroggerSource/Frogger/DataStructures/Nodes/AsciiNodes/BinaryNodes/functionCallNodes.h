@@ -3,7 +3,6 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include <vector>
 #include "binaryNode.h"
 #include "commandNodes.h"
 #include "..\..\..\Tables\records.h"

@@ -3,7 +3,6 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include <vector>
 #include "..\Scanning\scfScanner.h"
 #include "..\Scanning\scfToken.h"
 #include "..\DataStructures\dataTyped.h"

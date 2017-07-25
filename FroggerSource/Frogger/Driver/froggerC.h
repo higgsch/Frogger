@@ -4,7 +4,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include "..\DataStructures\Tables\tables.h"
 #include "..\DataStructures\OutputLanguage\cppLanguage.h"
 using namespace std;
