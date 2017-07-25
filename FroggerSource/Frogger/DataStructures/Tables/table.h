@@ -24,21 +24,18 @@ template <class T> struct Record
 // ----------------------------------------------------------
 // This class represents a collection of records.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
-template <class T> class Table
+template <class T> class Table : protected vector<Record<T>*>
 {
-protected:
-	vector<Record<T>*> * table;
-
+private:
+	typedef vector<Record<T>*> super;
 public:
-	Table() { table = new vector<Record<T>*>(); }
-
 	// ----------------------------------------------------------
 	// This function adds record to the table.
 	// @rec: The record to add.
 	//
-	// Version 3.0
+	// Version 4.2
 	// ----------------------------------------------------------
 	void add(Record<T>* r)
 	{
@@ -46,7 +43,7 @@ public:
 			return;
 
 		if (!isDefined(r->rec))
-			table->push_back(r);
+			push_back(r);
 	}
 
 	// ----------------------------------------------------------
@@ -54,11 +51,11 @@ public:
 	// the table.
 	// @rec: The record in question.
 	//
-	// Version 3.0
+	// Version 4.2
 	// ----------------------------------------------------------
 	bool isDefined(T* rec)
 	{
-		for (Record<T>* r : *table)
+		for (Record<T>* r : *this)
 		{
 			if (r->equals(rec))
 				return true;
@@ -71,11 +68,11 @@ public:
 	// record
 	// @rec: The record in question.
 	//
-	// Version 3.0
+	// Version 4.2
 	// ----------------------------------------------------------
 	bool matchExists(T* rec)
 	{
-		for (Record<T>* r : *table)
+		for (Record<T>* r : *this)
 		{
 			if (r->matches(rec))
 				return true;
@@ -88,12 +85,12 @@ public:
 	// match the desired record.
 	// @rec: The record in question.
 	//
-	// Version 3.0
+	// Version 4.2
 	// ----------------------------------------------------------
 	int getNumberOfMatches(T* rec)
 	{
 		int matches = 0;
-		for (Record<T>* r : *table)
+		for (Record<T>* r : *this)
 		{
 			if (r->matches(rec))
 				matches++;
@@ -106,11 +103,11 @@ public:
 	// table or NULL if no match found.
 	// @rec: The record in question.
 	//
-	// Version 3.0
+	// Version 4.2
 	// ----------------------------------------------------------
 	T* getFirstMatch(T* rec)
 	{
-		for (Record<T>* r : *table)
+		for (Record<T>* r : *this)
 		{
 			if (r->matches(rec))
 				return r->rec;
@@ -118,6 +115,6 @@ public:
 		return NULL;
 	}
 
-	int size() { return table->size(); }
-	T* operator[] (int x) { return (*table)[x]->rec; }
+	int size() { return ((super*)this)->size(); }
+	T* operator[] (int x) { return this->at(x)->rec; }
 };

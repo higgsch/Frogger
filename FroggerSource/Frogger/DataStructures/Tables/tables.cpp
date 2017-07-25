@@ -261,7 +261,7 @@ FunctionTable::FunctionTable(Language * language)
 // ----------------------------------------------------------
 DataType FunctionTable::getFunctionReturnType(Function* funct)
 {
-	for (Record<Function>* f : *table)
+	for (Record<Function>* f : *this)
 	{
 		if (f->equals(funct))
 			return funct->returnType;
