@@ -32,7 +32,7 @@ struct Symbol
 // ----------------------------------------------------------
 struct DataTypeList : vector<DataType>
 {
-
+	bool isEmpty() { return size() == 0; }
 };
 
 // ----------------------------------------------------------
@@ -53,7 +53,7 @@ public:
 	bool matches(Command* cmd);
 	void copy(Command* cmd);
 
-	int getNumArgs();
+	int getNumArgs() { return argTypeList->size(); }
 	DataType getDataTypeOfArgNumber(int argNo);
 	void setDataTypeOfArgNumber(int argNo, DataType type);
 

@@ -29,7 +29,6 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 	end = (end == -1) ? inFile.length() - 1 : end;
 
 	progStruct.PEF->UDFName = inFile.substr(start, end - start);
-	progStruct.PEF->args = new ArgList();
 
 	FgrFunctionC funcComp(lang);
 	progAST.PEF = funcComp.compileFunctionToAST(inFile, new FunctionTable(lang), progStruct.PEF);
@@ -83,7 +82,6 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	//compile PEFF
 	progStruct.PEF->UDFName = projectName;
 	progStruct.PEF->returnType = DT_NULL;
-	progStruct.PEF->args = new ArgList();
 	FgrFunctionC funcComp(lang);
 	progAST.PEF = funcComp.compileFunctionToAST(projectDir + projectName + ".fgr", table, progStruct.PEF);
 

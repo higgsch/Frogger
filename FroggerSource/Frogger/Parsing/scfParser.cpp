@@ -162,7 +162,7 @@ DataType SCFParser::dataType()
 // the required PEF.
 // @rec: The UDFRecord to compare to PEF.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 {
@@ -172,7 +172,7 @@ bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 	if (rec->UDFName != pefName)
 		return false;
 
-	if (rec->args != NULL && rec->args->size() != 0)
+	if (rec->args->size() != 0)
 		return false;
 
 	return true;

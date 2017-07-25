@@ -24,17 +24,14 @@ bool SymbolRecord::isAddable()
 // This function determines if the current record is allowed
 // to be added to the table.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 bool CommandRecord::isAddable()
 {
-	if (rec->argTypeList != NULL)
+	for (DataType t : *(rec->argTypeList))
 	{
-		for (DataType t : *(rec->argTypeList))
-		{
-			if (t == DT_NOT_DEFINED)
-				return false;
-		}
+		if (t == DT_NOT_DEFINED)
+			return false;
 	}
 
 	return true;
@@ -44,7 +41,7 @@ bool CommandRecord::isAddable()
 // This function determines if the current record is allowed
 // to be added to the table.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 bool FunctionRecord::isAddable()
 {
@@ -54,13 +51,10 @@ bool FunctionRecord::isAddable()
 	if (rec->returnType == DT_NOT_DEFINED)
 		return false;
 
-	if (rec->argTypeList != NULL)
+	for (DataType t : *(rec->argTypeList))
 	{
-		for (DataType t : *(rec->argTypeList))
-		{
-			if (t == DT_NOT_DEFINED)
-				return false;
-		}
+		if (t == DT_NOT_DEFINED)
+			return false;
 	}
 
 	return true;
@@ -149,27 +143,22 @@ CommandTable::CommandTable(Language * language)
 	CMD_END_NULL->builtIn = true;
 	add(new CommandRecord(CMD_END_NULL));
 	
-	CMD_END_STR->argTypeList = new DataTypeList();
 	CMD_END_STR->addArg(DT_STRING);
 	CMD_END_STR->builtIn = true;
 	add(new CommandRecord(CMD_END_STR));
 	
-	CMD_END_DBL->argTypeList = new DataTypeList();
 	CMD_END_DBL->addArg(DT_DOUBLE);
 	CMD_END_DBL->builtIn = true;
 	add(new CommandRecord(CMD_END_DBL));
 
-	CMD_DISPLAY_STR->argTypeList = new DataTypeList();
 	CMD_DISPLAY_STR->addArg(DT_STRING);
 	CMD_DISPLAY_STR->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_STR));
 
-	CMD_DISPLAY_DBL->argTypeList = new DataTypeList();
 	CMD_DISPLAY_DBL->addArg(DT_DOUBLE);
 	CMD_DISPLAY_DBL->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_DBL));
 
-	CMD_OPEN_INPUT->argTypeList = new DataTypeList();
 	CMD_OPEN_INPUT->addArg(DT_STRING);
 	CMD_OPEN_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_INPUT));
@@ -177,12 +166,10 @@ CommandTable::CommandTable(Language * language)
 	CMD_CLOSE_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_CLOSE_INPUT));
 
-	CMD_WRITE->argTypeList = new DataTypeList();
 	CMD_WRITE->addArg(DT_STRING);
 	CMD_WRITE->builtIn = true;
 	add(new CommandRecord(CMD_WRITE));
 
-	CMD_OPEN_OUTPUT->argTypeList = new DataTypeList();
 	CMD_OPEN_OUTPUT->addArg(DT_STRING);
 	CMD_OPEN_OUTPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_OUTPUT));
@@ -222,7 +209,6 @@ FunctionTable::FunctionTable(Language * language)
 	FUNCT_PARSE_DOUBLE->builtIn = true;
 	add(new FunctionRecord(FUNCT_PARSE_DOUBLE));
 
-	FUNCT_ASCII_AT->argTypeList = new DataTypeList();
 	FUNCT_ASCII_AT->addArg(DT_DOUBLE);
 	FUNCT_ASCII_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ASCII_AT));
@@ -242,7 +228,6 @@ FunctionTable::FunctionTable(Language * language)
 	FUNCT_READ->builtIn = true;
 	add(new FunctionRecord(FUNCT_READ));
 
-	FUNCT_ELEMENT_AT->argTypeList = new DataTypeList();
 	FUNCT_ELEMENT_AT->addArg(DT_DOUBLE);
 	FUNCT_ELEMENT_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ELEMENT_AT));
@@ -257,7 +242,7 @@ FunctionTable::FunctionTable(Language * language)
 // in the table.
 // @funct: The function in question.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 DataType FunctionTable::getFunctionReturnType(Function* funct)
 {

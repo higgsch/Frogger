@@ -46,6 +46,8 @@ struct UDFRecord
 	ArgList * args;
 	DataType returnType;
 
+	UDFRecord() { args = new ArgList(); }
+
 	ArgPair* operator[](int index) { return (*args)[index]; }
 };
 
@@ -70,6 +72,8 @@ struct ProgramStruct
 {
 	UDFRecord * PEF;
 	UDFCollection * UDFs;
+
+	ProgramStruct() { UDFs = new UDFCollection(); }
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }
@@ -216,6 +220,8 @@ struct ProgramAST
 {
 	FunctionAST * PEF;
 	FunctionASTCollection * UDFs;
+
+	ProgramAST() { UDFs = new FunctionASTCollection(); }
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 
