@@ -102,16 +102,12 @@ ArgList * SCFParser::arguments()
 // ----------------------------------------------------------
 ArgPair * SCFParser::argument()
 {
-	ArgPair * arg = new ArgPair();
-
-	SCFToken name = next_token();
+	string name = next_token().lexeme;
 	match(TOKTYPE_ID);
-	arg->name = name.lexeme;
-
 	match(TOKTYPE_COLON);
-	arg->type = dataType();
+	DataType dt = dataType();
 
-	return arg;
+	return new ArgPair(name, dt);
 }
 
 // ----------------------------------------------------------

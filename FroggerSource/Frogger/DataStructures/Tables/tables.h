@@ -14,27 +14,6 @@ class ProgramNode;
 class Language;
 
 // ----------------------------------------------------------
-// This class represents the data known about an argument.
-//
-// Version 4.0
-// ----------------------------------------------------------
-struct ArgPair
-{
-	string name;
-	DataType type;
-};
-
-// ----------------------------------------------------------
-// This class represents the data known about an argument list.
-//
-// Version 4.2
-// ----------------------------------------------------------
-struct ArgList : vector<ArgPair *>
-{
-
-};
-
-// ----------------------------------------------------------
 // This class represents the data known about a User Defined 
 // Function.
 //

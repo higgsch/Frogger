@@ -28,9 +28,9 @@ bool SymbolRecord::isAddable()
 // ----------------------------------------------------------
 bool CommandRecord::isAddable()
 {
-	for (DataType t : *(rec->argTypeList))
+	for (ArgPair* a : *(rec->argTypeList))
 	{
-		if (t == DT_NOT_DEFINED)
+		if (a->type == DT_NOT_DEFINED)
 			return false;
 	}
 
@@ -51,9 +51,9 @@ bool FunctionRecord::isAddable()
 	if (rec->returnType == DT_NOT_DEFINED)
 		return false;
 
-	for (DataType t : *(rec->argTypeList))
+	for (ArgPair* a : *(rec->argTypeList))
 	{
-		if (t == DT_NOT_DEFINED)
+		if (a->type == DT_NOT_DEFINED)
 			return false;
 	}
 
@@ -143,34 +143,34 @@ CommandTable::CommandTable(Language * language)
 	CMD_END_NULL->builtIn = true;
 	add(new CommandRecord(CMD_END_NULL));
 	
-	CMD_END_STR->addArg(DT_STRING);
+	CMD_END_STR->addArg("", DT_STRING);
 	CMD_END_STR->builtIn = true;
 	add(new CommandRecord(CMD_END_STR));
 	
-	CMD_END_DBL->addArg(DT_DOUBLE);
+	CMD_END_DBL->addArg("", DT_DOUBLE);
 	CMD_END_DBL->builtIn = true;
 	add(new CommandRecord(CMD_END_DBL));
 
-	CMD_DISPLAY_STR->addArg(DT_STRING);
+	CMD_DISPLAY_STR->addArg("", DT_STRING);
 	CMD_DISPLAY_STR->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_STR));
 
-	CMD_DISPLAY_DBL->addArg(DT_DOUBLE);
+	CMD_DISPLAY_DBL->addArg("", DT_DOUBLE);
 	CMD_DISPLAY_DBL->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_DBL));
 
-	CMD_OPEN_INPUT->addArg(DT_STRING);
+	CMD_OPEN_INPUT->addArg("", DT_STRING);
 	CMD_OPEN_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_INPUT));
 
 	CMD_CLOSE_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_CLOSE_INPUT));
 
-	CMD_WRITE->addArg(DT_STRING);
+	CMD_WRITE->addArg("", DT_STRING);
 	CMD_WRITE->builtIn = true;
 	add(new CommandRecord(CMD_WRITE));
 
-	CMD_OPEN_OUTPUT->addArg(DT_STRING);
+	CMD_OPEN_OUTPUT->addArg("", DT_STRING);
 	CMD_OPEN_OUTPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_OUTPUT));
 
@@ -209,7 +209,7 @@ FunctionTable::FunctionTable(Language * language)
 	FUNCT_PARSE_DOUBLE->builtIn = true;
 	add(new FunctionRecord(FUNCT_PARSE_DOUBLE));
 
-	FUNCT_ASCII_AT->addArg(DT_DOUBLE);
+	FUNCT_ASCII_AT->addArg("", DT_DOUBLE);
 	FUNCT_ASCII_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ASCII_AT));
 
@@ -228,7 +228,7 @@ FunctionTable::FunctionTable(Language * language)
 	FUNCT_READ->builtIn = true;
 	add(new FunctionRecord(FUNCT_READ));
 
-	FUNCT_ELEMENT_AT->addArg(DT_DOUBLE);
+	FUNCT_ELEMENT_AT->addArg("", DT_DOUBLE);
 	FUNCT_ELEMENT_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ELEMENT_AT));
 

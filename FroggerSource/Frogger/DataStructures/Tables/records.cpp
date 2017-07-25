@@ -17,7 +17,7 @@ Command::Command(string i_name)
 	name = i_name;
 
 	builtIn = false;
-	argTypeList = new DataTypeList();
+	argTypeList = new ArgList();
 }
 
 // ----------------------------------------------------------
@@ -26,12 +26,12 @@ Command::Command(string i_name)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void Command::addArg(DataType argType)
+void Command::addArg(string argName, DataType argType)
 {
 	//if (argType == DT_NOT_DEFINED)
 	//	return;
-
-	argTypeList->push_back(argType);
+	
+	argTypeList->push_back(new ArgPair(argName, argType));
 }
 
 // ----------------------------------------------------------
@@ -51,7 +51,7 @@ bool Command::equals(Command * cmd)
 
 	for (int i = 0; i < argTypeList->size(); i++)
 	{
-		if (argTypeList->at(i) != cmd->argTypeList->at(i))
+		if (argTypeList->at(i)->type != cmd->argTypeList->at(i)->type)
 			return false;
 	}
 
@@ -76,7 +76,8 @@ bool Command::matches(Command * cmd)
 
 	for (int i = 0; i < argTypeList->size(); i++)
 	{
-		if (cmd->argTypeList->at(i) != DT_NOT_DEFINED && argTypeList->at(i) != cmd->argTypeList->at(i))
+		if (cmd->argTypeList->at(i)->type != DT_NOT_DEFINED && 
+			argTypeList->at(i)->type != cmd->argTypeList->at(i)->type)
 			return false;
 	}
 
@@ -96,9 +97,9 @@ void Command::copy(Command * cmd)
 
 	argTypeList->clear();
 
-	for (DataType type : *(cmd->argTypeList))
+	for (ArgPair* arg : *(cmd->argTypeList))
 	{
-		argTypeList->push_back(type);
+		argTypeList->push_back(new ArgPair(arg->name, arg->type));
 	}
 }
 
@@ -112,7 +113,7 @@ void Command::copy(Command * cmd)
 DataType Command::getDataTypeOfArgNumber(int argNo)
 { 
 	if (argNo < argTypeList->size())
-		return argTypeList->at(argNo);
+		return argTypeList->at(argNo)->type;
 	else
 		return DT_NOT_DEFINED;
 }
@@ -122,12 +123,12 @@ DataType Command::getDataTypeOfArgNumber(int argNo)
 // @argNo: The index in the argument list to modify.
 // @type: The data type to change to.
 //
-// Version 2.5
+// Version 4.2
 // ----------------------------------------------------------
 void Command::setDataTypeOfArgNumber(int argNo, DataType type)
 { 
 	if (argNo < argTypeList->size()) 
-		(*argTypeList)[argNo] = type; 
+		(*argTypeList)[argNo]->type = type; 
 }
 
 // ----------------------------------------------------------

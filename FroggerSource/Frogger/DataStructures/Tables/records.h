@@ -9,6 +9,29 @@
 using namespace std;
 
 // ----------------------------------------------------------
+// This class represents the data known about an argument.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct ArgPair
+{
+	string name;
+	DataType type;
+
+	ArgPair(string argName, DataType argType) : name(argName), type(argType) {}
+};
+
+// ----------------------------------------------------------
+// This class represents the data known about an argument list.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct ArgList : vector<ArgPair *>
+{
+	bool isEmpty() { return size() == 0; }
+};
+
+// ----------------------------------------------------------
 // This class represents everything known about a variable.
 //
 // Version 4.2
@@ -26,16 +49,6 @@ struct Symbol
 };
 
 // ----------------------------------------------------------
-// This class represents a list of data types.
-//
-// Version 4.2
-// ----------------------------------------------------------
-struct DataTypeList : vector<DataType>
-{
-	bool isEmpty() { return size() == 0; }
-};
-
-// ----------------------------------------------------------
 // This class represents everything known about a command.
 //
 // Version 4.2
@@ -45,10 +58,10 @@ class Command
 public:
 	bool builtIn;
 	string name;
-	DataTypeList *argTypeList;
+	ArgList *argTypeList;
 
 	Command(string i_name);
-	void addArg(DataType arg);
+	void addArg(string argName, DataType argType);
 	bool equals(Command* cmd);
 	bool matches(Command* cmd);
 	void copy(Command* cmd);

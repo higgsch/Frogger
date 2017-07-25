@@ -72,7 +72,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 		int argIndex = 0;
 		while (argIndex < currRec.args->size())
 		{
-			currFunction->addArg(currRec[argIndex]->type);
+			currFunction->addArg("", currRec[argIndex]->type);
 			argIndex++;
 		}
 		table->add(new FunctionRecord(currFunction));
