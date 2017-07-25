@@ -18,23 +18,46 @@ class Language;
 //
 // Version 4.0
 // ----------------------------------------------------------
-struct argPair
+struct ArgPair
 {
 	string name;
 	DataType type;
 };
 
 // ----------------------------------------------------------
+// This class represents the data known about an argument list.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct ArgList : vector<ArgPair *>
+{
+
+};
+
+// ----------------------------------------------------------
 // This class represents the data known about a User Defined 
 // Function.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 struct UDFRecord
 {
 	string UDFName;
-	vector<argPair *> * args;
+	ArgList * args;
 	DataType returnType;
+
+	ArgPair* operator[](int index) { return (*args)[index]; }
+};
+
+// ----------------------------------------------------------
+// This class represents the data known about a User Defined 
+// Function Collection.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct UDFCollection : vector<UDFRecord *>
+{
+
 };
 
 // ----------------------------------------------------------
@@ -46,10 +69,12 @@ struct UDFRecord
 struct ProgramStruct
 {
 	UDFRecord * PEF;
-	vector<UDFRecord *> * UDFs;
+	UDFCollection * UDFs;
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }
+
+	UDFRecord* operator[](int index) { return (*UDFs)[index]; }
 };
 
 // ----------------------------------------------------------
@@ -173,6 +198,16 @@ struct FunctionAST
 };
 
 // ----------------------------------------------------------
+// This class wraps the ASTs and Symbol Tables for a UDF Collection.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct FunctionASTCollection : vector<FunctionAST *>
+{
+
+};
+
+// ----------------------------------------------------------
 // This class wraps the PEF and all UDFs in a Frogger program.
 //
 // Version 4.2
@@ -180,10 +215,12 @@ struct FunctionAST
 struct ProgramAST
 {
 	FunctionAST * PEF;
-	vector<FunctionAST *> * UDFs;
+	FunctionASTCollection * UDFs;
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 
 	ProgramNode* getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
 	ProgramNode* getPEFNode() { return PEF->root; }
+
+	FunctionAST* operator[](int index) { return (*UDFs)[index]; }
 };

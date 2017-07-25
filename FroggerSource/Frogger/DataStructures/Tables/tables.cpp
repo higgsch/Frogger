@@ -83,7 +83,7 @@ SymbolTable::SymbolTable(Language * language, UDFRecord * rec)
 
 	while (index < rec->args->size())
 	{
-		argPair * pair = (*(rec->args))[index];
+		ArgPair * pair = (*(rec->args))[index];
 		Symbol * sym = new Symbol(pair->name, pair->type);
 		sym->isLocal = false;
 		add(new SymbolRecord(sym));

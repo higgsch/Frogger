@@ -38,8 +38,8 @@ private:
 public:
 	FroggerC::FroggerC() { 
 		progStruct.PEF = new UDFRecord();
-		progStruct.UDFs = new vector<UDFRecord *>();
-		progAST.UDFs = new vector<FunctionAST *>(); 
+		progStruct.UDFs = new UDFCollection();
+		progAST.UDFs = new FunctionASTCollection(); 
 		lang = new CPPLanguage();
 		lang->initialize();
 	}

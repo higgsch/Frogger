@@ -29,7 +29,7 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 	end = (end == -1) ? inFile.length() - 1 : end;
 
 	progStruct.PEF->UDFName = inFile.substr(start, end - start);
-	progStruct.PEF->args = new vector<argPair *>();
+	progStruct.PEF->args = new ArgList();
 
 	FgrFunctionC funcComp(lang);
 	progAST.PEF = funcComp.compileFunctionToAST(inFile, new FunctionTable(lang), progStruct.PEF);
@@ -58,8 +58,8 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	int index = 0;
 	while (index < progStruct.UDFs->size())
 	{
-		UDFRecord * currRec = (*progStruct.UDFs)[index];
-		string currUDFPath = projectDir + currRec->UDFName + ".fgr";
+		UDFRecord currRec = *(progStruct[index]);
+		string currUDFPath = projectDir + currRec.UDFName + ".fgr";
 		ifstream currUDF(currUDFPath);
 		if (!currUDF.good())
 		{
@@ -68,12 +68,12 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 		
 		currUDF.close();
 
-		Function * currFunction = new Function(DT_NULL,currRec->UDFName,currRec->returnType);
+		Function * currFunction = new Function(DT_NULL,currRec.UDFName,currRec.returnType);
 
 		int argIndex = 0;
-		while (argIndex < currRec->args->size())
+		while (argIndex < currRec.args->size())
 		{
-			currFunction->addArg((*(currRec->args))[argIndex]->type);
+			currFunction->addArg(currRec[argIndex]->type);
 			argIndex++;
 		}
 		table->add(new FunctionRecord(currFunction));
@@ -83,7 +83,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	//compile PEFF
 	progStruct.PEF->UDFName = projectName;
 	progStruct.PEF->returnType = DT_NULL;
-	progStruct.PEF->args = new vector<argPair *>();
+	progStruct.PEF->args = new ArgList();
 	FgrFunctionC funcComp(lang);
 	progAST.PEF = funcComp.compileFunctionToAST(projectDir + projectName + ".fgr", table, progStruct.PEF);
 
@@ -91,7 +91,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	index = 0;
 	while (index < progStruct.UDFs->size())
 	{
-		progAST.UDFs->push_back(funcComp.compileFunctionToAST(projectDir + (*progStruct.UDFs)[index]->UDFName + ".fgr", table, (*progStruct.UDFs)[index]));
+		progAST.UDFs->push_back(funcComp.compileFunctionToAST(projectDir + progStruct[index]->UDFName + ".fgr", table, progStruct[index]));
 		index++;
 	}
 
@@ -150,7 +150,7 @@ void FroggerC::emitInputProjectCode(string outFile)
 	int index = 0;
 	while (index < progAST.UDFs->size())
 	{
-		cgp->printUDFCode((*(progAST.UDFs))[index], (*(progStruct.UDFs))[index]);
+		cgp->printUDFCode(progAST[index], progStruct[index]);
 		index++;
 	}
 

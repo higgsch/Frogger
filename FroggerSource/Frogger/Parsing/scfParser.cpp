@@ -24,13 +24,13 @@ SCFParser::SCFParser()
 // This function initiates the parse of the SCF and returns 
 // the table of UDF records.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-vector<UDFRecord *> * SCFParser::parseSCF(string SCFPath, string projectName)
+UDFCollection * SCFParser::parseSCF(string SCFPath, string projectName)
 {
 	open(SCFPath);
 
-	vector<UDFRecord *> * files = new vector<UDFRecord *>();
+	UDFCollection * files = new UDFCollection();
 
 	while (next_token().type != TOKTYPE_SCANEOF)
 	{
@@ -75,11 +75,11 @@ UDFRecord * SCFParser::record()
 // ----------------------------------------------------------
 // This function processes and returns a list of arguments.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-vector<argPair *> * SCFParser::arguments()
+ArgList * SCFParser::arguments()
 {
-	vector<argPair *> * args = new vector<argPair *>();
+	ArgList * args = new ArgList();
 
 	if (next_token().type != TOKTYPE_ARROW)
 	{
@@ -98,11 +98,11 @@ vector<argPair *> * SCFParser::arguments()
 // ----------------------------------------------------------
 // This function processes and returns a single argument.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-argPair * SCFParser::argument()
+ArgPair * SCFParser::argument()
 {
-	argPair * arg = new argPair();
+	ArgPair * arg = new ArgPair();
 
 	SCFToken name = next_token();
 	match(TOKTYPE_ID);
@@ -184,9 +184,9 @@ bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 // @rec: The UDFRecord to compare to files.
 // @files: A list of files
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-bool SCFParser::isInFiles(UDFRecord * rec, vector<UDFRecord *> * files)
+bool SCFParser::isInFiles(UDFRecord * rec, UDFCollection * files)
 {
 	for (int recordIndex = 0; recordIndex < files->size(); recordIndex++)
 	{

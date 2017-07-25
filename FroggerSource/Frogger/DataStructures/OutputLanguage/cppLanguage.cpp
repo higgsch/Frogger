@@ -599,7 +599,7 @@ string CPPLanguage::getLabelText(string udfName, int labelIndex)
 //
 // Version 4.2
 // ----------------------------------------------------------
-string CPPLanguage::getFunctionPrototype(DataType returnType, string udfName, vector<argPair*>* args)
+string CPPLanguage::getFunctionPrototype(DataType returnType, string udfName, ArgList* args)
 {
 	return getTypeString(returnType) + " " + udfName + nest(true, getArgsString(args));
 }
@@ -631,14 +631,14 @@ string CPPLanguage::getTypeString(DataType dt)
 //
 // Version 4.2
 // ----------------------------------------------------------
-string CPPLanguage::getArgsString(vector<argPair *> * args)
+string CPPLanguage::getArgsString(ArgList * args)
 {
 	string result = "";
 	int index = 0;
 
 	while (index < args->size())
 	{
-		argPair * arg = (*args)[index];
+		ArgPair * arg = (*args)[index];
 		result = result + getTypeString(arg->type) + " _" + arg->name;
 		index++;
 

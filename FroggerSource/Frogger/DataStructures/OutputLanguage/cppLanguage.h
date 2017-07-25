@@ -145,9 +145,9 @@ private:
 	string getSupportText(SUPPORT_TEXT& text);
 
 	string getLabelText(string udfName, int stmtNo);
-	string getFunctionPrototype(DataType returnType, string udfName, vector<argPair*>* args);
+	string getFunctionPrototype(DataType returnType, string udfName, ArgList* args);
 	string getTypeString(DataType type);
-	string getArgsString(vector<argPair*>* args);
+	string getArgsString(ArgList* args);
 
 	// ----------------------------------------------------------
 	// This function returns a formatted line with an opening brace

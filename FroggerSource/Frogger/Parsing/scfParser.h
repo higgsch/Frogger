@@ -14,7 +14,7 @@ using namespace std;
 // This class provides the functionality to interpret a .struct 
 // file
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class SCFParser
 {
@@ -24,8 +24,8 @@ private:
 	SCFToken lookahead[1];
 	
 	UDFRecord * record();
-	vector<argPair *> * arguments();
-	argPair * argument();
+	ArgList * arguments();
+	ArgPair * argument();
 	string filename();
 	DataType dataType();
 
@@ -35,7 +35,7 @@ private:
 	SCFToken next_token();
 
 	bool isPEF(UDFRecord * rec, string pefName);
-	bool isInFiles(UDFRecord * rec, vector<UDFRecord *> * files);
+	bool isInFiles(UDFRecord * rec, UDFCollection * files);
 
 public:
 	SCFParser();
@@ -43,5 +43,5 @@ public:
 	void open(string SCFPath) { scanner.open(SCFPath); }
 	void close() { scanner.close(); }
 
-	vector<UDFRecord *> * parseSCF(string SCFPath, string projectName);
+	UDFCollection * parseSCF(string SCFPath, string projectName);
 };
