@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.2
 // -----------------------------------------------------------------
 // This program provides the Symbol, Function, and Command classes.
 // -----------------------------------------------------------------
@@ -24,7 +24,7 @@ Command::Command(string i_name)
 // This function adds an argument type to the command's end.
 // @argType: The data type of the argument to add.
 //
-// Version 2.5
+// Version 4.2
 // ----------------------------------------------------------
 void Command::addArg(DataType argType)
 {
@@ -32,7 +32,7 @@ void Command::addArg(DataType argType)
 	//	return;
 
 	if (argTypeList == NULL)
-		argTypeList = new vector<DataType>();
+		argTypeList = new DataTypeList();
 
 	argTypeList->push_back(argType);
 }
@@ -99,7 +99,7 @@ bool Command::matches(Command * cmd)
 // This function performs a deep copy to itself.
 // @cmd: The command to duplicate.
 //
-// Version 2.5
+// Version 4.2
 // ----------------------------------------------------------
 void Command::copy(Command * cmd)
 {
@@ -108,7 +108,7 @@ void Command::copy(Command * cmd)
 	if (cmd->argTypeList != NULL)
 	{
 		if (argTypeList == NULL)
-			argTypeList = new vector<DataType>();
+			argTypeList = new DataTypeList();
 		else
 			argTypeList->clear();
 

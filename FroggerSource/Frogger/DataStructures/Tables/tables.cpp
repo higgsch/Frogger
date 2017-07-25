@@ -83,7 +83,7 @@ SymbolTable::SymbolTable(Language * language, UDFRecord * rec)
 
 	while (index < rec->args->size())
 	{
-		ArgPair * pair = (*(rec->args))[index];
+		ArgPair * pair = (*rec)[index];
 		Symbol * sym = new Symbol(pair->name, pair->type);
 		sym->isLocal = false;
 		add(new SymbolRecord(sym));
@@ -149,27 +149,27 @@ CommandTable::CommandTable(Language * language)
 	CMD_END_NULL->builtIn = true;
 	add(new CommandRecord(CMD_END_NULL));
 	
-	CMD_END_STR->argTypeList = new vector<DataType>();
+	CMD_END_STR->argTypeList = new DataTypeList();
 	CMD_END_STR->addArg(DT_STRING);
 	CMD_END_STR->builtIn = true;
 	add(new CommandRecord(CMD_END_STR));
 	
-	CMD_END_DBL->argTypeList = new vector<DataType>();
+	CMD_END_DBL->argTypeList = new DataTypeList();
 	CMD_END_DBL->addArg(DT_DOUBLE);
 	CMD_END_DBL->builtIn = true;
 	add(new CommandRecord(CMD_END_DBL));
 
-	CMD_DISPLAY_STR->argTypeList = new vector<DataType>();
+	CMD_DISPLAY_STR->argTypeList = new DataTypeList();
 	CMD_DISPLAY_STR->addArg(DT_STRING);
 	CMD_DISPLAY_STR->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_STR));
 
-	CMD_DISPLAY_DBL->argTypeList = new vector<DataType>();
+	CMD_DISPLAY_DBL->argTypeList = new DataTypeList();
 	CMD_DISPLAY_DBL->addArg(DT_DOUBLE);
 	CMD_DISPLAY_DBL->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_DBL));
 
-	CMD_OPEN_INPUT->argTypeList = new vector<DataType>();
+	CMD_OPEN_INPUT->argTypeList = new DataTypeList();
 	CMD_OPEN_INPUT->addArg(DT_STRING);
 	CMD_OPEN_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_INPUT));
@@ -177,12 +177,12 @@ CommandTable::CommandTable(Language * language)
 	CMD_CLOSE_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_CLOSE_INPUT));
 
-	CMD_WRITE->argTypeList = new vector<DataType>();
+	CMD_WRITE->argTypeList = new DataTypeList();
 	CMD_WRITE->addArg(DT_STRING);
 	CMD_WRITE->builtIn = true;
 	add(new CommandRecord(CMD_WRITE));
 
-	CMD_OPEN_OUTPUT->argTypeList = new vector<DataType>();
+	CMD_OPEN_OUTPUT->argTypeList = new DataTypeList();
 	CMD_OPEN_OUTPUT->addArg(DT_STRING);
 	CMD_OPEN_OUTPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_OUTPUT));
@@ -222,7 +222,7 @@ FunctionTable::FunctionTable(Language * language)
 	FUNCT_PARSE_DOUBLE->builtIn = true;
 	add(new FunctionRecord(FUNCT_PARSE_DOUBLE));
 
-	FUNCT_ASCII_AT->argTypeList = new vector<DataType>();
+	FUNCT_ASCII_AT->argTypeList = new DataTypeList();
 	FUNCT_ASCII_AT->addArg(DT_DOUBLE);
 	FUNCT_ASCII_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ASCII_AT));
@@ -242,7 +242,7 @@ FunctionTable::FunctionTable(Language * language)
 	FUNCT_READ->builtIn = true;
 	add(new FunctionRecord(FUNCT_READ));
 
-	FUNCT_ELEMENT_AT->argTypeList = new vector<DataType>();
+	FUNCT_ELEMENT_AT->argTypeList = new DataTypeList();
 	FUNCT_ELEMENT_AT->addArg(DT_DOUBLE);
 	FUNCT_ELEMENT_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ELEMENT_AT));

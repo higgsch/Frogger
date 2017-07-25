@@ -26,16 +26,26 @@ struct Symbol
 };
 
 // ----------------------------------------------------------
+// This class represents a list of data types.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct DataTypeList : vector<DataType>
+{
+
+};
+
+// ----------------------------------------------------------
 // This class represents everything known about a command.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class Command
 {
 public:
 	bool builtIn;
 	string name;
-	vector<DataType> *argTypeList;
+	DataTypeList *argTypeList;
 
 	Command(string i_name);
 	void addArg(DataType arg);
