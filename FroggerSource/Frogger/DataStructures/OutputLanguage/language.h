@@ -53,13 +53,14 @@ protected:
 	}
 
 public:
-	Language(string indentString) : indentString(indentString), indentDepth(0)
+	Language(string indentString) : indentString(indentString), indentDepth(0) {}
+
+	void initialize()
 	{ 
-		/*
 		initOutputTexts();
 		builtInCommands = new CommandTable(this);
 		builtInFunctions = new FunctionTable(this);
-		builtInSymbols = new SymbolTable(this);*/
+		builtInSymbols = new SymbolTable(this);
 	}
 
 	CommandTable* builtInCommands;

@@ -190,13 +190,7 @@ protected:
 	void initDependencies();
 
 public:
-	CPPLanguage() : Language(INDENT) 
-	{ 
-		initOutputTexts();
-		builtInCommands = new CommandTable(this);
-		builtInFunctions = new FunctionTable(this);
-		builtInSymbols = new SymbolTable(this);
-	}
+	CPPLanguage() : Language(INDENT) {}
 
 	//Highest Level
 	string getMetaCode(ProgramStruct * structure);

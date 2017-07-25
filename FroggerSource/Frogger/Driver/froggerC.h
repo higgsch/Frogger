@@ -41,6 +41,7 @@ public:
 		progStruct.UDFs = new vector<UDFRecord *>();
 		progAST.UDFs = new vector<FunctionAST *>(); 
 		lang = new CPPLanguage();
+		lang->initialize();
 	}
 
 	void compileInputFile(string inFile, string outFile);
