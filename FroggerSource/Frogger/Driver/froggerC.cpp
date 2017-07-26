@@ -53,9 +53,10 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	progStruct.UDFs = p.parseSCF(projectDir + projectName + ".struct", projectName);
 	FunctionTable * table = new FunctionTable(lang);
 
+	int numFiles = progStruct.UDFs->size();
+
 	//verify all referenced files exist
-	int index = 0;
-	while (index < progStruct.UDFs->size())
+	for (int index = 0; index < numFiles; index++)
 	{
 		UDFRecord currRec = *(progStruct[index]);
 		string currUDFPath = projectDir + currRec.UDFName + ".fgr";
@@ -69,14 +70,12 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 
 		Function * currFunction = new Function(DT_NULL,currRec.UDFName,currRec.returnType,false);
 
-		int argIndex = 0;
-		while (argIndex < currRec.args->size())
+		int numArgs = currRec.args->size();
+		for (int argIndex = 0; argIndex < numArgs; argIndex++)
 		{
 			currFunction->addArg("", currRec[argIndex]->type);
-			argIndex++;
 		}
 		table->add(new FunctionRecord(currFunction));
-		index++;
 	}
 
 	//compile PEFF
@@ -86,10 +85,8 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	funcComp.compileFunctionToAST(projectDir + projectName + ".fgr", table, progStruct.PEF);
 
 	//compile all referenced files
-	index = 0;
-	while (index < progStruct.UDFs->size())
+	for (int index = 0; index < numFiles; index++ )
 	{
-		index++;
 		funcComp.compileFunctionToAST(projectDir + progStruct[index]->UDFName + ".fgr", table, progStruct[index]);
 	}
 
@@ -145,11 +142,10 @@ void FroggerC::emitInputProjectCode(string outFile)
 	cgp->printMetaCode(&progStruct);
 	cgp->printPEFCode(progStruct.PEF);
 
-	int index = 0;
-	while (index < progStruct.UDFs->size())
+	int numUDFs = progStruct.getNumberOfUDFs();
+	for (int index = 0; index < numUDFs; index++)
 	{
 		cgp->printUDFCode(progStruct[index]);
-		index++;
 	}
 
 	cgp->close();

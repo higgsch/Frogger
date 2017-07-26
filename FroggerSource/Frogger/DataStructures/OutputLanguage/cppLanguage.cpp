@@ -634,15 +634,14 @@ string CPPLanguage::getTypeString(DataType dt)
 string CPPLanguage::getArgsString(ArgList * args)
 {
 	string result = "";
-	int index = 0;
 
-	while (index < args->size())
+	int numArgs = args->size();
+	for (int index = 0; index < numArgs; index++)
 	{
 		ArgPair * arg = (*args)[index];
 		result = result + getTypeString(arg->type) + " _" + arg->name;
-		index++;
 
-		if (index != args->size())
+		if (index != numArgs - 1)
 			result = result + ", ";
 	}
 
