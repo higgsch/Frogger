@@ -63,11 +63,14 @@ struct ProgramStruct
 // ----------------------------------------------------------
 // This class wraps a Symbol for Table use.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 struct SymbolRecord : public Record<Symbol>
 {
 	SymbolRecord(Symbol* s) : Record(s) {}
+	SymbolRecord(string id, DataType type, bool isLocal) 
+		: Record(new Symbol(id, type, isLocal)) {}
+
 	bool equals(Symbol* s) {return rec->equals(s);}
 	bool matches(Symbol* s) {return rec->matches(s);}
 
@@ -77,11 +80,14 @@ struct SymbolRecord : public Record<Symbol>
 // ----------------------------------------------------------
 // This class wraps a Command for Table use.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 struct CommandRecord : public Record<Command>
 {
 	CommandRecord(Command* c) : Record(c) {}
+	CommandRecord(DataType parentType, string name, bool builtIn)
+		: Record(new Command(parentType, name, builtIn)) {}
+
 	bool equals(Command* c) {return rec->equals(c);}
 	bool matches(Command* c) {return rec->matches(c);}
 
@@ -91,11 +97,14 @@ struct CommandRecord : public Record<Command>
 // ----------------------------------------------------------
 // This class wraps a Function for Table use.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 struct FunctionRecord : public Record<Function>
 {
 	FunctionRecord(Function* f) : Record(f) {}
+	FunctionRecord(DataType parentType, string name, DataType returnType, bool builtIn)
+		: Record(new Function(parentType, name, returnType, builtIn)) {}
+
 	bool equals(Function* f) {return rec->equals(f);}
 	bool matches(Function* f) {return rec->matches(f);}
 
@@ -116,6 +125,8 @@ public:
 	SymbolTable(Language * language);
 
 	DataType symbolType(string id);
+
+	Symbol* SYM_ARGS;
 };
 
 // ----------------------------------------------------------

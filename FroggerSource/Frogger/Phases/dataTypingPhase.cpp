@@ -47,13 +47,13 @@ void DataTypingPhase::visit(ProgramNode * n)
 // This function processes a variable reference.
 // @n: The node representing the variable.
 //
-// Version 3.1
+// Version 4.2
 // ----------------------------------------------------------
 void DataTypingPhase::visit(IdRefNode * n)
 {
 	string id = n->getLexeme();
 	DataType type = n->getDataType();
-	Symbol sym = Symbol(id, DT_NOT_DEFINED);
+	Symbol sym = Symbol(id, DT_NOT_DEFINED, true);
 
 	if (type == DT_NOT_DEFINED)
 	{
@@ -64,13 +64,13 @@ void DataTypingPhase::visit(IdRefNode * n)
 		}
 
 		if (setUnknownTypeNodesToDefault)
-			symbols->add(new SymbolRecord(new Symbol(id, DT_DOUBLE)));
+			symbols->add(new SymbolRecord(id, DT_DOUBLE, true));
 
 		return;
 	}
 	
 	if (!symbols->isDefined(&sym))
-		symbols->add(new SymbolRecord(new Symbol(id,type)));
+		symbols->add(new SymbolRecord(id, type, true));
 	else
 	{
 		if (symbols->symbolType(id) != type)

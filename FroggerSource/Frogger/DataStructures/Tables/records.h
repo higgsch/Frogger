@@ -19,7 +19,9 @@ struct Symbol
 	DataType type;
 	bool isLocal; //flag for a symbol defined within a user-defined function
 
-	Symbol(string i_id, DataType i_type) : id(i_id), type(i_type), isLocal(true) {}
+	Symbol(string i_id, DataType i_type, bool i_isLocal) 
+		: id(i_id), type(i_type), isLocal(i_isLocal) {}
+
 	bool equals(Symbol* s) { return id == s->id; }
 	bool matches(Symbol* s) { return id == s->id; }
 	//TODO fix matches
