@@ -21,7 +21,7 @@ class SupportReqsPhase : public Phase
 private:
 	Language * lang;
 public:
-	void gatherRequirements(Language * language, ProgramAST * progAST);
+	void gatherRequirements(Language * language, ProgramStruct * prog);
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }

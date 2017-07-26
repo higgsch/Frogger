@@ -13,15 +13,15 @@ using namespace std;
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::gatherRequirements(Language * language, ProgramAST * ast)
+void SupportReqsPhase::gatherRequirements(Language * language, ProgramStruct * prog)
 {
 	lang = language;
 
-	ast->getPEFNode()->accept(this);
+	prog->getPEFNode()->accept(this);
 
-	int UDFCount = ast->getNumberOfUDFs();
+	int UDFCount = prog->getNumberOfUDFs();
 	for (int index = 0; index < UDFCount; index++)
-		ast->getUDFNode(index)->accept(this);
+		prog->getUDFNode(index)->accept(this);
 }
 
 // ----------------------------------------------------------

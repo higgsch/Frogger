@@ -9,57 +9,6 @@
 #include "..\dataTyped.h"
 using namespace std;
 
-//forward declaration
-class ProgramNode;
-class Language;
-
-// ----------------------------------------------------------
-// This class represents the data known about a User Defined 
-// Function.
-//
-// Version 4.2
-// ----------------------------------------------------------
-struct UDFRecord
-{
-	string UDFName;
-	ArgList * args;
-	DataType returnType;
-
-	UDFRecord() { args = new ArgList(); }
-
-	ArgPair* operator[](int index) { return (*args)[index]; }
-};
-
-// ----------------------------------------------------------
-// This class represents the data known about a User Defined 
-// Function Collection.
-//
-// Version 4.2
-// ----------------------------------------------------------
-struct UDFCollection : vector<UDFRecord *>
-{
-
-};
-
-// ----------------------------------------------------------
-// This class represents the data known about a Frogger
-// Program. Generated from the .struct file.
-//
-// Version 4.2
-// ----------------------------------------------------------
-struct ProgramStruct
-{
-	UDFRecord * PEF;
-	UDFCollection * UDFs;
-
-	ProgramStruct() { UDFs = new UDFCollection(); }
-
-	int getNumberOfUDFs() { return UDFs->size(); }
-	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }
-
-	UDFRecord* operator[](int index) { return (*UDFs)[index]; }
-};
-
 // ----------------------------------------------------------
 // This class wraps a Symbol for Table use.
 //
@@ -110,6 +59,8 @@ struct FunctionRecord : public Record<Function>
 
 	bool isAddable();
 };
+
+class Language;
 
 // ----------------------------------------------------------
 // This class represents a collection of variables
@@ -178,45 +129,4 @@ public:
 	Function* FUNCT_READ;
 	Function* FUNCT_ELEMENT_AT;
 	Function* FUNCT_SIZE;
-};
-
-// ----------------------------------------------------------
-// This class wraps the AST and Symbol Table for a UDF.
-//
-// Version 4.0
-// ----------------------------------------------------------
-struct FunctionAST
-{
-	ProgramNode * root;
-	SymbolTable * symbols;
-};
-
-// ----------------------------------------------------------
-// This class wraps the ASTs and Symbol Tables for a UDF Collection.
-//
-// Version 4.2
-// ----------------------------------------------------------
-struct FunctionASTCollection : vector<FunctionAST *>
-{
-
-};
-
-// ----------------------------------------------------------
-// This class wraps the PEF and all UDFs in a Frogger program.
-//
-// Version 4.2
-// ----------------------------------------------------------
-struct ProgramAST
-{
-	FunctionAST * PEF;
-	FunctionASTCollection * UDFs;
-
-	ProgramAST() { UDFs = new FunctionASTCollection(); }
-
-	int getNumberOfUDFs() { return UDFs->size(); }
-
-	ProgramNode* getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
-	ProgramNode* getPEFNode() { return PEF->root; }
-
-	FunctionAST* operator[](int index) { return (*UDFs)[index]; }
 };

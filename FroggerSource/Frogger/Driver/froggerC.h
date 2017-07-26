@@ -24,10 +24,9 @@ class FroggerC
 {
 private:
 	CPPLanguage * lang;
-	ProgramAST progAST;
 	ProgramStruct progStruct;
 
-	void computeRequiredSupportCode(ProgramAST * progAST);
+	void computeRequiredSupportCode(ProgramStruct * prog);
 
 	void emitInputFileCode(string outFile);
 	void emitInputProjectCode(string outFile);

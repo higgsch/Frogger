@@ -20,15 +20,15 @@ class FgrFunctionC
 private:
 	Language * lang;
 
-	void buildAST(FunctionAST * funct, string inFile);
+	void buildAST(UDFRecord * funct, string inFile);
 
-	void computeJumpToLineNumbers(FunctionAST * funct);
-	void convertStrings(FunctionAST * funct);
-	void checkDataTypes(FunctionAST * ast, FunctionTable * functs, SymbolTable * symbols);
+	void computeJumpToLineNumbers(UDFRecord * funct);
+	void convertStrings(UDFRecord * funct);
+	void checkDataTypes(UDFRecord * ast, FunctionTable * functs, SymbolTable * symbols);
 
 public:
 	FgrFunctionC(Language* lang) : lang(lang) {}
-	FunctionAST * compileFunctionToAST(string inFile, FunctionTable * functs, UDFRecord * rec);
+	void compileFunctionToAST(string inFile, FunctionTable * functs, UDFRecord * rec);
 	
-	void printAST(FunctionAST * funct, string outFile);
+	void printAST(UDFRecord * funct, string outFile);
 };

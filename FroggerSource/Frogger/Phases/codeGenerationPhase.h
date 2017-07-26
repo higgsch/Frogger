@@ -41,8 +41,8 @@ public:
 	void close() { p->close(); }
 
 	void printMetaCode(ProgramStruct * progStruct);
-	void printUDFCode(FunctionAST * UDF, UDFRecord * rec);
-	void printPEFCode(FunctionAST * PEF, UDFRecord * rec);
+	void printUDFCode(UDFRecord * rec);
+	void printPEFCode(UDFRecord * rec);
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);

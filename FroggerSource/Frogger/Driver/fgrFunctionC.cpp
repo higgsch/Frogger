@@ -17,29 +17,25 @@ using namespace std;
 //
 // Version 4.2
 // ----------------------------------------------------------
-FunctionAST* FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, UDFRecord * rec)
+void FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, UDFRecord * rec)
 {
-	FunctionAST * ast = new FunctionAST();
-
-	buildAST(ast, inFile);
+	buildAST(rec, inFile);
 	
 	//printAST(funct, "printableAST.txt");
 
-	computeJumpToLineNumbers(ast);
+	computeJumpToLineNumbers(rec);
 
-	convertStrings(ast);
-	checkDataTypes(ast, functs, new SymbolTable(lang, rec));
-
-	return ast;
+	convertStrings(rec);
+	checkDataTypes(rec, functs, new SymbolTable(lang, rec));
 }
 
 // ----------------------------------------------------------
 // This function drives the parsing of the FROGGER file.
 // @inFile: The .fgr file to open (from project directory).
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-void FgrFunctionC::buildAST(FunctionAST * funct, string inFile)
+void FgrFunctionC::buildAST(UDFRecord * funct, string inFile)
 {
 	FGRParser *p = new FGRParser();
 
@@ -54,9 +50,9 @@ void FgrFunctionC::buildAST(FunctionAST * funct, string inFile)
 // This function drives the computation of line numbers to 
 // jump to for each line.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-void FgrFunctionC::computeJumpToLineNumbers(FunctionAST * funct)
+void FgrFunctionC::computeJumpToLineNumbers(UDFRecord * funct)
 {
 	//Set line numbers
 	LineNoPhase *lnp = new LineNoPhase();
@@ -73,9 +69,9 @@ void FgrFunctionC::computeJumpToLineNumbers(FunctionAST * funct)
 // This function drives string conversion from FROGGER strings
 // to C++ strings.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-void FgrFunctionC::convertStrings(FunctionAST * funct)
+void FgrFunctionC::convertStrings(UDFRecord * funct)
 {
 	StringConversionPhase *scp = new StringConversionPhase();
 	funct->root->accept(scp);
@@ -87,7 +83,7 @@ void FgrFunctionC::convertStrings(FunctionAST * funct)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void FgrFunctionC::checkDataTypes(FunctionAST * ast, FunctionTable * functs, SymbolTable * symbols)
+void FgrFunctionC::checkDataTypes(UDFRecord * ast, FunctionTable * functs, SymbolTable * symbols)
 {
 	DataTypingPhase *dtp = new DataTypingPhase(lang, functs, symbols);
 	ast->root->accept(dtp);
@@ -99,9 +95,9 @@ void FgrFunctionC::checkDataTypes(FunctionAST * ast, FunctionTable * functs, Sym
 // This function drives test output of the tree to a file.
 // @outFile: The file that tree should be is sent to.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
-void FgrFunctionC::printAST(FunctionAST * funct, string outFile)
+void FgrFunctionC::printAST(UDFRecord * funct, string outFile)
 {
 	ofstream* out = new ofstream();
 	out->open(outFile);

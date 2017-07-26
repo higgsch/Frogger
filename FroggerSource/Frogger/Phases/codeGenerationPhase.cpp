@@ -26,13 +26,13 @@ void CodeGenerationPhase::printMetaCode(ProgramStruct * progStruct)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printPEFCode(FunctionAST * PEF, UDFRecord * rec)
+void CodeGenerationPhase::printPEFCode(UDFRecord * PEF)
 {
-	currUDFName = rec->UDFName;
+	currUDFName = PEF->UDFName;
 
 	PEF->root->accept(this);
 	string pefText = PEF->root->outputText;
-	p->printString(lang->getPEFCode(rec, PEF->symbols, pefText));
+	p->printString(lang->getPEFCode(PEF, PEF->symbols, pefText));
 }
 
 // ----------------------------------------------------------
@@ -41,13 +41,13 @@ void CodeGenerationPhase::printPEFCode(FunctionAST * PEF, UDFRecord * rec)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printUDFCode(FunctionAST * UDF, UDFRecord * rec) 
+void CodeGenerationPhase::printUDFCode(UDFRecord * UDF) 
 {
-	currUDFName = rec->UDFName;
+	currUDFName = UDF->UDFName;
 
 	UDF->root->accept(this);
 	string udfText = UDF->root->outputText;
-	p->printString(lang->getUDFCode(rec, UDF->symbols, udfText));
+	p->printString(lang->getUDFCode(UDF, UDF->symbols, udfText));
 }
 
 // ----------------------------------------------------------

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header for Node Record classes.
+// This is the header for Record classes.
 // -----------------------------------------------------------------
 #pragma once
 
@@ -90,4 +90,57 @@ struct Command : public Routine
 {
 	Command(DataType i_parentType, string i_name, bool i_builtIn)
 		: Routine(i_parentType, i_name, DT_NULL, i_builtIn) {}
+};
+
+//forward declarations
+class ProgramNode;
+class SymbolTable;
+
+// ----------------------------------------------------------
+// This class represents the data known about a User Defined 
+// Function.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct UDFRecord
+{
+	string UDFName;
+	ArgList * args;
+	DataType returnType;
+
+	ProgramNode * root;
+	SymbolTable * symbols;
+
+	UDFRecord() { args = new ArgList(); }
+
+	ArgPair* operator[](int index) { return (*args)[index]; }
+};
+
+// ----------------------------------------------------------
+// This class represents the data known about a User Defined 
+// Function Collection.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct UDFCollection : vector<UDFRecord *> {};
+
+// ----------------------------------------------------------
+// This class represents the data known about a Frogger
+// Program. Generated from the .struct file.
+//
+// Version 4.2
+// ----------------------------------------------------------
+struct ProgramStruct
+{
+	UDFRecord * PEF;
+	UDFCollection * UDFs;
+
+	ProgramStruct() { UDFs = new UDFCollection(); }
+
+	int getNumberOfUDFs() { return UDFs->size(); }
+	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }
+	ProgramNode* getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
+	ProgramNode* getPEFNode() { return PEF->root; }
+
+	UDFRecord* operator[](int index) { return (*UDFs)[index]; }
 };

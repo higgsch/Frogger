@@ -31,9 +31,9 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 	progStruct.PEF->UDFName = inFile.substr(start, end - start);
 
 	FgrFunctionC funcComp(lang);
-	progAST.PEF = funcComp.compileFunctionToAST(inFile, new FunctionTable(lang), progStruct.PEF);
+	funcComp.compileFunctionToAST(inFile, new FunctionTable(lang), progStruct.PEF);
 
-	computeRequiredSupportCode(&progAST);
+	computeRequiredSupportCode(&progStruct);
 	
 	emitInputFileCode(outFile);
 
@@ -83,17 +83,17 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	progStruct.PEF->UDFName = projectName;
 	progStruct.PEF->returnType = DT_NULL;
 	FgrFunctionC funcComp(lang);
-	progAST.PEF = funcComp.compileFunctionToAST(projectDir + projectName + ".fgr", table, progStruct.PEF);
+	funcComp.compileFunctionToAST(projectDir + projectName + ".fgr", table, progStruct.PEF);
 
 	//compile all referenced files
 	index = 0;
 	while (index < progStruct.UDFs->size())
 	{
-		progAST.UDFs->push_back(funcComp.compileFunctionToAST(projectDir + progStruct[index]->UDFName + ".fgr", table, progStruct[index]));
 		index++;
+		funcComp.compileFunctionToAST(projectDir + progStruct[index]->UDFName + ".fgr", table, progStruct[index]);
 	}
 
-	computeRequiredSupportCode(&progAST);
+	computeRequiredSupportCode(&progStruct);
 
 	//emit project code
 	emitInputProjectCode(outFile);
@@ -106,10 +106,10 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 //
 // Version 4.2
 // ----------------------------------------------------------
-void FroggerC::computeRequiredSupportCode(ProgramAST * progAST)
+void FroggerC::computeRequiredSupportCode(ProgramStruct * prog)
 {
 	SupportReqsPhase * reqs = new SupportReqsPhase();
-	reqs->gatherRequirements(lang, progAST);
+	reqs->gatherRequirements(lang, prog);
 	delete reqs;
 }
 
@@ -125,7 +125,7 @@ void FroggerC::emitInputFileCode(string outFile)
 
 	cgp->open(outFile);
 	cgp->printMetaCode(&progStruct);
-	cgp->printPEFCode(progAST.PEF, progStruct.PEF);
+	cgp->printPEFCode(progStruct.PEF);
 	cgp->close();
 
 	delete cgp;
@@ -143,12 +143,12 @@ void FroggerC::emitInputProjectCode(string outFile)
 
 	cgp->open(outFile);
 	cgp->printMetaCode(&progStruct);
-	cgp->printPEFCode(progAST.PEF,progStruct.PEF);
+	cgp->printPEFCode(progStruct.PEF);
 
 	int index = 0;
-	while (index < progAST.UDFs->size())
+	while (index < progStruct.UDFs->size())
 	{
-		cgp->printUDFCode(progAST[index], progStruct[index]);
+		cgp->printUDFCode(progStruct[index]);
 		index++;
 	}
 
