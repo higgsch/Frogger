@@ -194,8 +194,8 @@ public:
 
 	//Highest Level
 	string getMetaCode(ProgramStruct * structure);
-	string getPEFCode(UDFRecord* rec, SymbolTable* symbols, string pefText);
-	string getUDFCode(UDFRecord* rec, SymbolTable* symbols, string udfText);
+	string getPEFCode(UDFRecord* rec, string pefText);
+	string getUDFCode(UDFRecord* rec, string udfText);
 	
 	//Stmt
 	string getJmpStmtText(string udfName, int stmtNo, int jmpNo, bool isOwnLine, string stmtText);

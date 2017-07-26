@@ -119,32 +119,30 @@ string CPPLanguage::getMetaCode(ProgramStruct * structure)
 // ----------------------------------------------------------
 // This function returns the PEF code
 // @rec: the PEF's record
-// @symbols: the PEF's symbol table
 // @pefText: the output text of the PEF's statements
 //
 // Version 4.2
 // ----------------------------------------------------------
-string CPPLanguage::getPEFCode(UDFRecord* rec, SymbolTable* symbols, string pefText)
+string CPPLanguage::getPEFCode(UDFRecord* rec, string pefText)
 {
-	return getUDFCode(rec, symbols, pefText);
+	return getUDFCode(rec, pefText);
 }
 
 // ----------------------------------------------------------
 // This function returns the UDF code
 // @rec: the UDF's record
-// @symbols: the UDF's symbol table
 // @udfText: the output text of the UDF's statements
 //
 // Version 4.2
 // ----------------------------------------------------------
-string CPPLanguage::getUDFCode(UDFRecord* rec, SymbolTable* symbols, string udfText)
+string CPPLanguage::getUDFCode(UDFRecord* rec, string udfText)
 {
 	string result = "";
 
 	result += line(getFunctionPrototype(rec->returnType, rec->UDFName, rec->args));
 	result += openBraceLine();
 
-	result += getSymbolTableCode(symbols);
+	result += getSymbolTableCode(rec->symbols);
 
 	result += emptyLine() + emptyLine();
 

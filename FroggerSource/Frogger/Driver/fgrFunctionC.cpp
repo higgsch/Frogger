@@ -26,7 +26,7 @@ void FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, U
 	computeJumpToLineNumbers(rec);
 
 	convertStrings(rec);
-	checkDataTypes(rec, functs, new SymbolTable(lang, rec));
+	checkDataTypes(rec, functs);
 }
 
 // ----------------------------------------------------------
@@ -83,8 +83,9 @@ void FgrFunctionC::convertStrings(UDFRecord * funct)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void FgrFunctionC::checkDataTypes(UDFRecord * ast, FunctionTable * functs, SymbolTable * symbols)
+void FgrFunctionC::checkDataTypes(UDFRecord * ast, FunctionTable * functs)
 {
+	SymbolTable * symbols = new SymbolTable(lang, ast);
 	DataTypingPhase *dtp = new DataTypingPhase(lang, functs, symbols);
 	ast->root->accept(dtp);
 	ast->symbols = symbols;

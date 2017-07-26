@@ -32,7 +32,7 @@ void CodeGenerationPhase::printPEFCode(UDFRecord * PEF)
 
 	PEF->root->accept(this);
 	string pefText = PEF->root->outputText;
-	p->printString(lang->getPEFCode(PEF, PEF->symbols, pefText));
+	p->printString(lang->getPEFCode(PEF, pefText));
 }
 
 // ----------------------------------------------------------
@@ -47,7 +47,7 @@ void CodeGenerationPhase::printUDFCode(UDFRecord * UDF)
 
 	UDF->root->accept(this);
 	string udfText = UDF->root->outputText;
-	p->printString(lang->getUDFCode(UDF, UDF->symbols, udfText));
+	p->printString(lang->getUDFCode(UDF, udfText));
 }
 
 // ----------------------------------------------------------

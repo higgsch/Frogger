@@ -68,8 +68,8 @@ public:
 	SymbolTable* builtInSymbols;
 
 	virtual string getMetaCode(ProgramStruct * structure) =0;
-	virtual string getPEFCode(UDFRecord* rec, SymbolTable* symbols, string pefText) =0;
-	virtual string getUDFCode(UDFRecord* rec, SymbolTable* symbols, string udfText) =0;
+	virtual string getPEFCode(UDFRecord* rec, string pefText) =0;
+	virtual string getUDFCode(UDFRecord* rec, string udfText) =0;
 
 	virtual string getJmpStmtText(string udfName, int stmtNo, int jmpNo, bool isOwnLine, string stmtText) =0;
 	virtual string getIfStmtText(string udfName, int stmtNo, bool isOwnLine,
