@@ -11,22 +11,22 @@ using namespace std;
 // This class provides a node representation for an element
 // in an argument list.
 //
-// Version 3.1
+// Version 4.2
 // ----------------------------------------------------------
 class ArgListNode : public BinaryNode
 {
 private:
-	Command * cmd;
+	Routine * rout;
 	int argNo;
 
 public:
-	ArgListNode(int lineNo) : BinaryNode(lineNo) { cmd = NULL; argNo = -1;}
+	ArgListNode(int lineNo) : BinaryNode(lineNo) { rout = NULL; argNo = -1;}
 	~ArgListNode() {} // cmd is deleted by FunctionCallNode or CommandCallNode 
 
 	void setArgNo(int i) { argNo = i; }
 	int getArgNo() { return argNo; }
-	void setCmd(Command* c) { cmd = c; }
-	Command* getCmd() { return cmd; }
+	void setRoutine(Routine* r) { rout = r; }
+	Routine* getRoutine() { return rout; }
 	bool isListTyped(){	return isTreeTyped(); }
 	bool hasNextArg() { return getNextArg() != NULL; }
 

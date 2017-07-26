@@ -67,7 +67,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 		
 		currUDF.close();
 
-		Function * currFunction = new Function(DT_NULL,currRec.UDFName,currRec.returnType);
+		Function * currFunction = new Function(DT_NULL,currRec.UDFName,currRec.returnType,false);
 
 		int argIndex = 0;
 		while (argIndex < currRec.args->size())

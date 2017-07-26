@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.1
+//                      Version: 4.2
 // -----------------------------------------------------------------
 // This program represents a visitor for displaying the AST to
 // an output stream.
@@ -148,7 +148,7 @@ void PrintingPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void PrintingPhase::visit(FunctionCallNode * n)
 {
@@ -160,8 +160,7 @@ void PrintingPhase::visit(FunctionCallNode * n)
 
 	printLine(concat("argListLength = ", n->getArgListLength()));
 	
-	printCmdData(n->getCmd(), "cmd");
-	printFunctData(n->getFunct(), "funct");
+	printRoutineData(n->getFunct(), "rout");
 
 	printNodeData(n->getPrimary(), "primary");
 	printNodeData(n->getArgList(), "argList");
@@ -174,7 +173,7 @@ void PrintingPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void PrintingPhase::visit(CommandCallNode * n)
 {
@@ -186,7 +185,7 @@ void PrintingPhase::visit(CommandCallNode * n)
 
 	printLine(concat("argListLength = ", n->getArgListLength()));
 	
-	printCmdData(n->getCmd(), "cmd");
+	printRoutineData(n->getCmd(), "rout");
 
 	printNodeData(n->getPrimary(), "primary");
 	printNodeData(n->getArgList(), "argList");
@@ -199,7 +198,7 @@ void PrintingPhase::visit(CommandCallNode * n)
 // This function processes an element in an argument list.
 // @n: The node representing the statement.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
 void PrintingPhase::visit(ArgListNode * n)
 {
@@ -212,7 +211,7 @@ void PrintingPhase::visit(ArgListNode * n)
 	printDataTypeInfo(n);
 	printLine("isListTyped = " + trueOrFalse(n->isListTyped()));
 
-	printCmdData(n->getCmd(), "cmd");
+	printRoutineData(n->getRoutine(), "rout");
 
 	printLine("hasNextArg = " + trueOrFalse(n->hasNextArg()));
 	
@@ -356,29 +355,11 @@ void PrintingPhase::printNodeData(Node* n, string name)
 // This function safely prints a Command's data.
 // @n: The node representing the operation.
 //
-// Version 3.0
+// Version 4.2
 // ----------------------------------------------------------
-void PrintingPhase::printCmdData(Command* c, string name)
+void PrintingPhase::printRoutineData(Routine* r, string name)
 {
-	if (c == NULL)
-		printLine(name + " = NULL");
-	else
-	{
-		print(indent() + name + " = ");
-		//TODO display data
-		print("\n");
-	}
-}
-
-// ----------------------------------------------------------
-// This function safely prints a Function's data.
-// @n: The node representing the operation.
-//
-// Version 3.0
-// ----------------------------------------------------------
-void PrintingPhase::printFunctData(Function* f, string name)
-{
-	if (f == NULL)
+	if (r == NULL)
 		printLine(name + " = NULL");
 	else
 	{

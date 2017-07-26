@@ -11,11 +11,11 @@ using namespace std;
 // This constructor builds a node for a function call.
 // @str: The function's name.
 //
-// Version 3.1
+// Version 4.2
 // ----------------------------------------------------------
 FunctionCallNode::FunctionCallNode(string str, int lineNo) : CommandCallNode(str, lineNo)
 {
-	funct = new Function(DT_NOT_DEFINED, str, DT_NOT_DEFINED);
+	funct = new Function(DT_NOT_DEFINED, str, DT_NOT_DEFINED, false);
 	((Command*)this->getFunct())->copy(funct);
 }
 

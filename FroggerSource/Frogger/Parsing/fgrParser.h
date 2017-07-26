@@ -13,7 +13,7 @@ using namespace std;
 // This class parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code.
 //
-// Version 4.0
+// Version 4.2
 // ----------------------------------------------------------
 class FGRParser
 {
@@ -38,7 +38,7 @@ private:
 
 	//Action Statements
 	JmpStmtNode* jmpstmt();
-	AsciiNode* arglist(int argNo, Command* cmd);
+	AsciiNode* arglist(int argNo, Routine* rout);
 
 	//Expressions
 	AsciiNode* expr();

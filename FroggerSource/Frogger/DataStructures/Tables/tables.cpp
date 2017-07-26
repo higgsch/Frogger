@@ -128,53 +128,43 @@ CommandTable::CommandTable(Language * language)
 {
 	lang = language;
 
-	CMD_END_NULL = new Command(lang->CMDNAME_END_NULL);
-	CMD_END_STR = new Command(lang->CMDNAME_END_STR);
-	CMD_END_DBL = new Command(lang->CMDNAME_END_DBL);
-	CMD_DISPLAY_STR = new Command(lang->CMDNAME_DISPLAY_STR);
-	CMD_DISPLAY_DBL = new Command(lang->CMDNAME_DISPLAY_DBL);
-	CMD_OPEN_INPUT = new Command(lang->CMDNAME_OPEN_INPUT);
-	CMD_CLOSE_INPUT = new Command(lang->CMDNAME_CLOSE_INPUT);
-	CMD_WRITE = new Command(lang->CMDNAME_WRITE);
-	CMD_OPEN_OUTPUT = new Command(lang->CMDNAME_OPEN_OUTPUT);
-	CMD_CLOSE_OUTPUT = new Command(lang->CMDNAME_CLOSE_OUTPUT);
+	CMD_END_NULL = new Command(DT_NULL, lang->CMDNAME_END_NULL, true);
+	CMD_END_STR = new Command(DT_NULL, lang->CMDNAME_END_STR, true);
+	CMD_END_DBL = new Command(DT_NULL, lang->CMDNAME_END_DBL, true);
+	CMD_DISPLAY_STR = new Command(DT_NULL, lang->CMDNAME_DISPLAY_STR, true);
+	CMD_DISPLAY_DBL = new Command(DT_NULL, lang->CMDNAME_DISPLAY_DBL, true);
+	CMD_OPEN_INPUT = new Command(DT_NULL, lang->CMDNAME_OPEN_INPUT, true);
+	CMD_CLOSE_INPUT = new Command(DT_NULL, lang->CMDNAME_CLOSE_INPUT, true);
+	CMD_WRITE = new Command(DT_NULL, lang->CMDNAME_WRITE, true);
+	CMD_OPEN_OUTPUT = new Command(DT_NULL, lang->CMDNAME_OPEN_OUTPUT, true);
+	CMD_CLOSE_OUTPUT = new Command(DT_NULL, lang->CMDNAME_CLOSE_OUTPUT, true);
 
 	//Add built-in commands
-	CMD_END_NULL->builtIn = true;
 	add(new CommandRecord(CMD_END_NULL));
 	
 	CMD_END_STR->addArg("", DT_STRING);
-	CMD_END_STR->builtIn = true;
 	add(new CommandRecord(CMD_END_STR));
 	
 	CMD_END_DBL->addArg("", DT_DOUBLE);
-	CMD_END_DBL->builtIn = true;
 	add(new CommandRecord(CMD_END_DBL));
 
 	CMD_DISPLAY_STR->addArg("", DT_STRING);
-	CMD_DISPLAY_STR->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_STR));
 
 	CMD_DISPLAY_DBL->addArg("", DT_DOUBLE);
-	CMD_DISPLAY_DBL->builtIn = true;
 	add(new CommandRecord(CMD_DISPLAY_DBL));
 
 	CMD_OPEN_INPUT->addArg("", DT_STRING);
-	CMD_OPEN_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_INPUT));
 
-	CMD_CLOSE_INPUT->builtIn = true;
 	add(new CommandRecord(CMD_CLOSE_INPUT));
 
 	CMD_WRITE->addArg("", DT_STRING);
-	CMD_WRITE->builtIn = true;
 	add(new CommandRecord(CMD_WRITE));
 
 	CMD_OPEN_OUTPUT->addArg("", DT_STRING);
-	CMD_OPEN_OUTPUT->builtIn = true;
 	add(new CommandRecord(CMD_OPEN_OUTPUT));
 
-	CMD_CLOSE_OUTPUT->builtIn = true;
 	add(new CommandRecord(CMD_CLOSE_OUTPUT));
 }
 
@@ -187,52 +177,41 @@ FunctionTable::FunctionTable(Language * language)
 {
 	lang = language;
 
-	FUNCT_TO_STRING = new Function(DT_DOUBLE, lang->FUNCTNAME_TO_STRING, DT_STRING);
-	FUNCT_TO_ASCII = new Function(DT_DOUBLE, lang->FUNCTNAME_TO_ASCII, DT_STRING);
-	FUNCT_PARSE_DOUBLE = new Function(DT_STRING, lang->FUNCTNAME_PARSE_DOUBLE, DT_DOUBLE);
-	FUNCT_ASCII_AT = new Function(DT_STRING, lang->FUNCTNAME_ASCII_AT, DT_DOUBLE);
-	FUNCT_LENGTH = new Function(DT_STRING, lang->FUNCTNAME_LENGTH, DT_DOUBLE);
-	FUNCT_RETRIEVE_DOUBLE = new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_DOUBLE, DT_DOUBLE);
-	FUNCT_RANDOM = new Function(DT_NULL, lang->FUNCTNAME_RANDOM, DT_DOUBLE);
-	FUNCT_RETRIEVE_STRING = new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_STRING, DT_STRING);
-	FUNCT_READ = new Function(DT_NULL, lang->FUNCTNAME_READ, DT_STRING);
-	FUNCT_ELEMENT_AT = new Function(DT_ARGS, lang->FUNCTNAME_ELEMENT_AT, DT_STRING);
-	FUNCT_SIZE = new Function(DT_ARGS, lang->FUNCTNAME_SIZE, DT_DOUBLE);
+	FUNCT_TO_STRING = new Function(DT_DOUBLE, lang->FUNCTNAME_TO_STRING, DT_STRING, true);
+	FUNCT_TO_ASCII = new Function(DT_DOUBLE, lang->FUNCTNAME_TO_ASCII, DT_STRING, true);
+	FUNCT_PARSE_DOUBLE = new Function(DT_STRING, lang->FUNCTNAME_PARSE_DOUBLE, DT_DOUBLE, true);
+	FUNCT_ASCII_AT = new Function(DT_STRING, lang->FUNCTNAME_ASCII_AT, DT_DOUBLE, true);
+	FUNCT_LENGTH = new Function(DT_STRING, lang->FUNCTNAME_LENGTH, DT_DOUBLE, true);
+	FUNCT_RETRIEVE_DOUBLE = new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_DOUBLE, DT_DOUBLE, true);
+	FUNCT_RANDOM = new Function(DT_NULL, lang->FUNCTNAME_RANDOM, DT_DOUBLE, true);
+	FUNCT_RETRIEVE_STRING = new Function(DT_NULL, lang->FUNCTNAME_RETRIEVE_STRING, DT_STRING, true);
+	FUNCT_READ = new Function(DT_NULL, lang->FUNCTNAME_READ, DT_STRING, true);
+	FUNCT_ELEMENT_AT = new Function(DT_ARGS, lang->FUNCTNAME_ELEMENT_AT, DT_STRING, true);
+	FUNCT_SIZE = new Function(DT_ARGS, lang->FUNCTNAME_SIZE, DT_DOUBLE, true);
 
 	//Add built-in functions
-	FUNCT_TO_STRING->builtIn = true;
 	add(new FunctionRecord(FUNCT_TO_STRING));
 
-	FUNCT_TO_ASCII->builtIn = true;
 	add(new FunctionRecord(FUNCT_TO_ASCII));
 
-	FUNCT_PARSE_DOUBLE->builtIn = true;
 	add(new FunctionRecord(FUNCT_PARSE_DOUBLE));
 
 	FUNCT_ASCII_AT->addArg("", DT_DOUBLE);
-	FUNCT_ASCII_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ASCII_AT));
 
-	FUNCT_LENGTH->builtIn = true;
 	add(new FunctionRecord(FUNCT_LENGTH));
 
-	FUNCT_RETRIEVE_DOUBLE->builtIn = true;
 	add(new FunctionRecord(FUNCT_RETRIEVE_DOUBLE));
 
-	FUNCT_RANDOM->builtIn = true;
 	add(new FunctionRecord(FUNCT_RANDOM));
 
-	FUNCT_RETRIEVE_STRING->builtIn = true;
 	add(new FunctionRecord(FUNCT_RETRIEVE_STRING));
 
-	FUNCT_READ->builtIn = true;
 	add(new FunctionRecord(FUNCT_READ));
 
 	FUNCT_ELEMENT_AT->addArg("", DT_DOUBLE);
-	FUNCT_ELEMENT_AT->builtIn = true;
 	add(new FunctionRecord(FUNCT_ELEMENT_AT));
 
-	FUNCT_SIZE->builtIn = true;
 	add(new FunctionRecord(FUNCT_SIZE));
 }
 

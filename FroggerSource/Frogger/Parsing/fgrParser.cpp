@@ -311,22 +311,22 @@ JmpStmtNode* FGRParser::jmpstmt()
 //
 // Version 4.2
 // ----------------------------------------------------------
-AsciiNode* FGRParser::arglist(int argNo, Command* cmd)
+AsciiNode* FGRParser::arglist(int argNo, Routine* rout)
 {
 	AsciiNode * firstArg = expr();
 	AsciiNode * nextArg = NULL;
 
 	ArgListNode * list = new ArgListNode(scanner.getLineNo());
-	list->setCmd(cmd);
+	list->setRoutine(rout);
 	list->addThisArg(firstArg);
 	list->setArgNo(argNo);
-	cmd->addArg("", DT_NOT_DEFINED);
+	rout->addArg("", DT_NOT_DEFINED);
 	argNo++;
 
 	if (next_token().type == TOKTYPE_COMMA)
 	{
 		match(TOKTYPE_COMMA);
-		nextArg = arglist(argNo, cmd);
+		nextArg = arglist(argNo, rout);
 	}
 
 	list->addNextArg(nextArg);

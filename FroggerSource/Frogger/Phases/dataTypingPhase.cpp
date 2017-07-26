@@ -146,12 +146,12 @@ void DataTypingPhase::visit(CommandCallNode * n)
 // This function processes an element in an argument list.
 // @n: The node representing the statement.
 //
-// Version 3.1
+// Version 4.2
 // ----------------------------------------------------------
 void DataTypingPhase::visit(ArgListNode * n)
 {
 	int argNo = n->getArgNo();
-	DataType oldArgType = n->getCmd()->getDataTypeOfArgNumber(argNo);
+	DataType oldArgType = n->getRoutine()->getArg(argNo)->type;
 	if (oldArgType != DT_NOT_DEFINED)
 		checkAndSetNodeDataType(n->getThisArg(),oldArgType);
 
@@ -161,9 +161,7 @@ void DataTypingPhase::visit(ArgListNode * n)
 	if (argType != DT_NOT_DEFINED)
 	{
 		checkAndSetNodeDataType(n, argType);
-		Command * cmd = n->getCmd();
-		int argNo = n->getArgNo();
-		checkAndSetArgDataType(cmd,argNo,argType,n->getLineNo());
+		checkAndSetArgDataType(n->getRoutine(), n->getArgNo(), argType, n->getLineNo());
 	}
 }
 
@@ -285,17 +283,17 @@ void DataTypingPhase::checkAndSetTreeDataType(BinaryNode * node, DataType type)
 // It throws a dataType error if there is a dataType 
 // conflict.
 // 
-// Version 3.1
+// Version 4.2
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetArgDataType(Command * cmd, int argNo, DataType type, int lineNo)
+void DataTypingPhase::checkAndSetArgDataType(Routine * rout, int argNo, DataType type, int lineNo)
 {
-	DataType oldType = cmd->getDataTypeOfArgNumber(argNo);
+	DataType oldType = rout->getArg(argNo)->type;
 	if (oldType == type || type == DT_NOT_DEFINED)
 		return;
 
 	if (oldType == DT_NOT_DEFINED)
 	{
-		cmd->setDataTypeOfArgNumber(argNo, type);
+		rout->setDataTypeOfArgNumber(argNo, type);
 		return;
 	}
 	else

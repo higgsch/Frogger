@@ -27,7 +27,7 @@ private:
 	void checkAndSetTreeDataType(TerminalNode * node, DataType type);
 	void checkAndSetTreeDataType(UnaryNode * node, DataType type);
 	void checkAndSetTreeDataType(BinaryNode * node, DataType type);
-	void checkAndSetArgDataType(Command * cmd, int argNo, DataType type, int lineNo);
+	void checkAndSetArgDataType(Routine * rout, int argNo, DataType type, int lineNo);
 	void unifyTreeDataType(TerminalNode * node);
 	void unifyTreeDataType(UnaryNode * node);
 	void unifyTreeDataType(BinaryNode * node);

@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for displaying the AST to
 // an output stream.
 //
-// Version 3.1
+// Version 4.2
 // ----------------------------------------------------------
 class PrintingPhase : public Phase
 {
@@ -29,8 +29,7 @@ private:
 	void printBinaryOpNodeInfo(BinaryOpNode* n, string name);
 
 	void printNodeData(Node* n, string name);
-	void printCmdData(Command* c, string name);
-	void printFunctData(Function* f, string name);
+	void printRoutineData(Routine* r, string name);
 
 	void printLine(string line) { *out << indent() << line << endl; }
 	void print(string toPrint) { *out << toPrint; }
