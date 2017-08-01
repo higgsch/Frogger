@@ -13,9 +13,10 @@ v3.2: Added File I/O: openI, openO, read, write, closeI, closeO routines
 v3.3: Added commandline argument and string length functionality.
 v4.0: Added user-defined functions (force modulation into different files).
 v4.1: Added Test Framework.
+v4.2: Refactored with cleaner code.
 
-v4.2: Refactor with cleaner code.
-v4.3: Add function overloading.
+v4.3: Include gcc or cl inline.
+v4.4: Add function overloading.
       Perhaps numToMonth(num=double)~string.fgr
 v5+: Add object orientation (folder modulation).
 v5+.2: Add asciiFunction config file functionality.
