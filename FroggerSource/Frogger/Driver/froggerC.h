@@ -5,7 +5,7 @@
 
 #include <string>
 #include "..\DataStructures\Tables\tables.h"
-#include "..\DataStructures\OutputLanguage\cppLanguage.h"
+#include "..\Languages\CPP\cppLanguage.h"
 using namespace std;
 
 //forward declaration

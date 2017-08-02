@@ -7,7 +7,7 @@
 #include "phase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
-#include "..\DataStructures\OutputLanguage\language.h"
+#include "..\Languages\language.h"
 using namespace std;
 
 // ----------------------------------------------------------
