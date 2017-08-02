@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 4.3
 // -----------------------------------------------------------------
 // This program represents the CPPLanguage package.
 // -----------------------------------------------------------------
@@ -95,6 +95,33 @@ void CPPLanguage::initOutputTexts()
 	MAIN_DEC = STATIC_SUPPORT("int main(int argc, char* argv[])");
 
 	initDependencies();
+}
+
+extern string rootDir;
+
+// ----------------------------------------------------------
+// This function calls a Windows module to compile the temp
+// C++ code to .exe.
+// @outFilename: The name of the .cpp file
+// @exeFilename: The name of the desired .exe output file.
+//
+// Version 4.3
+// ----------------------------------------------------------
+void CPPLanguage::outputToExe(string outFilename, string exeFilename)
+{
+	system(("call " + rootDir + "Languages\\CPP\\MSCL.bat " + outFilename + " " + exeFilename + ">nul").c_str());
+}
+
+// ----------------------------------------------------------
+// This function calls a Windows module to clean up all temp
+// files created from compilation.
+// @filename: The name of the temporary .cpp file
+//
+// Version 4.3
+// ----------------------------------------------------------
+void CPPLanguage::cleanup(string filename)
+{
+	system(("call " + rootDir + "Languages\\CPP\\clean.bat " + filename + ">nul").c_str());
 }
 
 // ----------------------------------------------------------

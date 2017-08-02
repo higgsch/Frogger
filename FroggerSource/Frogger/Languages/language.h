@@ -23,7 +23,7 @@ public:
 // ----------------------------------------------------------
 // This class represents a generic Language package.
 //
-// Version 4.2
+// Version 4.3
 // ----------------------------------------------------------
 class Language
 {
@@ -62,6 +62,9 @@ public:
 		builtInFunctions = new FunctionTable(this);
 		builtInSymbols = new SymbolTable(this);
 	}
+
+	virtual void outputToExe(string outFilename, string exeFilename) =0;
+	virtual void cleanup(string filename) =0;
 
 	CommandTable* builtInCommands;
 	FunctionTable* builtInFunctions;

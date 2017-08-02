@@ -18,7 +18,7 @@ bool quietMode;
 // It can be used to compile a Frogger Program Entry Function 
 // File or Frogger Project Folder to c++ output.
 //
-// Version 4.2
+// Version 4.3
 // ----------------------------------------------------------
 class FroggerC
 {
@@ -28,8 +28,8 @@ private:
 
 	void computeRequiredSupportCode(ProgramStruct * prog);
 
-	void emitInputFileCode(string outFile);
-	void emitInputProjectCode(string outFile);
+	void emitInputFileCode(string fileDir, string inFilename,string outFile, bool toExe, bool cleanup);
+	void emitInputProjectCode(string projectDir, string projectName, string outFile, bool toExe, bool cleanup);
 
 	void struct_error(string err);
 
@@ -40,6 +40,6 @@ public:
 		lang->initialize();
 	}
 
-	void compileInputFile(string inFile, string outFile);
-	void compileInputProject(string projectDir, string projectName, string outFile);
+	void compileInputFile(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup);
+	void compileInputProject(string projectDir, string projectName, string outFile, bool toExe, bool cleanup);
 };

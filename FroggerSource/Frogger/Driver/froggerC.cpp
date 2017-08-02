@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 4.3
 // -----------------------------------------------------------------
 // This program compiles a Frogger source to c++ output.
 // -----------------------------------------------------------------
@@ -10,32 +10,29 @@
 #include "..\Parsing\SCFParser.h"
 #include "..\Phases\phases.h"
 #include <iostream>
+#include <Windows.h>
 using namespace std;
+
+string rootDir = "";
 
 // ----------------------------------------------------------
 // This function drives the PEFF compilation process.
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 4.2
+// Version 4.3
 // ----------------------------------------------------------
-void FroggerC::compileInputFile(string inFile, string outFile)
+void FroggerC::compileInputFile(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup)
 {
 	progStruct.PEF->returnType = DT_NULL;
-
-	int start = inFile.find_last_of('\\') + 1;
-
-	int end = inFile.find_last_of('.');
-	end = (end == -1) ? inFile.length() - 1 : end;
-
-	progStruct.PEF->UDFName = inFile.substr(start, end - start);
+	progStruct.PEF->UDFName = inFilename;
 
 	FgrFunctionC funcComp(lang);
-	funcComp.compileFunctionToAST(inFile, new FunctionTable(lang), progStruct.PEF);
+	funcComp.compileFunctionToAST(fileDir + inFilename + ".fgr", new FunctionTable(lang), progStruct.PEF);
 
 	computeRequiredSupportCode(&progStruct);
 	
-	emitInputFileCode(outFile);
+	emitInputFileCode(fileDir, inFilename, outFile, toExe, cleanup);
 
 	cout << "Program successfully compiled" << endl;
 }
@@ -45,9 +42,9 @@ void FroggerC::compileInputFile(string inFile, string outFile)
 // @inProject: The PF path.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.2
+// Version 4.3
 // ----------------------------------------------------------
-void FroggerC::compileInputProject(string projectDir, string projectName, string outFile)
+void FroggerC::compileInputProject(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
 {
 	SCFParser p;
 	progStruct.UDFs = p.parseSCF(projectDir + projectName + ".struct", projectName);
@@ -93,7 +90,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	computeRequiredSupportCode(&progStruct);
 
 	//emit project code
-	emitInputProjectCode(outFile);
+	emitInputProjectCode(projectDir, projectName, outFile, toExe, cleanup);
 
 	cout << "Program successfully compiled" << endl;
 }
@@ -114,16 +111,24 @@ void FroggerC::computeRequiredSupportCode(ProgramStruct * prog)
 // This function drives code generation for a single file input.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.2
+// Version 4.3
 // ----------------------------------------------------------
-void FroggerC::emitInputFileCode(string outFile)
+void FroggerC::emitInputFileCode(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup)
 {
+	string filename = (toExe) ? rootDir + "bin\\" + inFilename : outFile;
+
 	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
-	cgp->open(outFile);
+	cgp->open(filename + ".cpp");
 	cgp->printMetaCode(&progStruct);
 	cgp->printPEFCode(progStruct.PEF);
 	cgp->close();
+
+	if (toExe)
+		cgp->outputToExe(filename, outFile);
+
+	if (cleanup)
+		cgp->cleanup(filename);
 
 	delete cgp;
 }
@@ -132,13 +137,15 @@ void FroggerC::emitInputFileCode(string outFile)
 // This function drives code generation for a project input.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.2
+// Version 4.3
 // ----------------------------------------------------------
-void FroggerC::emitInputProjectCode(string outFile)
+void FroggerC::emitInputProjectCode(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
 {
+	string filename = (toExe) ? rootDir + "bin\\" + projectName : outFile;
+
 	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
-	cgp->open(outFile);
+	cgp->open(filename + ".cpp");
 	cgp->printMetaCode(&progStruct);
 	cgp->printPEFCode(progStruct.PEF);
 
@@ -149,6 +156,12 @@ void FroggerC::emitInputProjectCode(string outFile)
 	}
 
 	cgp->close();
+
+	if (toExe)
+		cgp->outputToExe(filename, outFile);
+
+	if (toExe && cleanup)
+		cgp->cleanup(filename);
 
 	delete cgp;
 }
@@ -174,6 +187,7 @@ void FroggerC::struct_error(string err_msg)
 }
 
 //Forward declarations for main
+void initializeRootDir();
 void printUsage();
 void printHelp();
 string stripTrailingSlashes(string s);
@@ -184,10 +198,12 @@ string stripTrailingSlashes(string s);
 // compilation process.
 // Note: Command line accepts .fgr filename then .cpp filename.
 //
-// Version 4.0
+// Version 4.3
 // ----------------------------------------------------------
 int main(int argc, char* argv[])
 {
+	initializeRootDir();
+
 	if (argc == 1)
 	{
 		printUsage();
@@ -207,6 +223,8 @@ int main(int argc, char* argv[])
 	string outFilePath = ""; //.cpp filepath
 	bool inFile = false;
 	bool inProject = false;
+	bool toExe = true;
+	bool cleanup = true;
 
 	bool error = false;
 
@@ -223,6 +241,16 @@ int main(int argc, char* argv[])
 		else if (switchArg == "/q")
 		{
 			quietMode = true;
+			continue;
+		}
+		else if (switchArg == "/i")
+		{
+			toExe = false;
+			continue;
+		}
+		else if (switchArg == "/v")
+		{
+			cleanup = false;
 			continue;
 		}
 		else if (switchArg != "/o" && switchArg != "/if" && switchArg != "/ip")
@@ -337,7 +365,7 @@ int main(int argc, char* argv[])
 				cout << "Starting Project Compilation: " << inPath << "\\ -> " << outFilePath << endl;
 	
 			FroggerC c;
-			c.compileInputProject(inPath + "\\", projectName, outFilePath);
+			c.compileInputProject(inPath + "\\", projectName, outFilePath, toExe, cleanup);
 		}
 	}
 
@@ -354,8 +382,15 @@ int main(int argc, char* argv[])
 			if (!quietMode)
 			cout << "Starting File Compilation: " << inPath << " -> " << outFilePath << endl;
 	
+			int start = inPath.find_last_of('\\') + 1;
+			int end = inPath.find_last_of('.');
+			end = (end == -1) ? inPath.length() - 1 : end;
+
+			string inFileDir = inPath.substr(0, start);
+			string inFilename = inPath.substr(start, end - start);
+
 			FroggerC c;
-			c.compileInputFile(inPath, outFilePath);
+			c.compileInputFile(inFileDir, inFilename, outFilePath, toExe, cleanup);
 		}
 	}
 
@@ -426,4 +461,26 @@ string stripTrailingSlashes(string s)
 	}
 
 	return s;
+}
+
+// ----------------------------------------------------------
+// This function obtains and sets the Frogger.exe directory
+// from the Windows operating system.
+//
+// Version 4.3
+// ----------------------------------------------------------
+void initializeRootDir()
+{
+	TCHAR path[MAX_PATH];
+	int size = GetModuleFileName(NULL, path, sizeof(path));
+
+	rootDir = "";
+
+	for (int i = 0; i < size; i++)
+	{
+		rootDir += (char)path[i];
+	}
+	
+	rootDir = rootDir.substr(0, rootDir.find_last_of("\\"));
+	rootDir = rootDir.substr(0, rootDir.find_last_of("\\") + 1);
 }

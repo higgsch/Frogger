@@ -122,7 +122,7 @@ public:
 // ----------------------------------------------------------
 // This class represents the CPPLanguage package.
 //
-// Version 4.2
+// Version 4.3
 // ----------------------------------------------------------
 class CPPLanguage : public Language
 {
@@ -191,6 +191,9 @@ protected:
 
 public:
 	CPPLanguage() : Language(INDENT) {}
+
+	void outputToExe(string outFilename, string exeFilename);
+	void cleanup(string filename);
 
 	//Highest Level
 	string getMetaCode(ProgramStruct * structure);
