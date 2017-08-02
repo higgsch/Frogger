@@ -4,14 +4,8 @@ CC = cl
 clean:
 	del /f /s *.o *.cpp *.cpp *.ilk *.pdb *.exe *.txt
 
-compileSource: $(fname).o
-	$(CC) $(CFLAGS) -Fo$(fname).exe $(fname).o
-
-$(fname).o: $(fname).cpp
-	$(CC) $(CFLAGS) -c -Fo$(fname).o $(fname).cpp
-
-$(fname).cpp: ..\..\Samples\$(fversion)\$(fname).fgr
-	..\..\Debug\Frogger.exe /q /if ..\..\Samples\$(fversion)\$(fname).fgr /o $(fname).cpp>nul
+compileSource: ..\..\Samples\$(fversion)\$(fname).fgr
+	..\..\Debug\Frogger.exe /q /if ..\..\Samples\$(fversion)\$(fname).fgr /o $(fname).exe>nul
 
 syntaxCheck: ..\InputCode\$(fname).fgr
-	..\..\Debug\Frogger.exe /q /if ..\InputCode\$(fname).fgr /o $(fname).cpp>$(fname).txt
+	..\..\Debug\Frogger.exe /i /q /if ..\InputCode\$(fname).fgr /o $(fname).cpp>$(fname).txt
