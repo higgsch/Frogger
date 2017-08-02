@@ -3,8 +3,8 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "..\Tables\tables.h"
-#include "..\Nodes\AsciiNodes\BinaryNodes\BinaryOpNodes\binaryOpNode.h"
+#include "..\DataStructures\Tables\tables.h"
+#include "..\DataStructures\Nodes\AsciiNodes\BinaryNodes\BinaryOpNodes\binaryOpNode.h"
 #include <vector>
 using namespace std;
 
