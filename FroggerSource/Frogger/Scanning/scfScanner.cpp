@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.4
 // -----------------------------------------------------------------
 // This program reads through a .struct file and converts strings of 
 // chars to tokens.
@@ -189,7 +189,7 @@ bool SCFScanner::readIdCharsToBuffer()
 // @lineNo: The line number that the error occurred on.
 // @err_msg: The message to display to the user.
 // 
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 void SCFScanner::lexical_error(string err_msg)
 {
@@ -200,6 +200,6 @@ void SCFScanner::lexical_error(string err_msg)
 		cout << "Press Enter to Exit" << endl;
 
 		getchar();
-		exit(0);
 	}
+	exit(0);
 }

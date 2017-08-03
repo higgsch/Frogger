@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.3
+//                      Version: 4.4
 // -----------------------------------------------------------------
 // This program compiles a Frogger source to c++ output.
 // -----------------------------------------------------------------
@@ -171,7 +171,7 @@ void FroggerC::emitInputProjectCode(string projectDir, string projectName, strin
 // terminates the program.
 // @err_msg: The message to display to the user.
 // 
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 void FroggerC::struct_error(string err_msg)
 {
@@ -182,8 +182,8 @@ void FroggerC::struct_error(string err_msg)
 		cout << "Press Enter to Exit" << endl;
 
 		getchar();
-		exit(0);
 	}
+	exit(0);
 }
 
 //Forward declarations for main

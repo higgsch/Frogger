@@ -14,7 +14,7 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This class provides the error function for all AST nodes.
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
 class Node : public DataTyped
 {
@@ -25,7 +25,7 @@ protected:
 	// @err_msg: The message to display.
 	// @line_no: The line number on which the error occured.
 	//
-	// Version 4.0
+	// Version 4.4
 	// ----------------------------------------------------------
 	void ast_error(string err_msg, int line_no)
 	{
@@ -36,8 +36,8 @@ protected:
 			cout << "Press Enter to Exit" << endl;
 
 			getchar();
-			exit(0);
 		}
+		exit(0);
 	}
 
 	// ----------------------------------------------------------

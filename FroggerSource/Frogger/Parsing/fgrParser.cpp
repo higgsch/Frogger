@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.4
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -749,7 +749,7 @@ void FGRParser::match(fgr_token_type toMatch)
 // the program.
 // @err_msg: The message to display.
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 void FGRParser::syntax_error(string err_msg)
 {
@@ -761,8 +761,8 @@ void FGRParser::syntax_error(string err_msg)
 		cout << "Press Enter to Exit" << endl;
 
 		getchar();
-		exit(0);
 	}
+	exit(0);
 }
 
 // ----------------------------------------------------------

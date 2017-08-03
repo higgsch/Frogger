@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 4.4
 // ----------------------------------------------------------------
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
@@ -393,7 +393,7 @@ void DataTypingPhase::unifyTreeDataType(BinaryNode * node)
 // @err_msg: The message to display to the user.
 // @line_no: The line on which the error occured.
 // 
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 void DataTypingPhase::dataType_error(string err_msg, int line_no)
 {
@@ -404,8 +404,8 @@ void DataTypingPhase::dataType_error(string err_msg, int line_no)
 		cout << "Press Enter to Exit" << endl;
 
 		getchar();
-		exit(0);
 	}
+	exit(0);
 }
 
 void DataTypingPhase::processDoubleOperator(BinaryOpNode * n)

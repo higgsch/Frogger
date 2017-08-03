@@ -43,7 +43,7 @@ extern bool quietMode;
 // This class provides the base of the visitor inheritance for
 // the AST intermediate representation. 
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 class Phase
 {
@@ -80,7 +80,7 @@ public:
 	// @msg: The message to display.
 	// @line_no: The line number that the error occured on.
 	//
-	// Version 4.0
+	// Version 4.4
 	// ----------------------------------------------------------
 	void semantic_error(string msg, int line_no)
 	{
@@ -91,7 +91,7 @@ public:
 			cout << "Press Enter to Exit" << endl;
 
 			getchar();
-			exit(0);
 		}
+		exit(0);
 	}
 };

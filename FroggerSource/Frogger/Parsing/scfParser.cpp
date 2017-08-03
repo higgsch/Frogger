@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.0
+//                      Version: 4.4
 // -----------------------------------------------------------------
 // This program provides the functionality to interpret a SCF file
 // -----------------------------------------------------------------
@@ -252,7 +252,7 @@ void SCFParser::match(scf_token_type toMatch)
 // the program.
 // @err_msg: The message to display.
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 void SCFParser::syntax_error(string err_msg)
 {
@@ -264,8 +264,8 @@ void SCFParser::syntax_error(string err_msg)
 		cout << "Press Enter to Exit" << endl;
 
 		getchar();
-		exit(0);
 	}
+	exit(0);
 }
 
 // ----------------------------------------------------------
