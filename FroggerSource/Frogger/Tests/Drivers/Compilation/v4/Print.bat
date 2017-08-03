@@ -1,0 +1,1 @@
+call Print.exe>v4\Print.txt

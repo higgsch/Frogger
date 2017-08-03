@@ -1,9 +1,7 @@
 echo off
 
-call Compilation\runCompileTest.bat v3\StringLength "Pass - StringLength" "Fail - StringLength"
+call Compilation\runCompileTest.bat pf v4 Print
 
 pause
 
 call _clean.lnk>nul
-
-pause
