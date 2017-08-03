@@ -18,13 +18,15 @@ bool quietMode;
 // It can be used to compile a Frogger Program Entry Function 
 // File or Frogger Project Folder to c++ output.
 //
-// Version 4.3
+// Version 4.4
 // ----------------------------------------------------------
 class FroggerC
 {
 private:
 	CPPLanguage * lang;
 	ProgramStruct progStruct;
+
+	string getUDFFilename(UDFRecord * udf);
 
 	void computeRequiredSupportCode(ProgramStruct * prog);
 

@@ -17,7 +17,7 @@ class SCFToken;
 // This class reads through a .struct file and converts 
 // strings of chars to tokens.
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 class SCFScanner
 {
@@ -27,7 +27,6 @@ private:
 	int lineNo; //a count variable for the current line number
 
 	bool readThisString(string toRead);
-	bool readIgnoredChars();
 
 	SCFToken readId();
 	SCFToken readPunctuation();

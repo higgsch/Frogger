@@ -11,7 +11,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class represents a visitor for checking data types
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
 class DataTypingPhase : public Phase
 {
@@ -36,7 +36,7 @@ private:
 	void processDoubleOperator(BinaryOpNode * n);
 
 public:
-	DataTypingPhase(Language * language, FunctionTable * functs, SymbolTable * syms);
+	DataTypingPhase(Language * language, FunctionTable * functs, CommandTable * cmds, SymbolTable * syms);
 
 	SymbolTable * getSymbolTable() { return symbols; }
 	FunctionTable * getFunctionTable() { return functions; }

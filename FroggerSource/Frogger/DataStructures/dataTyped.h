@@ -2,7 +2,7 @@
 // This is the header file for the DataTyped class. 
 // -----------------------------------------------------------------
 #pragma once
-
+#include <string>
 using namespace std;
 
 //Set of node data types
@@ -12,6 +12,8 @@ enum DataType
 	DT_DOUBLE,DT_STRING,DT_ARGS,
 	DT_NOT_DEFINED //Used when the type is unknown
 };
+
+string getDataTypeString(DataType dt);
 
 // ----------------------------------------------------------
 // This class mimics an interface, used for type checking.

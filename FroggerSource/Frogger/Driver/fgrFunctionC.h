@@ -13,7 +13,7 @@ class ProgramNode;
 // ----------------------------------------------------------
 // This class compiles a .fgr source file to c++ output.
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
 class FgrFunctionC
 {
@@ -24,11 +24,11 @@ private:
 
 	void computeJumpToLineNumbers(UDFRecord * funct);
 	void convertStrings(UDFRecord * funct);
-	void checkDataTypes(UDFRecord * ast, FunctionTable * functs);
+	void checkDataTypes(UDFRecord * ast, FunctionTable * functs, CommandTable * cmds);
 
 public:
 	FgrFunctionC(Language* lang) : lang(lang) {}
-	void compileFunctionToAST(string inFile, FunctionTable * functs, UDFRecord * rec);
+	void compileFunctionToAST(string inFile, FunctionTable * functs, CommandTable * cmds, UDFRecord * rec);
 	
 	void printAST(UDFRecord * funct, string outFile);
 };

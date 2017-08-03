@@ -11,8 +11,8 @@ using namespace std;
 // set of scf token categories
 typedef enum scf_token_types {
 	TOKTYPE_NOTOK = -1, 
-	TOKTYPE_ID, 
-	TOKTYPE_DOT, TOKTYPE_COLON, TOKTYPE_COMMA, TOKTYPE_ARROW, 
+	TOKTYPE_ID, TOKTYPE_LPAREN, TOKTYPE_RPAREN,
+	TOKTYPE_EQUALS, TOKTYPE_COMMA, TOKTYPE_TILDE, TOKTYPE_DOT, 
 	TOKTYPE_EOL, TOKTYPE_SCANEOF
 } scf_token_type;
 
@@ -21,7 +21,7 @@ typedef enum scf_token_types {
 // constructors for ease of use and static "constants" for 
 // compact use. 
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 class SCFToken
 { //Glorified Struct with public members and static placeholders
@@ -35,10 +35,12 @@ public:
 	//static "constants" used for simplified processing of language
 	//static tokens
 	static SCFToken NOTOK;
-	static SCFToken DOT;
-	static SCFToken COLON;
+	static SCFToken LPAREN;
+	static SCFToken RPAREN;
+	static SCFToken EQUALS;
 	static SCFToken COMMA;
-	static SCFToken ARROW;
+	static SCFToken TILDE;
+	static SCFToken DOT;
 	static SCFToken EOL;
 	static SCFToken SCANEOF;
 };

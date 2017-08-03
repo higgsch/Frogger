@@ -20,7 +20,7 @@ string rootDir = "";
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 4.3
+// Version 4.4
 // ----------------------------------------------------------
 void FroggerC::compileInputFile(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup)
 {
@@ -28,7 +28,12 @@ void FroggerC::compileInputFile(string fileDir, string inFilename, string outFil
 	progStruct.PEF->UDFName = inFilename;
 
 	FgrFunctionC funcComp(lang);
-	funcComp.compileFunctionToAST(fileDir + inFilename + ".fgr", new FunctionTable(lang), progStruct.PEF);
+
+	CommandTable * cmdTable = new CommandTable(lang);
+	Command * PEF = new Command(DT_NULL, progStruct.PEF->UDFName, false);
+	cmdTable->add(new CommandRecord(PEF));
+
+	funcComp.compileFunctionToAST(fileDir + getUDFFilename(progStruct.PEF), new FunctionTable(lang), cmdTable, progStruct.PEF);
 
 	computeRequiredSupportCode(&progStruct);
 	
@@ -42,13 +47,14 @@ void FroggerC::compileInputFile(string fileDir, string inFilename, string outFil
 // @inProject: The PF path.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.3
+// Version 4.4
 // ----------------------------------------------------------
 void FroggerC::compileInputProject(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
 {
 	SCFParser p;
 	progStruct.UDFs = p.parseSCF(projectDir + projectName + ".struct", projectName);
-	FunctionTable * table = new FunctionTable(lang);
+	FunctionTable * functTable = new FunctionTable(lang);
+	CommandTable * cmdTable = new CommandTable(lang);
 
 	int numFiles = progStruct.UDFs->size();
 
@@ -56,7 +62,7 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	for (int index = 0; index < numFiles; index++)
 	{
 		UDFRecord currRec = *(progStruct[index]);
-		string currUDFPath = projectDir + currRec.UDFName + ".fgr";
+		string currUDFPath = projectDir + getUDFFilename(&currRec);
 		ifstream currUDF(currUDFPath);
 		if (!currUDF.good())
 		{
@@ -65,26 +71,40 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 		
 		currUDF.close();
 
-		Function * currFunction = new Function(DT_NULL,currRec.UDFName,currRec.returnType,false);
-
-		int numArgs = currRec.args->size();
-		for (int argIndex = 0; argIndex < numArgs; argIndex++)
+		if (currRec.returnType == DT_NULL)
 		{
-			currFunction->addArg("", currRec[argIndex]->type);
+			Command * currCommand = new Command(DT_NULL, currRec.UDFName, false);
+
+			int numArgs = currRec.args->size();
+			for (int argIndex = 0; argIndex < numArgs; argIndex++)
+			{
+				currCommand->addArg("", currRec[argIndex]->type);
+			}
+			cmdTable->add(new CommandRecord(currCommand));
 		}
-		table->add(new FunctionRecord(currFunction));
+		else
+		{
+			Function * currFunction = new Function(DT_NULL,currRec.UDFName,currRec.returnType,false);
+
+			int numArgs = currRec.args->size();
+			for (int argIndex = 0; argIndex < numArgs; argIndex++)
+			{
+				currFunction->addArg("", currRec[argIndex]->type);
+			}
+			functTable->add(new FunctionRecord(currFunction));
+		}
 	}
 
 	//compile PEFF
 	progStruct.PEF->UDFName = projectName;
 	progStruct.PEF->returnType = DT_NULL;
 	FgrFunctionC funcComp(lang);
-	funcComp.compileFunctionToAST(projectDir + projectName + ".fgr", table, progStruct.PEF);
+	funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct.PEF), functTable, cmdTable, progStruct.PEF);
 
 	//compile all referenced files
 	for (int index = 0; index < numFiles; index++ )
 	{
-		funcComp.compileFunctionToAST(projectDir + progStruct[index]->UDFName + ".fgr", table, progStruct[index]);
+		funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct[index]), functTable, cmdTable, progStruct[index]);
 	}
 
 	computeRequiredSupportCode(&progStruct);
@@ -93,6 +113,32 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 	emitInputProjectCode(projectDir, projectName, outFile, toExe, cleanup);
 
 	cout << "Program successfully compiled" << endl;
+}
+
+// ----------------------------------------------------------
+// This function returns the filename corresponding to the 
+// given UDFRecord.
+// @udf: The UDFRecord in question.
+//
+// Version 4.4
+// ----------------------------------------------------------
+string FroggerC::getUDFFilename(UDFRecord * udf)
+{
+	string filename = udf->UDFName + "(";
+
+	int argCount = udf->args->size();
+	if (argCount > 0)
+		filename += udf->args->at(0)->name + "=" + getDataTypeString(udf->args->at(0)->type);
+
+	for (int argIndex = 1; argIndex < argCount; argIndex++)
+	{
+		ArgPair * currArg = udf->args->at(argIndex);
+		filename += "," + currArg->name + "=" + getDataTypeString(currArg->type);
+	}
+
+	filename += ")~" + getDataTypeString(udf->returnType);
+
+	return filename + ".fgr";
 }
 
 // ----------------------------------------------------------
@@ -198,7 +244,7 @@ string stripTrailingSlashes(string s);
 // compilation process.
 // Note: Command line accepts .fgr filename then .cpp filename.
 //
-// Version 4.3
+// Version 4.4
 // ----------------------------------------------------------
 int main(int argc, char* argv[])
 {
@@ -356,7 +402,7 @@ int main(int argc, char* argv[])
 		if (!SCF.good())
 		{
 			inFile = true;
-			inPath = inPath + "\\" + projectName + ".fgr";
+			inPath = inPath + "\\" + projectName;
 		}
 		else
 		{
@@ -371,7 +417,7 @@ int main(int argc, char* argv[])
 
 	if (inFile)
 	{
-		ifstream PEF(inPath);
+		ifstream PEF(inPath + "()~null.fgr");
 		if (!PEF.good())
 		{
 			cout << "PEFF DNE: " << inPath << endl;
@@ -384,7 +430,7 @@ int main(int argc, char* argv[])
 	
 			int start = inPath.find_last_of('\\') + 1;
 			int end = inPath.find_last_of('.');
-			end = (end == -1) ? inPath.length() - 1 : end;
+			end = (end == -1) ? inPath.length() : end;
 
 			string inFileDir = inPath.substr(0, start);
 			string inFilename = inPath.substr(start, end - start);

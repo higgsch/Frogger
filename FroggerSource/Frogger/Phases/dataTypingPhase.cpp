@@ -12,15 +12,15 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
-DataTypingPhase::DataTypingPhase(Language * language, FunctionTable * functs, SymbolTable * syms) 
+DataTypingPhase::DataTypingPhase(Language * language, FunctionTable * functs, CommandTable * cmds, SymbolTable * syms) 
 { 
 	lang = language;
 
 	symbols = syms; 
 	functions = functs;
-	commands = new CommandTable(lang);
+	commands = cmds;
 	changeMadeThisRound = false; 
 	setUnknownTypeNodesToDefault = false;
 }

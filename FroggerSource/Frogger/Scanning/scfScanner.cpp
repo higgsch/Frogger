@@ -15,7 +15,7 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 SCFToken SCFScanner::scan()
 {
@@ -26,12 +26,6 @@ SCFToken SCFScanner::scan()
 	while (in_char != EOF)
 	{
 		in_char = source.peek();
-
-		if (readIgnoredChars())
-		{
-			in_char = source.peek();
-			continue;
-		}
 
 		if (isalpha(in_char)) //Identifiers
 			return readId();
@@ -88,34 +82,6 @@ bool SCFScanner::readThisString(string toRead)
 }
 
 // ----------------------------------------------------------
-// This function attempts to read the next group of ignored  
-// chars from the input file.
-// Returns whether or not an ignored group was read
-// Note: If false is returned, the input location was untouched
-//
-// Version 4.0
-// ----------------------------------------------------------
-bool SCFScanner::readIgnoredChars()
-{
-	char in_char = source.peek();
-
-	if (in_char == '\n')
-	{
-		return false;
-	}
-
-	if (isspace(in_char))
-	{
-		string toRead = "";
-		toRead += in_char;
-		readThisString(toRead);
-		return true;
-	}
-
-	return false;
-}
-
-// ----------------------------------------------------------
 // This function attempts to read an identifier from the 
 // input file.
 // Returns the token for the read identifier or NOTOK
@@ -137,18 +103,22 @@ SCFToken SCFScanner::readId()
 // input file.
 // Returns the token for the read punctuation or NOTOK
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 SCFToken SCFScanner::readPunctuation()
 {
-	if (readThisString("."))
-		return SCFToken::DOT;
-	else if (readThisString(":"))
-		return SCFToken::COLON;
-	else if (readThisString(","))
+	if (readThisString(SCFToken::LPAREN.lexeme))
+		return SCFToken::LPAREN;
+	else if (readThisString(SCFToken::RPAREN.lexeme))
+		return SCFToken::RPAREN;
+	else if (readThisString(SCFToken::EQUALS.lexeme))
+		return SCFToken::EQUALS;
+	else if (readThisString(SCFToken::COMMA.lexeme))
 		return SCFToken::COMMA;
-	else if (readThisString("->"))
-		return SCFToken::ARROW;
+	else if (readThisString(SCFToken::TILDE.lexeme))
+		return SCFToken::TILDE;
+	else if (readThisString(SCFToken::DOT.lexeme))
+		return SCFToken::DOT;
 	//Windows text files contain '\n' as part of the end of line sequence.
 	//Other representations may require a '\r' instead to count lines properly.
 	else if (readThisString("\n"))

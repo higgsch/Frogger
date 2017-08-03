@@ -13,7 +13,7 @@ using namespace std;
 // This class provides the functionality to interpret a .struct 
 // file
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
 class SCFParser
 {
@@ -25,7 +25,7 @@ private:
 	UDFRecord * record();
 	ArgList * arguments();
 	ArgPair * argument();
-	string filename();
+	string functName();
 	DataType dataType();
 
 	void match(scf_token_type);
@@ -35,6 +35,7 @@ private:
 
 	bool isPEF(UDFRecord * rec, string pefName);
 	bool isInFiles(UDFRecord * rec, UDFCollection * files);
+	bool functionSignatureMatches(UDFRecord * first, UDFRecord * second);
 
 public:
 	SCFParser();

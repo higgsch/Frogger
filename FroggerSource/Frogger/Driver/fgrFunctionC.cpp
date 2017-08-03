@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 4.4
 // -----------------------------------------------------------------
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
@@ -15,9 +15,9 @@ using namespace std;
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
-void FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, UDFRecord * rec)
+void FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, CommandTable * cmds, UDFRecord * rec)
 {
 	buildAST(rec, inFile);
 	
@@ -26,7 +26,7 @@ void FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, U
 	computeJumpToLineNumbers(rec);
 
 	convertStrings(rec);
-	checkDataTypes(rec, functs);
+	checkDataTypes(rec, functs, cmds);
 }
 
 // ----------------------------------------------------------
@@ -81,12 +81,12 @@ void FgrFunctionC::convertStrings(UDFRecord * funct)
 // ----------------------------------------------------------
 // This function drives data typing.
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
-void FgrFunctionC::checkDataTypes(UDFRecord * ast, FunctionTable * functs)
+void FgrFunctionC::checkDataTypes(UDFRecord * ast, FunctionTable * functs, CommandTable * cmds)
 {
 	SymbolTable * symbols = new SymbolTable(lang, ast);
-	DataTypingPhase *dtp = new DataTypingPhase(lang, functs, symbols);
+	DataTypingPhase *dtp = new DataTypingPhase(lang, functs, cmds, symbols);
 	ast->root->accept(dtp);
 	ast->symbols = symbols;
 	delete dtp;

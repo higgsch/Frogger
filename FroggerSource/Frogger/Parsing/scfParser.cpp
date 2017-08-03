@@ -58,30 +58,52 @@ UDFCollection * SCFParser::parseSCF(string SCFPath, string projectName)
 // ----------------------------------------------------------
 // This function processes and returns a single UDF record.
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 UDFRecord * SCFParser::record()
 {
 	UDFRecord * rec = new UDFRecord();
 
-	rec->UDFName = filename();
+	rec->UDFName = functName();
+	match(TOKTYPE_LPAREN);
 	rec->args = arguments();
-	match(TOKTYPE_ARROW);
+	match(TOKTYPE_RPAREN);
+	match(TOKTYPE_TILDE);
 	rec->returnType = dataType();
+
+	match(TOKTYPE_DOT);
+	SCFToken ext = next_token();
+	match(TOKTYPE_ID);
+
+	if (ext.lexeme != "fgr")
+		syntax_error("Found ." + ext.lexeme + " -- Expected .fgr");
 
 	return rec;
 }
 
 // ----------------------------------------------------------
+// This function processes and returns a function name.
+//
+// Version 4.4
+// ----------------------------------------------------------
+string SCFParser::functName()
+{
+	SCFToken name = next_token();
+	match(TOKTYPE_ID);
+
+	return name.lexeme;
+}
+
+// ----------------------------------------------------------
 // This function processes and returns a list of arguments.
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
 ArgList * SCFParser::arguments()
 {
 	ArgList * args = new ArgList();
 
-	if (next_token().type != TOKTYPE_ARROW)
+	if (next_token().type != TOKTYPE_RPAREN)
 	{
 		args->push_back(argument());
 	}
@@ -98,37 +120,16 @@ ArgList * SCFParser::arguments()
 // ----------------------------------------------------------
 // This function processes and returns a single argument.
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
 ArgPair * SCFParser::argument()
 {
 	string name = next_token().lexeme;
 	match(TOKTYPE_ID);
-	match(TOKTYPE_COLON);
+	match(TOKTYPE_EQUALS);
 	DataType dt = dataType();
 
 	return new ArgPair(name, dt);
-}
-
-// ----------------------------------------------------------
-// This function processes and returns a filename.
-//
-// Version 4.0
-// ----------------------------------------------------------
-string SCFParser::filename()
-{
-	SCFToken name = next_token();
-	match(TOKTYPE_ID);
-	SCFToken dot = next_token();
-	match(TOKTYPE_DOT);
-	SCFToken ext = next_token();
-	match(TOKTYPE_ID);
-
-	if (ext.lexeme != "fgr")
-		syntax_error("Found ." + ext.lexeme + " -- Expected .fgr");
-
-	//return name.lexeme + dot.lexeme + ext.lexeme;
-	return name.lexeme;
 }
 
 // ----------------------------------------------------------
@@ -180,7 +181,7 @@ bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 // @rec: The UDFRecord to compare to files.
 // @files: A list of files
 //
-// Version 4.2
+// Version 4.4
 // ----------------------------------------------------------
 bool SCFParser::isInFiles(UDFRecord * rec, UDFCollection * files)
 {
@@ -188,12 +189,37 @@ bool SCFParser::isInFiles(UDFRecord * rec, UDFCollection * files)
 	{
 		UDFRecord * currRec = files->at(recordIndex);
 
-		if (currRec->UDFName == rec->UDFName)
-			//Cannot have two files of identical name, so overloading is impossible
+		if (functionSignatureMatches(currRec, rec))
 			return true;
 	}
 
 	return false;
+}
+
+// ----------------------------------------------------------
+// This function determines if the given UDFRecords' signatures
+// match. 
+// @first: The UDFRecord to compare to second.
+// @second: The UDFRecord to compare to first.
+//
+// Version 4.4
+// ----------------------------------------------------------
+bool SCFParser::functionSignatureMatches(UDFRecord * first, UDFRecord * second)
+{
+	if (first->UDFName != second->UDFName)
+		return false;
+
+	int argCount = first->args->size();
+	if (argCount != second->args->size())
+		return false;
+
+	for (int argIndex = 0; argIndex < argCount; argIndex++)
+	{
+		if (first->args->at(argIndex)->type != second->args->at(argIndex)->type)
+			return false;
+	}
+
+	return true;
 }
 
 // ----------------------------------------------------------
@@ -202,7 +228,7 @@ bool SCFParser::isInFiles(UDFRecord * rec, UDFCollection * files)
 // on failure.
 // @toMatch: The expected token category.
 //
-// Version 4.0
+// Version 4.4
 // ----------------------------------------------------------
 void SCFParser::match(scf_token_type toMatch)
 {
@@ -217,17 +243,23 @@ void SCFParser::match(scf_token_type toMatch)
 		string type;
 		switch (toMatch)
 		{
-		case TOKTYPE_DOT:
-			type = ".";
+		case TOKTYPE_LPAREN:
+			type = SCFToken::LPAREN.lexeme;
 			break;
-		case TOKTYPE_COLON:
-			type = ":";
+		case TOKTYPE_RPAREN:
+			type = SCFToken::RPAREN.lexeme;
+			break;
+		case TOKTYPE_EQUALS:
+			type = SCFToken::EQUALS.lexeme;
 			break;
 		case TOKTYPE_COMMA:
-			type = ",";
+			type = SCFToken::COMMA.lexeme;
 			break;
-		case TOKTYPE_ARROW:
-			type = "->";
+		case TOKTYPE_TILDE:
+			type = SCFToken::TILDE.lexeme;
+			break;
+		case TOKTYPE_DOT:
+			type = SCFToken::DOT.lexeme;
 			break;
 		case TOKTYPE_SCANEOF:
 			type = "<EOF>";
