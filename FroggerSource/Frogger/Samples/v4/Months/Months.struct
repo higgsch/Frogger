@@ -1,4 +1,4 @@
-Months.fgr -> null
-numToMonth.fgr moNum:double -> string
-monthToNum.fgr moStr:string -> double
-stringEquals.fgr first_str:string, second_str:string -> double
+Months()~null.fgr
+numToMonth(moNum=double)~string.fgr
+monthToNum(moStr=string)~double.fgr
+stringEquals(first_str=string,second_str=string)~double.fgr
