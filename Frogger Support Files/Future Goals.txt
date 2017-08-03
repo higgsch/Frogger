@@ -17,6 +17,7 @@ v4.2: Refactored with cleaner code.
 v4.3: Included cl inline.
 v4.4: Added function overloading.
 
+v5: Add MASM32 and/or Irvine's MASM as a target language
 v5+: Add object orientation (folder modulation).
 v5+.2: Add asciiFunction config file functionality.
 v5++: Write a Frogger compiler in Frogger. (Silently screams in agony...)
