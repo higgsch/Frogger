@@ -166,7 +166,7 @@ ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 		syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct");
 
 	SCFParser p;
-	ObjectStruct * object = p.parseObjectLevelSCF(objectDir + name + "\\", name);
+	ObjectStruct * object = p.parseObjectLevelSCF(objectDir, name);
 
 	int udfCount = object->getNumberOfUDFs();
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
