@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.4
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program compiles a Frogger source to c++ output.
 // -----------------------------------------------------------------
@@ -47,12 +47,12 @@ void FroggerC::compileInputFile(string fileDir, string inFilename, string outFil
 // @inProject: The PF path.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 void FroggerC::compileInputProject(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
 {
 	SCFParser p;
-	progStruct.UDFs = p.parseSCF(projectDir + projectName + ".struct", projectName);
+	progStruct = *p.parseProgramLevelSCF(projectDir, projectName);
 	FunctionTable * functTable = new FunctionTable(lang);
 	CommandTable * cmdTable = new CommandTable(lang);
 

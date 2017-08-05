@@ -17,7 +17,7 @@ class SCFToken;
 // This class reads through a .struct file and converts 
 // strings of chars to tokens.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 class SCFScanner
 {
@@ -40,6 +40,7 @@ public:
 
 	void open(string inFile) { source.open(inFile); }
 	void close() { source.close(); }
+	bool good() { return source.good(); }
 
 	SCFToken scan();
 

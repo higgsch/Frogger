@@ -13,7 +13,7 @@ using namespace std;
 // This class provides the functionality to interpret a .struct 
 // file
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 class SCFParser
 {
@@ -22,10 +22,11 @@ private:
 	SCFToken current_token;
 	SCFToken lookahead[1];
 	
-	UDFRecord * record();
+	UDFRecord * functRecord(string name);
+	ObjectStruct * objectRecord(string objectDir, string name);
 	ArgList * arguments();
 	ArgPair * argument();
-	string functName();
+	string id();
 	DataType dataType();
 
 	void match(scf_token_type);
@@ -34,14 +35,17 @@ private:
 	SCFToken next_token();
 
 	bool isPEF(UDFRecord * rec, string pefName);
-	bool isInFiles(UDFRecord * rec, UDFCollection * files);
+	bool isInFunctions(UDFRecord * rec, UDFCollection * functions);
+	bool isInObjects(ObjectStruct * rec, OFCollection * objects);
 	bool functionSignatureMatches(UDFRecord * first, UDFRecord * second);
+
+	ObjectStruct * parseObjectLevelSCF(string objectDir, string objectName);
 
 public:
 	SCFParser();
 
-	void open(string SCFPath) { scanner.open(SCFPath); }
+	void open(string SCFPath);
 	void close() { scanner.close(); }
 
-	UDFCollection * parseSCF(string SCFPath, string projectName);
+	ProgramStruct * parseProgramLevelSCF(string projectDir, string projectName);
 };

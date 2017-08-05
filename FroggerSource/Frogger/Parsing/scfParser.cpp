@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.4
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program provides the functionality to interpret a SCF file
 // -----------------------------------------------------------------
@@ -23,48 +23,173 @@ SCFParser::SCFParser()
 // ----------------------------------------------------------
 // This function initiates the parse of the SCF and returns 
 // the table of UDF records.
+// @projectDir: The PF
+// @projectName: The name of the project
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
-UDFCollection * SCFParser::parseSCF(string SCFPath, string projectName)
+ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projectName)
 {
-	open(SCFPath);
+	open(projectDir + projectName + ".struct");
 
-	UDFCollection * files = new UDFCollection();
+	ProgramStruct * progStruct = new ProgramStruct();
+	progStruct->name = projectName;
+	progStruct->PEF = NULL;
 
 	while (next_token().type != TOKTYPE_SCANEOF)
 	{
-		UDFRecord * currRec = record();
-		if (!isPEF(currRec, projectName))
-		{
-			if (isInFiles(currRec, files))
+		string name = id();
+
+		if (next_token().type == TOKTYPE_LPAREN)
+		{ //Function Declaration Record
+			UDFRecord * currRec = functRecord(name);
+			if (isPEF(currRec, projectName))
 			{
-				syntax_error("" + currRec->UDFName + " function is duplicated.");
+				if (progStruct->PEF != NULL)
+					syntax_error("PEF is duplicated.");
+
+				progStruct->PEF = currRec;
 			}
 			else
 			{
-				files->push_back(currRec);
+				if (isInFunctions(currRec, progStruct->UDFs))
+				{
+					syntax_error("" + currRec->UDFName + " function is duplicated.");
+				}
+				else
+				{
+					progStruct->UDFs->push_back(currRec);
+				}
 			}
 		}
+		else if (next_token().type == TOKTYPE_DOT)
+		{ //Object Declaration Record
+			ObjectStruct * currRec = objectRecord(projectDir + name + "\\", name);
+			
+			if (isInObjects(currRec, progStruct->OFs))
+			{
+				syntax_error(currRec->name + " object is duplicated.");
+			}
+			else
+			{
+				progStruct->OFs->push_back(currRec);
+			}
+		}
+		else
+		{
+			syntax_error("Incomplete SCF Record: " + name);
+		}
+
 		if (next_token().type != TOKTYPE_SCANEOF)
 			match(TOKTYPE_EOL);
 	}
 
 	close();
 
-	return files;
+	return progStruct;
 }
 
 // ----------------------------------------------------------
-// This function processes and returns a single UDF record.
+// This function initiates the parse of the SCF and returns 
+// the ObjectStructure
+// @objectDir: The OF
+// @objectName: The name of the object
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
-UDFRecord * SCFParser::record()
+ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectName)
+{
+	open(objectDir + objectName + ".struct");
+
+	ObjectStruct * objStruct = new ObjectStruct();
+	objStruct->name = objectName;
+
+	while (next_token().type != TOKTYPE_SCANEOF)
+	{
+		string name = id();
+
+		if (next_token().type == TOKTYPE_LPAREN)
+		{ //Function Declaration Record
+			UDFRecord * currRec = functRecord(name);
+			if (isInFunctions(currRec, objStruct->UDFs))
+			{
+				syntax_error("" + currRec->UDFName + " function is duplicated.");
+			}
+			else
+			{
+				objStruct->UDFs->push_back(currRec);
+			}
+		}
+		else if (next_token().type == TOKTYPE_DOT)
+		{ //Object Declaration Record
+			ObjectStruct * currRec = objectRecord(objectDir + name + "\\", name);
+			
+			if (isInObjects(currRec, objStruct->OFs))
+			{
+				syntax_error(currRec->name + " object is duplicated.");
+			}
+			else
+			{
+				objStruct->OFs->push_back(currRec);
+			}
+		}
+		else
+		{
+			syntax_error("Incomplete SCF Record: " + name);
+		}
+
+		if (next_token().type != TOKTYPE_SCANEOF)
+			match(TOKTYPE_EOL);
+	}
+
+	close();
+
+	return objStruct;
+}
+
+// ----------------------------------------------------------
+// This function processes an object declaration record and 
+// returns a single Object Structure.
+// @objectDir: The OF including trailing slash
+// @name: The objectName
+//
+// Version 5.0
+// ----------------------------------------------------------
+ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
+{
+	match(TOKTYPE_DOT);
+			
+	SCFToken ext = next_token();
+	match(TOKTYPE_ID);
+
+	if (ext.lexeme != "struct")
+		syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct");
+
+	SCFParser p;
+	ObjectStruct * object = p.parseObjectLevelSCF(objectDir + name + "\\", name);
+
+	int udfCount = object->getNumberOfUDFs();
+	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
+	{
+		UDFRecord * currRec = object->getUDF(udfIndex);
+		currRec->primary = name + ":" + currRec->primary;
+	}
+
+	return object;
+}
+
+// ----------------------------------------------------------
+// This function processes a function declaration record and 
+// returns a single UDF record.
+// @name: The UDFName
+//
+// Version 5.0
+// ----------------------------------------------------------
+UDFRecord * SCFParser::functRecord(string name)
 {
 	UDFRecord * rec = new UDFRecord();
 
-	rec->UDFName = functName();
+	rec->UDFName = name;
 	match(TOKTYPE_LPAREN);
 	rec->args = arguments();
 	match(TOKTYPE_RPAREN);
@@ -84,14 +209,14 @@ UDFRecord * SCFParser::record()
 // ----------------------------------------------------------
 // This function processes and returns a function name.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
-string SCFParser::functName()
+string SCFParser::id()
 {
-	SCFToken name = next_token();
+	SCFToken id = next_token();
 	match(TOKTYPE_ID);
 
-	return name.lexeme;
+	return id.lexeme;
 }
 
 // ----------------------------------------------------------
@@ -177,19 +302,40 @@ bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 
 // ----------------------------------------------------------
 // This function determines if the given UDFRecord exists 
-// in the file list.
+// in the functions list.
 // @rec: The UDFRecord to compare to files.
-// @files: A list of files
+// @functions: A list of functions
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
-bool SCFParser::isInFiles(UDFRecord * rec, UDFCollection * files)
+bool SCFParser::isInFunctions(UDFRecord * rec, UDFCollection * functions)
 {
-	for (int recordIndex = 0; recordIndex < files->size(); recordIndex++)
+	for (int recordIndex = 0; recordIndex < functions->size(); recordIndex++)
 	{
-		UDFRecord * currRec = files->at(recordIndex);
+		UDFRecord * currRec = functions->at(recordIndex);
 
 		if (functionSignatureMatches(currRec, rec))
+			return true;
+	}
+
+	return false;
+}
+
+// ----------------------------------------------------------
+// This function determines if the given ObjectStruct exists 
+// in the objects list.
+// @rec: The UDFRecord to compare to files.
+// @objects: A list of objects
+//
+// Version 5.0
+// ----------------------------------------------------------
+bool SCFParser::isInObjects(ObjectStruct * rec, OFCollection * objects)
+{
+	for (int objectIndex = 0; objectIndex < objects->size(); objectIndex++)
+	{
+		ObjectStruct * currRec = objects->at(objectIndex);
+
+		if (rec->name == currRec->name)
 			return true;
 	}
 
@@ -202,10 +348,13 @@ bool SCFParser::isInFiles(UDFRecord * rec, UDFCollection * files)
 // @first: The UDFRecord to compare to second.
 // @second: The UDFRecord to compare to first.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 bool SCFParser::functionSignatureMatches(UDFRecord * first, UDFRecord * second)
 {
+	if (first->primary != second->primary)
+		return false; 
+
 	if (first->UDFName != second->UDFName)
 		return false;
 
@@ -311,4 +460,21 @@ SCFToken SCFParser::next_token()
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];
+}
+
+// ----------------------------------------------------------
+// This function opens the SCF and checks for existance.
+// @SCFPath: The path to the SCF.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void SCFParser::open(string SCFPath)
+{
+	scanner.open(SCFPath);
+
+	if (!scanner.good())
+	{
+		scanner.close();
+		syntax_error("SCF not found: " + SCFPath);
+	}
 }

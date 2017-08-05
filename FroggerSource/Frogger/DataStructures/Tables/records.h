@@ -100,10 +100,11 @@ class SymbolTable;
 // This class represents the data known about a User Defined 
 // Function.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 struct UDFRecord
 {
+	string primary; //TODO configure as user defined dt
 	string UDFName;
 	ArgList * args;
 	DataType returnType;
@@ -111,7 +112,7 @@ struct UDFRecord
 	ProgramNode * root;
 	SymbolTable * symbols;
 
-	UDFRecord() { args = new ArgList(); }
+	UDFRecord() : args(new ArgList()), primary("") {}
 
 	ArgPair* operator[](int index) { return (*args)[index]; }
 };
@@ -124,23 +125,46 @@ struct UDFRecord
 // ----------------------------------------------------------
 struct UDFCollection : vector<UDFRecord *> {};
 
+//Forward declaration
+struct ObjectStruct;
+
+// ----------------------------------------------------------
+// This class represents the data known about an Object File
+// Collection.
+//
+// Version 5.0
+// ----------------------------------------------------------
+struct OFCollection : vector<ObjectStruct *> {};
+
 // ----------------------------------------------------------
 // This class represents the data known about a Frogger
-// Program. Generated from the .struct file.
+// Object. Generated from the .struct file.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
-struct ProgramStruct
+struct ObjectStruct
 {
-	UDFRecord * PEF;
+	string name;
 	UDFCollection * UDFs;
+	OFCollection * OFs;
 
-	ProgramStruct() { UDFs = new UDFCollection(); }
+	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()) {}
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }
 	ProgramNode* getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
-	ProgramNode* getPEFNode() { return PEF->root; }
 
 	UDFRecord* operator[](int index) { return (*UDFs)[index]; }
+};
+
+// ----------------------------------------------------------
+// This class represents the data known about a Frogger
+// Program. Generated from the .struct file.
+//
+// Version 5.0
+// ----------------------------------------------------------
+struct ProgramStruct : public ObjectStruct
+{
+	UDFRecord * PEF;
+	ProgramNode* getPEFNode() { return PEF->root; }
 };
