@@ -69,7 +69,7 @@ void FGRParser::prog()
 {
 	FGRToken tok = next_token();
 	if (tok.type == TOKTYPE_SCANEOF)
-		this->syntax_error("A program must have at least one statement");
+		syntax_error("A program must have at least one statement");
 
 	ControlFlowNode* first = flowstmt(); 
 	first->addNextStmt(flowstmts());

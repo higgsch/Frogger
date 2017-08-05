@@ -16,7 +16,7 @@ using namespace std;
 FunctionCallNode::FunctionCallNode(string str, int lineNo) : CommandCallNode(str, lineNo)
 {
 	funct = new Function(DT_NOT_DEFINED, str, DT_NOT_DEFINED, false);
-	((Command*)this->getFunct())->copy(funct);
+	((Command*)getFunct())->copy(funct);
 }
 
 // ----------------------------------------------------------

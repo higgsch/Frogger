@@ -116,5 +116,5 @@ public:
 	}
 
 	int size() { return ((super*)this)->size(); }
-	T* operator[] (int x) { return this->at(x)->rec; }
+	T* operator[] (int x) { return at(x)->rec; }
 };
