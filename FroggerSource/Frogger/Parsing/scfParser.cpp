@@ -12,12 +12,13 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 4.0
+// Version 5.0
 // ----------------------------------------------------------
 SCFParser::SCFParser()
 {
 	current_token = SCFToken::NOTOK;
 	lookahead[0] = SCFToken::NOTOK;
+	currFilePath = "";
 }
 
 // ----------------------------------------------------------
@@ -433,12 +434,12 @@ void SCFParser::match(scf_token_type toMatch)
 // the program.
 // @err_msg: The message to display.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 void SCFParser::syntax_error(string err_msg)
 {
 	int lineNo = scanner.getLineNo();
-	cout << "STRUCT SYNTAX ERROR on line " << lineNo << ": " << err_msg << endl;
+	cout << "STRUCT SYNTAX ERROR in file " << currFilePath << " on line " << lineNo << ": " << err_msg << endl;
 	
 	if (!quietMode)
 	{
@@ -477,4 +478,6 @@ void SCFParser::open(string SCFPath)
 		scanner.close();
 		syntax_error("SCF not found: " + SCFPath);
 	}
+
+	currFilePath = SCFPath;
 }

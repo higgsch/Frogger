@@ -18,6 +18,8 @@ using namespace std;
 class SCFParser
 {
 private:
+	string currFilePath;
+
 	SCFScanner scanner;
 	SCFToken current_token;
 	SCFToken lookahead[1];
