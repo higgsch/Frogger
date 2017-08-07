@@ -12,12 +12,12 @@ using namespace std;
 // ----------------------------------------------------------
 // This class wraps a Symbol for Table use.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 struct SymbolRecord : public Record<Symbol>
 {
 	SymbolRecord(Symbol* s) : Record(s) {}
-	SymbolRecord(string id, DataType type, bool isLocal) 
+	SymbolRecord(string id, DataType * type, bool isLocal) 
 		: Record(new Symbol(id, type, isLocal)) {}
 
 	bool equals(Symbol* s) {return rec->equals(s);}
@@ -29,12 +29,12 @@ struct SymbolRecord : public Record<Symbol>
 // ----------------------------------------------------------
 // This class wraps a Command for Table use.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 struct CommandRecord : public Record<Command>
 {
 	CommandRecord(Command* c) : Record(c) {}
-	CommandRecord(DataType parentType, string name, bool builtIn)
+	CommandRecord(DataType * parentType, string name, bool builtIn)
 		: Record(new Command(parentType, name, builtIn)) {}
 
 	bool equals(Command* c) {return rec->equals(c);}
@@ -46,12 +46,12 @@ struct CommandRecord : public Record<Command>
 // ----------------------------------------------------------
 // This class wraps a Function for Table use.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 struct FunctionRecord : public Record<Function>
 {
 	FunctionRecord(Function* f) : Record(f) {}
-	FunctionRecord(DataType parentType, string name, DataType returnType, bool builtIn)
+	FunctionRecord(DataType * parentType, string name, DataType * returnType, bool builtIn)
 		: Record(new Function(parentType, name, returnType, builtIn)) {}
 
 	bool equals(Function* f) {return rec->equals(f);}
@@ -65,7 +65,7 @@ class Language;
 // ----------------------------------------------------------
 // This class represents a collection of variables
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 class SymbolTable : public Table<Symbol>
 {
@@ -75,7 +75,7 @@ public:
 	SymbolTable(Language * language, UDFRecord * rec);
 	SymbolTable(Language * language);
 
-	DataType symbolType(string id);
+	DataType * symbolType(string id);
 
 	Symbol* SYM_ARGS;
 };
@@ -107,7 +107,7 @@ public:
 // ----------------------------------------------------------
 // This class represents a collection of functions
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 class FunctionTable : public Table<Function>
 {
@@ -116,7 +116,7 @@ private:
 public:
 	FunctionTable(Language * language);
 
-	DataType getFunctionReturnType(Function* funct);
+	DataType* getFunctionReturnType(Function* funct);
 
 	Function* FUNCT_TO_STRING;
 	Function* FUNCT_TO_ASCII;

@@ -1,24 +1,8 @@
 #include "dataTyped.h"
 using namespace std;
 
-// ----------------------------------------------------------
-// This function maps the DataType enum to strings
-//
-// Version 4.4
-// ----------------------------------------------------------
-string getDataTypeString(DataType dt)
-{
-	switch (dt)
-	{
-	case DT_NULL:
-		return "null";
-	case DT_DOUBLE:
-		return "double";
-	case DT_STRING:
-		return "string";
-	case DT_ARGS:
-		return "args";
-	default:
-		return "<No Type>";
-	}
-}
+DataType* DataType::DT_NULL = new DataType(DTE_NULL, "null");
+DataType* DataType::DT_DOUBLE = new DataType(DTE_DOUBLE, "double");
+DataType* DataType::DT_STRING = new DataType(DTE_STRING, "string");
+DataType* DataType::DT_STRINGLIST = new DataType(DTE_STRINGLIST, "stringList");
+DataType* DataType::DT_NOT_DEFINED = new DataType(DTE_NOT_DEFINED, "<Not Defined>");

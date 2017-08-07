@@ -173,7 +173,7 @@ ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
 	{
 		UDFRecord * currRec = object->getUDF(udfIndex);
-		currRec->primary = name + ":" + currRec->primary;
+		currRec->primary->typeString = name + ":" + currRec->primary->typeString;
 	}
 
 	return object;
@@ -246,14 +246,14 @@ ArgList * SCFParser::arguments()
 // ----------------------------------------------------------
 // This function processes and returns a single argument.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 ArgPair * SCFParser::argument()
 {
 	string name = next_token().lexeme;
 	match(TOKTYPE_ID);
 	match(TOKTYPE_EQUALS);
-	DataType dt = dataType();
+	DataType * dt = dataType();
 
 	return new ArgPair(name, dt);
 }
@@ -261,23 +261,23 @@ ArgPair * SCFParser::argument()
 // ----------------------------------------------------------
 // This function processes and returns a data type.
 //
-// Version 4.0
+// Version 5.0
 // ----------------------------------------------------------
-DataType SCFParser::dataType()
+DataType * SCFParser::dataType()
 {
 	SCFToken type = next_token();
 	match(TOKTYPE_ID);
 
 	if (type.lexeme == "double")
-		return DT_DOUBLE;
+		return DataType::DT_DOUBLE;
 	else if (type.lexeme == "string")
-		return DT_STRING;
+		return DataType::DT_STRING;
 	else if (type.lexeme == "null")
-		return DT_NULL;
+		return DataType::DT_NULL;
 	else
 		syntax_error("Invalid data type -- Expected double, string, or null");
 
-	return DT_NOT_DEFINED;
+	return DataType::DT_NOT_DEFINED;
 }
 
 // ----------------------------------------------------------
@@ -285,11 +285,11 @@ DataType SCFParser::dataType()
 // the required PEF.
 // @rec: The UDFRecord to compare to PEF.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 {
-	if (rec->returnType != DT_NULL)
+	if (rec->returnType != DataType::DT_NULL)
 		return false;
 
 	if (rec->UDFName != pefName)

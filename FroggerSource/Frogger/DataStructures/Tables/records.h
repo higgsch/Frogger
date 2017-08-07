@@ -11,15 +11,15 @@ using namespace std;
 // ----------------------------------------------------------
 // This class represents everything known about a variable.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 struct Symbol
 {
 	string id;
-	DataType type;
+	DataType * type;
 	bool isLocal; //flag for a symbol defined within a user-defined function
 
-	Symbol(string i_id, DataType i_type, bool i_isLocal) 
+	Symbol(string i_id, DataType * i_type, bool i_isLocal) 
 		: id(i_id), type(i_type), isLocal(i_isLocal) {}
 
 	bool equals(Symbol* s) { return id == s->id; }
@@ -30,14 +30,14 @@ struct Symbol
 // ----------------------------------------------------------
 // This class represents the data known about an argument.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 struct ArgPair
 {
 	string name;
-	DataType type;
+	DataType * type;
 
-	ArgPair(string argName, DataType argType) : name(argName), type(argType) {}
+	ArgPair(string argName, DataType * argType) : name(argName), type(argType) {}
 };
 
 // ----------------------------------------------------------
@@ -53,21 +53,21 @@ struct ArgList : vector<ArgPair *>
 // ----------------------------------------------------------
 // This class represents everything known about a Routine.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 struct Routine
 {
 	bool builtIn;
-	DataType parentType;
+	DataType * parentType;
 	string name;
-	DataType returnType;
+	DataType * returnType;
 	ArgList * argTypeList;
 
-	Routine(DataType i_parentType, string i_name, DataType i_returnType, bool i_builtIn)
+	Routine(DataType * i_parentType, string i_name, DataType * i_returnType, bool i_builtIn)
 		: parentType(i_parentType), name(i_name), returnType(i_returnType), builtIn(i_builtIn),
 		  argTypeList(new ArgList()) {}
 
-	void addArg(string argName, DataType argType);
+	void addArg(string argName, DataType* argType);
 	
 	bool equals(Routine* other);
 	bool matches(Routine* other);
@@ -75,21 +75,21 @@ struct Routine
 
 	int getNumArgs() { return argTypeList->size(); }
 	ArgPair * getArg(int argNo);
-	void setDataTypeOfArgNumber(int argNo, DataType type);
+	void setDataTypeOfArgNumber(int argNo, DataType * type);
 
 	bool isUserDefined() { return !builtIn; }
 };
 
 struct Function : public Routine 
 {
-	Function(DataType i_parentType, string i_name, DataType i_returnType, bool i_builtIn)
+	Function(DataType * i_parentType, string i_name, DataType * i_returnType, bool i_builtIn)
 		: Routine(i_parentType, i_name, i_returnType, i_builtIn) {}
 };
 
 struct Command : public Routine 
 {
-	Command(DataType i_parentType, string i_name, bool i_builtIn)
-		: Routine(i_parentType, i_name, DT_NULL, i_builtIn) {}
+	Command(DataType * i_parentType, string i_name, bool i_builtIn)
+		: Routine(i_parentType, i_name, DataType::DT_NULL, i_builtIn) {}
 };
 
 //forward declarations
@@ -104,15 +104,15 @@ class SymbolTable;
 // ----------------------------------------------------------
 struct UDFRecord
 {
-	string primary; //TODO configure as user defined dt
+	DataType * primary;
 	string UDFName;
 	ArgList * args;
-	DataType returnType;
+	DataType * returnType;
 
 	ProgramNode * root;
 	SymbolTable * symbols;
 
-	UDFRecord() : args(new ArgList()), primary("") {}
+	UDFRecord() : args(new ArgList()), primary(DataType::DT_NULL) {}
 
 	ArgPair* operator[](int index) { return (*args)[index]; }
 };

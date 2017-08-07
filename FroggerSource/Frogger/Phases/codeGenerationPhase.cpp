@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -290,11 +290,11 @@ bool CodeGenerationPhase::validBuiltInCommandName(string name)
 // This function processes an operation.
 // @n: The node representing the operation.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visitBinaryOpNode(BinaryOpNode * n)
 {
 	n->visitAllChildren(this);
-	bool isString = n->getDataType() == DT_STRING;
+	bool isString = n->getDataType() == DataType::DT_STRING;
 	n->outputText = lang->getBinaryOpText(isNested(n), isString, leftText(n), rightText(n), n->getOpType());
 }

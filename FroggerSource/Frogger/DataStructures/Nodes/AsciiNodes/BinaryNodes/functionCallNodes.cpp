@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.1
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program provides nodes for function calls.
 // -----------------------------------------------------------------
@@ -11,11 +11,11 @@ using namespace std;
 // This constructor builds a node for a function call.
 // @str: The function's name.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 FunctionCallNode::FunctionCallNode(string str, int lineNo) : CommandCallNode(str, lineNo)
 {
-	funct = new Function(DT_NOT_DEFINED, str, DT_NOT_DEFINED, false);
+	funct = new Function(DataType::DT_NOT_DEFINED, str, DataType::DT_NOT_DEFINED, false);
 	((Command*)getFunct())->copy(funct);
 }
 

@@ -11,7 +11,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class represents a visitor for checking data types
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 class DataTypingPhase : public Phase
 {
@@ -23,11 +23,11 @@ private:
 	bool changeMadeThisRound;
 	bool setUnknownTypeNodesToDefault;
 
-	void checkAndSetNodeDataType(AsciiNode * node, DataType type);
-	void checkAndSetTreeDataType(TerminalNode * node, DataType type);
-	void checkAndSetTreeDataType(UnaryNode * node, DataType type);
-	void checkAndSetTreeDataType(BinaryNode * node, DataType type);
-	void checkAndSetArgDataType(Routine * rout, int argNo, DataType type, int lineNo);
+	void checkAndSetNodeDataType(AsciiNode * node, DataType * type);
+	void checkAndSetTreeDataType(TerminalNode * node, DataType * type);
+	void checkAndSetTreeDataType(UnaryNode * node, DataType * type);
+	void checkAndSetTreeDataType(BinaryNode * node, DataType * type);
+	void checkAndSetArgDataType(Routine * rout, int argNo, DataType * type, int lineNo);
 	void unifyTreeDataType(TerminalNode * node);
 	void unifyTreeDataType(UnaryNode * node);
 	void unifyTreeDataType(BinaryNode * node);
@@ -50,8 +50,8 @@ public:
 	void visit(FunctionCallNode * n);
 	void visit(CommandCallNode * n);
 	void visit(ArgListNode * n);
-	void visit(StringConstingNode * n) { checkAndSetNodeDataType(n, DT_STRING); }
-	void visit(DoubleConstingNode * n) { checkAndSetNodeDataType(n, DT_DOUBLE); }
+	void visit(StringConstingNode * n) { checkAndSetNodeDataType(n, DataType::DT_STRING); }
+	void visit(DoubleConstingNode * n) { checkAndSetNodeDataType(n, DataType::DT_DOUBLE); }
 	void visit(AddingNode * n);
 	void visit(SubingNode * n) { processDoubleOperator(n); }
 	void visit(MulingNode * n) { processDoubleOperator(n); }

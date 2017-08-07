@@ -309,7 +309,7 @@ JmpStmtNode* FGRParser::jmpstmt()
 // <arglist> => <expr>
 // Returns: A pointer to the node representing this term.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 AsciiNode* FGRParser::arglist(int argNo, Routine* rout)
 {
@@ -320,7 +320,7 @@ AsciiNode* FGRParser::arglist(int argNo, Routine* rout)
 	list->setRoutine(rout);
 	list->addThisArg(firstArg);
 	list->setArgNo(argNo);
-	rout->addArg("", DT_NOT_DEFINED);
+	rout->addArg("", DataType::DT_NOT_DEFINED);
 	argNo++;
 
 	if (next_token().type == TOKTYPE_COMMA)

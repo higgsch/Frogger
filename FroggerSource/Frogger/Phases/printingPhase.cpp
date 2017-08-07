@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program represents a visitor for displaying the AST to
 // an output stream.
@@ -282,7 +282,7 @@ void PrintingPhase::visit(NotingNode * n)
 // This function prints the data typing information of a node.
 // @n: The node representing the operation.
 //
-// Version 3.0
+// Version 5.0
 // ----------------------------------------------------------
 void PrintingPhase::printDataTypeInfo(Node* n)
 {
@@ -290,7 +290,7 @@ void PrintingPhase::printDataTypeInfo(Node* n)
 	{
 		printLine("isTreeTyped = " + trueOrFalse(n->isTreeTyped()));
 		printLine("isTyped = " + trueOrFalse(n->isTyped()));
-		printLine("dataType = " + dataType(n->getDataType()));
+		printLine("dataType = " + n->getDataType()->typeString);
 	}
 }
 
@@ -382,27 +382,4 @@ string PrintingPhase::indent()
 		result = result + " ";
 
 	return result;
-}
-	
-// ----------------------------------------------------------
-// This function returns a string representation of the 
-// DataType.
-//
-// Version 3.0
-// ----------------------------------------------------------
-string PrintingPhase::dataType(DataType dt)
-{
-	switch (dt)
-	{
-	case DT_NULL:
-		return "NULL";
-	case DT_DOUBLE:
-		return "DOUBLE";
-	case DT_STRING:
-		return "STRING";
-	case DT_NOT_DEFINED:
-		return "NOT DEFINED";
-	default:
-		return "ERROR";
-	}
 }

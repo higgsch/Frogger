@@ -29,7 +29,7 @@ private:
 	ArgList * arguments();
 	ArgPair * argument();
 	string id();
-	DataType dataType();
+	DataType * dataType();
 
 	void match(scf_token_type);
 	void syntax_error(string);

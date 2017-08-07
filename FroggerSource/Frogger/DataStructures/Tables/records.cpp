@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program provides the Symbol, Function, and Command classes.
 // -----------------------------------------------------------------
@@ -12,9 +12,9 @@ using namespace std;
 // @argName: The name of the argument to add.
 // @argType: The data type of the argument to add.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
-void Routine::addArg(string argName, DataType argType)
+void Routine::addArg(string argName, DataType * argType)
 {
 	//if (argType == DT_NOT_DEFINED)
 	//	return;
@@ -55,17 +55,17 @@ bool Routine::equals(Routine * other)
 // Note: other's DT_NOT_DEFINED data is ignored.
 // @other: The routine to compare.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 bool Routine::matches(Routine * other)
 {
-	if (other->parentType != DT_NOT_DEFINED && parentType != other->parentType)
+	if (other->parentType != DataType::DT_NOT_DEFINED && parentType != other->parentType)
 		return false;
 
 	if (name != other->name)
 		return false;
 
-	if (other->returnType != DT_NOT_DEFINED && returnType != other->returnType)
+	if (other->returnType != DataType::DT_NOT_DEFINED && returnType != other->returnType)
 		return false;
 
 	if (argTypeList->size() != other->argTypeList->size())
@@ -73,7 +73,7 @@ bool Routine::matches(Routine * other)
 
 	for (int i = 0; i < argTypeList->size(); i++)
 	{
-		if (other->argTypeList->at(i)->type != DT_NOT_DEFINED && 
+		if (other->argTypeList->at(i)->type != DataType::DT_NOT_DEFINED && 
 			argTypeList->at(i)->type != other->argTypeList->at(i)->type)
 			return false;
 	}
@@ -123,7 +123,7 @@ ArgPair* Routine::getArg(int argNo)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void Routine::setDataTypeOfArgNumber(int argNo, DataType type)
+void Routine::setDataTypeOfArgNumber(int argNo, DataType* type)
 { 
 	if (argNo < argTypeList->size()) 
 		(*argTypeList)[argNo]->type = type; 

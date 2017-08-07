@@ -12,7 +12,7 @@ using namespace std;
 // This class represents a visitor for displaying the AST to
 // an output stream.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 class PrintingPhase : public Phase
 {
@@ -36,7 +36,6 @@ private:
 	
 	string indent();
 	string trueOrFalse(bool b) { return b ? "true" : "false"; }
-	string dataType(DataType dt);
 	string concat(string s, int i) { return s + to_string(i); }
 
 public:

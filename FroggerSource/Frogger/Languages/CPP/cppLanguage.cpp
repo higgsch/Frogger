@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.3
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program represents the CPPLanguage package.
 // -----------------------------------------------------------------
@@ -622,9 +622,9 @@ string CPPLanguage::getLabelText(string udfName, int labelIndex)
 // This function generates the function prototype of the given
 // UDFRecord.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
-string CPPLanguage::getFunctionPrototype(DataType returnType, string udfName, ArgList* args)
+string CPPLanguage::getFunctionPrototype(DataType * returnType, string udfName, ArgList* args)
 {
 	return getTypeString(returnType) + " " + udfName + nest(true, getArgsString(args));
 }
@@ -633,17 +633,17 @@ string CPPLanguage::getFunctionPrototype(DataType returnType, string udfName, Ar
 // This function returns the output text corresponding to
 // the given DataType.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
-string CPPLanguage::getTypeString(DataType dt)
+string CPPLanguage::getTypeString(DataType * dt)
 {
-	switch (dt)
+	switch (dt->type)
 	{
-	case DataType::DT_DOUBLE:
+	case DTE_DOUBLE:
 		return DT_DOUBLE;
-	case DataType::DT_STRING:
+	case DTE_STRING:
 		return DT_STRING;
-	case DataType::DT_NULL:
+	case DTE_NULL:
 		return DT_VOID;
 	default:
 		return "UNDEFINED TYPE";

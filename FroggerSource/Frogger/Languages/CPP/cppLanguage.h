@@ -122,7 +122,7 @@ public:
 // ----------------------------------------------------------
 // This class represents the CPPLanguage package.
 //
-// Version 4.3
+// Version 5.0
 // ----------------------------------------------------------
 class CPPLanguage : public Language
 {
@@ -145,8 +145,8 @@ private:
 	string getSupportText(SUPPORT_TEXT& text);
 
 	string getLabelText(string udfName, int stmtNo);
-	string getFunctionPrototype(DataType returnType, string udfName, ArgList* args);
-	string getTypeString(DataType type);
+	string getFunctionPrototype(DataType * returnType, string udfName, ArgList* args);
+	string getTypeString(DataType *  type);
 	string getArgsString(ArgList* args);
 
 	// ----------------------------------------------------------
