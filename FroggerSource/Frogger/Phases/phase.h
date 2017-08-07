@@ -5,6 +5,7 @@
 
 #include <string>
 #include <iostream>
+#include "..\DataStructures\Tables\structs.h"
 using namespace std;
 
 //forward declarations

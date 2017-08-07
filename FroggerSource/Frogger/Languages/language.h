@@ -8,6 +8,8 @@
 #include <vector>
 using namespace std;
 
+struct ProgramStruct;
+
 // ----------------------------------------------------------
 // This class represents a generic piece of text for output
 //

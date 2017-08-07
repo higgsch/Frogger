@@ -57,6 +57,7 @@ struct FunctionRecord : public Record<Routine>
 };
 
 class Language;
+struct UDFRecord;
 
 // ----------------------------------------------------------
 // This class represents a collection of variables

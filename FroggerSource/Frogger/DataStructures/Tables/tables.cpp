@@ -6,6 +6,7 @@
 // CommandTable.
 // -----------------------------------------------------------------
 #include "tables.h"
+#include "structs.h"
 #include "..\..\Languages\language.h"
 using namespace std;
 

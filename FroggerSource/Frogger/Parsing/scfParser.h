@@ -7,6 +7,7 @@
 #include "..\Scanning\scfToken.h"
 #include "..\DataStructures\dataTyped.h"
 #include "..\DataStructures\Tables\tables.h"
+#include "..\DataStructures\Tables\structs.h"
 using namespace std;
 
 // ----------------------------------------------------------
