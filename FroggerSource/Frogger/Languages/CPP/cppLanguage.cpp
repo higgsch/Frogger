@@ -128,7 +128,7 @@ void CPPLanguage::cleanup(string filename)
 // This function returns the pre-program code
 // @structure: the program's structure
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 string CPPLanguage::getMetaCode(ProgramStruct * structure)
 {
@@ -139,7 +139,7 @@ string CPPLanguage::getMetaCode(ProgramStruct * structure)
 	result += getBuiltInCommandCode();
 
 	result += getForwardDeclarationCode(structure);
-	result += getMainFunctionText(structure->PEF->UDFName);
+	result += getMainFunctionText(structure->PEF->name);
 	return result;
 }
 
@@ -160,13 +160,13 @@ string CPPLanguage::getPEFCode(UDFRecord* rec, string pefText)
 // @rec: the UDF's record
 // @udfText: the output text of the UDF's statements
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 string CPPLanguage::getUDFCode(UDFRecord* rec, string udfText)
 {
 	string result = "";
 
-	result += line(getFunctionPrototype(rec->returnType, rec->UDFName, rec->args));
+	result += line(getFunctionPrototype(rec->returnType, rec->name, rec->args));
 	result += openBraceLine();
 
 	result += getSymbolTableCode(rec->symbols);
@@ -522,17 +522,17 @@ string CPPLanguage::getBuiltInCommandCode()
 // function declarations.
 // @prog: The structure table for the program.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 {
 	string result = "";
-	result += line(getFunctionPrototype(prog->PEF->returnType, prog->PEF->UDFName, prog->PEF->args) + ";");
+	result += line(getFunctionPrototype(prog->PEF->returnType, prog->PEF->name, prog->PEF->args) + ";");
 
 	for (int index = 0; index < prog->getNumberOfUDFs(); index++)
 	{
 		UDFRecord * currFunct = prog->getUDF(index);
-		result += line(getFunctionPrototype(currFunct->returnType, currFunct->UDFName, currFunct->args) + ";");
+		result += line(getFunctionPrototype(currFunct->returnType, currFunct->name, currFunct->args) + ";");
 	}
 
 	result += emptyLine();

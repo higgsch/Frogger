@@ -16,7 +16,7 @@ using namespace std;
 CommandCallNode::CommandCallNode(string str, int lineNo) : BinaryNode(lineNo)
 {
 	lexeme = str;
-	cmd = new Command(DataType::DT_NULL, str, false);
+	cmd = new Routine(DataType::DT_NULL, str, DataType::DT_NULL, false);
 }
 
 // ----------------------------------------------------------

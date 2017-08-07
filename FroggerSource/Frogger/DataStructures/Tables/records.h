@@ -58,14 +58,14 @@ struct ArgList : vector<ArgPair *>
 struct Routine
 {
 	bool builtIn;
-	DataType * parentType;
+	DataType * primary;
 	string name;
 	DataType * returnType;
-	ArgList * argTypeList;
+	ArgList * args;
 
-	Routine(DataType * i_parentType, string i_name, DataType * i_returnType, bool i_builtIn)
-		: parentType(i_parentType), name(i_name), returnType(i_returnType), builtIn(i_builtIn),
-		  argTypeList(new ArgList()) {}
+	Routine(DataType * primary, string name, DataType * returnType, bool builtIn)
+		: primary(primary), name(name), returnType(returnType), builtIn(builtIn),
+		  args(new ArgList()) {}
 
 	void addArg(string argName, DataType* argType);
 	
@@ -73,23 +73,12 @@ struct Routine
 	bool matches(Routine* other);
 	void copy(Routine* other);
 
-	int getNumArgs() { return argTypeList->size(); }
+	int getNumArgs() { return args->size(); }
 	ArgPair * getArg(int argNo);
+	ArgPair * operator[](int index) { return (*args)[index]; }
 	void setDataTypeOfArgNumber(int argNo, DataType * type);
 
 	bool isUserDefined() { return !builtIn; }
-};
-
-struct Function : public Routine 
-{
-	Function(DataType * i_parentType, string i_name, DataType * i_returnType, bool i_builtIn)
-		: Routine(i_parentType, i_name, i_returnType, i_builtIn) {}
-};
-
-struct Command : public Routine 
-{
-	Command(DataType * i_parentType, string i_name, bool i_builtIn)
-		: Routine(i_parentType, i_name, DataType::DT_NULL, i_builtIn) {}
 };
 
 //forward declarations
@@ -102,19 +91,12 @@ class SymbolTable;
 //
 // Version 5.0
 // ----------------------------------------------------------
-struct UDFRecord
+struct UDFRecord : public Routine
 {
-	DataType * primary;
-	string UDFName;
-	ArgList * args;
-	DataType * returnType;
-
 	ProgramNode * root;
 	SymbolTable * symbols;
 
-	UDFRecord() : args(new ArgList()), primary(DataType::DT_NULL) {}
-
-	ArgPair* operator[](int index) { return (*args)[index]; }
+	UDFRecord(DataType * primary, string name, DataType * returnType) : Routine(primary, name, returnType, false) {}
 };
 
 // ----------------------------------------------------------

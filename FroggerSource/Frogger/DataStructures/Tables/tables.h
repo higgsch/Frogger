@@ -31,14 +31,12 @@ struct SymbolRecord : public Record<Symbol>
 //
 // Version 5.0
 // ----------------------------------------------------------
-struct CommandRecord : public Record<Command>
+struct CommandRecord : public Record<Routine>
 {
-	CommandRecord(Command* c) : Record(c) {}
-	CommandRecord(DataType * parentType, string name, bool builtIn)
-		: Record(new Command(parentType, name, builtIn)) {}
+	CommandRecord(Routine* c) : Record(c) {}
 
-	bool equals(Command* c) {return rec->equals(c);}
-	bool matches(Command* c) {return rec->matches(c);}
+	bool equals(Routine* c) {return rec->equals(c);}
+	bool matches(Routine* c) {return rec->matches(c);}
 
 	bool isAddable();
 };
@@ -48,14 +46,12 @@ struct CommandRecord : public Record<Command>
 //
 // Version 5.0
 // ----------------------------------------------------------
-struct FunctionRecord : public Record<Function>
+struct FunctionRecord : public Record<Routine>
 {
-	FunctionRecord(Function* f) : Record(f) {}
-	FunctionRecord(DataType * parentType, string name, DataType * returnType, bool builtIn)
-		: Record(new Function(parentType, name, returnType, builtIn)) {}
+	FunctionRecord(Routine* f) : Record(f) {}
 
-	bool equals(Function* f) {return rec->equals(f);}
-	bool matches(Function* f) {return rec->matches(f);}
+	bool equals(Routine* f) {return rec->equals(f);}
+	bool matches(Routine* f) {return rec->matches(f);}
 
 	bool isAddable();
 };
@@ -83,25 +79,25 @@ public:
 // ----------------------------------------------------------
 // This class represents a collection of commands
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
-class CommandTable : public Table<Command>
+class CommandTable : public Table<Routine>
 {
 private:
 	Language * lang;
 public:
 	CommandTable(Language * language);
 
-	Command* CMD_END_NULL;
-	Command* CMD_END_STR;
-	Command* CMD_END_DBL;
-	Command* CMD_DISPLAY_STR;
-	Command* CMD_DISPLAY_DBL;
-	Command* CMD_OPEN_INPUT;
-	Command* CMD_CLOSE_INPUT;
-	Command* CMD_WRITE;
-	Command* CMD_OPEN_OUTPUT;
-	Command* CMD_CLOSE_OUTPUT;
+	Routine* CMD_END_NULL;
+	Routine* CMD_END_STR;
+	Routine* CMD_END_DBL;
+	Routine* CMD_DISPLAY_STR;
+	Routine* CMD_DISPLAY_DBL;
+	Routine* CMD_OPEN_INPUT;
+	Routine* CMD_CLOSE_INPUT;
+	Routine* CMD_WRITE;
+	Routine* CMD_OPEN_OUTPUT;
+	Routine* CMD_CLOSE_OUTPUT;
 };
 
 // ----------------------------------------------------------
@@ -109,24 +105,24 @@ public:
 //
 // Version 5.0
 // ----------------------------------------------------------
-class FunctionTable : public Table<Function>
+class FunctionTable : public Table<Routine>
 {
 private:
 	Language * lang;
 public:
 	FunctionTable(Language * language);
 
-	DataType* getFunctionReturnType(Function* funct);
+	DataType* getFunctionReturnType(Routine* funct);
 
-	Function* FUNCT_TO_STRING;
-	Function* FUNCT_TO_ASCII;
-	Function* FUNCT_PARSE_DOUBLE;
-	Function* FUNCT_ASCII_AT;
-	Function* FUNCT_LENGTH;
-	Function* FUNCT_RETRIEVE_DOUBLE;
-	Function* FUNCT_RANDOM;
-	Function* FUNCT_RETRIEVE_STRING;
-	Function* FUNCT_READ;
-	Function* FUNCT_ELEMENT_AT;
-	Function* FUNCT_SIZE;
+	Routine* FUNCT_TO_STRING;
+	Routine* FUNCT_TO_ASCII;
+	Routine* FUNCT_PARSE_DOUBLE;
+	Routine* FUNCT_ASCII_AT;
+	Routine* FUNCT_LENGTH;
+	Routine* FUNCT_RETRIEVE_DOUBLE;
+	Routine* FUNCT_RANDOM;
+	Routine* FUNCT_RETRIEVE_STRING;
+	Routine* FUNCT_READ;
+	Routine* FUNCT_ELEMENT_AT;
+	Routine* FUNCT_SIZE;
 };

@@ -12,20 +12,20 @@ using namespace std;
 // This class provides a node representation for a function
 // call.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 class FunctionCallNode : public CommandCallNode
 {
 private:
-	Function * funct;
+	Routine * funct;
 
 public:
 	FunctionCallNode(string name, int lineNo);
 	~FunctionCallNode();
 	
-	Function* getFunct() { return funct; }
+	Routine* getFunct() { return funct; }
 	//Don't just change pointer because ArgListNodes use the old pointer
-	void setFunct(Function * function) { funct->copy(function); }
+	void setFunct(Routine * function) { funct->copy(function); }
 
 	int getArgListLength() { return funct->getNumArgs(); }
 

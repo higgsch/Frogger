@@ -55,7 +55,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 			{
 				if (isInFunctions(currRec, progStruct->UDFs))
 				{
-					syntax_error("" + currRec->UDFName + " function is duplicated.");
+					syntax_error("" + currRec->name + " function is duplicated.");
 				}
 				else
 				{
@@ -114,7 +114,7 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			UDFRecord * currRec = functRecord(name);
 			if (isInFunctions(currRec, objStruct->UDFs))
 			{
-				syntax_error("" + currRec->UDFName + " function is duplicated.");
+				syntax_error("" + currRec->name + " function is duplicated.");
 			}
 			else
 			{
@@ -188,14 +188,11 @@ ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 // ----------------------------------------------------------
 UDFRecord * SCFParser::functRecord(string name)
 {
-	UDFRecord * rec = new UDFRecord();
-
-	rec->UDFName = name;
 	match(TOKTYPE_LPAREN);
-	rec->args = arguments();
+	ArgList * args = arguments();
 	match(TOKTYPE_RPAREN);
 	match(TOKTYPE_TILDE);
-	rec->returnType = dataType();
+	DataType * returnType = dataType();
 
 	match(TOKTYPE_DOT);
 	SCFToken ext = next_token();
@@ -204,6 +201,8 @@ UDFRecord * SCFParser::functRecord(string name)
 	if (ext.lexeme != "fgr")
 		syntax_error("Found ." + ext.lexeme + " -- Expected .fgr");
 
+	UDFRecord * rec = new UDFRecord(DataType::DT_NULL, name, returnType);
+	rec->args = args;
 	return rec;
 }
 
@@ -292,7 +291,7 @@ bool SCFParser::isPEF(UDFRecord * rec, string pefName)
 	if (rec->returnType != DataType::DT_NULL)
 		return false;
 
-	if (rec->UDFName != pefName)
+	if (rec->name != pefName)
 		return false;
 
 	if (rec->args->size() != 0)
@@ -356,7 +355,7 @@ bool SCFParser::functionSignatureMatches(UDFRecord * first, UDFRecord * second)
 	if (first->primary != second->primary)
 		return false; 
 
-	if (first->UDFName != second->UDFName)
+	if (first->name != second->name)
 		return false;
 
 	int argCount = first->args->size();

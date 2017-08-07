@@ -18,7 +18,7 @@ bool quietMode;
 // It can be used to compile a Frogger Program Entry Function 
 // File or Frogger Project Folder to c++ output.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 class FroggerC
 {
@@ -36,8 +36,8 @@ private:
 	void struct_error(string err);
 
 public:
-	FroggerC::FroggerC() { 
-		progStruct.PEF = new UDFRecord();
+	FroggerC::FroggerC(string PEFName) { 
+		progStruct.PEF = new UDFRecord(DataType::DT_NULL, PEFName, DataType::DT_NULL);
 		lang = new CPPLanguage();
 		lang->initialize();
 	}

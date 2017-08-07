@@ -24,11 +24,11 @@ void CodeGenerationPhase::printMetaCode(ProgramStruct * progStruct)
 // @PEF: The AST for the PEF
 // @rec: The record of the PEF
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::printPEFCode(UDFRecord * PEF)
 {
-	currUDFName = PEF->UDFName;
+	currUDFName = PEF->name;
 
 	PEF->root->accept(this);
 	string pefText = PEF->root->outputText;
@@ -39,11 +39,11 @@ void CodeGenerationPhase::printPEFCode(UDFRecord * PEF)
 // This function generates the code for a given UDF.
 // @UDF: The UDF's struct.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::printUDFCode(UDFRecord * UDF) 
 {
-	currUDFName = UDF->UDFName;
+	currUDFName = UDF->name;
 
 	UDF->root->accept(this);
 	string udfText = UDF->root->outputText;
@@ -148,11 +148,11 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(FunctionCallNode * n)
 {
-	Function* funct = n->getFunct();
+	Routine* funct = n->getFunct();
 
 	string name = funct->name;
 	bool isBuiltIn = !(funct->isUserDefined());
@@ -177,11 +177,11 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void CodeGenerationPhase::visit(CommandCallNode * n)
 {
-	Command* cmd = n->getCmd();
+	Routine* cmd = n->getCmd();
 
 	string name = cmd->name;
 	bool isBuiltIn = !(cmd->isUserDefined());

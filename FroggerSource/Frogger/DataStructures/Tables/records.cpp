@@ -19,7 +19,7 @@ void Routine::addArg(string argName, DataType * argType)
 	//if (argType == DT_NOT_DEFINED)
 	//	return;
 	
-	argTypeList->push_back(new ArgPair(argName, argType));
+	args->push_back(new ArgPair(argName, argType));
 }
 
 // ----------------------------------------------------------
@@ -27,22 +27,22 @@ void Routine::addArg(string argName, DataType * argType)
 // signature as the given routine.
 // @other: The routine to compare.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 bool Routine::equals(Routine * other)
 {
-	if (parentType != other->parentType)
+	if (primary != other->primary)
 		return false;
 
 	if (name != other->name)
 		return false;
 
-	if (argTypeList->size() != other->argTypeList->size())
+	if (args->size() != other->args->size())
 		return false;
 
-	for (int i = 0; i < argTypeList->size(); i++)
+	for (int i = 0; i < args->size(); i++)
 	{
-		if (argTypeList->at(i)->type != other->argTypeList->at(i)->type)
+		if (args->at(i)->type != other->args->at(i)->type)
 			return false;
 	}
 
@@ -59,7 +59,7 @@ bool Routine::equals(Routine * other)
 // ----------------------------------------------------------
 bool Routine::matches(Routine * other)
 {
-	if (other->parentType != DataType::DT_NOT_DEFINED && parentType != other->parentType)
+	if (other->primary != DataType::DT_NOT_DEFINED && primary != other->primary)
 		return false;
 
 	if (name != other->name)
@@ -68,13 +68,13 @@ bool Routine::matches(Routine * other)
 	if (other->returnType != DataType::DT_NOT_DEFINED && returnType != other->returnType)
 		return false;
 
-	if (argTypeList->size() != other->argTypeList->size())
+	if (args->size() != other->args->size())
 		return false;
 
-	for (int i = 0; i < argTypeList->size(); i++)
+	for (int i = 0; i < args->size(); i++)
 	{
-		if (other->argTypeList->at(i)->type != DataType::DT_NOT_DEFINED && 
-			argTypeList->at(i)->type != other->argTypeList->at(i)->type)
+		if (other->args->at(i)->type != DataType::DT_NOT_DEFINED && 
+			args->at(i)->type != other->args->at(i)->type)
 			return false;
 	}
 
@@ -85,20 +85,20 @@ bool Routine::matches(Routine * other)
 // This function performs a deep copy to itself.
 // @other: The Routine to duplicate.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void Routine::copy(Routine * other)
 {
 	builtIn = other->builtIn;
-	parentType = other->parentType;
+	primary = other->primary;
 	name = other->name;
 	returnType = other->returnType;
 
-	argTypeList->clear();
+	args->clear();
 
-	for (ArgPair* arg : *(other->argTypeList))
+	for (ArgPair* arg : *(other->args))
 	{
-		argTypeList->push_back(new ArgPair(arg->name, arg->type));
+		args->push_back(new ArgPair(arg->name, arg->type));
 	}
 }
 
@@ -106,12 +106,12 @@ void Routine::copy(Routine * other)
 // This function returns the arg at the selected index.
 // @argNo: The index in the argument list to retrieve.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 ArgPair* Routine::getArg(int argNo)
 { 
-	if (argNo < argTypeList->size())
-		return argTypeList->at(argNo);
+	if (argNo < args->size())
+		return args->at(argNo);
 	else
 		return NULL;
 }
@@ -121,10 +121,10 @@ ArgPair* Routine::getArg(int argNo)
 // @argNo: The index in the argument list to modify.
 // @type: The data type to change to.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void Routine::setDataTypeOfArgNumber(int argNo, DataType* type)
 { 
-	if (argNo < argTypeList->size()) 
-		(*argTypeList)[argNo]->type = type; 
+	if (argNo < args->size()) 
+		(*args)[argNo]->type = type; 
 }

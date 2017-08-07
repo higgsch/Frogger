@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.2
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program represents a visitor for gathering support code reqs.
 // -----------------------------------------------------------------
@@ -40,13 +40,13 @@ void SupportReqsPhase::visit(IdRefNode * n)
 // This function processes the include for a function call.
 // @n: The node representing the statement.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void SupportReqsPhase::visit(FunctionCallNode * n)
 {
 	n->visitAllChildren(this);
 
-	Function * funct = n->getFunct();
+	Routine * funct = n->getFunct();
 	if (funct->equals(lang->builtInFunctions->FUNCT_TO_STRING))
 		lang->toStringUsed();
 
@@ -85,13 +85,13 @@ void SupportReqsPhase::visit(FunctionCallNode * n)
 // This function processes the include for a command call.
 // @n: The node representing the statement.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 void SupportReqsPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 
-	Command * cmd = n->getCmd();
+	Routine * cmd = n->getCmd();
 	if (cmd->equals(lang->builtInCommands->CMD_DISPLAY_DBL))
 		lang->displayDoubleUsed();
 	

@@ -44,20 +44,20 @@ public:
 // ----------------------------------------------------------
 // This class provides a node representation for a command call.
 //
-// Version 3.1
+// Version 5.0
 // ----------------------------------------------------------
 class CommandCallNode : public BinaryNode
 {
 private:
-	Command * cmd;
+	Routine * cmd;
 
 public:
 	CommandCallNode(string name, int lineNo);
 	~CommandCallNode();
 
-	Command* getCmd() { return cmd; }
+	Routine* getCmd() { return cmd; }
 	//Don't just change pointer because ArgListNodes use the old pointer
-	void setCmd(Command * command) { cmd->copy(command); }
+	void setCmd(Routine * command) { cmd->copy(command); }
 	int getArgListLength() { return cmd->getNumArgs(); }
 
 	void addPrimary(AsciiNode* n) { addLeftChild(n); }

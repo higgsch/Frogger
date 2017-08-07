@@ -111,7 +111,7 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 
 	n->visitAllChildren(this);
 
-	Function * funct = n->getFunct();
+	Routine * funct = n->getFunct();
 	if (!functions->matchExists(funct))
 		dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
 	else if (functions->getNumberOfMatches(funct) == 1)
@@ -126,13 +126,13 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 3.1
+// Version 5.0
 // ----------------------------------------------------------
 void DataTypingPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 
-	Command * cmd = n->getCmd();
+	Routine * cmd = n->getCmd();
 	if (!commands->matchExists(cmd))
 		dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
 	else if (commands->getNumberOfMatches(cmd) == 1)
