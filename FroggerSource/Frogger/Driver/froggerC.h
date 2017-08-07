@@ -24,7 +24,7 @@ class FroggerC
 {
 private:
 	CPPLanguage * lang;
-	ProgramStruct progStruct;
+	ProgramStruct * progStruct;
 
 	string getUDFFilename(UDFRecord * udf);
 
@@ -36,10 +36,10 @@ private:
 	void struct_error(string err);
 
 public:
-	FroggerC::FroggerC(string PEFName) { 
-		progStruct.PEF = new UDFRecord(DataType::DT_NULL, PEFName, DataType::DT_NULL);
+	FroggerC::FroggerC() { 
 		lang = new CPPLanguage();
 		lang->initialize();
+		progStruct = new ProgramStruct(lang);
 	}
 
 	void compileInputFile(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup);

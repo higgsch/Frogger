@@ -8,6 +8,7 @@
 #include "..\DataStructures\dataTyped.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\DataStructures\Tables\structs.h"
+#include "..\Languages\language.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -32,6 +33,8 @@ private:
 	string id();
 	DataType * dataType();
 
+	Language * lang;
+
 	void match(scf_token_type);
 	void syntax_error(string);
 
@@ -45,7 +48,7 @@ private:
 	ObjectStruct * parseObjectLevelSCF(string objectDir, string objectName);
 
 public:
-	SCFParser();
+	SCFParser(Language * lang);
 
 	void open(string SCFPath);
 	void close() { scanner.close(); }

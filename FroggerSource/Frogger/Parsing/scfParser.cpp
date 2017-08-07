@@ -14,7 +14,7 @@ extern bool quietMode;
 //
 // Version 5.0
 // ----------------------------------------------------------
-SCFParser::SCFParser()
+SCFParser::SCFParser(Language * lang) : lang(lang)
 {
 	current_token = SCFToken::NOTOK;
 	lookahead[0] = SCFToken::NOTOK;
@@ -33,7 +33,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 {
 	open(projectDir + projectName + ".struct");
 
-	ProgramStruct * progStruct = new ProgramStruct();
+	ProgramStruct * progStruct = new ProgramStruct(lang);
 	progStruct->name = projectName;
 	progStruct->PEF = NULL;
 
@@ -50,6 +50,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 					syntax_error("PEF is duplicated.");
 
 				progStruct->PEF = currRec;
+				progStruct->cmds->add(new CommandRecord(currRec));
 			}
 			else
 			{
@@ -60,6 +61,10 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				else
 				{
 					progStruct->UDFs->push_back(currRec);
+					if (currRec->returnType->isNull())
+						progStruct->cmds->add(new CommandRecord(currRec));
+					else
+						progStruct->functs->add(new FunctionRecord(currRec));
 				}
 			}
 		}
@@ -102,7 +107,7 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 {
 	open(objectDir + objectName + ".struct");
 
-	ObjectStruct * objStruct = new ObjectStruct();
+	ObjectStruct * objStruct = new ObjectStruct(lang);
 	objStruct->name = objectName;
 
 	while (next_token().type != TOKTYPE_SCANEOF)
@@ -119,6 +124,10 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			else
 			{
 				objStruct->UDFs->push_back(currRec);
+				if (currRec->returnType->isNull())
+					objStruct->cmds->add(new CommandRecord(currRec));
+				else
+					objStruct->functs->add(new FunctionRecord(currRec));
 			}
 		}
 		else if (next_token().type == TOKTYPE_DOT)
@@ -166,7 +175,7 @@ ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 	if (ext.lexeme != "struct")
 		syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct");
 
-	SCFParser p;
+	SCFParser p(lang);
 	ObjectStruct * object = p.parseObjectLevelSCF(objectDir, name);
 
 	int udfCount = object->getNumberOfUDFs();

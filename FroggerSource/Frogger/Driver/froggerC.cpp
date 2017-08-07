@@ -25,13 +25,13 @@ string rootDir = "";
 void FroggerC::compileInputFile(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup)
 {
 	FgrFunctionC funcComp(lang);
+	progStruct->PEF = new UDFRecord(DataType::DT_NULL, inFilename, DataType::DT_NULL);
 
-	CommandTable * cmdTable = new CommandTable(lang);
-	cmdTable->add(new CommandRecord(progStruct.PEF));
+	progStruct->cmds->add(new CommandRecord(progStruct->PEF));
 
-	funcComp.compileFunctionToAST(fileDir + getUDFFilename(progStruct.PEF), new FunctionTable(lang), cmdTable, progStruct.PEF);
+	funcComp.compileFunctionToAST(fileDir + getUDFFilename(progStruct->PEF), progStruct->functs, progStruct->cmds, progStruct->PEF);
 
-	computeRequiredSupportCode(&progStruct);
+	computeRequiredSupportCode(progStruct);
 	
 	emitInputFileCode(fileDir, inFilename, outFile, toExe, cleanup);
 
@@ -47,17 +47,15 @@ void FroggerC::compileInputFile(string fileDir, string inFilename, string outFil
 // ----------------------------------------------------------
 void FroggerC::compileInputProject(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
 {
-	SCFParser p;
-	progStruct = *p.parseProgramLevelSCF(projectDir, projectName);
-	FunctionTable * functTable = new FunctionTable(lang);
-	CommandTable * cmdTable = new CommandTable(lang);
+	SCFParser p(lang);
+	progStruct = p.parseProgramLevelSCF(projectDir, projectName);
 
-	int numFiles = progStruct.UDFs->size();
+	int numFiles = progStruct->UDFs->size();
 
 	//verify all referenced files exist
 	for (int index = 0; index < numFiles; index++)
 	{
-		UDFRecord* currRec = (progStruct[index]);
+		UDFRecord* currRec = (progStruct->getUDF(index));
 		string currUDFPath = projectDir + getUDFFilename(currRec);
 		ifstream currUDF(currUDFPath);
 		if (!currUDF.good())
@@ -66,28 +64,19 @@ void FroggerC::compileInputProject(string projectDir, string projectName, string
 		}
 		
 		currUDF.close();
-
-		if (currRec->returnType == DataType::DT_NULL)
-		{
-			cmdTable->add(new CommandRecord(currRec));
-		}
-		else
-		{
-			functTable->add(new FunctionRecord(currRec));
-		}
 	}
 
 	//compile PEFF
 	FgrFunctionC funcComp(lang);
-	funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct.PEF), functTable, cmdTable, progStruct.PEF);
+	funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct->PEF), progStruct->functs, progStruct->cmds, progStruct->PEF);
 
 	//compile all referenced files
 	for (int index = 0; index < numFiles; index++ )
 	{
-		funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct[index]), functTable, cmdTable, progStruct[index]);
+		funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct->getUDF(index)), progStruct->functs, progStruct->cmds, progStruct->getUDF(index));
 	}
 
-	computeRequiredSupportCode(&progStruct);
+	computeRequiredSupportCode(progStruct);
 
 	//emit project code
 	emitInputProjectCode(projectDir, projectName, outFile, toExe, cleanup);
@@ -137,7 +126,7 @@ void FroggerC::computeRequiredSupportCode(ProgramStruct * prog)
 // This function drives code generation for a single file input.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.3
+// Version 5.0
 // ----------------------------------------------------------
 void FroggerC::emitInputFileCode(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup)
 {
@@ -146,8 +135,8 @@ void FroggerC::emitInputFileCode(string fileDir, string inFilename, string outFi
 	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
 	cgp->open(filename + ".cpp");
-	cgp->printMetaCode(&progStruct);
-	cgp->printPEFCode(progStruct.PEF);
+	cgp->printMetaCode(progStruct);
+	cgp->printPEFCode(progStruct->PEF);
 	cgp->close();
 
 	if (toExe)
@@ -163,7 +152,7 @@ void FroggerC::emitInputFileCode(string fileDir, string inFilename, string outFi
 // This function drives code generation for a project input.
 // @outFile: The file that output source is sent to.
 //
-// Version 4.3
+// Version 5.0
 // ----------------------------------------------------------
 void FroggerC::emitInputProjectCode(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
 {
@@ -172,13 +161,13 @@ void FroggerC::emitInputProjectCode(string projectDir, string projectName, strin
 	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
 	cgp->open(filename + ".cpp");
-	cgp->printMetaCode(&progStruct);
-	cgp->printPEFCode(progStruct.PEF);
+	cgp->printMetaCode(progStruct);
+	cgp->printPEFCode(progStruct->PEF);
 
-	int numUDFs = progStruct.getNumberOfUDFs();
+	int numUDFs = progStruct->getNumberOfUDFs();
 	for (int index = 0; index < numUDFs; index++)
 	{
-		cgp->printUDFCode(progStruct[index]);
+		cgp->printUDFCode(progStruct->getUDF(index));
 	}
 
 	cgp->close();
@@ -390,7 +379,7 @@ int main(int argc, char* argv[])
 			if (!quietMode)
 				cout << "Starting Project Compilation: " << inPath << "\\ -> " << outFilePath << endl;
 	
-			FroggerC c(projectName);
+			FroggerC c;
 			c.compileInputProject(inPath + "\\", projectName, outFilePath, toExe, cleanup);
 		}
 	}
@@ -415,7 +404,7 @@ int main(int argc, char* argv[])
 			string inFileDir = inPath.substr(0, start);
 			string inFilename = inPath.substr(start, end - start);
 
-			FroggerC c(inFilename);
+			FroggerC c;
 			c.compileInputFile(inFileDir, inFilename, outFilePath, toExe, cleanup);
 		}
 	}
