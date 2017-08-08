@@ -68,9 +68,8 @@ bool FunctionRecord::isAddable()
 //
 // Version 5.0
 // ----------------------------------------------------------
-SymbolTable::SymbolTable(Language * language, UDFRecord * rec)
+SymbolTable::SymbolTable(Language * lang, UDFRecord * rec)
 {
-	lang = language;
 	SYM_ARGS = new Symbol(lang->SYM_ARGS, DataType::DT_STRINGLIST, false);
 	add(new SymbolRecord(SYM_ARGS));
 
@@ -90,9 +89,8 @@ SymbolTable::SymbolTable(Language * language, UDFRecord * rec)
 //
 // Version 5.0
 // ----------------------------------------------------------
-SymbolTable::SymbolTable(Language * language)
+SymbolTable::SymbolTable(Language * lang)
 {
-	lang = language;
 	SYM_ARGS = new Symbol(lang->SYM_ARGS, DataType::DT_STRINGLIST, false);
 	add(new SymbolRecord(SYM_ARGS));
 }
@@ -121,10 +119,8 @@ DataType * SymbolTable::symbolType(string id)
 //
 // Version 5.0
 // ----------------------------------------------------------
-CommandTable::CommandTable(Language * language)
+CommandTable::CommandTable(Language * lang)
 {
-	lang = language;
-
 	//Add built-in commands
 	CMD_END_NULL = new Routine(DataType::DT_NULL, lang->CMDNAME_END_NULL, DataType::DT_NULL, true);
 	add(new CommandRecord(CMD_END_NULL));
@@ -169,10 +165,8 @@ CommandTable::CommandTable(Language * language)
 //
 // Version 5.0
 // ----------------------------------------------------------
-FunctionTable::FunctionTable(Language * language)
+FunctionTable::FunctionTable(Language * lang)
 {
-	lang = language;
-
 	//Add built-in functions
 	FUNCT_TO_STRING = new Routine(DataType::DT_DOUBLE, lang->FUNCTNAME_TO_STRING, DataType::DT_STRING, true);
 	add(new FunctionRecord(FUNCT_TO_STRING));

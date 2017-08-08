@@ -10,22 +10,6 @@ using namespace std;
 extern bool quietMode;
 
 // ----------------------------------------------------------
-// Default constructor.
-//
-// Version 4.4
-// ----------------------------------------------------------
-DataTypingPhase::DataTypingPhase(Language * language, FunctionTable * functs, CommandTable * cmds, SymbolTable * syms) 
-{ 
-	lang = language;
-
-	symbols = syms; 
-	functions = functs;
-	commands = cmds;
-	changeMadeThisRound = false; 
-	setUnknownTypeNodesToDefault = false;
-}
-
-// ----------------------------------------------------------
 // This function starts the phase on the program root node.
 // @n: The node representing the program.
 //
@@ -112,11 +96,12 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 	n->visitAllChildren(this);
 
 	Routine * funct = n->getFunct();
-	if (!functions->matchExists(funct))
+	FunctionTable * functs = getPrimaryScopeFunctions(n);
+	if (!functs->matchExists(funct))
 		dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
-	else if (functions->getNumberOfMatches(funct) == 1)
+	else if (functs->getNumberOfMatches(funct) == 1)
 	{
-		n->setFunct(functions->getFirstMatch(funct));
+		n->setFunct(functs->getFirstMatch(funct));
 		checkAndSetNodeDataType(n, funct->returnType);
 		n->visitAllChildren(this);
 	}
@@ -133,11 +118,12 @@ void DataTypingPhase::visit(CommandCallNode * n)
 	n->visitAllChildren(this);
 
 	Routine * cmd = n->getCmd();
-	if (!commands->matchExists(cmd))
+	CommandTable * cmds = getPrimaryScopeCommands(n);
+	if (!cmds->matchExists(cmd))
 		dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
-	else if (commands->getNumberOfMatches(cmd) == 1)
+	else if (cmds->getNumberOfMatches(cmd) == 1)
 	{
-		n->setCmd(commands->getFirstMatch(cmd));
+		n->setCmd(cmds->getFirstMatch(cmd));
 		n->visitAllChildren(this);
 	}
 }
@@ -388,16 +374,65 @@ void DataTypingPhase::unifyTreeDataType(BinaryNode * node)
 }
 
 // ----------------------------------------------------------
+// This function returns a safe function table based on the 
+// scope of the given node's primary.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+FunctionTable * DataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * n)
+{
+	AsciiNode * primary = n->getPrimary();
+	if (primary == NULL)
+		return functions;
+
+	DataType * primaryType = primary->getDataType();
+	if (primaryType == DataType::DT_NULL)
+		return functions;
+
+	if (primaryType == DataType::DT_NOT_DEFINED)
+		return functions; //TODO return empty functionTable
+
+	return progStruct->getObject(primary->getDataType())->scopedFuncts;
+}
+
+// ----------------------------------------------------------
+// This function returns a safe command table based on the 
+// scope of the given node's primary.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+CommandTable * DataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
+{
+	AsciiNode * primary = n->getPrimary();
+	if (primary == NULL)
+		return commands;
+
+	DataType * primaryType = primary->getDataType();
+	if (primaryType == DataType::DT_NULL)
+		return commands;
+
+	if (primaryType == DataType::DT_NOT_DEFINED)
+		return new CommandTable();
+
+	return progStruct->getObject(primary->getDataType())->scopedCmds;
+}
+
+//SymbolTable * DataTypingPhase::getPrimaryScopeSymbols(IdRefNode * n)
+//{
+//	
+//}
+
+// ----------------------------------------------------------
 // This function displays an error message to the user and 
 // terminates the program.
 // @err_msg: The message to display to the user.
 // @line_no: The line on which the error occured.
 // 
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 void DataTypingPhase::dataType_error(string err_msg, int line_no)
 {
-	cout << "DATA TYPE ERROR on line " << line_no << ": " << err_msg << endl;
+	cout << "DATA TYPE ERROR in UDF " << udfName << " on line " << line_no << ": " << err_msg << endl;
 	
 	if (!quietMode)
 	{

@@ -17,9 +17,12 @@ class DataTypingPhase : public Phase
 {
 private:
 	Language * lang;
+	DataTypeCollection * types;
+	ProgramStruct * progStruct;
 	SymbolTable * symbols;
 	FunctionTable * functions;
 	CommandTable * commands;
+	string udfName;
 	bool changeMadeThisRound;
 	bool setUnknownTypeNodesToDefault;
 
@@ -35,8 +38,16 @@ private:
 
 	void processDoubleOperator(BinaryOpNode * n);
 
+	FunctionTable * getPrimaryScopeFunctions(FunctionCallNode * n);
+	CommandTable * getPrimaryScopeCommands(CommandCallNode * n);
+	//SymbolTable * getPrimaryScopeSymbols(IdRefNode * n);
+
 public:
-	DataTypingPhase(Language * language, FunctionTable * functs, CommandTable * cmds, SymbolTable * syms);
+	DataTypingPhase(Language * lang, ProgramStruct * progStruct, 
+		FunctionTable * functs, CommandTable * cmds, SymbolTable * syms, string UDFName)
+		: lang(lang), progStruct(progStruct), types(progStruct->types),
+		symbols(syms), functions(functs), commands(cmds), udfName(UDFName), 
+		changeMadeThisRound(false), setUnknownTypeNodesToDefault(false) {}
 
 	SymbolTable * getSymbolTable() { return symbols; }
 	FunctionTable * getFunctionTable() { return functions; }

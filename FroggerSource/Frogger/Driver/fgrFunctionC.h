@@ -9,16 +9,18 @@ using namespace std;
 
 //forward declaration
 class ProgramNode;
+struct ProgramStruct;
 
 // ----------------------------------------------------------
 // This class compiles a .fgr source file to c++ output.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 class FgrFunctionC
 {
 private:
 	Language * lang;
+	ProgramStruct * progStruct;
 
 	void buildAST(UDFRecord * funct, string inFile);
 
@@ -27,7 +29,7 @@ private:
 	void checkDataTypes(UDFRecord * ast, FunctionTable * functs, CommandTable * cmds);
 
 public:
-	FgrFunctionC(Language* lang) : lang(lang) {}
+	FgrFunctionC(Language* lang, ProgramStruct * progStruct) : lang(lang), progStruct(progStruct) {}
 	void compileFunctionToAST(string inFile, FunctionTable * functs, CommandTable * cmds, UDFRecord * rec);
 	
 	void printAST(UDFRecord * funct, string outFile);

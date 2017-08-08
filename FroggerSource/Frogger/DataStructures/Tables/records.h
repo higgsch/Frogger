@@ -57,11 +57,11 @@ struct ArgList : vector<ArgPair *>
 // ----------------------------------------------------------
 struct Routine
 {
-	bool builtIn;
-	DataType * primary;
 	string name;
+	DataType * primary;
 	DataType * returnType;
 	ArgList * args;
+	bool builtIn;
 
 	Routine(DataType * primary, string name, DataType * returnType, bool builtIn)
 		: primary(primary), name(name), returnType(returnType), builtIn(builtIn),

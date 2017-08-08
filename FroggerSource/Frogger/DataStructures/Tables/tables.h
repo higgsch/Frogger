@@ -66,11 +66,10 @@ struct UDFRecord;
 // ----------------------------------------------------------
 class SymbolTable : public Table<Symbol>
 {
-private:
-	Language * lang;
 public:
 	SymbolTable(Language * language, UDFRecord * rec);
 	SymbolTable(Language * language);
+	SymbolTable() {}
 
 	DataType * symbolType(string id);
 
@@ -84,10 +83,9 @@ public:
 // ----------------------------------------------------------
 class CommandTable : public Table<Routine>
 {
-private:
-	Language * lang;
 public:
 	CommandTable(Language * language);
+	CommandTable() {}
 
 	Routine* CMD_END_NULL;
 	Routine* CMD_END_STR;
@@ -108,10 +106,9 @@ public:
 // ----------------------------------------------------------
 class FunctionTable : public Table<Routine>
 {
-private:
-	Language * lang;
 public:
 	FunctionTable(Language * language);
+	FunctionTable() {}
 
 	DataType* getFunctionReturnType(Routine* funct);
 

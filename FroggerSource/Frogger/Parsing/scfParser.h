@@ -56,4 +56,5 @@ public:
 	void close() { scanner.close(); }
 
 	ProgramStruct * parseProgramLevelSCF(string projectDir, string projectName);
+	DataTypeCollection * getTypeList() { return types; }
 };

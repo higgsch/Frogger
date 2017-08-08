@@ -52,7 +52,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 					syntax_error("PEF is duplicated.");
 
 				progStruct->PEF = currRec;
-				progStruct->cmds->add(new CommandRecord(currRec));
+				progStruct->visibleCmds->add(new CommandRecord(currRec));
 			}
 			else
 			{
@@ -64,9 +64,15 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				{
 					progStruct->UDFs->push_back(currRec);
 					if (currRec->returnType->isNull())
-						progStruct->cmds->add(new CommandRecord(currRec));
+					{
+						progStruct->visibleCmds->add(new CommandRecord(currRec));
+						progStruct->scopedCmds->add(new CommandRecord(currRec));
+					}
 					else
-						progStruct->functs->add(new FunctionRecord(currRec));
+					{
+						progStruct->visibleFuncts->add(new FunctionRecord(currRec));
+						progStruct->scopedFuncts->add(new FunctionRecord(currRec));
+					}
 				}
 			}
 		}
@@ -129,9 +135,15 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			{
 				objStruct->UDFs->push_back(currRec);
 				if (currRec->returnType->isNull())
-					objStruct->cmds->add(new CommandRecord(currRec));
+				{
+					objStruct->visibleCmds->add(new CommandRecord(currRec));
+					objStruct->scopedCmds->add(new CommandRecord(currRec));
+				}
 				else
-					objStruct->functs->add(new FunctionRecord(currRec));
+				{
+					objStruct->visibleFuncts->add(new FunctionRecord(currRec));
+					objStruct->scopedFuncts->add(new FunctionRecord(currRec));
+				}
 			}
 		}
 		else if (next_token().type == TOKTYPE_DOT)

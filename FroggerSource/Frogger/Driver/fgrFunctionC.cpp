@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.4
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
@@ -81,12 +81,12 @@ void FgrFunctionC::convertStrings(UDFRecord * funct)
 // ----------------------------------------------------------
 // This function drives data typing.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 void FgrFunctionC::checkDataTypes(UDFRecord * ast, FunctionTable * functs, CommandTable * cmds)
 {
 	SymbolTable * symbols = new SymbolTable(lang, ast);
-	DataTypingPhase *dtp = new DataTypingPhase(lang, functs, cmds, symbols);
+	DataTypingPhase *dtp = new DataTypingPhase(lang, progStruct, functs, cmds, symbols, ast->name);
 	ast->root->accept(dtp);
 	ast->symbols = symbols;
 	delete dtp;

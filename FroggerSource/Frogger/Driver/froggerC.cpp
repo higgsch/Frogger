@@ -27,7 +27,6 @@ FroggerC::FroggerC()
 
 	progStruct = new ProgramStruct(lang);
 	p = new SCFParser(lang);
-	funcComp = new FgrFunctionC(lang);
 }
 
 // ----------------------------------------------------------
@@ -46,14 +45,17 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 	else
 	{
 		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL);
-		progStruct->cmds->add(new CommandRecord(progStruct->PEF));
+		progStruct->visibleCmds->add(new CommandRecord(progStruct->PEF));
 	}
 
 	verifyPEFExists(dir);
 	verifyAllContainedUDFsExist(dir, progStruct);
+	
+	progStruct->types = p->getTypeList();
+	funcComp = new FgrFunctionC(lang, progStruct);
 
 	compilePEF(dir);
-	compileAllContainedUDFs(dir, progStruct, progStruct->functs, progStruct->cmds);
+	compileAllContainedUDFs(dir, progStruct, progStruct->visibleFuncts, progStruct->visibleCmds);
 
 	computeRequiredSupportCode(progStruct);
 
@@ -106,7 +108,7 @@ void FroggerC::verifyAllContainedUDFsExist(string dir, ObjectStruct * obj)
 // ----------------------------------------------------------
 void FroggerC::compilePEF(string dir)
 {
-	funcComp->compileFunctionToAST(dir + getUDFFilename(progStruct->PEF), progStruct->functs, progStruct->cmds, progStruct->PEF);
+	funcComp->compileFunctionToAST(dir + getUDFFilename(progStruct->PEF), progStruct->visibleFuncts, progStruct->visibleCmds, progStruct->PEF);
 }
 
 // ----------------------------------------------------------
@@ -118,21 +120,21 @@ void FroggerC::compilePEF(string dir)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionTable * functs, CommandTable * cmds)
+void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionTable * visibleFuncts, CommandTable * visibleCmds)
 {
 	int udfCount = obj->getNumberOfUDFs();
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++ )
 	{
 		UDFRecord * currUDF = obj->getUDF(udfIndex);
 		string path = dir + getUDFFilename(currUDF);
-		funcComp->compileFunctionToAST(path, functs, cmds, currUDF);
+		funcComp->compileFunctionToAST(path, visibleFuncts, visibleCmds, currUDF);
 	}
 
 	int objCount = obj->getNumberOfOFs();
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
 	{
 		ObjectStruct * currObj = obj->getOF(objIndex);
-		compileAllContainedUDFs(dir + currObj->name + "\\", currObj, currObj->functs, currObj->cmds);
+		compileAllContainedUDFs(dir + currObj->name + "\\", currObj, currObj->visibleFuncts, currObj->visibleCmds);
 	}
 }
 
