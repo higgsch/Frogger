@@ -66,8 +66,10 @@ struct ObjectStruct
 		symbols(new SymbolTable(lang)), cmds(new CommandTable(lang)), functs(new FunctionTable(lang)) {}
 
 	int getNumberOfUDFs() { return UDFs->size(); }
+	int getNumberOfOFs() { return OFs->size(); }
 	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }
-	ProgramNode* getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
+	ProgramNode * getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
+	ObjectStruct * getOF(int objIndex) { return (*OFs)[objIndex]; }
 
 	UDFRecord* operator[](int index) { return (*UDFs)[index]; }
 };

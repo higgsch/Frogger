@@ -86,8 +86,15 @@ void FroggerC::verifyAllContainedUDFsExist(string dir, ObjectStruct * obj)
 	int udfCount = obj->getNumberOfUDFs();
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
 	{
-		UDFRecord* currRec = (obj->getUDF(udfIndex));
+		UDFRecord* currRec = obj->getUDF(udfIndex);
 		verifyFileExists(dir + getUDFFilename(currRec));
+	}
+
+	int objCount = obj->getNumberOfOFs();
+	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	{
+		ObjectStruct* currObj = obj->getOF(objIndex);
+		verifyAllContainedUDFsExist(dir + currObj->name + "\\", currObj);
 	}
 }
 
@@ -119,6 +126,13 @@ void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionT
 		UDFRecord * currUDF = obj->getUDF(udfIndex);
 		string path = dir + getUDFFilename(currUDF);
 		funcComp->compileFunctionToAST(path, functs, cmds, currUDF);
+	}
+
+	int objCount = obj->getNumberOfOFs();
+	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	{
+		ObjectStruct * currObj = obj->getOF(objIndex);
+		compileAllContainedUDFs(dir + currObj->name + "\\", currObj, currObj->functs, currObj->cmds);
 	}
 }
 

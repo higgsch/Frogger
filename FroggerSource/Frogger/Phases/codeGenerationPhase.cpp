@@ -50,6 +50,12 @@ void CodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
 	{
 		printUDFCode(obj->getUDF(udfIndex));
 	}
+
+	int objCount = obj->getNumberOfOFs();
+	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	{
+		printAllContainedUDFsCode(obj->getOF(objIndex));
+	}
 }
 
 // ----------------------------------------------------------
