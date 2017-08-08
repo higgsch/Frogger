@@ -16,72 +16,166 @@ using namespace std;
 string rootDir = "";
 
 // ----------------------------------------------------------
-// This function drives the PEFF compilation process.
+// Default Constructor.
+//
+// Version 5.0
+// ----------------------------------------------------------
+FroggerC::FroggerC()
+{ 
+	lang = new CPPLanguage();
+	lang->initialize();
+
+	progStruct = new ProgramStruct(lang);
+	p = new SCFParser(lang);
+	funcComp = new FgrFunctionC(lang);
+}
+
+// ----------------------------------------------------------
+// This function drives the compilation process.
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::compileInputFile(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup)
+void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
 {
-	FgrFunctionC funcComp(lang);
-	progStruct->PEF = new UDFRecord(DataType::DT_NULL, inFilename, DataType::DT_NULL);
+	if (isProject)
+	{
+		progStruct = p->parseProgramLevelSCF(dir, name);
+	}
+	else
+	{
+		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL);
+		progStruct->cmds->add(new CommandRecord(progStruct->PEF));
+	}
 
-	progStruct->cmds->add(new CommandRecord(progStruct->PEF));
+	verifyPEFExists(dir);
+	verifyAllContainedUDFsExist(dir, progStruct);
 
-	funcComp.compileFunctionToAST(fileDir + getUDFFilename(progStruct->PEF), progStruct->functs, progStruct->cmds, progStruct->PEF);
+	compilePEF(dir);
+	compileAllContainedUDFs(dir, progStruct, progStruct->functs, progStruct->cmds);
 
 	computeRequiredSupportCode(progStruct);
-	
-	emitInputFileCode(fileDir, inFilename, outFile, toExe, cleanup);
+
+	emitCode(dir, name, outFile, toExe, cleanup, isProject);
 
 	cout << "Program successfully compiled" << endl;
 }
 
 // ----------------------------------------------------------
-// This function drives the PF compilation process.
-// @inProject: The PF path.
+// This function checks that the PEF exists.
+// @dir: The folder in which the PEF should appear.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::verifyPEFExists(string dir)
+{
+	verifyFileExists(dir + getUDFFilename(progStruct->PEF));
+}
+
+// ----------------------------------------------------------
+// This function checks that all files within the given 
+// collection exist.
+// @dir: The folder in which the udf files should appear.
+// @obj: The object.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::verifyAllContainedUDFsExist(string dir, ObjectStruct * obj)
+{
+	int udfCount = obj->getNumberOfUDFs();
+	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
+	{
+		UDFRecord* currRec = (obj->getUDF(udfIndex));
+		verifyFileExists(dir + getUDFFilename(currRec));
+	}
+}
+
+// ----------------------------------------------------------
+// This function compiles the PEF.
+// @dir: The folder in which the udf files should appear.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::compilePEF(string dir)
+{
+	funcComp->compileFunctionToAST(dir + getUDFFilename(progStruct->PEF), progStruct->functs, progStruct->cmds, progStruct->PEF);
+}
+
+// ----------------------------------------------------------
+// This function compiles all UDFs within the given collection.
+// @dir: The folder in which the udf files should appear.
+// @udfs: The collection of UDFs.
+// @functs: The function table to use for compilation.
+// @cmds: The command table to use for compilation.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionTable * functs, CommandTable * cmds)
+{
+	int udfCount = obj->getNumberOfUDFs();
+	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++ )
+	{
+		UDFRecord * currUDF = obj->getUDF(udfIndex);
+		string path = dir + getUDFFilename(currUDF);
+		funcComp->compileFunctionToAST(path, functs, cmds, currUDF);
+	}
+}
+
+// ----------------------------------------------------------
+// This function drives support code requirements checking.
+//
+// Version 4.2
+// ----------------------------------------------------------
+void FroggerC::computeRequiredSupportCode(ProgramStruct * prog)
+{
+	SupportReqsPhase * reqs = new SupportReqsPhase();
+	reqs->gatherRequirements(lang, prog);
+	delete reqs;
+}
+
+// ----------------------------------------------------------
+// This function drives code generation.
 // @outFile: The file that output source is sent to.
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::compileInputProject(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
+void FroggerC::emitCode(string dir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
 {
-	SCFParser p(lang);
-	progStruct = p.parseProgramLevelSCF(projectDir, projectName);
+	string filename = (toExe) ? rootDir + "bin\\" + name : outFile;
 
-	int numFiles = progStruct->UDFs->size();
+	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
-	//verify all referenced files exist
-	for (int index = 0; index < numFiles; index++)
+	cgp->open(filename + ".cpp");
+	cgp->printMetaCode(progStruct);
+	cgp->printPEFCode(progStruct);
+	cgp->printAllContainedUDFsCode(progStruct);
+	cgp->close();
+
+	if (toExe)
+		cgp->outputToExe(filename, outFile);
+
+	if (toExe && cleanup)
+		cgp->cleanup(filename);
+
+	delete cgp;
+}
+
+// ----------------------------------------------------------
+// This function checks that the given file exists.
+// @filename: The path to the file.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::verifyFileExists(string filename)
+{
+	ifstream file(filename);
+	if (!file.good())
 	{
-		UDFRecord* currRec = (progStruct->getUDF(index));
-		string currUDFPath = projectDir + getUDFFilename(currRec);
-		ifstream currUDF(currUDFPath);
-		if (!currUDF.good())
-		{
-			struct_error(currUDFPath + " does not exist or is not accessible.");
-		}
+		struct_error(filename + " does not exist or is not accessible.");
+	}
 		
-		currUDF.close();
-	}
-
-	//compile PEFF
-	FgrFunctionC funcComp(lang);
-	funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct->PEF), progStruct->functs, progStruct->cmds, progStruct->PEF);
-
-	//compile all referenced files
-	for (int index = 0; index < numFiles; index++ )
-	{
-		funcComp.compileFunctionToAST(projectDir + getUDFFilename(progStruct->getUDF(index)), progStruct->functs, progStruct->cmds, progStruct->getUDF(index));
-	}
-
-	computeRequiredSupportCode(progStruct);
-
-	//emit project code
-	emitInputProjectCode(projectDir, projectName, outFile, toExe, cleanup);
-
-	cout << "Program successfully compiled" << endl;
+	file.close();
 }
 
 // ----------------------------------------------------------
@@ -108,77 +202,6 @@ string FroggerC::getUDFFilename(UDFRecord * udf)
 	filename += ")~" + udf->returnType->typeString;
 
 	return filename + ".fgr";
-}
-
-// ----------------------------------------------------------
-// This function drives support code requirements checking.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void FroggerC::computeRequiredSupportCode(ProgramStruct * prog)
-{
-	SupportReqsPhase * reqs = new SupportReqsPhase();
-	reqs->gatherRequirements(lang, prog);
-	delete reqs;
-}
-
-// ----------------------------------------------------------
-// This function drives code generation for a single file input.
-// @outFile: The file that output source is sent to.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::emitInputFileCode(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup)
-{
-	string filename = (toExe) ? rootDir + "bin\\" + inFilename : outFile;
-
-	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
-
-	cgp->open(filename + ".cpp");
-	cgp->printMetaCode(progStruct);
-	cgp->printPEFCode(progStruct->PEF);
-	cgp->close();
-
-	if (toExe)
-		cgp->outputToExe(filename, outFile);
-
-	if (cleanup)
-		cgp->cleanup(filename);
-
-	delete cgp;
-}
-
-// ----------------------------------------------------------
-// This function drives code generation for a project input.
-// @outFile: The file that output source is sent to.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::emitInputProjectCode(string projectDir, string projectName, string outFile, bool toExe, bool cleanup)
-{
-	string filename = (toExe) ? rootDir + "bin\\" + projectName : outFile;
-
-	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
-
-	cgp->open(filename + ".cpp");
-	cgp->printMetaCode(progStruct);
-	cgp->printPEFCode(progStruct->PEF);
-
-	int numUDFs = progStruct->getNumberOfUDFs();
-	for (int index = 0; index < numUDFs; index++)
-	{
-		cgp->printUDFCode(progStruct->getUDF(index));
-	}
-
-	cgp->close();
-
-	if (toExe)
-		cgp->outputToExe(filename, outFile);
-
-	if (toExe && cleanup)
-		cgp->cleanup(filename);
-
-	delete cgp;
 }
 
 // ----------------------------------------------------------
@@ -371,6 +394,7 @@ int main(int argc, char* argv[])
 		if (!SCF.good())
 		{
 			inFile = true;
+			inProject = false;
 			inPath = inPath + "\\" + projectName;
 		}
 		else
@@ -380,7 +404,7 @@ int main(int argc, char* argv[])
 				cout << "Starting Project Compilation: " << inPath << "\\ -> " << outFilePath << endl;
 	
 			FroggerC c;
-			c.compileInputProject(inPath + "\\", projectName, outFilePath, toExe, cleanup);
+			c.compile(inPath + "\\", projectName, outFilePath, toExe, cleanup, inProject);
 		}
 	}
 
@@ -405,7 +429,7 @@ int main(int argc, char* argv[])
 			string inFilename = inPath.substr(start, end - start);
 
 			FroggerC c;
-			c.compileInputFile(inFileDir, inFilename, outFilePath, toExe, cleanup);
+			c.compile(inFileDir, inFilename, outFilePath, toExe, cleanup, inProject);
 		}
 	}
 

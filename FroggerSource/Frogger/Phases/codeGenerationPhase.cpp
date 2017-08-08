@@ -26,13 +26,30 @@ void CodeGenerationPhase::printMetaCode(ProgramStruct * progStruct)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::printPEFCode(UDFRecord * PEF)
+void CodeGenerationPhase::printPEFCode(ProgramStruct * progStruct)
 {
+	UDFRecord * PEF = progStruct->PEF;
 	currUDFName = PEF->name;
 
 	PEF->root->accept(this);
 	string pefText = PEF->root->outputText;
 	p->printString(lang->getPEFCode(PEF, pefText));
+}
+
+// ----------------------------------------------------------
+// This function generates all code for UDFs contained within
+// the given Object.
+// @obj: The Object.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
+{
+	int udfCount = obj->getNumberOfUDFs();
+	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
+	{
+		printUDFCode(obj->getUDF(udfIndex));
+	}
 }
 
 // ----------------------------------------------------------

@@ -10,6 +10,8 @@ using namespace std;
 
 //forward declaration
 class ProgramNode;
+class SCFParser;
+class FgrFunctionC;
 
 bool quietMode;
 
@@ -25,23 +27,24 @@ class FroggerC
 private:
 	CPPLanguage * lang;
 	ProgramStruct * progStruct;
+	SCFParser * p;
+	FgrFunctionC * funcComp;
 
-	string getUDFFilename(UDFRecord * udf);
-
+	void verifyPEFExists(string dir);
+	void verifyAllContainedUDFsExist(string dir, ObjectStruct * obj);
+	void compilePEF(string dir);
+	void compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionTable * functs, CommandTable * cmds);
+	
 	void computeRequiredSupportCode(ProgramStruct * prog);
 
-	void emitInputFileCode(string fileDir, string inFilename,string outFile, bool toExe, bool cleanup);
-	void emitInputProjectCode(string projectDir, string projectName, string outFile, bool toExe, bool cleanup);
+	void emitCode(string dir, string name,string outFile, bool toExe, bool cleanup, bool isProject);
 
+	void verifyFileExists(string filename);
+	string getUDFFilename(UDFRecord * udf);
 	void struct_error(string err);
 
 public:
-	FroggerC::FroggerC() { 
-		lang = new CPPLanguage();
-		lang->initialize();
-		progStruct = new ProgramStruct(lang);
-	}
+	FroggerC::FroggerC(); 
 
-	void compileInputFile(string fileDir, string inFilename, string outFile, bool toExe, bool cleanup);
-	void compileInputProject(string projectDir, string projectName, string outFile, bool toExe, bool cleanup);
+	void compile(string dir, string name, string outFile, bool toExe, bool cleanup, bool isProject);
 };

@@ -16,7 +16,7 @@ using namespace std;
 // This class represents a visitor for generating output code
 // that reflects the current AST.
 //
-// Version 4.3
+// Version 5.0
 // ----------------------------------------------------------
 class CodeGenerationPhase : public Phase
 {
@@ -41,8 +41,9 @@ public:
 	void close() { p->close(); }
 
 	void printMetaCode(ProgramStruct * progStruct);
+	void printPEFCode(ProgramStruct * progStruct);
+	void printAllContainedUDFsCode(ObjectStruct * obj);
 	void printUDFCode(UDFRecord * rec);
-	void printPEFCode(UDFRecord * rec);
 
 	void outputToExe(string outFilename, string exeFilename) { lang->outputToExe(outFilename, exeFilename); }
 	void cleanup(string filename) { lang->cleanup(filename); }
