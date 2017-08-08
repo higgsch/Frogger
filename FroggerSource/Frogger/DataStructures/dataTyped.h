@@ -69,7 +69,7 @@ public:
 //
 // Version 5.0
 // ----------------------------------------------------------
-class DataTypeCollection : public vector<DataType*> 
+struct DataTypeCollection : public vector<DataType*> 
 {
 	DataTypeCollection() 
 	{
@@ -77,5 +77,34 @@ class DataTypeCollection : public vector<DataType*>
 		push_back(DataType::DT_DOUBLE);
 		push_back(DataType::DT_STRING);
 		push_back(DataType::DT_STRINGLIST);
+	}
+
+	void add(string typeString)
+	{
+		if (!isInList(typeString))
+			push_back(new DataType(DTE_USER_DEFINED, typeString));
+	}
+
+	bool isInList(string name)
+	{
+		int dtCount = size();
+		for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
+		{
+			if (at(dtIndex)->typeString == name)
+				return true;
+		}
+		return false;
+	}
+
+	DataType * getDT(string name)
+	{
+		int dtCount = size();
+		for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
+		{
+			DataType* currDT = at(dtIndex);
+			if (currDT->typeString == name)
+				return currDT;
+		}
+		return DataType::DT_NOT_DEFINED;
 	}
 };

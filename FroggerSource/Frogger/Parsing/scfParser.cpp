@@ -19,6 +19,8 @@ SCFParser::SCFParser(Language * lang) : lang(lang)
 	current_token = SCFToken::NOTOK;
 	lookahead[0] = SCFToken::NOTOK;
 	currFilePath = "";
+
+	types = new DataTypeCollection();
 }
 
 // ----------------------------------------------------------
@@ -105,6 +107,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 // ----------------------------------------------------------
 ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectName)
 {
+	types->add(objectName);
 	open(objectDir + objectName + ".struct");
 
 	ObjectStruct * objStruct = new ObjectStruct(lang);
@@ -117,6 +120,7 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 		if (next_token().type == TOKTYPE_LPAREN)
 		{ //Function Declaration Record
 			UDFRecord * currRec = functRecord(name);
+			currRec->primary = types->getDT(objectName);
 			if (isInFunctions(currRec, objStruct->UDFs))
 			{
 				syntax_error("" + currRec->name + " function is duplicated.");
@@ -177,13 +181,6 @@ ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 
 	SCFParser p(lang);
 	ObjectStruct * object = p.parseObjectLevelSCF(objectDir, name);
-
-	int udfCount = object->getNumberOfUDFs();
-	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
-	{
-		UDFRecord * currRec = object->getUDF(udfIndex);
-		currRec->primary->typeString = name + ":" + currRec->primary->typeString;
-	}
 
 	return object;
 }
@@ -283,9 +280,13 @@ DataType * SCFParser::dataType()
 	else if (type.lexeme == "null")
 		return DataType::DT_NULL;
 	else
-		syntax_error("Invalid data type -- Expected double, string, or null");
+	{
+		types->add(type.lexeme);
+		return types->getDT(type.lexeme);
+	}
 
-	return DataType::DT_NOT_DEFINED;
+	//else
+	//	syntax_error("Invalid data type -- Expected double, string, null, or User-Defined type");
 }
 
 // ----------------------------------------------------------

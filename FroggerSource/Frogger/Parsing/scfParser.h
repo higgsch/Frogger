@@ -20,6 +20,8 @@ using namespace std;
 class SCFParser
 {
 private:
+	DataTypeCollection * types;
+
 	string currFilePath;
 
 	SCFScanner scanner;
