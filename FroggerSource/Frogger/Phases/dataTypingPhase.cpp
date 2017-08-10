@@ -116,15 +116,18 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 void DataTypingPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
-
-	Routine * cmd = n->getCmd();
-	CommandTable * cmds = getPrimaryScopeCommands(n);
-	if (!cmds->matchExists(cmd))
-		dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
-	else if (cmds->getNumberOfMatches(cmd) == 1)
+	//p:setY -> p is a double (default)
+	if (n->getCmd()->primary == DataType::DT_NULL || (n->getPrimary()->getDataType() != DataType::DT_NOT_DEFINED))
 	{
-		n->setCmd(cmds->getFirstMatch(cmd));
-		n->visitAllChildren(this);
+		Routine * cmd = n->getCmd();
+		CommandTable * cmds = getPrimaryScopeCommands(n);
+		if (!cmds->matchExists(cmd))
+			dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
+		else if (cmds->getNumberOfMatches(cmd) == 1)
+		{
+			n->setCmd(cmds->getFirstMatch(cmd));
+			n->visitAllChildren(this);
+		}
 	}
 }
 
