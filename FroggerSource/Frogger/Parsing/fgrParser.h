@@ -13,14 +13,14 @@ using namespace std;
 // This class parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 class FGRParser
 {
 private:
 	FGRScanner scanner; //the scanning object that provides a Token stream
 	FGRToken current_token; //the currently-selected Token
-	FGRToken lookahead[1]; //storage location for one lookahead Token
+	FGRToken lookahead[2]; //storage location for two lookahead Tokens
 	ProgramNode* root; //the root of the AST
 
 	string currFileName;
@@ -56,6 +56,7 @@ private:
 	void syntax_error(string);
 
 	FGRToken next_token();
+	FGRToken second_token();
 
 public:
 	FGRParser();

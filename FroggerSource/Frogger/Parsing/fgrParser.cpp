@@ -13,12 +13,13 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This is the default constructor.
 //
-// Version 4.0
+// Version 5.0
 // ----------------------------------------------------------
 FGRParser::FGRParser()
 {
 	current_token = FGRToken::NOTOK;
 	lookahead[0] = FGRToken::NOTOK;
+	lookahead[1] = FGRToken::NOTOK;
 	root = new ProgramNode();
 	currFileName = "";
 }
@@ -642,7 +643,7 @@ BinaryOpNode* FGRParser::expop()
 // on failure.
 // @toMatch: The expected token category.
 //
-// Version 3.0
+// Version 5.0
 // ----------------------------------------------------------
 void FGRParser::match(fgr_token_type toMatch)
 {
@@ -650,7 +651,8 @@ void FGRParser::match(fgr_token_type toMatch)
 	if (tok.type == toMatch)
 	{
 		current_token = lookahead[0];
-		lookahead[0] = FGRToken::NOTOK;
+		lookahead[0] = lookahead[1];
+		lookahead[1] = FGRToken::NOTOK;
 	}
 	else
 	{
@@ -776,4 +778,21 @@ FGRToken FGRParser::next_token()
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];
+}
+
+// ----------------------------------------------------------
+// This function populates and returns the second lookahead 
+// token.
+//
+// Version 5.0
+// ----------------------------------------------------------
+FGRToken FGRParser::second_token()
+{
+	if (lookahead[1].type == TOKTYPE_NOTOK)
+	{
+		lookahead[0] = next_token();
+		lookahead[1] = scanner.scan();
+	}
+
+	return lookahead[1];
 }
