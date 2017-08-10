@@ -65,10 +65,13 @@ struct ObjectStruct
 	FunctionTable * scopedFuncts; //Functions accessible by <obj>:id()
 	FunctionTable * visibleFuncts; //Functions accessible within the object
 
+	bool isUserDefined;
+
 	ObjectStruct(Language * lang) : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		scopedSymbols(new SymbolTable()), visibleSymbols(new SymbolTable(lang)),
 		scopedCmds(new CommandTable()), visibleCmds(new CommandTable(lang)),
-		scopedFuncts(new FunctionTable()), visibleFuncts(new FunctionTable(lang)) {}
+		scopedFuncts(new FunctionTable()), visibleFuncts(new FunctionTable(lang)),
+		isUserDefined(true) {}
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }

@@ -96,7 +96,10 @@ void FroggerC::verifyAllContainedUDFsExist(string dir, ObjectStruct * obj)
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
 	{
 		ObjectStruct* currObj = obj->getOF(objIndex);
-		verifyAllContainedUDFsExist(dir + currObj->name + "\\", currObj);
+		if (currObj->isUserDefined)
+		{
+			verifyAllContainedUDFsExist(dir + currObj->name + "\\", currObj);
+		}
 	}
 }
 
@@ -134,7 +137,10 @@ void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionT
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
 	{
 		ObjectStruct * currObj = obj->getOF(objIndex);
-		compileAllContainedUDFs(dir + currObj->name + "\\", currObj, currObj->visibleFuncts, currObj->visibleCmds);
+		if (currObj->isUserDefined)
+		{
+			compileAllContainedUDFs(dir + currObj->name + "\\", currObj, currObj->visibleFuncts, currObj->visibleCmds);
+		}
 	}
 }
 

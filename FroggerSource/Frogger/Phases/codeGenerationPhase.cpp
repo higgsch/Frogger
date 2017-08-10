@@ -54,7 +54,11 @@ void CodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
 	int objCount = obj->getNumberOfOFs();
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
 	{
-		printAllContainedUDFsCode(obj->getOF(objIndex));
+		ObjectStruct * currObj = obj->getOF(objIndex);
+		if (currObj->isUserDefined)
+		{
+			printAllContainedUDFsCode(obj->getOF(objIndex));
+		}
 	}
 }
 
