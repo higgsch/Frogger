@@ -44,7 +44,7 @@ private:
 	AsciiNode* expr();
 	AsciiNode* addterm();
 	AsciiNode* multerm();
-	AsciiNode* typedterm();
+	AsciiNode* typedterm(bool isEndFunction);
 	AsciiNode* primary();
 
 	//Operators

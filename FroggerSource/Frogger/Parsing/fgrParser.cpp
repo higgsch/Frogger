@@ -251,6 +251,7 @@ BinaryOpNode* FGRParser::boolop()
 
 // ----------------------------------------------------------
 // This function represents production rules:
+// <jmpstmt> => <typedterm> ;       // NOTE: <typedterm> contains ': <commandname> ( [<arglist>] )'
 // <jmpstmt> => <commandname> ( [<arglist>] ) ;
 // <jmpstmt> => id assign <expr> ;
 // Returns: A pointer to the node representing this jmpstmt.
@@ -262,13 +263,21 @@ JmpStmtNode* FGRParser::jmpstmt()
 	JmpStmtNode* stmt = new JmpStmtNode();
 
 	FGRToken idTok = next_token();
-	match(TOKTYPE_ID);
+	FGRToken tok = second_token();
 
-	FGRToken tok = next_token();
 	switch (tok.type)
 	{
+	case TOKTYPE_COLON:
+		{
+			AsciiNode * cmd = typedterm(false);
+			match(TOKTYPE_SEMICOLON);
+
+			stmt->setStmt(cmd);
+			break;
+		}
 	case TOKTYPE_LPAREN:
 		{
+			match(TOKTYPE_ID);
 			match(TOKTYPE_LPAREN);
 			CommandCallNode* cmd = new CommandCallNode(DataType::DT_NULL, idTok.lexeme, scanner.getLineNo());
 
@@ -286,6 +295,7 @@ JmpStmtNode* FGRParser::jmpstmt()
 		}
 	case TOKTYPE_ASSIGN:
 		{
+			match(TOKTYPE_ID);
 			IdRefNode* id = new IdRefNode(idTok.lexeme, scanner.getLineNo());
 			match(TOKTYPE_ASSIGN);
 
@@ -407,11 +417,11 @@ AsciiNode* FGRParser::addterm()
 // <multerm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 //
-// Version 3.0
+// Version 5.0
 // ----------------------------------------------------------
 AsciiNode* FGRParser::multerm()
 {
-	AsciiNode* left = typedterm();
+	AsciiNode* left = typedterm(true);
 
 	FGRToken tok = next_token();
 	switch (tok.type)
@@ -439,14 +449,16 @@ AsciiNode* FGRParser::multerm()
 // <typedterm.1> => : id ( ) <typedterm.1>
 // <typedterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
+// @isEndFunction: Triggers the final tail as function or command
 //
-// Version 3.1
+// Version 5.0
 // ----------------------------------------------------------
-AsciiNode* FGRParser::typedterm()
+AsciiNode* FGRParser::typedterm(bool isEndFunction)
 {
 	AsciiNode * root = NULL;
 	AsciiNode * prim = primary();
 	AsciiNode * curr = prim;
+	FunctionCallNode * endRoutine = NULL;
 
 	do
 	{
@@ -471,9 +483,21 @@ AsciiNode* FGRParser::typedterm()
 
 			funct->addPrimary(curr);
 			curr = funct;
+			endRoutine = funct;
 		}
 		else
 		{
+			if (!isEndFunction)
+			{
+				CommandCallNode * cmd = new CommandCallNode(DataType::DT_NOT_DEFINED, endRoutine->getLexeme(), endRoutine->getLineNo());
+				cmd->addArgList(endRoutine->getArgList());
+				cmd->addPrimary(endRoutine->getPrimary());
+				curr = cmd;
+
+				//TODO
+				//delete endRoutine;  //Deletes primary node: tell node to drop children?
+			}
+
 			root = curr;
 		}
 	} while (root == NULL);
