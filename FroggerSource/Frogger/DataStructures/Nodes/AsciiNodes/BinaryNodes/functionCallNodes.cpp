@@ -13,7 +13,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-FunctionCallNode::FunctionCallNode(string str, int lineNo) : CommandCallNode(str, lineNo)
+FunctionCallNode::FunctionCallNode(string str, int lineNo) : CommandCallNode(DataType::DT_NOT_DEFINED, str, lineNo)
 {
 	funct = new Routine(DataType::DT_NOT_DEFINED, str, DataType::DT_NOT_DEFINED, false);
 	((Routine*)getFunct())->copy(funct);

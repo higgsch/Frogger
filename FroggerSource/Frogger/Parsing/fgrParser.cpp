@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.4
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -254,7 +254,7 @@ BinaryOpNode* FGRParser::boolop()
 // <jmpstmt> => id assign <expr> ;
 // Returns: A pointer to the node representing this jmpstmt.
 //
-// Version 3.1
+// Version 5.0
 // ----------------------------------------------------------
 JmpStmtNode* FGRParser::jmpstmt()
 {
@@ -269,7 +269,7 @@ JmpStmtNode* FGRParser::jmpstmt()
 	case TOKTYPE_LPAREN:
 		{
 			match(TOKTYPE_LPAREN);
-			CommandCallNode* cmd = new CommandCallNode(idTok.lexeme, scanner.getLineNo());
+			CommandCallNode* cmd = new CommandCallNode(DataType::DT_NULL, idTok.lexeme, scanner.getLineNo());
 
 			FGRToken argTok = next_token();
 			if (argTok.type != TOKTYPE_RPAREN)

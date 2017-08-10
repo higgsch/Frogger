@@ -13,10 +13,10 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-CommandCallNode::CommandCallNode(string str, int lineNo) : BinaryNode(lineNo)
+CommandCallNode::CommandCallNode(DataType * primaryType, string str, int lineNo) : BinaryNode(lineNo)
 {
 	lexeme = str;
-	cmd = new Routine(DataType::DT_NULL, str, DataType::DT_NULL, false);
+	cmd = new Routine(primaryType, str, DataType::DT_NULL, false);
 }
 
 // ----------------------------------------------------------

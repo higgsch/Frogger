@@ -52,7 +52,7 @@ private:
 	Routine * cmd;
 
 public:
-	CommandCallNode(string name, int lineNo);
+	CommandCallNode(DataType * primary, string name, int lineNo);
 	~CommandCallNode();
 
 	Routine* getCmd() { return cmd; }
