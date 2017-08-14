@@ -123,11 +123,20 @@ CommandTable::CommandTable(Language * lang)
 {
 	initializeConsts(lang);
 
-	//Add built-in commands
 	addEndNull();
 	addEndString();
 	addEndDouble();
 
+	addBuiltInVisibleCommands();
+}
+
+// ----------------------------------------------------------
+// This function adds the built in commands for visible tables
+//
+// Version 5.0
+// ----------------------------------------------------------
+void CommandTable::addBuiltInVisibleCommands()
+{
 	add(CMD_DISPLAY_STR);
 	add(CMD_DISPLAY_DBL);
 	add(CMD_OPEN_INPUT);
@@ -182,7 +191,16 @@ FunctionTable::FunctionTable(Language * lang)
 {
 	initializeConsts(lang);
 
-	//Add built-in functions
+	addBuiltInVisibleFunctions();
+}
+
+// ----------------------------------------------------------
+// This function adds the built in functions for visible tables
+//
+// Version 5.0
+// ----------------------------------------------------------
+void FunctionTable::addBuiltInVisibleFunctions()
+{
 	add(FUNCT_TO_STRING);
 	add(FUNCT_TO_ASCII);
 	add(FUNCT_PARSE_DOUBLE);

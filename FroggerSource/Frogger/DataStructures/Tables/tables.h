@@ -83,12 +83,15 @@ public:
 // ----------------------------------------------------------
 class CommandTable : public Table<Routine>
 {
+private:
+	void initializeConsts(Language * lang);
+
 public:
 	CommandTable(Language * lang);
 	CommandTable() {}
 
-	void initializeConsts(Language * lang);
 	void add(Routine* r) { ((Table<Routine>*)this)->add(new CommandRecord(r)); }
+	void addBuiltInVisibleCommands();
 
 	void addEndNull() { add(CMD_END_NULL); }
 	void addEndString() { add(CMD_END_STR); }
@@ -113,12 +116,15 @@ public:
 // ----------------------------------------------------------
 class FunctionTable : public Table<Routine>
 {
+private:
+	void initializeConsts(Language * lang);
+
 public:
 	FunctionTable(Language * lang);
 	FunctionTable() {}
 
-	void initializeConsts(Language * lang);
 	void add(Routine* r) { ((Table<Routine>*)this)->add(new FunctionRecord(r)); }
+	void addBuiltInVisibleFunctions();
 
 	DataType* getFunctionReturnType(Routine* funct);
 
