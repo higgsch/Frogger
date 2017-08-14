@@ -67,8 +67,8 @@ struct UDFRecord;
 class SymbolTable : public Table<Symbol>
 {
 public:
-	SymbolTable(Language * language, UDFRecord * rec);
-	SymbolTable(Language * language);
+	SymbolTable(Language * lang, UDFRecord * rec);
+	SymbolTable(Language * lang);
 	SymbolTable() {}
 
 	DataType * symbolType(string id);
@@ -84,8 +84,15 @@ public:
 class CommandTable : public Table<Routine>
 {
 public:
-	CommandTable(Language * language);
+	CommandTable(Language * lang);
 	CommandTable() {}
+
+	void initializeConsts(Language * lang);
+	void add(Routine* r) { ((Table<Routine>*)this)->add(new CommandRecord(r)); }
+
+	void addEndNull() { add(CMD_END_NULL); }
+	void addEndString() { add(CMD_END_STR); }
+	void addEndDouble() { add(CMD_END_DBL); }
 
 	Routine* CMD_END_NULL;
 	Routine* CMD_END_STR;
@@ -107,8 +114,11 @@ public:
 class FunctionTable : public Table<Routine>
 {
 public:
-	FunctionTable(Language * language);
+	FunctionTable(Language * lang);
 	FunctionTable() {}
+
+	void initializeConsts(Language * lang);
+	void add(Routine* r) { ((Table<Routine>*)this)->add(new FunctionRecord(r)); }
 
 	DataType* getFunctionReturnType(Routine* funct);
 

@@ -45,7 +45,7 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 	else
 	{
 		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL);
-		progStruct->visibleCmds->add(new CommandRecord(progStruct->PEF));
+		progStruct->visibleCmds->add(progStruct->PEF);
 	}
 
 	verifyPEFExists(dir);

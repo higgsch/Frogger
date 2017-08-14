@@ -121,43 +121,56 @@ DataType * SymbolTable::symbolType(string id)
 // ----------------------------------------------------------
 CommandTable::CommandTable(Language * lang)
 {
+	initializeConsts(lang);
+
 	//Add built-in commands
+	addEndNull();
+	addEndString();
+	addEndDouble();
+
+	add(CMD_DISPLAY_STR);
+	add(CMD_DISPLAY_DBL);
+	add(CMD_OPEN_INPUT);
+	add(CMD_CLOSE_INPUT);
+	add(CMD_WRITE);
+	add(CMD_OPEN_OUTPUT);
+	add(CMD_CLOSE_OUTPUT);
+}
+
+// ----------------------------------------------------------
+// This function creates and initializes the CMD constants.
+// @lang: The language the CommandTable is in.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void CommandTable::initializeConsts(Language * lang)
+{
 	CMD_END_NULL = new Routine(DataType::DT_NULL, lang->CMDNAME_END_NULL, DataType::DT_NULL, true);
-	add(new CommandRecord(CMD_END_NULL));
-	
+
 	CMD_END_STR = new Routine(DataType::DT_NULL, lang->CMDNAME_END_STR, DataType::DT_NULL, true);
 	CMD_END_STR->addArg("", DataType::DT_STRING);
-	add(new CommandRecord(CMD_END_STR));
-	
+
 	CMD_END_DBL = new Routine(DataType::DT_NULL, lang->CMDNAME_END_DBL, DataType::DT_NULL, true);
 	CMD_END_DBL->addArg("", DataType::DT_DOUBLE);
-	add(new CommandRecord(CMD_END_DBL));
-
+	
 	CMD_DISPLAY_STR = new Routine(DataType::DT_NULL, lang->CMDNAME_DISPLAY_STR, DataType::DT_NULL, true);
 	CMD_DISPLAY_STR->addArg("", DataType::DT_STRING);
-	add(new CommandRecord(CMD_DISPLAY_STR));
 
 	CMD_DISPLAY_DBL = new Routine(DataType::DT_NULL, lang->CMDNAME_DISPLAY_DBL, DataType::DT_NULL, true);
 	CMD_DISPLAY_DBL->addArg("", DataType::DT_DOUBLE);
-	add(new CommandRecord(CMD_DISPLAY_DBL));
 
 	CMD_OPEN_INPUT = new Routine(DataType::DT_NULL, lang->CMDNAME_OPEN_INPUT, DataType::DT_NULL, true);
 	CMD_OPEN_INPUT->addArg("", DataType::DT_STRING);
-	add(new CommandRecord(CMD_OPEN_INPUT));
 
 	CMD_CLOSE_INPUT = new Routine(DataType::DT_NULL, lang->CMDNAME_CLOSE_INPUT, DataType::DT_NULL, true);
-	add(new CommandRecord(CMD_CLOSE_INPUT));
-
+	
 	CMD_WRITE = new Routine(DataType::DT_NULL, lang->CMDNAME_WRITE, DataType::DT_NULL, true);
 	CMD_WRITE->addArg("", DataType::DT_STRING);
-	add(new CommandRecord(CMD_WRITE));
 
 	CMD_OPEN_OUTPUT = new Routine(DataType::DT_NULL, lang->CMDNAME_OPEN_OUTPUT, DataType::DT_NULL, true);
 	CMD_OPEN_OUTPUT->addArg("", DataType::DT_STRING);
-	add(new CommandRecord(CMD_OPEN_OUTPUT));
 
 	CMD_CLOSE_OUTPUT = new Routine(DataType::DT_NULL, lang->CMDNAME_CLOSE_OUTPUT, DataType::DT_NULL, true);
-	add(new CommandRecord(CMD_CLOSE_OUTPUT));
 }
 
 // ----------------------------------------------------------
@@ -167,41 +180,53 @@ CommandTable::CommandTable(Language * lang)
 // ----------------------------------------------------------
 FunctionTable::FunctionTable(Language * lang)
 {
+	initializeConsts(lang);
+
 	//Add built-in functions
+	add(FUNCT_TO_STRING);
+	add(FUNCT_TO_ASCII);
+	add(FUNCT_PARSE_DOUBLE);
+	add(FUNCT_ASCII_AT);
+	add(FUNCT_LENGTH);
+	add(FUNCT_RETRIEVE_DOUBLE);
+	add(FUNCT_RANDOM);
+	add(FUNCT_RETRIEVE_STRING);
+	add(FUNCT_READ);
+	add(FUNCT_ELEMENT_AT);
+	add(FUNCT_SIZE);
+}
+
+// ----------------------------------------------------------
+// This function creates and initializes the FUNCT constants.
+// @lang: The language the FunctionTable is in.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void FunctionTable::initializeConsts(Language* lang)
+{
 	FUNCT_TO_STRING = new Routine(DataType::DT_DOUBLE, lang->FUNCTNAME_TO_STRING, DataType::DT_STRING, true);
-	add(new FunctionRecord(FUNCT_TO_STRING));
 
 	FUNCT_TO_ASCII = new Routine(DataType::DT_DOUBLE, lang->FUNCTNAME_TO_ASCII, DataType::DT_STRING, true);
-	add(new FunctionRecord(FUNCT_TO_ASCII));
 
 	FUNCT_PARSE_DOUBLE = new Routine(DataType::DT_STRING, lang->FUNCTNAME_PARSE_DOUBLE, DataType::DT_DOUBLE, true);
-	add(new FunctionRecord(FUNCT_PARSE_DOUBLE));
 
 	FUNCT_ASCII_AT = new Routine(DataType::DT_STRING, lang->FUNCTNAME_ASCII_AT, DataType::DT_DOUBLE, true);
 	FUNCT_ASCII_AT->addArg("", DataType::DT_DOUBLE);
-	add(new FunctionRecord(FUNCT_ASCII_AT));
 
 	FUNCT_LENGTH = new Routine(DataType::DT_STRING, lang->FUNCTNAME_LENGTH, DataType::DT_DOUBLE, true);
-	add(new FunctionRecord(FUNCT_LENGTH));
 
 	FUNCT_RETRIEVE_DOUBLE = new Routine(DataType::DT_NULL, lang->FUNCTNAME_RETRIEVE_DOUBLE, DataType::DT_DOUBLE, true);
-	add(new FunctionRecord(FUNCT_RETRIEVE_DOUBLE));
 
 	FUNCT_RANDOM = new Routine(DataType::DT_NULL, lang->FUNCTNAME_RANDOM, DataType::DT_DOUBLE, true);
-	add(new FunctionRecord(FUNCT_RANDOM));
 
 	FUNCT_RETRIEVE_STRING = new Routine(DataType::DT_NULL, lang->FUNCTNAME_RETRIEVE_STRING, DataType::DT_STRING, true);
-	add(new FunctionRecord(FUNCT_RETRIEVE_STRING));
 
 	FUNCT_READ = new Routine(DataType::DT_NULL, lang->FUNCTNAME_READ, DataType::DT_STRING, true);
-	add(new FunctionRecord(FUNCT_READ));
 
 	FUNCT_ELEMENT_AT = new Routine(DataType::DT_STRINGLIST, lang->FUNCTNAME_ELEMENT_AT, DataType::DT_STRING, true);
 	FUNCT_ELEMENT_AT->addArg("", DataType::DT_DOUBLE);
-	add(new FunctionRecord(FUNCT_ELEMENT_AT));
-
+	
 	FUNCT_SIZE = new Routine(DataType::DT_STRINGLIST, lang->FUNCTNAME_SIZE, DataType::DT_DOUBLE, true);
-	add(new FunctionRecord(FUNCT_SIZE));
 }
 
 // ----------------------------------------------------------
