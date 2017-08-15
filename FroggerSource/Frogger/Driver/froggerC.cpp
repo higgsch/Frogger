@@ -155,6 +155,10 @@ void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj)
 void FroggerC::addAllLocalUDFsToVisibles()
 {
 	addAllLocalUDFsToVisibles(progStruct);
+
+	progStruct->PEF->visibleCmds->merge(progStruct->scopedCmds);
+	progStruct->PEF->visibleFuncts->merge(progStruct->scopedFuncts);
+	progStruct->PEF->visibleSyms->merge(progStruct->scopedSymbols);
 }
 
 // ----------------------------------------------------------
