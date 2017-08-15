@@ -535,6 +535,7 @@ AsciiNode* FGRParser::primary()
 
 			//Function call
 			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme, scanner.getLineNo());
+			funct->getFunct()->primary = DataType::DT_NULL;
 			match(TOKTYPE_LPAREN);
 
 			FGRToken firstArg = next_token();
