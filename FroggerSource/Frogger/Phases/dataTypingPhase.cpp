@@ -397,7 +397,7 @@ FunctionTable * DataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * n)
 		return functions;
 
 	if (primaryType == DataType::DT_NOT_DEFINED)
-		return functions; //TODO return empty functionTable
+		return new FunctionTable();
 
 	return progStruct->getObject(primary->getDataType())->scopedFuncts;
 }
