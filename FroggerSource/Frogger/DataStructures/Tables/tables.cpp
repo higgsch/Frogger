@@ -196,17 +196,10 @@ FunctionTable::FunctionTable(Language * lang)
 // ----------------------------------------------------------
 void FunctionTable::addBuiltInVisibleFunctions()
 {
-	add(FUNCT_TO_STRING);
-	add(FUNCT_TO_ASCII);
-	add(FUNCT_PARSE_DOUBLE);
-	add(FUNCT_ASCII_AT);
-	add(FUNCT_LENGTH);
 	add(FUNCT_RETRIEVE_DOUBLE);
 	add(FUNCT_RANDOM);
 	add(FUNCT_RETRIEVE_STRING);
 	add(FUNCT_READ);
-	add(FUNCT_ELEMENT_AT);
-	add(FUNCT_SIZE);
 }
 
 // ----------------------------------------------------------
