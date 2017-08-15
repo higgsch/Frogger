@@ -95,15 +95,18 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 
 	n->visitAllChildren(this);
 
-	Routine * funct = n->getFunct();
-	FunctionTable * functs = getPrimaryScopeFunctions(n);
-	if (!functs->matchExists(funct))
-		dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
-	else if (functs->getNumberOfMatches(funct) == 1)
+	if (n->getFunct()->primary == DataType::DT_NULL || (n->getPrimary()->getDataType() != DataType::DT_NOT_DEFINED))
 	{
-		n->setFunct(functs->getFirstMatch(funct));
-		checkAndSetNodeDataType(n, funct->returnType);
-		n->visitAllChildren(this);
+		Routine * funct = n->getFunct();
+		FunctionTable * functs = getPrimaryScopeFunctions(n);
+		if (!functs->matchExists(funct))
+			dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
+		else if (functs->getNumberOfMatches(funct) == 1)
+		{
+			n->setFunct(functs->getFirstMatch(funct));
+			checkAndSetNodeDataType(n, funct->returnType);
+			n->visitAllChildren(this);
+		}
 	}
 }
 
@@ -117,6 +120,7 @@ void DataTypingPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 	//p:setY -> p is a double (default)
+	
 	if (n->getCmd()->primary == DataType::DT_NULL || (n->getPrimary()->getDataType() != DataType::DT_NOT_DEFINED))
 	{
 		Routine * cmd = n->getCmd();
