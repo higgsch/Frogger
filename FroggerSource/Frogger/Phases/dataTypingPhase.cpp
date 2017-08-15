@@ -95,7 +95,7 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 
 	n->visitAllChildren(this);
 
-	if (n->getFunct()->primary == DataType::DT_NULL || (n->getPrimary()->getDataType() != DataType::DT_NOT_DEFINED))
+	if (n->getFunct()->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
 	{
 		Routine * funct = n->getFunct();
 		FunctionTable * functs = getPrimaryScopeFunctions(n);
@@ -121,7 +121,7 @@ void DataTypingPhase::visit(CommandCallNode * n)
 	n->visitAllChildren(this);
 	//p:setY -> p is a double (default)
 	
-	if (n->getCmd()->primary == DataType::DT_NULL || (n->getPrimary()->getDataType() != DataType::DT_NOT_DEFINED))
+	if (n->getCmd()->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
 	{
 		Routine * cmd = n->getCmd();
 		CommandTable * cmds = getPrimaryScopeCommands(n);
