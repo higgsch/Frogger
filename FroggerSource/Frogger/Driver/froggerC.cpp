@@ -45,6 +45,7 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 	else
 	{
 		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL, lang);
+		progStruct->PEF->visibleCmds->addEndNull();
 		progStruct->scopedCmds->add(progStruct->PEF);
 	}
 

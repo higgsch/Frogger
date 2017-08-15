@@ -48,6 +48,8 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 			UDFRecord * currRec = functRecord(name);
 			if (isPEF(currRec, projectName))
 			{
+				currRec->visibleCmds->addEndNull();
+
 				if (progStruct->PEF != NULL)
 					syntax_error("PEF is duplicated.");
 
@@ -63,6 +65,8 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				else
 				{
 					progStruct->UDFs->push_back(currRec);
+
+					addEndCommand(currRec);
 					if (currRec->returnType->isNull())
 					{
 						progStruct->scopedCmds->add(currRec);
@@ -134,6 +138,8 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			else
 			{
 				objStruct->UDFs->push_back(currRec);
+
+				addEndCommand(currRec);
 				if (currRec->returnType->isNull())
 				{
 					objStruct->scopedCmds->add(currRec);
@@ -171,6 +177,30 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 	addAllLocalUDFsToVisibles(objStruct);
 
 	return objStruct;
+}
+
+// ----------------------------------------------------------
+// This function adds the correct end command to the given 
+// UDFRecord.
+// @rec: The record to add an end command to.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void SCFParser::addEndCommand(UDFRecord* rec)
+{
+	if (rec->returnType->isNull())
+		rec->visibleCmds->addEndNull();
+	else if (rec->returnType->isDouble())
+		rec->visibleCmds->addEndDouble();
+	else if (rec->returnType->isString())
+		rec->visibleCmds->addEndString();
+	else
+	{
+		Routine* endCommand = new Routine(rec->primary, "end", DataType::DT_NULL, true);
+		endCommand->addArg("", rec->returnType);
+
+		rec->visibleCmds->add(endCommand);
+	}
 }
 
 // ----------------------------------------------------------

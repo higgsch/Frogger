@@ -122,11 +122,6 @@ DataType * SymbolTable::symbolType(string id)
 CommandTable::CommandTable(Language * lang)
 {
 	initializeConsts(lang);
-
-	addEndNull();
-	addEndString();
-	addEndDouble();
-
 	addBuiltInVisibleCommands();
 }
 
