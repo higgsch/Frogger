@@ -95,9 +95,9 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 
 	n->visitAllChildren(this);
 
-	if (n->getFunct()->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
+	Routine * funct = n->getFunct();
+	if (funct->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
 	{
-		Routine * funct = n->getFunct();
 		FunctionTable * functs = getPrimaryScopeFunctions(n);
 		if (!functs->matchExists(funct))
 			dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
@@ -105,6 +105,16 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 		{
 			n->setFunct(functs->getFirstMatch(funct));
 			checkAndSetNodeDataType(n, funct->returnType);
+			n->visitAllChildren(this);
+		}
+	}
+	else
+	{
+		//try to type primary
+		if (allFunctions->getNumberOfMatches(funct) == 1)
+		{
+			n->setFunct(allFunctions->getFirstMatch(funct));
+			n->getPrimary()->setDataType(n->getFunct()->primary);
 			n->visitAllChildren(this);
 		}
 	}
@@ -121,15 +131,25 @@ void DataTypingPhase::visit(CommandCallNode * n)
 	n->visitAllChildren(this);
 	//p:setY -> p is a double (default)
 	
-	if (n->getCmd()->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
+	Routine * cmd = n->getCmd();
+	if (cmd->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
 	{
-		Routine * cmd = n->getCmd();
 		CommandTable * cmds = getPrimaryScopeCommands(n);
 		if (!cmds->matchExists(cmd))
 			dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
 		else if (cmds->getNumberOfMatches(cmd) == 1)
 		{
 			n->setCmd(cmds->getFirstMatch(cmd));
+			n->visitAllChildren(this);
+		}
+	}
+	else
+	{
+		//Try to type primary
+		if (allCommands->getNumberOfMatches(cmd) == 1)
+		{
+			n->setCmd(allCommands->getFirstMatch(cmd));
+			n->getPrimary()->setDataType(n->getCmd()->primary);
 			n->visitAllChildren(this);
 		}
 	}
@@ -428,6 +448,26 @@ CommandTable * DataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 //{
 //	
 //}
+
+// ----------------------------------------------------------
+// This function merges all scoped tables within the given
+// ObjectStruct into cumulative tables.
+// @obj: The object to accumulate.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void DataTypingPhase::populateAllTables(ObjectStruct* obj)
+{
+	int objCount = obj->getNumberOfOFs();
+	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	{
+		populateAllTables(obj->getOF(objIndex));
+	}
+
+	allCommands->merge(obj->scopedCmds);
+	allFunctions->merge(obj->scopedFuncts);
+	allSymbols->merge(obj->scopedSymbols);
+}
 
 // ----------------------------------------------------------
 // This function displays an error message to the user and 

@@ -19,6 +19,10 @@ private:
 	Language * lang;
 	DataTypeCollection * types;
 	ProgramStruct * progStruct;
+	SymbolTable * allSymbols;
+	FunctionTable * allFunctions;
+	CommandTable * allCommands;
+
 	SymbolTable * symbols;
 	FunctionTable * functions;
 	CommandTable * commands;
@@ -42,12 +46,16 @@ private:
 	CommandTable * getPrimaryScopeCommands(CommandCallNode * n);
 	//SymbolTable * getPrimaryScopeSymbols(IdRefNode * n);
 
+	void populateAllTables(ObjectStruct* obj);
+
 public:
 	DataTypingPhase(Language * lang, ProgramStruct * progStruct, 
 		FunctionTable * functs, CommandTable * cmds, SymbolTable * syms, string UDFName)
 		: lang(lang), progStruct(progStruct), types(progStruct->types),
+		allSymbols(new SymbolTable()), allCommands(new CommandTable()), allFunctions(new FunctionTable()),
 		symbols(syms), functions(functs), commands(cmds), udfName(UDFName), 
-		changeMadeThisRound(false), setUnknownTypeNodesToDefault(false) {}
+		changeMadeThisRound(false), setUnknownTypeNodesToDefault(false) 
+	{ populateAllTables(progStruct); }
 
 	SymbolTable * getSymbolTable() { return symbols; }
 	FunctionTable * getFunctionTable() { return functions; }
