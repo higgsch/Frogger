@@ -49,6 +49,8 @@ private:
 
 	ObjectStruct * parseObjectLevelSCF(string objectDir, string objectName);
 
+	void addAllLocalUDFsToVisibles(ObjectStruct* obj);
+
 public:
 	SCFParser(Language * lang);
 
