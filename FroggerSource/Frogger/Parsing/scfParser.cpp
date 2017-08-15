@@ -102,8 +102,6 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 
 	close();
 
-	addAllLocalUDFsToVisibles(progStruct);
-
 	return progStruct;
 }
 
@@ -174,8 +172,6 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 
 	close();
 
-	addAllLocalUDFsToVisibles(objStruct);
-
 	return objStruct;
 }
 
@@ -200,24 +196,6 @@ void SCFParser::addEndCommand(UDFRecord* rec)
 		endCommand->addArg("", rec->returnType);
 
 		rec->visibleCmds->add(endCommand);
-	}
-}
-
-// ----------------------------------------------------------
-// This function merges all scoped tables into all visible tables.
-// @obj: The working ObjectStruct.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SCFParser::addAllLocalUDFsToVisibles(ObjectStruct* obj)
-{
-	int udfCount = obj->getNumberOfUDFs();
-	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
-	{
-		UDFRecord* currUDF = obj->getUDF(udfIndex);
-		currUDF->visibleCmds->merge(obj->scopedCmds);
-		currUDF->visibleFuncts->merge(obj->scopedFuncts);
-		currUDF->visibleSyms->merge(obj->scopedSymbols);
 	}
 }
 

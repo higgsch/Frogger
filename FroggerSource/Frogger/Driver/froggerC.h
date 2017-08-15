@@ -34,6 +34,9 @@ private:
 	void verifyAllContainedUDFsExist(string dir, ObjectStruct * obj);
 	void compilePEF(string dir);
 	void compileAllContainedUDFs(string dir, ObjectStruct * obj);
+
+	void addAllLocalUDFsToVisibles();
+	void addAllLocalUDFsToVisibles(ObjectStruct* obj);
 	
 	void computeRequiredSupportCode(ProgramStruct * prog);
 

@@ -49,6 +49,8 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 		progStruct->scopedCmds->add(progStruct->PEF);
 	}
 
+	addAllLocalUDFsToVisibles();
+
 	verifyPEFExists(dir);
 	verifyAllContainedUDFsExist(dir, progStruct);
 	
@@ -142,6 +144,40 @@ void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj)
 		{
 			compileAllContainedUDFs(dir + currObj->name + "\\", currObj);
 		}
+	}
+}
+
+// ----------------------------------------------------------
+// This function merges all scoped tables into all visible tables.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::addAllLocalUDFsToVisibles()
+{
+	addAllLocalUDFsToVisibles(progStruct);
+}
+
+// ----------------------------------------------------------
+// This function merges all scoped tables into all visible tables.
+// @obj: The working ObjectStruct.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::addAllLocalUDFsToVisibles(ObjectStruct* obj)
+{
+	int objCount = obj->getNumberOfOFs();
+	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	{
+		addAllLocalUDFsToVisibles(obj->getOF(objIndex));
+	}
+
+	int udfCount = obj->getNumberOfUDFs();
+	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
+	{
+		UDFRecord* currUDF = obj->getUDF(udfIndex);
+		currUDF->visibleCmds->merge(obj->scopedCmds);
+		currUDF->visibleFuncts->merge(obj->scopedFuncts);
+		currUDF->visibleSyms->merge(obj->scopedSymbols);
 	}
 }
 
