@@ -514,7 +514,7 @@ AsciiNode* FGRParser::typedterm(bool isEndFunction)
 // <primary> => ( <expr> )
 // Returns: A pointer to the node representing this term.
 //
-// Version 3.1
+// Version 5.0
 // ----------------------------------------------------------
 AsciiNode* FGRParser::primary()
 {
