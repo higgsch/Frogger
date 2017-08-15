@@ -169,7 +169,7 @@ string CPPLanguage::getUDFCode(UDFRecord* rec, string udfText)
 	result += line(getFunctionPrototype(rec->returnType, rec->name, rec->args));
 	result += openBraceLine();
 
-	result += getSymbolTableCode(rec->symbols);
+	result += getSymbolTableCode(rec->visibleSyms);
 
 	result += emptyLine() + emptyLine();
 

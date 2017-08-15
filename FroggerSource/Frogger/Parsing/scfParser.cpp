@@ -52,7 +52,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 					syntax_error("PEF is duplicated.");
 
 				progStruct->PEF = currRec;
-				progStruct->visibleCmds->add(currRec);
+				progStruct->scopedCmds->add(currRec);
 			}
 			else
 			{
@@ -65,12 +65,10 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 					progStruct->UDFs->push_back(currRec);
 					if (currRec->returnType->isNull())
 					{
-						progStruct->visibleCmds->add(currRec);
 						progStruct->scopedCmds->add(currRec);
 					}
 					else
 					{
-						progStruct->visibleFuncts->add(currRec);
 						progStruct->scopedFuncts->add(currRec);
 					}
 				}
@@ -136,12 +134,10 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				objStruct->UDFs->push_back(currRec);
 				if (currRec->returnType->isNull())
 				{
-					objStruct->visibleCmds->add(currRec);
 					objStruct->scopedCmds->add(currRec);
 				}
 				else
 				{
-					objStruct->visibleFuncts->add(currRec);
 					objStruct->scopedFuncts->add(currRec);
 				}
 			}
@@ -219,7 +215,7 @@ UDFRecord * SCFParser::functRecord(string name)
 	if (ext.lexeme != "fgr")
 		syntax_error("Found ." + ext.lexeme + " -- Expected .fgr");
 
-	UDFRecord * rec = new UDFRecord(DataType::DT_NULL, name, returnType);
+	UDFRecord * rec = new UDFRecord(DataType::DT_NULL, name, returnType, lang);
 	rec->args = args;
 	return rec;
 }

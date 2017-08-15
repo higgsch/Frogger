@@ -15,9 +15,9 @@ using namespace std;
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
-void FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, CommandTable * cmds, UDFRecord * rec)
+void FgrFunctionC::compileFunctionToAST(string inFile, UDFRecord * rec)
 {
 	buildAST(rec, inFile);
 	
@@ -26,7 +26,7 @@ void FgrFunctionC::compileFunctionToAST(string inFile, FunctionTable * functs, C
 	computeJumpToLineNumbers(rec);
 
 	convertStrings(rec);
-	checkDataTypes(rec, functs, cmds);
+	checkDataTypes(rec);
 }
 
 // ----------------------------------------------------------
@@ -83,12 +83,12 @@ void FgrFunctionC::convertStrings(UDFRecord * funct)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FgrFunctionC::checkDataTypes(UDFRecord * ast, FunctionTable * functs, CommandTable * cmds)
+void FgrFunctionC::checkDataTypes(UDFRecord * ast)
 {
 	SymbolTable * symbols = new SymbolTable(lang, ast);
-	DataTypingPhase *dtp = new DataTypingPhase(lang, progStruct, functs, cmds, symbols, ast->name);
+	DataTypingPhase *dtp = new DataTypingPhase(lang, progStruct, ast->visibleFuncts, ast->visibleCmds, symbols, ast->name);
 	ast->root->accept(dtp);
-	ast->symbols = symbols;
+	ast->visibleSyms = symbols;
 	delete dtp;
 }
 

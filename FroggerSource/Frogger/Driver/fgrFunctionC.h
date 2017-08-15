@@ -26,11 +26,11 @@ private:
 
 	void computeJumpToLineNumbers(UDFRecord * funct);
 	void convertStrings(UDFRecord * funct);
-	void checkDataTypes(UDFRecord * ast, FunctionTable * functs, CommandTable * cmds);
+	void checkDataTypes(UDFRecord * ast);
 
 public:
 	FgrFunctionC(Language* lang, ProgramStruct * progStruct) : lang(lang), progStruct(progStruct) {}
-	void compileFunctionToAST(string inFile, FunctionTable * functs, CommandTable * cmds, UDFRecord * rec);
+	void compileFunctionToAST(string inFile, UDFRecord * rec);
 	
 	void printAST(UDFRecord * funct, string outFile);
 };

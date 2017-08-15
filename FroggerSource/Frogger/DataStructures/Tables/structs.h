@@ -11,6 +11,7 @@ using namespace std;
 
 //forward declarations
 class ProgramNode;
+class Language;
 
 // ----------------------------------------------------------
 // This class represents the data known about a User Defined 
@@ -21,9 +22,16 @@ class ProgramNode;
 struct UDFRecord : public Routine
 {
 	ProgramNode * root;
-	SymbolTable * symbols;
+	SymbolTable * visibleSyms;
+	CommandTable * visibleCmds;
+	FunctionTable * visibleFuncts;
 
-	UDFRecord(DataType * primary, string name, DataType * returnType) : Routine(primary, name, returnType, false) {}
+	UDFRecord(DataType * primary, string name, DataType * returnType, Language* lang) : Routine(primary, name, returnType, false),
+	visibleCmds(new CommandTable(lang)), visibleFuncts(new FunctionTable(lang))
+	{
+		visibleCmds->addBuiltInVisibleCommands();
+		visibleFuncts->addBuiltInVisibleFunctions();
+	}
 };
 
 // ----------------------------------------------------------
@@ -59,19 +67,14 @@ struct ObjectStruct
 	OFCollection * OFs;
 
 	SymbolTable * scopedSymbols; //Symbols accessible by <obj>:id
-	SymbolTable * visibleSymbols; //Symbols accessible within the object
 	CommandTable * scopedCmds; //Commands accessible by <obj>:id()
-	CommandTable * visibleCmds; //Commands accessible within the object
 	FunctionTable * scopedFuncts; //Functions accessible by <obj>:id()
-	FunctionTable * visibleFuncts; //Functions accessible within the object
 
 	bool isUserDefined;
 
 	ObjectStruct(Language * lang) : UDFs(new UDFCollection()), OFs(new OFCollection()), 
-		scopedSymbols(new SymbolTable()), visibleSymbols(new SymbolTable(lang)),
-		scopedCmds(new CommandTable()), visibleCmds(new CommandTable(lang)),
-		scopedFuncts(new FunctionTable()), visibleFuncts(new FunctionTable(lang)),
-		isUserDefined(true) {}
+		scopedSymbols(new SymbolTable()), scopedCmds(new CommandTable()),
+		scopedFuncts(new FunctionTable()), isUserDefined(true) {}
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }

@@ -33,7 +33,7 @@ private:
 	void verifyPEFExists(string dir);
 	void verifyAllContainedUDFsExist(string dir, ObjectStruct * obj);
 	void compilePEF(string dir);
-	void compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionTable * functs, CommandTable * cmds);
+	void compileAllContainedUDFs(string dir, ObjectStruct * obj);
 	
 	void computeRequiredSupportCode(ProgramStruct * prog);
 

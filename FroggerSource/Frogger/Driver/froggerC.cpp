@@ -44,8 +44,8 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 	}
 	else
 	{
-		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL);
-		progStruct->visibleCmds->add(progStruct->PEF);
+		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL, lang);
+		progStruct->scopedCmds->add(progStruct->PEF);
 	}
 
 	verifyPEFExists(dir);
@@ -55,7 +55,7 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 	funcComp = new FgrFunctionC(lang, progStruct);
 
 	compilePEF(dir);
-	compileAllContainedUDFs(dir, progStruct, progStruct->visibleFuncts, progStruct->visibleCmds);
+	compileAllContainedUDFs(dir, progStruct);
 
 	computeRequiredSupportCode(progStruct);
 
@@ -111,7 +111,7 @@ void FroggerC::verifyAllContainedUDFsExist(string dir, ObjectStruct * obj)
 // ----------------------------------------------------------
 void FroggerC::compilePEF(string dir)
 {
-	funcComp->compileFunctionToAST(dir + getUDFFilename(progStruct->PEF), progStruct->visibleFuncts, progStruct->visibleCmds, progStruct->PEF);
+	funcComp->compileFunctionToAST(dir + getUDFFilename(progStruct->PEF), progStruct->PEF);
 }
 
 // ----------------------------------------------------------
@@ -123,14 +123,14 @@ void FroggerC::compilePEF(string dir)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionTable * visibleFuncts, CommandTable * visibleCmds)
+void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj)
 {
 	int udfCount = obj->getNumberOfUDFs();
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++ )
 	{
 		UDFRecord * currUDF = obj->getUDF(udfIndex);
 		string path = dir + getUDFFilename(currUDF);
-		funcComp->compileFunctionToAST(path, visibleFuncts, visibleCmds, currUDF);
+		funcComp->compileFunctionToAST(path, currUDF);
 	}
 
 	int objCount = obj->getNumberOfOFs();
@@ -139,7 +139,7 @@ void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj, FunctionT
 		ObjectStruct * currObj = obj->getOF(objIndex);
 		if (currObj->isUserDefined)
 		{
-			compileAllContainedUDFs(dir + currObj->name + "\\", currObj, currObj->visibleFuncts, currObj->visibleCmds);
+			compileAllContainedUDFs(dir + currObj->name + "\\", currObj);
 		}
 	}
 }
