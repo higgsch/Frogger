@@ -5,6 +5,7 @@
 
 #include "..\Scanning\scfScanner.h"
 #include "..\Scanning\scfToken.h"
+#include "odfParser.h"
 #include "..\DataStructures\dataTyped.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\DataStructures\Tables\structs.h"
@@ -30,6 +31,7 @@ private:
 	
 	UDFRecord * functRecord(string name);
 	ObjectStruct * objectRecord(string objectDir, string name);
+	DataStruct * dataRecord(string dataDir, string name);
 	ArgList * arguments();
 	ArgPair * argument();
 	string id();

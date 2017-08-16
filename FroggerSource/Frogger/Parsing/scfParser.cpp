@@ -62,34 +62,50 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				{
 					syntax_error("" + currRec->name + " function is duplicated.");
 				}
+				
+				progStruct->UDFs->push_back(currRec);
+
+				addEndCommand(currRec);
+				if (currRec->returnType->isNull())
+				{
+					progStruct->scopedCmds->add(currRec);
+				}
 				else
 				{
-					progStruct->UDFs->push_back(currRec);
-
-					addEndCommand(currRec);
-					if (currRec->returnType->isNull())
-					{
-						progStruct->scopedCmds->add(currRec);
-					}
-					else
-					{
-						progStruct->scopedFuncts->add(currRec);
-					}
+					progStruct->scopedFuncts->add(currRec);
 				}
 			}
 		}
 		else if (next_token().type == SCFTT_DOT)
-		{ //Object Declaration Record
-			ObjectStruct * currRec = objectRecord(projectDir + name + "\\", name);
-			
-			if (isInObjects(currRec, progStruct->OFs))
+		{ //Object Declaration Record or Data Declaration Record
+			match(SCFTT_DOT);
+
+			SCFToken ext = next_token();
+			match(SCFTT_ID);
+
+			if (ext.lexeme == "struct")
 			{
-				syntax_error(currRec->name + " object is duplicated.");
+				ObjectStruct * currRec = objectRecord(projectDir + name + "\\", name);
+			
+				if (isInObjects(currRec, progStruct->OFs))
+				{
+					syntax_error(currRec->name + " object is duplicated.");
+				}
+				
+				progStruct->OFs->push_back(currRec);
+
+			}
+			else if (ext.lexeme == "data")
+			{
+				if (name != projectName)
+				{
+					syntax_error("Invalid ODF: " + name + ".data -- Expected " + projectName + ".data");
+				}
+				
+				progStruct->data = dataRecord(projectDir, projectName);
 			}
 			else
-			{
-				progStruct->OFs->push_back(currRec);
-			}
+				syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct or " + projectName + ".data");
 		}
 		else
 		{
@@ -121,6 +137,9 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 	ObjectStruct * objStruct = new ObjectStruct(lang);
 	objStruct->name = objectName;
 
+	ODFParser dataP;
+	objStruct->data = dataP.parseODF(objectDir, objectName);
+
 	while (next_token().type != SCFTT_SCANEOF)
 	{
 		string name = id();
@@ -133,33 +152,48 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			{
 				syntax_error("" + currRec->name + " function is duplicated.");
 			}
+			
+			objStruct->UDFs->push_back(currRec);
+
+			addEndCommand(currRec);
+			if (currRec->returnType->isNull())
+			{
+				objStruct->scopedCmds->add(currRec);
+			}
 			else
 			{
-				objStruct->UDFs->push_back(currRec);
-
-				addEndCommand(currRec);
-				if (currRec->returnType->isNull())
-				{
-					objStruct->scopedCmds->add(currRec);
-				}
-				else
-				{
-					objStruct->scopedFuncts->add(currRec);
-				}
+				objStruct->scopedFuncts->add(currRec);
 			}
 		}
 		else if (next_token().type == SCFTT_DOT)
-		{ //Object Declaration Record
-			ObjectStruct * currRec = objectRecord(objectDir + name + "\\", name);
+		{ //Object Declaration Record or Data Declaration Record
+			match(SCFTT_DOT);
+
+			SCFToken ext = next_token();
+			match(SCFTT_ID);
+
+			if (ext.lexeme == "struct")
+			{
+				ObjectStruct * currRec = objectRecord(objectDir + name + "\\", name);
 			
-			if (isInObjects(currRec, objStruct->OFs))
-			{
-				syntax_error(currRec->name + " object is duplicated.");
-			}
-			else
-			{
+				if (isInObjects(currRec, objStruct->OFs))
+				{
+					syntax_error(currRec->name + " object is duplicated.");
+				}
+				
 				objStruct->OFs->push_back(currRec);
 			}
+			else if (ext.lexeme == "data")
+			{
+				if (name != objectName)
+				{
+					syntax_error("Invalid ODF: " + name + ".data -- Expected " + objectName + ".data");
+				}
+				
+				objStruct->data = dataRecord(objectDir, objectName);
+			}
+			else
+				syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct or " + objectName + ".data");
 		}
 		else
 		{
@@ -209,18 +243,22 @@ void SCFParser::addEndCommand(UDFRecord* rec)
 // ----------------------------------------------------------
 ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 {
-	match(SCFTT_DOT);
-			
-	SCFToken ext = next_token();
-	match(SCFTT_ID);
-
-	if (ext.lexeme != "struct")
-		syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct");
-
 	SCFParser p(lang);
-	ObjectStruct * object = p.parseObjectLevelSCF(objectDir, name);
+	return p.parseObjectLevelSCF(objectDir, name);
+}
 
-	return object;
+// ----------------------------------------------------------
+// This function processes a data declaration record and 
+// returns a single Data Structure.
+// @dataDir: The OF/PF including trailing slash
+// @name: The objectName/projectName
+//
+// Version 5.0
+// ----------------------------------------------------------
+DataStruct * SCFParser::dataRecord(string dataDir, string name)
+{
+	ODFParser p;
+	return p.parseODF(dataDir, name);
 }
 
 // ----------------------------------------------------------
