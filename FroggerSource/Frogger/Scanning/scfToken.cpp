@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.4
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program provides a compact interface for tokens.
 // -----------------------------------------------------------------
@@ -10,11 +10,11 @@ using namespace std;
 // ----------------------------------------------------------
 // Default constructor.
 //
-// Version 4.0
+// Version 5.0
 // ----------------------------------------------------------
 SCFToken::SCFToken()
 {
-	type = TOKTYPE_NOTOK;
+	type = SCFTT_NOTOK;
 	lexeme = "<None>";
 }
 
@@ -31,12 +31,12 @@ SCFToken::SCFToken(scf_token_type i_Type, string i_Lexeme)
 
 //static "constants" used for simplified processing of language
 //static tokens
-SCFToken SCFToken::NOTOK		= SCFToken(TOKTYPE_NOTOK, "<None>");
-SCFToken SCFToken::LPAREN		= SCFToken(TOKTYPE_LPAREN, "(");
-SCFToken SCFToken::RPAREN		= SCFToken(TOKTYPE_RPAREN, ")");
-SCFToken SCFToken::EQUALS		= SCFToken(TOKTYPE_EQUALS, "=");
-SCFToken SCFToken::COMMA		= SCFToken(TOKTYPE_COMMA, ",");
-SCFToken SCFToken::TILDE		= SCFToken(TOKTYPE_TILDE, "~");
-SCFToken SCFToken::DOT			= SCFToken(TOKTYPE_DOT, ".");
-SCFToken SCFToken::EOL			= SCFToken(TOKTYPE_EOL, "<End of Line>");
-SCFToken SCFToken::SCANEOF	= SCFToken(TOKTYPE_SCANEOF, "<EOF>");
+SCFToken SCFToken::NOTOK		= SCFToken(SCFTT_NOTOK, "<None>");
+SCFToken SCFToken::LPAREN		= SCFToken(SCFTT_LPAREN, "(");
+SCFToken SCFToken::RPAREN		= SCFToken(SCFTT_RPAREN, ")");
+SCFToken SCFToken::EQUALS		= SCFToken(SCFTT_EQUALS, "=");
+SCFToken SCFToken::COMMA		= SCFToken(SCFTT_COMMA, ",");
+SCFToken SCFToken::TILDE		= SCFToken(SCFTT_TILDE, "~");
+SCFToken SCFToken::DOT			= SCFToken(SCFTT_DOT, ".");
+SCFToken SCFToken::EOL			= SCFToken(SCFTT_EOL, "<End of Line>");
+SCFToken SCFToken::SCANEOF		= SCFToken(SCFTT_SCANEOF, "<EOF>");

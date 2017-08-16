@@ -10,10 +10,10 @@ using namespace std;
 
 // set of scf token categories
 typedef enum scf_token_types {
-	TOKTYPE_NOTOK = -1, 
-	TOKTYPE_ID, TOKTYPE_LPAREN, TOKTYPE_RPAREN,
-	TOKTYPE_EQUALS, TOKTYPE_COMMA, TOKTYPE_TILDE, TOKTYPE_DOT, 
-	TOKTYPE_EOL, TOKTYPE_SCANEOF
+	SCFTT_NOTOK = -1, 
+	SCFTT_ID, SCFTT_LPAREN, SCFTT_RPAREN,
+	SCFTT_EQUALS, SCFTT_COMMA, SCFTT_TILDE, SCFTT_DOT, 
+	SCFTT_EOL, SCFTT_SCANEOF
 } scf_token_type;
 
 // ----------------------------------------------------------

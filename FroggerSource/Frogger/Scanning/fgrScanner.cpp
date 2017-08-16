@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.4
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program reads through a .fgr file and converts strings of 
 // chars to tokens.
@@ -55,7 +55,7 @@ void FGRScanner::closeAndTerminate()
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 3.0
+// Version 5.0
 // ----------------------------------------------------------
 FGRToken FGRScanner::scan()
 {
@@ -81,17 +81,17 @@ FGRToken FGRScanner::scan()
 			return readString();
 		
 
-		if (foundToken.type == TOKTYPE_NOTOK)
+		if (foundToken.type == FGRTT_NOTOK)
 			foundToken = readBooleanOperator();
 
-		if (foundToken.type == TOKTYPE_NOTOK)
+		if (foundToken.type == FGRTT_NOTOK)
 			foundToken = readArithmeticOperator(); //must be after readBooleanOperator
 
-		if (foundToken.type == TOKTYPE_NOTOK)
+		if (foundToken.type == FGRTT_NOTOK)
 			foundToken = readPunctuation();
 
 		
-		if (foundToken.type != TOKTYPE_NOTOK)
+		if (foundToken.type != FGRTT_NOTOK)
 			return foundToken;
 		else
 		{
@@ -313,7 +313,7 @@ bool FGRScanner::readIgnoredChars()
 // input file.
 // Returns the token for the read identifier or NOTOK
 //
-// Version 3.0
+// Version 5.0
 // ----------------------------------------------------------
 FGRToken FGRScanner::readId()
 {
@@ -329,7 +329,7 @@ FGRToken FGRScanner::readId()
 	else if (token_buffer.contentsEquals("else"))
 		return FGRToken::ELSE;
 	else
-		return FGRToken(TOKTYPE_ID, token_buffer.value());
+		return FGRToken(FGRTT_ID, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -337,7 +337,7 @@ FGRToken FGRScanner::readId()
 // input file.
 // Returns the token for the read double or NOTOK
 //
-// Version 3.0
+// Version 5.0
 // ----------------------------------------------------------
 FGRToken FGRScanner::readDouble()
 {
@@ -350,7 +350,7 @@ FGRToken FGRScanner::readDouble()
 	if (c != '.')
 	{
 		unget();
-		return FGRToken(TOKTYPE_DOUBLECONST, token_buffer.value());
+		return FGRToken(FGRTT_DOUBLECONST, token_buffer.value());
 	}
 
 	token_buffer.append('.');
@@ -358,7 +358,7 @@ FGRToken FGRScanner::readDouble()
 	if (!readDigitsToBuffer())
 		lexical_error("Missing decimals for double");
 	
-	return FGRToken(TOKTYPE_DOUBLECONST, token_buffer.value());
+	return FGRToken(FGRTT_DOUBLECONST, token_buffer.value());
 }
 
 // ----------------------------------------------------------
@@ -366,7 +366,7 @@ FGRToken FGRScanner::readDouble()
 // input file.
 // Returns the token for the read string or NOTOK
 //
-// Version 3.0
+// Version 5.0
 // ----------------------------------------------------------
 FGRToken FGRScanner::readString()
 {
@@ -375,7 +375,7 @@ FGRToken FGRScanner::readString()
 	if (!readStringToBuffer())
 		return FGRToken::NOTOK;
 
-	return FGRToken(TOKTYPE_STRING, token_buffer.value());
+	return FGRToken(FGRTT_STRING, token_buffer.value());
 }
 
 // ----------------------------------------------------------

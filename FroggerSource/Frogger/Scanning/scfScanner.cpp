@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 4.4
+//                      Version: 5.0
 // -----------------------------------------------------------------
 // This program reads through a .struct file and converts strings of 
 // chars to tokens.
@@ -15,7 +15,7 @@ extern bool quietMode;
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 SCFToken SCFScanner::scan()
 {
@@ -32,7 +32,7 @@ SCFToken SCFScanner::scan()
 
 		foundToken = readPunctuation();
 		
-		if (foundToken.type != TOKTYPE_NOTOK)
+		if (foundToken.type != SCFTT_NOTOK)
 			return foundToken;
 		else
 		{
@@ -86,7 +86,7 @@ bool SCFScanner::readThisString(string toRead)
 // input file.
 // Returns the token for the read identifier or NOTOK
 //
-// Version 4.0
+// Version 5.0
 // ----------------------------------------------------------
 SCFToken SCFScanner::readId()
 {
@@ -95,7 +95,7 @@ SCFToken SCFScanner::readId()
 	if (!readIdCharsToBuffer())
 		return SCFToken::NOTOK;
 
-	return SCFToken(TOKTYPE_ID, token_buffer.value());
+	return SCFToken(SCFTT_ID, token_buffer.value());
 }
 
 // ----------------------------------------------------------
