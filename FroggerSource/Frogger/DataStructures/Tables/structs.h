@@ -42,6 +42,27 @@ struct UDFRecord : public Routine
 // ----------------------------------------------------------
 struct UDFCollection : public vector<UDFRecord *> {};
 
+// ----------------------------------------------------------
+// This class represents the data known about an Object's 
+// data member
+//
+// Version 5.0
+// ----------------------------------------------------------
+struct DataRecord
+{
+	string memberName;
+	DataType * type;
+	string defaultValue;
+};
+
+// ----------------------------------------------------------
+// This class represents the data known about an Object's 
+// data collection.
+//
+// Version 5.0
+// ----------------------------------------------------------
+struct DataStruct : vector<DataRecord *> {};
+
 //Forward declaration
 struct ObjectStruct;
 class Language;
@@ -65,6 +86,7 @@ struct ObjectStruct
 	string name;
 	UDFCollection * UDFs;
 	OFCollection * OFs;
+	DataStruct * data;
 
 	SymbolTable * scopedSymbols; //Symbols accessible by <obj>:id
 	CommandTable * scopedCmds; //Commands accessible by <obj>:id()
@@ -73,6 +95,7 @@ struct ObjectStruct
 	bool isUserDefined;
 
 	ObjectStruct(Language * lang) : UDFs(new UDFCollection()), OFs(new OFCollection()), 
+		data(new DataStruct()),
 		scopedSymbols(new SymbolTable()), scopedCmds(new CommandTable()),
 		scopedFuncts(new FunctionTable()), isUserDefined(true) {}
 
