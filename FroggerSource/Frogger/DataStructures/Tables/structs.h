@@ -27,7 +27,7 @@ struct UDFRecord : public Routine
 	FunctionTable * visibleFuncts;
 
 	UDFRecord(DataType * primary, string name, DataType * returnType, Language* lang) : Routine(primary, name, returnType, false),
-	visibleCmds(new CommandTable(lang)), visibleFuncts(new FunctionTable(lang))
+	visibleCmds(new CommandTable(lang)), visibleFuncts(new FunctionTable(lang)), visibleSyms(new SymbolTable())
 	{
 		visibleCmds->addBuiltInVisibleCommands();
 		visibleFuncts->addBuiltInVisibleFunctions();
