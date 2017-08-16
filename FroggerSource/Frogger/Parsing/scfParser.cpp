@@ -360,9 +360,6 @@ DataType * SCFParser::dataType()
 		types->add(type.lexeme);
 		return types->getDT(type.lexeme);
 	}
-
-	//else
-	//	syntax_error("Invalid data type -- Expected double, string, null, or User-Defined type");
 }
 
 // ----------------------------------------------------------
