@@ -13,6 +13,29 @@ using namespace std;
 extern bool quietMode;
 
 // ----------------------------------------------------------
+// This function opens the input file stream.
+// @inFile: The .struct file to open.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void ODFScanner::open(string inFile)
+{
+	currFileName = inFile;
+	source.open(inFile); 
+}
+
+// ----------------------------------------------------------
+// This function closes the input file stream.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void ODFScanner::close()
+{
+	currFileName = "";
+	source.close(); 
+}
+
+// ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
 // Version 5.0
@@ -283,7 +306,7 @@ bool ODFScanner::readStringToBuffer()
 // ----------------------------------------------------------
 void ODFScanner::lexical_error(string err_msg)
 {
-	cout << "DATA LEXICAL ERROR on line " << lineNo << ": " << err_msg << endl;
+	cout << "DATA LEXICAL ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
 	
 	if (!quietMode)
 	{

@@ -24,6 +24,7 @@ class ODFScanner
 private:
 	Buffer token_buffer; //a buffer to build the current token
 	ifstream source; //an input stream for the .data file
+	string currFileName;
 	int lineNo; //a count variable for the current line number
 
 	bool readThisString(string toRead);
@@ -42,10 +43,10 @@ private:
 	bool issinglequote(char c) { return c == '\''; }
 
 public:
-	ODFScanner() { lineNo = 1; }
+	ODFScanner(): lineNo(1), currFileName("") {}
 
-	void open(string inFile) { source.open(inFile); }
-	void close() { source.close(); }
+	void open(string inFile);
+	void close();
 	bool good() { return source.good(); }
 
 	ODFToken scan();
