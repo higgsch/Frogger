@@ -103,6 +103,13 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				}
 				
 				progStruct->data = dataRecord(projectDir, projectName);
+
+				int dataCount = progStruct->data->size();
+				for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
+				{
+					DataRecord * currData = progStruct->data->at(dataIndex);
+					progStruct->scopedSymbols->add(new SymbolRecord(currData->memberName, currData->type, false));
+				}
 			}
 			else
 				syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct or " + projectName + ".data");
@@ -191,6 +198,13 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				}
 				
 				objStruct->data = dataRecord(objectDir, objectName);
+
+				int dataCount = objStruct->data->size();
+				for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
+				{
+					DataRecord * currData = objStruct->data->at(dataIndex);
+					objStruct->scopedSymbols->add(new SymbolRecord(currData->memberName, currData->type, false));
+				}
 			}
 			else
 				syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct or " + objectName + ".data");
