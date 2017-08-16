@@ -137,8 +137,8 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 	ObjectStruct * objStruct = new ObjectStruct(lang);
 	objStruct->name = objectName;
 
-	ODFParser dataP;
-	objStruct->data = dataP.parseODF(objectDir, objectName);
+	//ODFParser dataP;
+	//objStruct->data = dataP.parseODF(objectDir, objectName);
 
 	while (next_token().type != SCFTT_SCANEOF)
 	{
