@@ -29,6 +29,7 @@ private:
 
 	bool readThisString(string toRead);
 
+	bool readIgnoredChars();
 	ODFToken readId();
 	ODFToken readDouble();
 	ODFToken readString();
