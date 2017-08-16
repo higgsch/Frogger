@@ -95,8 +95,9 @@ FGRToken FGRScanner::scan()
 			return foundToken;
 		else
 		{
-			string msg = "Invalid symbol - ";
+			string msg = "Invalid symbol - '";
 			msg += in_char;
+			msg += "'";
 			lexical_error(msg);
 		}
 	}
