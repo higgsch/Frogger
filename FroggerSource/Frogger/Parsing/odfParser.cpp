@@ -109,6 +109,8 @@ string ODFParser::defaultValue()
 	}
 	
 	match(ODFTT_OCTOTHORPE);
+
+	return value;
 }
 
 // ----------------------------------------------------------
