@@ -98,6 +98,7 @@ string ODFParser::defaultValue()
 	if (tok.type == ODFTT_STRING || tok.type == ODFTT_DOUBLECONST)
 	{
 		value = tok.lexeme;
+		match(tok.type);
 	}
 	else if (tok.type == ODFTT_OCTOTHORPE)
 	{
