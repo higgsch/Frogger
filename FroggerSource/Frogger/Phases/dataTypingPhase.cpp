@@ -5,6 +5,7 @@
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
 #include "dataTypingPhase.h"
+#include <string>
 using namespace std;
 
 extern bool quietMode;
@@ -94,6 +95,7 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 		n->getFunct()->returnType = oldNodeType;
 
 	n->visitAllChildren(this);
+	unifyFunctionCall(n);
 
 	Routine * funct = n->getFunct();
 	if (funct->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
@@ -129,9 +131,10 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 void DataTypingPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
-	//p:setY -> p is a double (default)
+	unifyCommandCall(n);
 	
 	Routine * cmd = n->getCmd();
+
 	if (cmd->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
 	{
 		CommandTable * cmds = getPrimaryScopeCommands(n);
@@ -444,10 +447,94 @@ CommandTable * DataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 	return progStruct->getObject(primary->getDataType())->scopedCmds;
 }
 
-//SymbolTable * DataTypingPhase::getPrimaryScopeSymbols(IdRefNode * n)
-//{
-//	
-//}
+// ----------------------------------------------------------
+// This function ensures the ASTNodes under the given node
+// are in line with the function record.
+// @n: The FunctionCallNode to check.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void DataTypingPhase::unifyFunctionCall(FunctionCallNode * n)
+{
+	Routine * funct = n->getFunct();
+
+	//ensure args match
+	int argCount = funct->getNumArgs();
+	ArgListNode * currArgListNode = (ArgListNode* )n->getArgList();
+	for (int argIndex = 0; argIndex < argCount; argIndex++)
+	{
+		if (currArgListNode == NULL)
+			dataType_error("Mismatched Argument List Length for Command Call: " + n->getLexeme(), n->getLineNo());
+
+		DataType * currFUNCTArgType = funct->getArg(argIndex)->type;
+		DataType * currArgListNodeType = currArgListNode->getDataType();
+
+		if (currArgListNodeType->isDefined() && !currFUNCTArgType->isDefined())
+			funct->getArg(argIndex)->type = currArgListNodeType;
+		else if (currFUNCTArgType->isDefined() && !currArgListNodeType->isDefined())
+			currArgListNode->setDataType(currFUNCTArgType);
+		else if (currFUNCTArgType->isDefined() && currArgListNodeType->isDefined()
+					&& *currFUNCTArgType != *currArgListNodeType)
+			dataType_error("Mismatched Argument Type for Command Call: " + n->getLexeme() + ", Argument No: " + to_string(argIndex), n->getLineNo());
+
+		currArgListNode = (ArgListNode*) currArgListNode->getNextArg();
+	}
+
+	//ensure no more args in AST
+	if (currArgListNode != NULL)
+		dataType_error("Mismatched Argument List Length for Command Call: " + n->getLexeme(), n->getLineNo());
+}
+
+// ----------------------------------------------------------
+// This function ensures the ASTNodes under the given node
+// are in line with the command record.
+// @n: The CommandCallNode to check.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void DataTypingPhase::unifyCommandCall(CommandCallNode * n)
+{
+	Routine * cmd = n->getCmd();
+
+	//ensure primary matches
+	if (!cmd->primary->isNull())
+	{
+		AsciiNode * primaryNode = n->getPrimary();
+		DataType * primaryNodeType = primaryNode->getDataType();
+		if (primaryNodeType->isDefined() && !cmd->primary->isDefined())
+			cmd->primary = primaryNodeType;
+		else if (cmd->primary->isDefined() && !primaryNodeType->isDefined())
+			primaryNode->setDataType(cmd->primary);
+		else if (cmd->primary->isDefined() && primaryNodeType->isDefined() && *(cmd->primary) != *(primaryNodeType))
+			dataType_error("Mismatched Primary Type for Command Call: " + n->getLexeme(), n->getLineNo());
+	}
+
+	//ensure args match
+	int argCount = cmd->getNumArgs();
+	ArgListNode * currArgListNode = (ArgListNode* )n->getArgList();
+	for (int argIndex = 0; argIndex < argCount; argIndex++)
+	{
+		if (currArgListNode == NULL)
+			dataType_error("Mismatched Argument List Length for Command Call: " + n->getLexeme(), n->getLineNo());
+
+		DataType * currCMDArgType = cmd->getArg(argIndex)->type;
+		DataType * currArgListNodeType = currArgListNode->getDataType();
+
+		if (currArgListNodeType->isDefined() && !currCMDArgType->isDefined())
+			cmd->getArg(argIndex)->type = currArgListNodeType;
+		else if (currCMDArgType->isDefined() && !currArgListNodeType->isDefined())
+			currArgListNode->setDataType(currCMDArgType);
+		else if (currCMDArgType->isDefined() && currArgListNodeType->isDefined()
+					&& *currCMDArgType != *currArgListNodeType)
+			dataType_error("Mismatched Argument Type for Command Call: " + n->getLexeme() + ", Argument No: " + to_string(argIndex), n->getLineNo());
+
+		currArgListNode = (ArgListNode*) currArgListNode->getNextArg();
+	}
+
+	//ensure no more args in AST
+	if (currArgListNode != NULL)
+		dataType_error("Mismatched Argument List Length for Command Call: " + n->getLexeme(), n->getLineNo());
+}
 
 // ----------------------------------------------------------
 // This function merges all scoped tables within the given

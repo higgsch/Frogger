@@ -44,7 +44,8 @@ private:
 
 	FunctionTable * getPrimaryScopeFunctions(FunctionCallNode * n);
 	CommandTable * getPrimaryScopeCommands(CommandCallNode * n);
-	//SymbolTable * getPrimaryScopeSymbols(IdRefNode * n);
+	void unifyFunctionCall(FunctionCallNode * n);
+	void unifyCommandCall(CommandCallNode * n);
 
 	void populateAllTables(ObjectStruct* obj);
 
