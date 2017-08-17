@@ -526,11 +526,22 @@ string CPPLanguage::getBuiltInCommandCode()
 string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 {
 	string result = emptyLine();
+
+	for (int objectIndex = 0; objectIndex < prog->getNumberOfOFs(); objectIndex++)
+	{
+		ObjectStruct * currObject = prog->getOF(objectIndex);
+		if (!currObject->isUserDefined)
+			continue;
+
+		result += line(getObjectDefinition(currObject));
+	}
+	result += emptyLine();
+
 	result += line(getFunctionPrototype(prog->PEF->returnType, prog->PEF->name, prog->PEF->args) + ";");
 
-	for (int index = 0; index < prog->getNumberOfUDFs(); index++)
+	for (int UDFIndex = 0; UDFIndex < prog->getNumberOfUDFs(); UDFIndex++)
 	{
-		UDFRecord * currFunct = prog->getUDF(index);
+		UDFRecord * currFunct = prog->getUDF(UDFIndex);
 		result += line(getFunctionPrototype(currFunct->returnType, currFunct->name, currFunct->args) + ";");
 	}
 
@@ -559,6 +570,17 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 	result += line(PEFName + nest(true, "") + ";");
 	result += closeBraceLine();
 	return result;
+}
+
+// ----------------------------------------------------------
+// This function returns the output text for an object.
+// @obj: The object to output.
+//
+// Version 5.0
+// ----------------------------------------------------------
+string CPPLanguage::getObjectDefinition(ObjectStruct * obj)
+{
+	string result = "class " + obj->name + ";";
 	return result;
 }
 

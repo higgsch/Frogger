@@ -140,6 +140,7 @@ private:
 	string getBuiltInCommandCode();
 	string getForwardDeclarationCode(ProgramStruct * prog);
 	string getMainFunctionText(string PEFName);
+	string getObjectDefinition(ObjectStruct * obj);
 
 	string getSymbolTableCode(SymbolTable * symbols);
 	string getSupportText(SUPPORT_TEXT& text);
