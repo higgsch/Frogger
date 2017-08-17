@@ -28,8 +28,10 @@ private:
 
 	void printMetaCode(ProgramStruct * progStruct);
 	void printPEFCode(ProgramStruct * progStruct);
-	void printAllContainedUDFsCode(ObjectStruct * obj);
+	void printAllContainedOFsCode(ObjectStruct * obj);
+
 	void printUDFCode(UDFRecord * rec);
+	void printAllContainedUDFsCode(ObjectStruct * obj);
 
 	void visitBinaryOpNode(BinaryOpNode * n);
 

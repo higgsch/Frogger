@@ -18,7 +18,7 @@ void CodeGenerationPhase::printCode(ProgramStruct * progStruct)
 {
 	printMetaCode(progStruct);
 	printPEFCode(progStruct);
-	printAllContainedUDFsCode(progStruct);
+	printAllContainedOFsCode(progStruct);
 }
 
 // ----------------------------------------------------------
@@ -63,6 +63,18 @@ void CodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
 	{
 		printUDFCode(obj->getUDF(udfIndex));
 	}
+}
+
+// ----------------------------------------------------------
+// This function generates all code for OFs contained within
+// the given Object.
+// @obj: The Object.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::printAllContainedOFsCode(ObjectStruct * obj)
+{
+	printAllContainedUDFsCode(obj);
 
 	int objCount = obj->getNumberOfOFs();
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
@@ -70,7 +82,7 @@ void CodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
 		ObjectStruct * currObj = obj->getOF(objIndex);
 		if (currObj->isUserDefined)
 		{
-			printAllContainedUDFsCode(obj->getOF(objIndex));
+			printAllContainedOFsCode(obj->getOF(objIndex));
 		}
 	}
 }
