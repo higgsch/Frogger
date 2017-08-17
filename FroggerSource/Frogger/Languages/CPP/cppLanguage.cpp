@@ -566,7 +566,7 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 // This function adds declarations for each symbol in the 
 // given symbol table.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 string CPPLanguage::getSymbolTableCode(SymbolTable * symbols)
 {
@@ -583,6 +583,8 @@ string CPPLanguage::getSymbolTableCode(SymbolTable * symbols)
 			result += line(DT_DOUBLE + " _" + s->id + " = 0;");
 		else if (s->type == DataType::DT_STRING)
 			result += line(DT_STRING + " _" + s->id + " = \"\";");
+		else if (s->type->type == DTE_USER_DEFINED)
+			result += line(s->type->typeString + " _" + s->id + ";");
 		else
 			result += line("Not_Defined _" + s->id + " = NULL;");
 	}
@@ -644,6 +646,8 @@ string CPPLanguage::getTypeString(DataType * dt)
 		return DT_STRING;
 	case DTE_NULL:
 		return DT_VOID;
+	case DTE_USER_DEFINED:
+		return dt->typeString;
 	default:
 		return "UNDEFINED TYPE";
 	}
