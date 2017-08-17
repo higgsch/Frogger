@@ -152,22 +152,19 @@ private:
 	// ----------------------------------------------------------
 	// This function returns a formatted line with an opening brace
 	//
-	// Version 4.2
+	// Version 5.0
 	// ----------------------------------------------------------
 	string openBraceLine() 
 	{
-		string result = line(OPEN_BRACE);
-		increaseIndent();
-		return result;
+		return line(OPEN_BRACE);
 	}
 	// ----------------------------------------------------------
 	// This function returns a formatted line with a closing brace
 	//
-	// Version 4.2
+	// Version 5.0
 	// ----------------------------------------------------------
 	string closeBraceLine()
 	{
-		decreaseIndent();
 		return line(CLOSE_BRACE);
 	}
 

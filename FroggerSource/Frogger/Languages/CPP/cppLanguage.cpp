@@ -140,7 +140,7 @@ string CPPLanguage::getMetaCode(ProgramStruct * structure)
 
 	result += getForwardDeclarationCode(structure);
 	result += getMainFunctionText(structure->PEF->name);
-	return result;
+	return this->clearIndents(result);
 }
 
 // ----------------------------------------------------------
@@ -164,22 +164,19 @@ string CPPLanguage::getPEFCode(UDFRecord* rec, string pefText)
 // ----------------------------------------------------------
 string CPPLanguage::getUDFCode(UDFRecord* rec, string udfText)
 {
-	string result = "";
+	string result = emptyLine();
 
 	result += line(getFunctionPrototype(rec->returnType, rec->name, rec->args));
 	result += openBraceLine();
 
-	result += getSymbolTableCode(rec->visibleSyms);
+	string udfContents = getSymbolTableCode(rec->visibleSyms);
+	udfContents += emptyLine();
+	udfContents += udfText;
+	result += increaseIndent(udfContents);
 
-	result += emptyLine() + emptyLine();
-
-	result += udfText;
-
-	result+= emptyLine();
 	result+= closeBraceLine();
-	result+= emptyLine();
 
-	return result;
+	return clearIndents(result);
 }
 
 // ----------------------------------------------------------
@@ -190,7 +187,7 @@ string CPPLanguage::getUDFCode(UDFRecord* rec, string udfText)
 // @isOwnLine: a flag for jump stmt nested in if stmts
 // @stmtText: the output text from this stmt's contents
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 string CPPLanguage::getJmpStmtText(string udfName, int stmtNo, int jmpNo, bool isOwnLine, string stmtText)
 {
@@ -198,18 +195,18 @@ string CPPLanguage::getJmpStmtText(string udfName, int stmtNo, int jmpNo, bool i
 		
 	if (isOwnLine)
 	{
-		result += line(getLabelText(udfName, stmtNo) + ":");
-		increaseIndent();
-				
+		result += emptyLine() + line(getLabelText(udfName, stmtNo) + ":");
 	}
-	result += stmtText;
-			
-	result += line("goto " + getLabelText(udfName, jmpNo) + ";");
+
+	string stmtContents = line(stmtText);
+	stmtContents += line("goto " + getLabelText(udfName, jmpNo) + ";");
+
 	if (isOwnLine)
 	{
-		result += emptyLine();
-		decreaseIndent();
+		stmtContents = increaseIndent(stmtContents);
 	}
+
+	result += stmtContents;
 
 	return result;
 }
@@ -223,7 +220,7 @@ string CPPLanguage::getJmpStmtText(string udfName, int stmtNo, int jmpNo, bool i
 // @trueStmtText: the output text from the true stmt
 // @falseStmtText: the output text from the false stmt
 //
-// Version 4.2
+// Version 5.0
 // ---------------------------------------------------------
 string CPPLanguage::getIfStmtText(string udfName, int stmtNo, bool isOwnLine,
 								  string boolExpText, string trueStmtText, string falseStmtText)
@@ -233,24 +230,26 @@ string CPPLanguage::getIfStmtText(string udfName, int stmtNo, bool isOwnLine,
 	if (isOwnLine) 
 	{
 		result += line(getLabelText(udfName, stmtNo) + ":");
-		increaseIndent();
 	}
 
-	result += line("if (" + boolExpText + ")");
-	result += openBraceLine();
+	string ifContents = line("if (" + boolExpText + ")");
+	ifContents += openBraceLine();
 
-	result += trueStmtText;
+	ifContents += increaseIndent(trueStmtText);
 
-	result += closeBraceLine();
-	result += line("else");
-	result += openBraceLine();
+	ifContents += closeBraceLine();
+	ifContents += line("else");
+	ifContents += openBraceLine();
 	
-	result += falseStmtText;
+	ifContents += increaseIndent(falseStmtText);
 
-	result += closeBraceLine();
+	ifContents += closeBraceLine();
 
 	if (isOwnLine)
-		decreaseIndent();
+		ifContents = increaseIndent(ifContents);
+
+	result += ifContents;
+
 	return result;
 }
 
@@ -259,11 +258,11 @@ string CPPLanguage::getIfStmtText(string udfName, int stmtNo, bool isOwnLine,
 // @assigneeText: the output text from the assignee
 // @assignorText: the output text from the assignor
 //
-// Version 4.2
+// Version 5.0
 // ---------------------------------------------------------
 string CPPLanguage::getAssignmentText(string assigneeText, string assignorText)
 {
-	return line(assigneeText + " = " + nest(true, assignorText) + ";");
+	return assigneeText + " = " + nest(true, assignorText) + ";";
 }
 
 // ----------------------------------------------------------
@@ -299,14 +298,14 @@ string CPPLanguage::getFunctionCallText(bool isBuiltIn, string primaryText, stri
 // @name: the command's name
 // @argListText: the output text from the call's arg list
 //
-// Version 4.2
+// Version 5.0
 // ---------------------------------------------------------
 string CPPLanguage::getCommandCallText(bool isBuiltIn, string primaryText, string name, string argListText)
 {
 	string result = "";
 
 	if (isBuiltIn && name == CMDNAME_END_NULL)
-		return line("return " + argListText + ";");
+		return "return " + argListText + ";";
 
 	//For Built-In
 	//result += (primaryText != "") ? nest(true, primaryText) + "." : ""; 
@@ -526,7 +525,7 @@ string CPPLanguage::getBuiltInCommandCode()
 // ----------------------------------------------------------
 string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 {
-	string result = "";
+	string result = emptyLine();
 	result += line(getFunctionPrototype(prog->PEF->returnType, prog->PEF->name, prog->PEF->args) + ";");
 
 	for (int index = 0; index < prog->getNumberOfUDFs(); index++)
@@ -543,7 +542,7 @@ string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 // This function returns the output text for main.
 // @PEFName: The name of the PEF function.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 string CPPLanguage::getMainFunctionText(string PEFName)
 {
@@ -559,7 +558,7 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 	result += emptyLine();
 	result += line(PEFName + nest(true, "") + ";");
 	result += closeBraceLine();
-	result += emptyLine();
+	return result;
 	return result;
 }
 

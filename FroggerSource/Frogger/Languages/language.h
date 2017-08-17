@@ -25,37 +25,65 @@ public:
 // ----------------------------------------------------------
 // This class represents a generic Language package.
 //
-// Version 4.3
+// Version 5.0
 // ----------------------------------------------------------
 class Language
 {
 private:
 
-	Language() : builtInCommands(new CommandTable(this)), builtInFunctions(new FunctionTable(this)), builtInSymbols(new SymbolTable(this)) {}
+	Language() :
+		INDENT_MARKER("\037"),
+		builtInCommands(new CommandTable(this)), 
+		builtInFunctions(new FunctionTable(this)), 
+		builtInSymbols(new SymbolTable(this)) {}
 
+	const string INDENT_MARKER;
 	string indentString; // the string to use for indenting
-	int indentDepth; // the number of indentChars to insert
 
 protected:
 	virtual void initOutputTexts() =0;
 	virtual string getBinaryOperationText(bool nested, string pretext, string midtext, string posttext, 
 										   string leftOperandText, string rightOperandText) =0;
-	void increaseIndent() { indentDepth++; }
-	void decreaseIndent() { indentDepth--; }
+	string replaceAll(string source, string toFind, string toReplace)
+	{
+		size_t n = 0;
+		while ((n = source.find(toFind, n)) != string::npos)
+		{
+			source = source.replace( n, toFind.size(), toReplace);
+			n += toFind.size();
+		}
+
+		return source;
+	}
+	string markForIndent() { return INDENT_MARKER; }
+	string increaseIndent(string text) 
+	{ 
+		return replaceAll(text,INDENT_MARKER, INDENT_MARKER + indentString);
+	}
+	string decreaseIndent(string text) 
+	{ 
+		return replaceAll(text, INDENT_MARKER + indentString, INDENT_MARKER);
+	}
+	string clearIndents(string text)
+	{
+		return replaceAll(text, INDENT_MARKER, "");
+	}
 
 	string emptyLine() { return "\n"; }
-	string line(string s) { return indent() + s + "\n"; }
-	string indent()
+	string line(string s) { return INDENT_MARKER + s + "\n"; }
+	string indent(int depth)
 	{
-		string result = "";
-		for (int i = 0; i < indentDepth; i++)
+		string result = INDENT_MARKER;
+		for (int i = 0; i < depth; i++)
 			result = result + indentString;
 
 		return result;
 	}
 
 public:
-	Language(string indentString) : indentString(indentString), indentDepth(0) {}
+	Language(string indentString) : 
+		INDENT_MARKER("\037"),
+		indentString(indentString) {}
 
 	void initialize()
 	{ 
