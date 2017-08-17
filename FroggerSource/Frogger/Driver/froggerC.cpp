@@ -210,9 +210,7 @@ void FroggerC::emitCode(string dir, string name, string outFile, bool toExe, boo
 	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
 	cgp->open(filename + ".cpp");
-	cgp->printMetaCode(progStruct);
-	cgp->printPEFCode(progStruct);
-	cgp->printAllContainedUDFsCode(progStruct);
+	cgp->printCode(progStruct);
 	cgp->close();
 
 	if (toExe)

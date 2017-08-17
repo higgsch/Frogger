@@ -26,6 +26,11 @@ private:
 
 	string currUDFName;
 
+	void printMetaCode(ProgramStruct * progStruct);
+	void printPEFCode(ProgramStruct * progStruct);
+	void printAllContainedUDFsCode(ObjectStruct * obj);
+	void printUDFCode(UDFRecord * rec);
+
 	void visitBinaryOpNode(BinaryOpNode * n);
 
 	bool isNested(BinaryOpNode * n) { return n->getParenNesting() > 0; }
@@ -40,10 +45,7 @@ public:
 	void open(string filename) { p->open(filename); }
 	void close() { p->close(); }
 
-	void printMetaCode(ProgramStruct * progStruct);
-	void printPEFCode(ProgramStruct * progStruct);
-	void printAllContainedUDFsCode(ObjectStruct * obj);
-	void printUDFCode(UDFRecord * rec);
+	void printCode(ProgramStruct * progStruct);
 
 	void outputToExe(string outFilename, string exeFilename) { lang->outputToExe(outFilename, exeFilename); }
 	void cleanup(string filename) { lang->cleanup(filename); }

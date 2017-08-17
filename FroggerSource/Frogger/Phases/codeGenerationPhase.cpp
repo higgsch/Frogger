@@ -9,6 +9,19 @@
 using namespace std;
 
 // ----------------------------------------------------------
+// This function generates the entire program code.
+// @progStruct: The structure of the program
+//
+// Version 5.0
+// ----------------------------------------------------------
+void CodeGenerationPhase::printCode(ProgramStruct * progStruct)
+{
+	printMetaCode(progStruct);
+	printPEFCode(progStruct);
+	printAllContainedUDFsCode(progStruct);
+}
+
+// ----------------------------------------------------------
 // This function generates the pre-program code.
 // @progStruct: The structure of the program
 //
