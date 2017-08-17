@@ -492,6 +492,8 @@ AsciiNode* FGRParser::typedterm(bool isEndFunction)
 				CommandCallNode * cmd = new CommandCallNode(DataType::DT_NOT_DEFINED, endRoutine->getLexeme(), endRoutine->getLineNo());
 				cmd->addArgList(endRoutine->getArgList());
 				cmd->addPrimary(endRoutine->getPrimary());
+				cmd->setCmd(endRoutine->getFunct());
+				cmd->getCmd()->returnType = DataType::DT_NULL;
 				curr = cmd;
 
 				//TODO
