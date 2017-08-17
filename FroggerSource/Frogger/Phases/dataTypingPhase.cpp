@@ -57,7 +57,7 @@ void DataTypingPhase::visit(IdRefNode * n)
 		symbols->add(new SymbolRecord(id, type, true));
 	else
 	{
-		if (symbols->symbolType(id) != type)
+		if (*(symbols->symbolType(id)) != *type)
 			dataType_error("Variable " + id + " used as multiple type", n->getLineNo());
 	}
 }
@@ -198,7 +198,7 @@ void DataTypingPhase::visit(AddingNode * n)
 // ----------------------------------------------------------
 void DataTypingPhase::checkAndSetNodeDataType(AsciiNode * node, DataType* type)
 {
-	if (node->getDataType() == type || type == DataType::DT_NOT_DEFINED)
+	if (*(node->getDataType()) == *type || type == DataType::DT_NOT_DEFINED)
 		return;
 
 	if (node->getDataType() == DataType::DT_NOT_DEFINED)
@@ -301,7 +301,7 @@ void DataTypingPhase::checkAndSetTreeDataType(BinaryNode * node, DataType* type)
 void DataTypingPhase::checkAndSetArgDataType(Routine * rout, int argNo, DataType * type, int lineNo)
 {
 	DataType* oldType = rout->getArg(argNo)->type;
-	if (oldType == type || type == DataType::DT_NOT_DEFINED)
+	if (*oldType == *type || type == DataType::DT_NOT_DEFINED)
 		return;
 
 	if (oldType == DataType::DT_NOT_DEFINED)

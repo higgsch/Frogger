@@ -59,13 +59,13 @@ bool Routine::equals(Routine * other)
 // ----------------------------------------------------------
 bool Routine::matches(Routine * other)
 {
-	if (other->primary != DataType::DT_NOT_DEFINED && primary != other->primary)
+	if (other->primary != DataType::DT_NOT_DEFINED && *primary != *(other->primary))
 		return false;
 
 	if (name != other->name)
 		return false;
 
-	if (other->returnType != DataType::DT_NOT_DEFINED && returnType != other->returnType)
+	if (other->returnType != DataType::DT_NOT_DEFINED && *returnType != *(other->returnType))
 		return false;
 
 	if (args->size() != other->args->size())
@@ -74,7 +74,7 @@ bool Routine::matches(Routine * other)
 	for (int i = 0; i < args->size(); i++)
 	{
 		if (other->args->at(i)->type != DataType::DT_NOT_DEFINED && 
-			args->at(i)->type != other->args->at(i)->type)
+			*(args->at(i)->type) != *(other->args->at(i)->type))
 			return false;
 	}
 
