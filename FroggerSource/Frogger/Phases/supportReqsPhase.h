@@ -14,12 +14,15 @@ using namespace std;
 // This class represents a visitor for gathering support code
 // requirements.
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
 class SupportReqsPhase : public Phase
 {
 private:
 	Language * lang;
+
+	void gatherRequirements(ObjectStruct * obj);
+
 public:
 	void gatherRequirements(Language * language, ProgramStruct * prog);
 
