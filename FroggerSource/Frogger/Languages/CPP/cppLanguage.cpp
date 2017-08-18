@@ -595,7 +595,7 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 	for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
 	{
 		DataRecord * currData = obj->data->at(dataIndex);
-		data += line(getTypeString(currData->type) + " " + currData->memberName + ";");
+		data += line(getTypeString(currData->type) + " _" + currData->memberName + ";");
 	}
 	result += increaseIndent(data) + emptyLine();
 
