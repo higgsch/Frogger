@@ -625,12 +625,14 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 	result += getSupportText(MAIN_DEC);
 	result += openBraceLine();
 
-	result += getSupportText(INIT_ARGS);
-	result += getSupportText(INIT_RANDOM);
-	result += getSupportText(INIT_I_FILE);
-	result += getSupportText(INIT_O_FILE);
+	string mainText = getSupportText(INIT_ARGS);
+	mainText += getSupportText(INIT_RANDOM);
+	mainText += getSupportText(INIT_I_FILE);
+	mainText += getSupportText(INIT_O_FILE);
 
-	result += line(PEFName + nest(true, "") + ";");
+	mainText += line(PEFName + nest(true, "") + ";");
+
+	result += increaseIndent(mainText);
 	result += closeBraceLine();
 	return result;
 }
