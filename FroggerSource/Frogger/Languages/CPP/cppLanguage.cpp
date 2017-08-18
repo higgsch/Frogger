@@ -273,23 +273,28 @@ string CPPLanguage::getAssignmentText(string assigneeText, string assignorText)
 // @name: the function's name
 // @argListText: the output text from the call's arg list
 //
-// Version 4.2
+// Version 5.0
 // ---------------------------------------------------------
 string CPPLanguage::getFunctionCallText(bool isBuiltIn, string primaryText, string name, string argListText)
 {
 	string result = "";
 
-	//For User Defined
-	//result += (primaryText != "") ? nest(true, primaryText) + "." : "";
-	
-	if (primaryText == "")
-		result += argListText;
-	else
+	if (isBuiltIn)
 	{
-		result += primaryText + ((argListText != "") ? ", " + argListText : "");
+		if (primaryText == "")
+			result += argListText;
+		else
+		{
+			result += primaryText + ((argListText != "") ? ", " + argListText : "");
+		}
+
+		return name + nest(true, result);
 	}
 
-	return name + nest(true, result);
+	//For User Defined
+	string primary = (primaryText != "") ? primaryText + "." : "";
+
+	return primary + "_" + name + nest(true, argListText);
 }
 
 // ----------------------------------------------------------
@@ -303,15 +308,17 @@ string CPPLanguage::getFunctionCallText(bool isBuiltIn, string primaryText, stri
 // ---------------------------------------------------------
 string CPPLanguage::getCommandCallText(bool isBuiltIn, string primaryText, string name, string argListText)
 {
-	string result = "";
-
 	if (isBuiltIn && name == CMDNAME_END_NULL)
-		return "return " + argListText + ";";
+		return "return" + ((argListText != "") ? " " + argListText : "") + ";";
 
-	//For Built-In
-	//result += (primaryText != "") ? nest(true, primaryText) + "." : ""; 
+	if (isBuiltIn)
+		return name + nest(true, argListText) + ";";
 
-	return name + nest(true, argListText) + ";";
+	if (primaryText == "")
+		return "_" + name + nest(true, argListText) + ";";
+
+	//For scoped functions
+	return primaryText + "._" + name +  nest(true, argListText) + ";"; 
 }
 
 // ----------------------------------------------------------
@@ -584,7 +591,7 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 {
 	string result = emptyLine();
 
-	result += line("class " + obj->name);
+	result += line("class _" + obj->name);
 
 	result += openBraceLine();
 
@@ -644,7 +651,7 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 	mainText += getSupportText(INIT_I_FILE);
 	mainText += getSupportText(INIT_O_FILE);
 
-	mainText += line(PEFName + nest(true, "") + ";");
+	mainText += line("_" + PEFName + nest(true, "") + ";");
 
 	result += increaseIndent(mainText);
 	result += closeBraceLine();
@@ -659,7 +666,7 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 // ----------------------------------------------------------
 string CPPLanguage::getClassForwardDeclaration(ObjectStruct * obj)
 {
-	string result = "class " + obj->name + ";";
+	string result = "class _" + obj->name + ";";
 	return result;
 }
 
@@ -685,7 +692,7 @@ string CPPLanguage::getSymbolTableCode(SymbolTable * symbols)
 		else if (s->type == DataType::DT_STRING)
 			result += line(DT_STRING + " _" + s->id + " = \"\";");
 		else if (s->type->type == DTE_USER_DEFINED)
-			result += line(s->type->typeString + " _" + s->id + ";");
+			result += line("_" + replaceAll(s->type->typeString, ":", "::_") + " _" + s->id + ";");
 		else
 			result += line("Not_Defined _" + s->id + " = NULL;");
 	}
@@ -728,7 +735,7 @@ string CPPLanguage::getLabelText(string udfName, int labelIndex)
 // ----------------------------------------------------------
 string CPPLanguage::getConstructor(ObjectStruct * obj)
 {
-	string result = obj->name + "() : ";
+	string result = "_" + obj->name + "() : ";
 	
 	int dataCount = obj->data->size();
 	for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
@@ -736,9 +743,10 @@ string CPPLanguage::getConstructor(ObjectStruct * obj)
 		DataRecord * currData = obj->data->at(dataIndex);
 		if (currData->type->isUserDefined())
 			continue;
-		result += currData->memberName + "(" + currData->defaultValue + "), ";
+		result += "_" + currData->memberName + "(" + currData->defaultValue + "), ";
 	}
 
+	//Remove fencepost comma
 	if (dataCount > 0)
 	{
 		result = result.substr(0, result.length() - 2) + " ";
@@ -756,7 +764,7 @@ string CPPLanguage::getConstructor(ObjectStruct * obj)
 // ----------------------------------------------------------
 string CPPLanguage::getFunctionDeclaration(UDFRecord * udf)
 {
-	return getTypeString(udf->returnType) + " " + udf->name + 
+	return getTypeString(udf->returnType) + " _" + udf->name + 
 		nest(true, getArgsString(udf->args));
 }
 
@@ -769,7 +777,7 @@ string CPPLanguage::getFunctionDeclaration(UDFRecord * udf)
 string CPPLanguage::getFunctionPrototype(UDFRecord * udf)
 {
 	return getTypeString(udf->returnType) + " " + 
-		((udf->primary->isNull()) ? "" : getTypeString(udf->primary) + "::") + udf->name + 
+		((udf->primary->isNull()) ? "" : getTypeString(udf->primary) + "::") + "_" + udf->name + 
 		nest(true, getArgsString(udf->args));
 }
 
@@ -790,7 +798,7 @@ string CPPLanguage::getTypeString(DataType * dt)
 	case DTE_NULL:
 		return DT_VOID;
 	case DTE_USER_DEFINED:
-		return this->replaceAll(dt->typeString,":","::");
+		return "_" + replaceAll(dt->typeString,":","::_");
 	default:
 		return "UNDEFINED TYPE";
 	}
