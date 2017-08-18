@@ -21,6 +21,8 @@ call Compilation\runCompileTest.bat if v3 StringLength
 call Compilation\runCompileTest.bat pf v4 Months
 call Compilation\runCompileTest.bat pf v4 Print
 
+call Compilation\runCompileTest.bat pf v5 CalcDistance
+
 pause
 
 call _clean.lnk>nul

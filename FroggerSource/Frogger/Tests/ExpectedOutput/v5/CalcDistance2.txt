@@ -1,0 +1,1 @@
+Point 0:Enter an X:Enter a Y:Point 1:Enter an X:Enter a Y:The Distance in Between (1.000000,2.000000) and (3.000000,4.000000) = 2.82843

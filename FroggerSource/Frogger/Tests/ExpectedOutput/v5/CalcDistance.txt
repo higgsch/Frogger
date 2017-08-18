@@ -1,0 +1,1 @@
+Point 0:Enter an X:Enter a Y:Point 1:Enter an X:Enter a Y:The Distance in Between (0.000000,0.000000) and (0.000000,0.000000) = 0
