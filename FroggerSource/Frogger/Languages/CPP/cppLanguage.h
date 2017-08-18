@@ -139,8 +139,10 @@ private:
 	string getBuiltInFunctionCode();
 	string getBuiltInCommandCode();
 	string getForwardDeclarationCode(ProgramStruct * prog);
+	string getClassForwardDeclaration(ObjectStruct * obj);
+	string getClassDefinitionCode(ProgramStruct * prog);
+	string getClassDefinitionCode(ObjectStruct * obj);
 	string getMainFunctionText(string PEFName);
-	string getObjectDefinition(ObjectStruct * obj);
 
 	string getSymbolTableCode(SymbolTable * symbols);
 	string getSupportText(SUPPORT_TEXT& text);

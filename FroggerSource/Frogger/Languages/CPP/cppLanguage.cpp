@@ -139,6 +139,7 @@ string CPPLanguage::getMetaCode(ProgramStruct * structure)
 	result += getBuiltInCommandCode();
 
 	result += getForwardDeclarationCode(structure);
+	result += getClassDefinitionCode(structure);
 	result += getMainFunctionText(structure->PEF->name);
 	return this->clearIndents(result);
 }
@@ -533,7 +534,7 @@ string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 		if (!currObject->isUserDefined)
 			continue;
 
-		result += line(getObjectDefinition(currObject));
+		result += line(getClassForwardDeclaration(currObject));
 	}
 	result += emptyLine();
 
@@ -545,7 +546,70 @@ string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 		result += line(getFunctionPrototype(currFunct->returnType, currFunct->name, currFunct->args) + ";");
 	}
 
-	result += emptyLine();
+	return result;
+}
+
+// ----------------------------------------------------------
+// This function returns the output text for all the class 
+// definitions within the program.
+// @prog: The structure table for the program.
+//
+// Version 5.0
+// ----------------------------------------------------------
+string CPPLanguage::getClassDefinitionCode(ProgramStruct * prog)
+{
+	string result = "";
+
+	int objCount = prog->getNumberOfOFs();
+	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	{
+		ObjectStruct * currObj = prog->getOF(objIndex);
+		if (!currObj->isUserDefined)
+			continue;
+
+		result += getClassDefinitionCode(prog->getOF(objIndex));
+	}
+
+	return result;
+}
+
+// ----------------------------------------------------------
+// This function returns the output text for all contained 
+// class definitions.
+// @obj: The structure table for the class.
+//
+// Version 5.0
+// ----------------------------------------------------------
+string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
+{
+	string result = emptyLine();
+
+	result += line("class " + obj->name);
+
+	result += openBraceLine();
+
+	string udfs = "";
+	int udfCount = obj->getNumberOfUDFs();
+	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
+	{
+		UDFRecord * currUDF = obj->getUDF(udfIndex);
+		udfs += line(getFunctionPrototype(currUDF->returnType,currUDF->name,currUDF->args) + ";");
+	}
+
+	result += increaseIndent(udfs);
+	
+	int objCount = obj->getNumberOfOFs();
+	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	{
+		ObjectStruct * currObj = obj->getOF(objIndex);
+		if (!currObj->isUserDefined)
+			continue;
+
+		result += increaseIndent(getClassDefinitionCode(obj->getOF(objIndex)));
+	}
+
+	result += closeBraceLine();
+
 	return result;
 }
 
@@ -557,7 +621,7 @@ string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 // ----------------------------------------------------------
 string CPPLanguage::getMainFunctionText(string PEFName)
 {
-	string result = "";
+	string result = emptyLine();
 	result += getSupportText(MAIN_DEC);
 	result += openBraceLine();
 
@@ -566,7 +630,6 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 	result += getSupportText(INIT_I_FILE);
 	result += getSupportText(INIT_O_FILE);
 
-	result += emptyLine();
 	result += line(PEFName + nest(true, "") + ";");
 	result += closeBraceLine();
 	return result;
@@ -578,7 +641,7 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 //
 // Version 5.0
 // ----------------------------------------------------------
-string CPPLanguage::getObjectDefinition(ObjectStruct * obj)
+string CPPLanguage::getClassForwardDeclaration(ObjectStruct * obj)
 {
 	string result = "class " + obj->name + ";";
 	return result;
