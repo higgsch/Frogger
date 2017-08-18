@@ -86,9 +86,9 @@ void FgrFunctionC::convertStrings(UDFRecord * funct)
 void FgrFunctionC::checkDataTypes(UDFRecord * ast)
 {
 	SymbolTable * symbols = new SymbolTable(lang, ast);
-	DataTypingPhase *dtp = new DataTypingPhase(lang, progStruct, ast->visibleFuncts, ast->visibleCmds, symbols, ast->name);
+	ast->visibleSyms->merge(symbols);
+	DataTypingPhase *dtp = new DataTypingPhase(lang, progStruct, ast->visibleFuncts, ast->visibleCmds, ast->visibleSyms, ast->name);
 	ast->root->accept(dtp);
-	ast->visibleSyms = symbols;
 	delete dtp;
 }
 
