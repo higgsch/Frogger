@@ -166,8 +166,8 @@ string CPPLanguage::getPEFCode(UDFRecord* rec, string pefText)
 string CPPLanguage::getUDFCode(UDFRecord* rec, string udfText)
 {
 	string result = emptyLine();
-
-	result += line(getFunctionPrototype(rec->returnType, rec->name, rec->args));
+	
+	result += line(getFunctionPrototype(rec));
 	result += openBraceLine();
 
 	string udfContents = getSymbolTableCode(rec->visibleSyms);
@@ -538,12 +538,12 @@ string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 	}
 	result += emptyLine();
 
-	result += line(getFunctionPrototype(prog->PEF->returnType, prog->PEF->name, prog->PEF->args) + ";");
+	result += line(getFunctionPrototype(prog->PEF) + ";");
 
 	for (int UDFIndex = 0; UDFIndex < prog->getNumberOfUDFs(); UDFIndex++)
 	{
 		UDFRecord * currFunct = prog->getUDF(UDFIndex);
-		result += line(getFunctionPrototype(currFunct->returnType, currFunct->name, currFunct->args) + ";");
+		result += line(getFunctionPrototype(currFunct) + ";");
 	}
 
 	return result;
@@ -588,16 +588,29 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 
 	result += openBraceLine();
 
-	string udfs = "";
+	string data = "";
+	int dataCount = obj->data->size();
+	if (dataCount > 0)
+		result += line("private:");
+	for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
+	{
+		DataRecord * currData = obj->data->at(dataIndex);
+		data += line(getTypeString(currData->type) + " " + currData->memberName + ";");
+	}
+	result += increaseIndent(data) + emptyLine();
+
+	result += line("public:");
+
+	string udfs = line(getConstructor(obj));
 	int udfCount = obj->getNumberOfUDFs();
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
 	{
 		UDFRecord * currUDF = obj->getUDF(udfIndex);
-		udfs += line(getFunctionPrototype(currUDF->returnType,currUDF->name,currUDF->args) + ";");
+		udfs += line(getFunctionDeclaration(currUDF) + ";");
 	}
-
 	result += increaseIndent(udfs);
 	
+	string ofs = "";
 	int objCount = obj->getNumberOfOFs();
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
 	{
@@ -605,8 +618,9 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 		if (!currObj->isUserDefined)
 			continue;
 
-		result += increaseIndent(getClassDefinitionCode(obj->getOF(objIndex)));
+		ofs += getClassDefinitionCode(obj->getOF(objIndex));
 	}
+	result += increaseIndent(ofs);
 
 	result += closeBraceLine();
 
@@ -707,14 +721,56 @@ string CPPLanguage::getLabelText(string udfName, int labelIndex)
 }
 
 // ----------------------------------------------------------
-// This function generates the function prototype of the given
-// UDFRecord.
+// This function generates the constructor for the given class.
+// @obj: The class struct.
 //
 // Version 5.0
 // ----------------------------------------------------------
-string CPPLanguage::getFunctionPrototype(DataType * returnType, string udfName, ArgList* args)
+string CPPLanguage::getConstructor(ObjectStruct * obj)
 {
-	return getTypeString(returnType) + " " + udfName + nest(true, getArgsString(args));
+	string result = obj->name + "() : ";
+	
+	int dataCount = obj->data->size();
+	for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
+	{
+		DataRecord * currData = obj->data->at(dataIndex);
+		if (currData->type->isUserDefined())
+			continue;
+		result += currData->memberName + "(" + currData->defaultValue + "), ";
+	}
+
+	if (dataCount > 0)
+	{
+		result = result.substr(0, result.length() - 2) + " ";
+	}
+
+	result += "{}";
+	return result;
+}
+
+// ----------------------------------------------------------
+// This function generates the function prototype of the given
+// UDFRecord without scope resolution.
+//
+// Version 5.0
+// ----------------------------------------------------------
+string CPPLanguage::getFunctionDeclaration(UDFRecord * udf)
+{
+	return getTypeString(udf->returnType) + " " + udf->name + 
+		nest(true, getArgsString(udf->args));
+}
+
+// ----------------------------------------------------------
+// This function generates the function prototype of the given
+// UDFRecord with scope resolution.
+//
+// Version 5.0
+// ----------------------------------------------------------
+string CPPLanguage::getFunctionPrototype(UDFRecord * udf)
+{
+	return getTypeString(udf->returnType) + " " + 
+		((udf->primary->isNull()) ? "" : getTypeString(udf->primary) + "::") + udf->name + 
+		nest(true, getArgsString(udf->args));
 }
 
 // ----------------------------------------------------------
@@ -734,7 +790,7 @@ string CPPLanguage::getTypeString(DataType * dt)
 	case DTE_NULL:
 		return DT_VOID;
 	case DTE_USER_DEFINED:
-		return dt->typeString;
+		return this->replaceAll(dt->typeString,":","::");
 	default:
 		return "UNDEFINED TYPE";
 	}

@@ -139,16 +139,19 @@ private:
 	string getBuiltInFunctionCode();
 	string getBuiltInCommandCode();
 	string getForwardDeclarationCode(ProgramStruct * prog);
+	string getMainFunctionText(string PEFName);
+
 	string getClassForwardDeclaration(ObjectStruct * obj);
 	string getClassDefinitionCode(ProgramStruct * prog);
 	string getClassDefinitionCode(ObjectStruct * obj);
-	string getMainFunctionText(string PEFName);
 
 	string getSymbolTableCode(SymbolTable * symbols);
 	string getSupportText(SUPPORT_TEXT& text);
 
 	string getLabelText(string udfName, int stmtNo);
-	string getFunctionPrototype(DataType * returnType, string udfName, ArgList* args);
+	string getConstructor(ObjectStruct * obj);
+	string getFunctionDeclaration(UDFRecord * udf);
+	string getFunctionPrototype(UDFRecord * udf);
 	string getTypeString(DataType *  type);
 	string getArgsString(ArgList* args);
 
