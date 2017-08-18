@@ -1,0 +1,5 @@
+display('Enter an X:');
+display('Enter a Y:');
+end(p);
+p:setX(retrieveDouble());
+p:setY(retrieveDouble());

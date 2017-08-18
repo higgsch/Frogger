@@ -1,0 +1,5 @@
+Point.struct
+CalcDistance()~null.fgr
+calcDistanceBetween(pfirst=Point,psecond=Point)~double.fgr
+displayDistanceBetween(pfirst=Point,psecond=Point)~null.fgr
+getPointFromUser()~Point.fgr

@@ -1,0 +1,8 @@
+display('Point 0:');
+end();
+displayDistanceBetween(pfirst, psecond);
+end();
+pfirst = getPointFromUser();
+psecond = getPointFromUser();
+display('Point 1:');
+end();
