@@ -622,7 +622,7 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 	}
 	result += increaseIndent(ofs);
 
-	result += closeBraceLine();
+	result += line(CLOSE_BRACE + ";");
 
 	return result;
 }
