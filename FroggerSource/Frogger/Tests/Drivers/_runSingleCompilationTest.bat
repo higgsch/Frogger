@@ -1,6 +1,6 @@
 echo off
 
-call Compilation\runCompileTest.bat pf v5 CalcDistance
+call Compilation\runCompileTest.bat pf v5 CalcPerimeter
 
 pause
 

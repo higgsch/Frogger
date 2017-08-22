@@ -22,6 +22,7 @@ call Compilation\runCompileTest.bat pf v4 Months
 call Compilation\runCompileTest.bat pf v4 Print
 
 call Compilation\runCompileTest.bat pf v5 CalcDistance
+call Compilation\runCompileTest.bat pf v5 CalcPerimeter
 
 pause
 

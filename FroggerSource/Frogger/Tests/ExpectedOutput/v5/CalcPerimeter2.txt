@@ -1,0 +1,6 @@
+Side A: Point 0:Enter an X:Enter a Y:Point 1:Enter an X:Enter a Y:Side B;Point 0:Enter an X:Enter a Y:Point 1:Enter an X:Enter a Y:Side C;Point 0:Enter an X:Enter a Y:Point 1:Enter an X:Enter a Y:Side D;Point 0:Enter an X:Enter a Y:Point 1:Enter an X:Enter a Y:Perimeter of Quadrilateral: 
+Side 1 - A: (-7.750000,1.860000)->B:(-5.810000,-0.490000)
+Side 2- A: (-5.810000,-0.490000)->B:(5.740000,-8.410000)
+Side 3 : A: (5.740000,-8.410000)->B:(-2.070000,-0.100000)
+Side 4 : A: (-2.070000,-0.100000)->B:(-7.750000,1.860000)
+-- is 34.4646
