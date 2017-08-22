@@ -1,0 +1,1 @@
+end(sideA:getLength() ++ sideB:getLength() ++ sideC:getLength() ++ sideD:getLength());

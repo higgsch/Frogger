@@ -1,0 +1,2 @@
+display('(' ++ X:toString() ++ ',' ++ (Y ++ 0):toString() ++ ')');
+end();

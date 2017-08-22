@@ -1,0 +1,9 @@
+Point.struct
+Line.data
+display()~null.fgr
+getA()~Point.fgr
+getB()~Point.fgr
+getLength()~double.fgr
+getPointFromUser()~Point.fgr
+setA(aNewA=Point)~null.fgr
+setB(aNewB=Point)~null.fgr

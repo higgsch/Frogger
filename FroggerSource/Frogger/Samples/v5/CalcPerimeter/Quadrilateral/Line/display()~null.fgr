@@ -1,0 +1,5 @@
+display('A: ');
+A:display();
+B:display();
+display('->B:');
+end();

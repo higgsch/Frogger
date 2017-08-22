@@ -1,0 +1,6 @@
+quad = getQuadrilateralFromUser();
+end();
+display('Perimeter of Quadrilateral: ');
+quad:display();
+display(quad:getPerimeter());
+display('&n-- is ');

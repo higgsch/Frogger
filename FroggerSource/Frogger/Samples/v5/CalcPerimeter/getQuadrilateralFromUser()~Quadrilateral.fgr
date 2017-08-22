@@ -1,0 +1,9 @@
+display('Side A: ');
+q:setSideB(q:getLineFromUser());
+q:setSideC(q:getLineFromUser());
+q:setSideD(q:getLineFromUser());
+q:setSideA(q:getLineFromUser());
+display('Side B;');
+display('Side C;');
+display('Side D;');
+end(q);

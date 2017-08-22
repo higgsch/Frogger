@@ -1,0 +1,10 @@
+display('&nSide 1 - ');
+end();
+sideB:display();
+sideA:display();
+display('&nSide 2- ');
+display('&nSide 3 : ');
+display('&nSide 4 : ');
+end();
+sideC:display();
+sideD:display();

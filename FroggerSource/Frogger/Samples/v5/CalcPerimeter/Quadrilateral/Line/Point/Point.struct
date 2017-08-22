@@ -1,0 +1,6 @@
+Point.data
+getX()~double.fgr
+getY()~double.fgr
+setX(newX=double)~null.fgr
+setY(newY=double)~null.fgr
+display()~null.fgr

@@ -1,0 +1,13 @@
+Line.struct
+Quadrilateral.data
+display()~null.fgr
+getLineFromUser()~Line.fgr
+getPerimeter()~double.fgr
+getSideA()~Line.fgr
+getSideB()~Line.fgr
+getSideC()~Line.fgr
+getSideD()~Line.fgr
+setSideA(aNewSideA=Line)~null.fgr
+setSideB(aNewSideB=Line)~null.fgr
+setSideC(aNewSideC=Line)~null.fgr
+setSideD(aNewSideD=Line)~null.fgr

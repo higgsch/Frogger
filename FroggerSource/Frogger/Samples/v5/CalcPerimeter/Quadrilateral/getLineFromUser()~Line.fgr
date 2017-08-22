@@ -1,0 +1,5 @@
+display('Point 0:');
+l:setA(l:getPointFromUser());
+l:setB(l:getPointFromUser());
+display('Point 1:');
+end(l);
