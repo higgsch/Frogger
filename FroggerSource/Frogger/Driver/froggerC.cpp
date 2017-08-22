@@ -252,15 +252,35 @@ string FroggerC::getUDFFilename(UDFRecord * udf)
 
 	int argCount = udf->args->size();
 	if (argCount > 0)
-		filename += udf->args->at(0)->name + "=" + udf->args->at(0)->type->typeString;
+	{
+		string argType = udf->args->at(0)->type->typeString;
+		size_t scopeOpPos = argType.find_last_of(":");
+
+		if (scopeOpPos == string::npos)
+			filename += udf->args->at(0)->name + "=" + argType;
+		else
+			filename += udf->args->at(0)->name + "=" + argType.substr(scopeOpPos + 1);
+	}
 
 	for (int argIndex = 1; argIndex < argCount; argIndex++)
 	{
 		ArgPair * currArg = udf->args->at(argIndex);
-		filename += "," + currArg->name + "=" + currArg->type->typeString;
+		string argType = currArg->type->typeString;
+		size_t scopeOpPos = argType.find_last_of(":");
+
+		if (scopeOpPos == string::npos)
+			filename += "," + currArg->name + "=" + argType;
+		else
+			filename += "," + currArg->name + "=" + argType.substr(scopeOpPos + 1);
 	}
 
-	filename += ")~" + udf->returnType->typeString;
+	string returnType = udf->returnType->typeString;
+	size_t scopeOpPos = returnType.find_last_of(":");
+
+	if (scopeOpPos == string::npos)
+		filename += ")~" + returnType;
+	else
+		filename += ")~" + returnType.substr(scopeOpPos + 1);
 
 	return filename + ".fgr";
 }

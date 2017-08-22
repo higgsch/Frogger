@@ -50,7 +50,7 @@ protected:
 		while ((n = source.find(toFind, n)) != string::npos)
 		{
 			source = source.replace( n, toFind.size(), toReplace);
-			n += toFind.size();
+			n += toReplace.size();
 		}
 
 		return source;

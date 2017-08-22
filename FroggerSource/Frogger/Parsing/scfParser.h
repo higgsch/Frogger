@@ -24,6 +24,7 @@ private:
 	DataTypeCollection * types;
 
 	string currFilePath;
+	string scope;
 
 	SCFScanner scanner;
 	SCFToken current_token;
@@ -49,7 +50,7 @@ private:
 	bool isInObjects(ObjectStruct * rec, OFCollection * objects);
 	bool functionSignatureMatches(UDFRecord * first, UDFRecord * second);
 
-	ObjectStruct * parseObjectLevelSCF(string objectDir, string objectName);
+	ObjectStruct * parseObjectLevelSCF(string objectDir, string objectName, string newScope);
 
 	void addEndCommand(UDFRecord* rec);
 

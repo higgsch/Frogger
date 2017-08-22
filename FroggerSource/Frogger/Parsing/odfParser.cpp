@@ -14,11 +14,12 @@ extern bool quietMode;
 //
 // Version 5.0
 // ----------------------------------------------------------
-ODFParser::ODFParser()
+ODFParser::ODFParser(string i_scope)
 {
 	current_token = ODFToken::NOTOK;
 	lookahead[0] = ODFToken::NOTOK;
 	currFilePath = "";
+	scope = i_scope;
 }
 
 // ----------------------------------------------------------
@@ -147,7 +148,7 @@ DataType * ODFParser::dataType()
 		return DataType::DT_STRINGLIST;
 	else
 	{
-		return new DataType(DTE_USER_DEFINED, type.lexeme);
+		return new DataType(DTE_USER_DEFINED, scope + type.lexeme);
 	}
 }
 

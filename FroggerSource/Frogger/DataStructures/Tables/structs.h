@@ -105,15 +105,26 @@ struct ObjectStruct
 	ProgramNode * getUDFNode(int udfIndex) { return (*UDFs)[udfIndex]->root; }
 	ObjectStruct * getOF(int objIndex) { return (*OFs)[objIndex]; }
 
-	ObjectStruct * getObject(DataType * dt)
+	ObjectStruct * getObject(string remainingObjectName)
 	{
-		string objectName = dt->typeString;
+		string objectName = "";
+		size_t scopeOperatorPos = remainingObjectName.find_first_of(":");
+		if (scopeOperatorPos == string::npos)
+			objectName = remainingObjectName;
+		else
+			objectName = remainingObjectName.substr(0, scopeOperatorPos);
+
 		int objCount = OFs->size();
 		for (int objIndex = 0; objIndex < objCount; objIndex++)
 		{
 			ObjectStruct * currObj = getOF(objIndex);
 			if (objectName == currObj->name)
-				return currObj;
+			{
+				if (scopeOperatorPos == string::npos)
+					return currObj;
+				else
+					return currObj->getObject(remainingObjectName.substr(scopeOperatorPos + 1));
+			}
 		}
 
 		return NULL;
@@ -136,6 +147,12 @@ struct ProgramStruct : public ObjectStruct
 	ProgramStruct(Language * lang);
 
 	ProgramNode* getPEFNode() { return PEF->root; }
+
+	ObjectStruct * getObject(DataType * dt)
+	{
+		string objectName = dt->typeString;
+		return ((ObjectStruct*)this)->getObject(objectName);
+	}
 
 	ObjectStruct * OBJ_DOUBLE;
 	ObjectStruct * OBJ_STRING;

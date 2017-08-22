@@ -33,6 +33,8 @@ SCFParser::SCFParser(Language * lang) : lang(lang)
 // ----------------------------------------------------------
 ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projectName)
 {
+	scope = "";
+
 	open(projectDir + projectName + ".struct");
 
 	ProgramStruct * progStruct = new ProgramStruct(lang);
@@ -136,16 +138,16 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 //
 // Version 5.0
 // ----------------------------------------------------------
-ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectName)
+ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectName, string newScope)
 {
-	types->add(objectName);
+	scope = newScope;
+
+	//scope includes objectName
+	types->add(scope.substr(0,scope.length()-1));
 	open(objectDir + objectName + ".struct");
 
 	ObjectStruct * objStruct = new ObjectStruct(lang);
 	objStruct->name = objectName;
-
-	//ODFParser dataP;
-	//objStruct->data = dataP.parseODF(objectDir, objectName);
 
 	while (next_token().type != SCFTT_SCANEOF)
 	{
@@ -154,7 +156,7 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 		if (next_token().type == SCFTT_LPAREN)
 		{ //Function Declaration Record
 			UDFRecord * currRec = functRecord(name);
-			currRec->primary = types->getDT(objectName);
+			currRec->primary = types->getDT(scope.substr(0,scope.length() - 1));
 			if (isInFunctions(currRec, objStruct->UDFs))
 			{
 				syntax_error("" + currRec->name + " function is duplicated.");
@@ -240,7 +242,7 @@ void SCFParser::addEndCommand(UDFRecord* rec)
 		rec->visibleCmds->addEndString();
 	else
 	{
-		Routine* endCommand = new Routine(rec->primary, "end", DataType::DT_NULL, true);
+		Routine* endCommand = new Routine(DataType::DT_NULL, "end", DataType::DT_NULL, true);
 		endCommand->addArg("", rec->returnType);
 
 		rec->visibleCmds->add(endCommand);
@@ -258,7 +260,7 @@ void SCFParser::addEndCommand(UDFRecord* rec)
 ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 {
 	SCFParser p(lang);
-	return p.parseObjectLevelSCF(objectDir, name);
+	return p.parseObjectLevelSCF(objectDir, name, scope + name + ":");
 }
 
 // ----------------------------------------------------------
@@ -271,7 +273,7 @@ ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 // ----------------------------------------------------------
 DataStruct * SCFParser::dataRecord(string dataDir, string name)
 {
-	ODFParser p;
+	ODFParser p(scope);
 	return p.parseODF(dataDir, name);
 }
 
@@ -371,8 +373,8 @@ DataType * SCFParser::dataType()
 		return DataType::DT_NULL;
 	else
 	{
-		types->add(type.lexeme);
-		return types->getDT(type.lexeme);
+		types->add(scope + type.lexeme);
+		return types->getDT(scope + type.lexeme);
 	}
 }
 

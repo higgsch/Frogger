@@ -595,28 +595,7 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 
 	result += openBraceLine();
 
-	string data = "";
-	int dataCount = obj->data->size();
-	if (dataCount > 0)
-		result += line("private:");
-	for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
-	{
-		DataRecord * currData = obj->data->at(dataIndex);
-		data += line(getTypeString(currData->type) + " _" + currData->memberName + ";");
-	}
-	result += increaseIndent(data) + emptyLine();
-
 	result += line("public:");
-
-	string udfs = line(getConstructor(obj));
-	int udfCount = obj->getNumberOfUDFs();
-	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
-	{
-		UDFRecord * currUDF = obj->getUDF(udfIndex);
-		udfs += line(getFunctionDeclaration(currUDF) + ";");
-	}
-	result += increaseIndent(udfs);
-	
 	string ofs = "";
 	int objCount = obj->getNumberOfOFs();
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
@@ -628,7 +607,30 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 		ofs += getClassDefinitionCode(obj->getOF(objIndex));
 	}
 	result += increaseIndent(ofs);
+	result += emptyLine();
 
+	string data = "";
+	int dataCount = obj->data->size();
+	if (dataCount > 0)
+		result += line("private:");
+	for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
+	{
+		DataRecord * currData = obj->data->at(dataIndex);
+		data += line(getTypeString(currData->type) + " _" + currData->memberName + ";");
+	}
+	result += increaseIndent(data) + emptyLine();
+
+	if (dataCount > 0)
+		result += line("public:");
+	string udfs = line(getConstructor(obj));
+	int udfCount = obj->getNumberOfUDFs();
+	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
+	{
+		UDFRecord * currUDF = obj->getUDF(udfIndex);
+		udfs += line(getFunctionDeclaration(currUDF) + ";");
+	}
+	result += increaseIndent(udfs);
+	
 	result += line(CLOSE_BRACE + ";");
 
 	return result;

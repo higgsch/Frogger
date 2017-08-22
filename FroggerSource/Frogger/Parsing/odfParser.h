@@ -19,6 +19,7 @@ class ODFParser
 {
 private:
 	string currFilePath;
+	string scope;
 
 	ODFScanner scanner;
 	ODFToken current_token;
@@ -40,7 +41,7 @@ private:
 	void close() { scanner.close(); }
 
 public:
-	ODFParser();
+	ODFParser(string scope);
 
 	DataStruct * parseODF(string dir, string name);
 };
