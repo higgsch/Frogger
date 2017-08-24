@@ -32,7 +32,7 @@ public:
 
 	bool isTreeTyped();
 
-	void visitThisStmt(Phase* p) { visitNode(p, stmt); }
-	void visitAllChildren(Phase* p) { visitThisStmt(p); visitNextStmt(p); }
-	void accept(Phase* p) { p->visit(this); }
+	void visitThisStmt(FGRPhase* p) { visitNode(p, stmt); }
+	void visitAllChildren(FGRPhase* p) { visitThisStmt(p); visitNextStmt(p); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

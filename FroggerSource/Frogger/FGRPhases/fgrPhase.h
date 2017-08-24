@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header for the Phase class.
+// This is the header for the FGRPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
@@ -46,7 +46,7 @@ extern bool quietMode;
 //
 // Version 4.4
 // ----------------------------------------------------------
-class Phase
+class FGRPhase
 {
 public:
 	//virtual visit functions required by visitor pattern

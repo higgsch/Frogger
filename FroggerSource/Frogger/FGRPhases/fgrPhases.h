@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "phase.h"
+#include "fgrPhase.h"
 #include "lineNoPhase.h"
 #include "summationPhase.h"
 #include "stringConversionPhase.h"

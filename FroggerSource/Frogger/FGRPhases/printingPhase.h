@@ -4,7 +4,7 @@
 #pragma once
 
 #include <iostream>
-#include "phase.h"
+#include "fgrPhase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
@@ -14,7 +14,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class PrintingPhase : public Phase
+class PrintingPhase : public FGRPhase
 {
 private:
 	ostream* out; // the output stream to print to

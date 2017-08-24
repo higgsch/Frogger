@@ -39,7 +39,7 @@ public:
 	bool isNested() { return isNestedStmt; }
 	void setNested(bool nest) { isNestedStmt = nest; }
 
-	void visitNextStmt(Phase* p) { if (!isNested()) visitNode(p, nextStmt); }
+	void visitNextStmt(FGRPhase* p) { if (!isNested()) visitNode(p, nextStmt); }
 
 	virtual void addNextStmt(ControlFlowNode* next)=0;
 };

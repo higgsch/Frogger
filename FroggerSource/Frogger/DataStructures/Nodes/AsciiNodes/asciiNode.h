@@ -6,7 +6,7 @@
 #include "..\node.h"
 using namespace std;
 
-class Phase;
+class FGRPhase;
 
 // ----------------------------------------------------------
 // This class provides the base of the node inheritance for

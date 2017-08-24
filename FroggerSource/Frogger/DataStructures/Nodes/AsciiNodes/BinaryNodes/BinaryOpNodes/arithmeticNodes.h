@@ -18,7 +18,7 @@ public:
 	AddingNode(int lineNo) : BinaryOpNode(lineNo, ADD) {}
 	~AddingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -33,7 +33,7 @@ public:
 	SubingNode(int lineNo) : BinaryOpNode(lineNo, SUB) {}
 	~SubingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -48,7 +48,7 @@ public:
 	MulingNode(int lineNo) : BinaryOpNode(lineNo, MUL) {}
 	~MulingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -63,7 +63,7 @@ public:
 	DivingNode(int lineNo) : BinaryOpNode(lineNo, DIV) {}
 	~DivingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -78,7 +78,7 @@ public:
 	ModDivingNode(int lineNo) : BinaryOpNode(lineNo, MODDIV) {}
 	~ModDivingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 // ----------------------------------------------------------
 // This class provides a node representation for an integer 
@@ -93,7 +93,7 @@ public:
 	IDivingNode(int lineNo) : BinaryOpNode(lineNo, IDIV) {}
 	~IDivingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -108,7 +108,7 @@ public:
 	RootingNode(int lineNo) : BinaryOpNode(lineNo, ROOT) {}
 	~RootingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -123,5 +123,5 @@ public:
 	ExpingNode(int lineNo) : BinaryOpNode(lineNo, EXP) {}
 	~ExpingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

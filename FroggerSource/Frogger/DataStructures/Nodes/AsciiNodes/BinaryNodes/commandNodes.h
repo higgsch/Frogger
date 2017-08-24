@@ -36,9 +36,9 @@ public:
 	AsciiNode* getThisArg() { return getLeftChild(); }
 	AsciiNode* getNextArg() { return getRightChild(); }
 	
-	void visitThisArg(Phase* p) { visitLeftChild(p); }
-	void visitNextArg(Phase* p) { visitRightChild(p); }
-	void accept(Phase* p)	{	p->visit(this);	}
+	void visitThisArg(FGRPhase* p) { visitLeftChild(p); }
+	void visitNextArg(FGRPhase* p) { visitRightChild(p); }
+	void accept(FGRPhase* p)	{	p->visit(this);	}
 };
 
 // ----------------------------------------------------------
@@ -66,7 +66,7 @@ public:
 	AsciiNode* getPrimary() { return getLeftChild(); }
 	AsciiNode* getArgList() { return getRightChild(); }
 
-	void visitPrimary(Phase* p) { visitLeftChild(p); }
-	void visitArgList(Phase* p) { visitRightChild(p); }
-	void accept(Phase* p)	{	p->visit(this);	}
+	void visitPrimary(FGRPhase* p) { visitLeftChild(p); }
+	void visitArgList(FGRPhase* p) { visitRightChild(p); }
+	void accept(FGRPhase* p)	{	p->visit(this);	}
 };

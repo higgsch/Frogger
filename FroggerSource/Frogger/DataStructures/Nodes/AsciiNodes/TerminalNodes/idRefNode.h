@@ -18,5 +18,5 @@ public:
 	IdRefNode(string id, int lineNo) : TerminalNode(lineNo) { lexeme = id; }
 	~IdRefNode() {}
 
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

@@ -20,5 +20,5 @@ public:
 
 	bool isTreeTyped() { return isTyped(); }
 
-	void visitAllChildren(Phase* p) { return; }
+	void visitAllChildren(FGRPhase* p) { return; }
 };

@@ -6,7 +6,7 @@
 #include "..\asciiNode.h"
 using namespace std;
 
-class Phase;
+class FGRPhase;
 
 // ----------------------------------------------------------
 // This class provides representation for nodes with two 
@@ -24,8 +24,8 @@ protected:
 	void addLeftChild(AsciiNode * absNode);
 	void addRightChild(AsciiNode * absNode);
 
-	void visitLeftChild(Phase* p) { visitNode(p, leftChild); }
-	void visitRightChild(Phase* p) { visitNode(p, rightChild); }
+	void visitLeftChild(FGRPhase* p) { visitNode(p, leftChild); }
+	void visitRightChild(FGRPhase* p) { visitNode(p, rightChild); }
 
 public:
 	BinaryNode(int lineNo);
@@ -36,5 +36,5 @@ public:
 
 	bool isTreeTyped();
 
-	void visitAllChildren(Phase* p) { visitLeftChild(p); visitRightChild(p); }
+	void visitAllChildren(FGRPhase* p) { visitLeftChild(p); visitRightChild(p); }
 };

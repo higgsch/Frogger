@@ -4,7 +4,7 @@
 #pragma once
 
 #include <iostream>
-#include "phase.h"
+#include "fgrPhase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\Languages\language.h"
@@ -16,7 +16,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class SupportReqsPhase : public Phase
+class SupportReqsPhase : public FGRPhase
 {
 private:
 	Language * lang;

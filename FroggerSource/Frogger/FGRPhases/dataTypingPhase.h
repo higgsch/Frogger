@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "phase.h"
+#include "fgrPhase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
 using namespace std;
@@ -13,7 +13,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class DataTypingPhase : public Phase
+class DataTypingPhase : public FGRPhase
 {
 private:
 	Language * lang;

@@ -22,8 +22,8 @@ public:
 	void addOperand(AsciiNode* n) { addChild(n); }
 	AsciiNode* getOperand() { return getChild(); }
 
-	void visitOperand(Phase* p) { visitChild(p); }
-	void accept(Phase* p) { p->visit(this); }
+	void visitOperand(FGRPhase* p) { visitChild(p); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -38,7 +38,7 @@ public:
 	LTingNode(int lineNo) : BinaryOpNode(lineNo, LT) {}
 	~LTingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -53,7 +53,7 @@ public:
 	GTingNode(int lineNo) : BinaryOpNode(lineNo, GT) {}
 	~GTingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -68,7 +68,7 @@ public:
 	EQingNode(int lineNo) : BinaryOpNode(lineNo, EQ) {}
 	~EQingNode() {}
 	
-	void accept(Phase* p)	{	p->visit(this);	}
+	void accept(FGRPhase* p)	{	p->visit(this);	}
 };
 
 // ----------------------------------------------------------
@@ -83,7 +83,7 @@ public:
 	LTEingNode(int lineNo) : BinaryOpNode(lineNo, LTE) {}
 	~LTEingNode() {}
 	
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };
 
 // ----------------------------------------------------------
@@ -98,5 +98,5 @@ public:
 	GTEingNode(int lineNo) : BinaryOpNode(lineNo, GTE) {}
 	~GTEingNode() {}
 
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

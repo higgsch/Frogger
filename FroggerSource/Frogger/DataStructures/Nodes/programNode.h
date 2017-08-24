@@ -7,7 +7,7 @@
 #include "node.h"
 using namespace std;
 
-class Phase;
+class FGRPhase;
 
 // ----------------------------------------------------------
 // This class provides a root node for the AST.
@@ -33,7 +33,7 @@ public:
 
 	bool isTreeTyped();
 
-	void visitFirstStmt(Phase* p) { visitNode(p, firstStmt); }
-	void visitAllChildren(Phase* p) { visitNode(p, firstStmt); }
-	void accept(Phase* p) { p->visit(this); }
+	void visitFirstStmt(FGRPhase* p) { visitNode(p, firstStmt); }
+	void visitAllChildren(FGRPhase* p) { visitNode(p, firstStmt); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

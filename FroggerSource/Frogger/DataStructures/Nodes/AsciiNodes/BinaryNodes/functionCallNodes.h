@@ -29,5 +29,5 @@ public:
 
 	int getArgListLength() { return funct->getNumArgs(); }
 
-	void accept(Phase* p) { p->visit(this); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

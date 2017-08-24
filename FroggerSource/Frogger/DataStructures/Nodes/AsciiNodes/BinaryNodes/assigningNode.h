@@ -29,7 +29,7 @@ public:
 	AsciiNode* getAssignee() { return getLeftChild(); }
 	AsciiNode* getAssignor() { return getRightChild(); }
 
-	void visitAssignee(Phase* p) { visitLeftChild(p); }
-	void visitAssignor(Phase* p) { visitRightChild(p); }
-	void accept(Phase* p) { p->visit(this); }
+	void visitAssignee(FGRPhase* p) { visitLeftChild(p); }
+	void visitAssignor(FGRPhase* p) { visitRightChild(p); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

@@ -5,7 +5,7 @@
 
 #include <string>
 #include <iostream>
-#include "..\..\Phases\phase.h"
+#include "..\..\FGRPhases\fgrPhase.h"
 #include "..\dataTyped.h"
 using namespace std;
 
@@ -45,7 +45,7 @@ protected:
 	//
 	// Version 3.0
 	// ----------------------------------------------------------
-	void visitNode(Phase* p, Node* n)
+	void visitNode(FGRPhase* p, Node* n)
 	{
 		if (n != NULL && p != NULL)
 			n->accept(p);
@@ -56,6 +56,6 @@ public:
 
 	virtual bool isTreeTyped() =0;
 
-	virtual void visitAllChildren(Phase* p) =0;
-	virtual void accept(Phase*) =0;
+	virtual void visitAllChildren(FGRPhase* p) =0;
+	virtual void accept(FGRPhase*) =0;
 };

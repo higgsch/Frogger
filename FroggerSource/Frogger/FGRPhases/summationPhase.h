@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "phase.h"
+#include "fgrPhase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
@@ -13,7 +13,7 @@ using namespace std;
 //
 // Version 3.0
 // ----------------------------------------------------------
-class SummationPhase : public Phase
+class SummationPhase : public FGRPhase
 {
 private:
 	int numStmts; // the total number of lines in the program

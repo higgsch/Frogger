@@ -37,7 +37,7 @@ public:
 
 	binaryOp getOpType() { return op; }
 
-	void visitLeftOperand(Phase* p) { visitLeftChild(p); }
-	void visitRightOperand(Phase* p) { visitRightChild(p); }
-	void visitBothOperands(Phase* p) { visitAllChildren(p); }
+	void visitLeftOperand(FGRPhase* p) { visitLeftChild(p); }
+	void visitRightOperand(FGRPhase* p) { visitRightChild(p); }
+	void visitBothOperands(FGRPhase* p) { visitAllChildren(p); }
 };

@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "phase.h"
+#include "fgrPhase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
@@ -12,7 +12,7 @@ using namespace std;
 //
 // Version 3.0
 // ----------------------------------------------------------
-class LineNoPhase : public Phase
+class LineNoPhase : public FGRPhase
 {
 private:
 	int lineCount; // a counter for current line number

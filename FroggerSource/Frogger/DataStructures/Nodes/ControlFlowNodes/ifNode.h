@@ -34,15 +34,15 @@ public:
 
 	bool isTreeTyped();
 
-	void visitBoolExp(Phase* p) { visitNode(p, boolExp); }
-	void visitTrueStmt(Phase* p) { visitNode(p, trueStmt); }
-	void visitFalseStmt(Phase* p) { visitNode(p, falseStmt); }
-	void visitThisStmt(Phase* p)
+	void visitBoolExp(FGRPhase* p) { visitNode(p, boolExp); }
+	void visitTrueStmt(FGRPhase* p) { visitNode(p, trueStmt); }
+	void visitFalseStmt(FGRPhase* p) { visitNode(p, falseStmt); }
+	void visitThisStmt(FGRPhase* p)
 	{
 		visitBoolExp(p);
 		visitTrueStmt(p);
 		visitFalseStmt(p);
 	}
-	void visitAllChildren(Phase* p) { visitThisStmt(p); visitNextStmt(p); }
-	void accept(Phase* p) { p->visit(this); }
+	void visitAllChildren(FGRPhase* p) { visitThisStmt(p); visitNextStmt(p); }
+	void accept(FGRPhase* p) { p->visit(this); }
 };

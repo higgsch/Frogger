@@ -18,7 +18,7 @@ public:
 	StringConstingNode(string str, int lineNo) : TerminalNode(lineNo) { lexeme = str; }
 	~StringConstingNode() {}
 
-	void accept(Phase* p)	{	p->visit(this);	}
+	void accept(FGRPhase* p)	{	p->visit(this);	}
 };
 
 // ----------------------------------------------------------
@@ -33,5 +33,5 @@ public:
 	DoubleConstingNode(string dbl, int lineNo) : TerminalNode(lineNo) { lexeme = dbl; }
 	~DoubleConstingNode() {}
 
-	void accept(Phase* p)	{	p->visit(this);	}
+	void accept(FGRPhase* p)	{	p->visit(this);	}
 };

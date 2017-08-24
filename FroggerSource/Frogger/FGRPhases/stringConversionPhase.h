@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "phase.h"
+#include "fgrPhase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
@@ -13,7 +13,7 @@ using namespace std;
 //
 // Version 4.0
 // ----------------------------------------------------------
-class StringConversionPhase : public Phase
+class StringConversionPhase : public FGRPhase
 {
 private:
 	string convertString(string);

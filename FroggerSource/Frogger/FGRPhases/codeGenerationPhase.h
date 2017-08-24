@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "phase.h"
+#include "fgrPhase.h"
 #include "..\DataStructures\Nodes\nodes.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\Printing\printer.h"
@@ -18,7 +18,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class CodeGenerationPhase : public Phase
+class CodeGenerationPhase : public FGRPhase
 {
 private:
 	Printer * p;

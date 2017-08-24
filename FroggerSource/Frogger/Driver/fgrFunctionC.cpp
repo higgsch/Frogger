@@ -5,7 +5,7 @@
 // This program compiles a .fgr source file to c++ output.
 // -----------------------------------------------------------------
 #include "fgrFunctionC.h"
-#include "..\Phases\phases.h"
+#include "..\FGRPhases\fgrPhases.h"
 #include "..\Parsing\FgrParser.h"
 #include <iostream>
 using namespace std;
