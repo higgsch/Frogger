@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the include header file for Phase classes. 
+// This is the include header file for FGRPhase classes. 
 // -----------------------------------------------------------------
 #pragma once
 
