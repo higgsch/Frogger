@@ -9,6 +9,7 @@
 #include "fgrFunctionC.h"
 #include "..\Parsing\SCFParser.h"
 #include "..\Phases\FGRPhases\fgrPhases.h"
+#include "..\Phases\SCFPhases\scfPhases.h"
 #include <iostream>
 #include <Windows.h>
 using namespace std;
@@ -49,7 +50,7 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 		progStruct->scopedTables->cmds->add(progStruct->PEF);
 	}
 
-	addAllLocalUDFsToVisibles();
+	runTableVisibilityPhase();
 
 	verifyPEFExists(dir);
 	verifyAllContainedUDFsExist(dir, progStruct);
@@ -152,37 +153,10 @@ void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::addAllLocalUDFsToVisibles()
+void FroggerC::runTableVisibilityPhase()
 {
-	addAllLocalUDFsToVisibles(progStruct);
-
-	progStruct->PEF->visibleTables->cmds->merge(progStruct->scopedTables->cmds);
-	progStruct->PEF->visibleTables->functs->merge(progStruct->scopedTables->functs);
-	progStruct->PEF->visibleTables->syms->merge(progStruct->scopedTables->syms);
-}
-
-// ----------------------------------------------------------
-// This function merges all scoped tables into all visible tables.
-// @obj: The working ObjectStruct.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::addAllLocalUDFsToVisibles(ObjectStruct* obj)
-{
-	int objCount = obj->getNumberOfOFs();
-	for (int objIndex = 0; objIndex < objCount; objIndex++)
-	{
-		addAllLocalUDFsToVisibles(obj->getOF(objIndex));
-	}
-
-	int udfCount = obj->getNumberOfUDFs();
-	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
-	{
-		UDFRecord* currUDF = obj->getUDF(udfIndex);
-		currUDF->visibleTables->cmds->merge(obj->scopedTables->cmds);
-		currUDF->visibleTables->functs->merge(obj->scopedTables->functs);
-		currUDF->visibleTables->syms->merge(obj->scopedTables->syms);
-	}
+	TableVisibilityPhase tvp;
+	tvp.process(progStruct);
 }
 
 // ----------------------------------------------------------

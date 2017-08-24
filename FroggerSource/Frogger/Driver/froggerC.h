@@ -35,8 +35,7 @@ private:
 	void compilePEF(string dir);
 	void compileAllContainedUDFs(string dir, ObjectStruct * obj);
 
-	void addAllLocalUDFsToVisibles();
-	void addAllLocalUDFsToVisibles(ObjectStruct* obj);
+	void runTableVisibilityPhase();
 	
 	void computeRequiredSupportCode(ProgramStruct * prog);
 
