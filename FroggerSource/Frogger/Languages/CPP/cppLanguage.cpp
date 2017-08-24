@@ -170,7 +170,7 @@ string CPPLanguage::getUDFCode(UDFRecord* rec, string udfText)
 	result += line(getFunctionPrototype(rec));
 	result += openBraceLine();
 
-	string udfContents = getSymbolTableCode(rec->visibleSyms);
+	string udfContents = getSymbolTableCode(rec->visibleTables->syms);
 	udfContents += emptyLine();
 	udfContents += udfText;
 	result += increaseIndent(udfContents);

@@ -22,15 +22,13 @@ class Language;
 struct UDFRecord : public Routine
 {
 	ProgramNode * root;
-	SymbolTable * visibleSyms;
-	CommandTable * visibleCmds;
-	FunctionTable * visibleFuncts;
+	TableGroup * visibleTables;
 
 	UDFRecord(DataType * primary, string name, DataType * returnType, Language* lang) : Routine(primary, name, returnType, false),
-	visibleCmds(new CommandTable(lang)), visibleFuncts(new FunctionTable(lang)), visibleSyms(new SymbolTable())
+		visibleTables(new TableGroup(lang))
 	{
-		visibleCmds->addBuiltInVisibleCommands();
-		visibleFuncts->addBuiltInVisibleFunctions();
+		visibleTables->cmds->addBuiltInVisibleCommands();
+		visibleTables->functs->addBuiltInVisibleFunctions();
 	}
 };
 
@@ -88,16 +86,13 @@ struct ObjectStruct
 	OFCollection * OFs;
 	DataCollection * data;
 
-	SymbolTable * scopedSymbols; //Symbols accessible by <obj>:id
-	CommandTable * scopedCmds; //Commands accessible by <obj>:id()
-	FunctionTable * scopedFuncts; //Functions accessible by <obj>:id()
+	TableGroup * scopedTables; //Records accessible by scoping (e.g. <obj>:id())
 
 	bool isUserDefined;
 
 	ObjectStruct(Language * lang) : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()),
-		scopedSymbols(new SymbolTable()), scopedCmds(new CommandTable()),
-		scopedFuncts(new FunctionTable()), isUserDefined(true) {}
+		scopedTables(new TableGroup()), isUserDefined(true) {}
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }

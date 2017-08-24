@@ -45,8 +45,8 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 	else
 	{
 		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL, lang);
-		progStruct->PEF->visibleCmds->addEndNull();
-		progStruct->scopedCmds->add(progStruct->PEF);
+		progStruct->PEF->visibleTables->cmds->addEndNull();
+		progStruct->scopedTables->cmds->add(progStruct->PEF);
 	}
 
 	addAllLocalUDFsToVisibles();
@@ -156,9 +156,9 @@ void FroggerC::addAllLocalUDFsToVisibles()
 {
 	addAllLocalUDFsToVisibles(progStruct);
 
-	progStruct->PEF->visibleCmds->merge(progStruct->scopedCmds);
-	progStruct->PEF->visibleFuncts->merge(progStruct->scopedFuncts);
-	progStruct->PEF->visibleSyms->merge(progStruct->scopedSymbols);
+	progStruct->PEF->visibleTables->cmds->merge(progStruct->scopedTables->cmds);
+	progStruct->PEF->visibleTables->functs->merge(progStruct->scopedTables->functs);
+	progStruct->PEF->visibleTables->syms->merge(progStruct->scopedTables->syms);
 }
 
 // ----------------------------------------------------------
@@ -179,9 +179,9 @@ void FroggerC::addAllLocalUDFsToVisibles(ObjectStruct* obj)
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
 	{
 		UDFRecord* currUDF = obj->getUDF(udfIndex);
-		currUDF->visibleCmds->merge(obj->scopedCmds);
-		currUDF->visibleFuncts->merge(obj->scopedFuncts);
-		currUDF->visibleSyms->merge(obj->scopedSymbols);
+		currUDF->visibleTables->cmds->merge(obj->scopedTables->cmds);
+		currUDF->visibleTables->functs->merge(obj->scopedTables->functs);
+		currUDF->visibleTables->syms->merge(obj->scopedTables->syms);
 	}
 }
 

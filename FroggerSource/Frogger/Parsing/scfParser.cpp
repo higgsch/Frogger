@@ -50,13 +50,13 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 			UDFRecord * currRec = functRecord(name);
 			if (isPEF(currRec, projectName))
 			{
-				currRec->visibleCmds->addEndNull();
+				currRec->visibleTables->cmds->addEndNull();
 
 				if (progStruct->PEF != NULL)
 					syntax_error("PEF is duplicated.");
 
 				progStruct->PEF = currRec;
-				progStruct->scopedCmds->add(currRec);
+				progStruct->scopedTables->cmds->add(currRec);
 			}
 			else
 			{
@@ -70,11 +70,11 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				addEndCommand(currRec);
 				if (currRec->returnType->isNull())
 				{
-					progStruct->scopedCmds->add(currRec);
+					progStruct->scopedTables->cmds->add(currRec);
 				}
 				else
 				{
-					progStruct->scopedFuncts->add(currRec);
+					progStruct->scopedTables->functs->add(currRec);
 				}
 			}
 		}
@@ -110,7 +110,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
 				{
 					DataRecord * currData = progStruct->data->at(dataIndex);
-					progStruct->scopedSymbols->add(new SymbolRecord(currData->memberName, currData->type, false));
+					progStruct->scopedTables->syms->add(new SymbolRecord(currData->memberName, currData->type, false));
 				}
 			}
 			else
@@ -167,11 +167,11 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			addEndCommand(currRec);
 			if (currRec->returnType->isNull())
 			{
-				objStruct->scopedCmds->add(currRec);
+				objStruct->scopedTables->cmds->add(currRec);
 			}
 			else
 			{
-				objStruct->scopedFuncts->add(currRec);
+				objStruct->scopedTables->functs->add(currRec);
 			}
 		}
 		else if (next_token().type == SCFTT_DOT)
@@ -205,7 +205,7 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
 				{
 					DataRecord * currData = objStruct->data->at(dataIndex);
-					objStruct->scopedSymbols->add(new SymbolRecord(currData->memberName, currData->type, false));
+					objStruct->scopedTables->syms->add(new SymbolRecord(currData->memberName, currData->type, false));
 				}
 			}
 			else
@@ -235,17 +235,17 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 void SCFParser::addEndCommand(UDFRecord* rec)
 {
 	if (rec->returnType->isNull())
-		rec->visibleCmds->addEndNull();
+		rec->visibleTables->cmds->addEndNull();
 	else if (rec->returnType->isDouble())
-		rec->visibleCmds->addEndDouble();
+		rec->visibleTables->cmds->addEndDouble();
 	else if (rec->returnType->isString())
-		rec->visibleCmds->addEndString();
+		rec->visibleTables->cmds->addEndString();
 	else
 	{
 		Routine* endCommand = new Routine(DataType::DT_NULL, "end", DataType::DT_NULL, true);
 		endCommand->addArg("", rec->returnType);
 
-		rec->visibleCmds->add(endCommand);
+		rec->visibleTables->cmds->add(endCommand);
 	}
 }
 

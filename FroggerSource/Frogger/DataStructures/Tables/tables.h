@@ -140,3 +140,18 @@ public:
 	Routine* FUNCT_ELEMENT_AT;
 	Routine* FUNCT_SIZE;
 };
+
+// ----------------------------------------------------------
+// This class holds a group of tables.
+//
+// Version 5.0
+// ----------------------------------------------------------
+struct TableGroup
+{
+	SymbolTable * syms;
+	CommandTable * cmds;
+	FunctionTable * functs;
+
+	TableGroup() : syms(new SymbolTable()), cmds(new CommandTable()), functs(new FunctionTable()) {}
+	TableGroup(Language* lang) : syms(new SymbolTable()), cmds(new CommandTable(lang)), functs(new FunctionTable(lang)) {}
+};

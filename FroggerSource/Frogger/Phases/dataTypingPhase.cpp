@@ -422,7 +422,7 @@ FunctionTable * DataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * n)
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new FunctionTable();
 
-	return progStruct->getObject(primary->getDataType())->scopedFuncts;
+	return progStruct->getObject(primary->getDataType())->scopedTables->functs;
 }
 
 // ----------------------------------------------------------
@@ -444,7 +444,7 @@ CommandTable * DataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new CommandTable();
 
-	return progStruct->getObject(primary->getDataType())->scopedCmds;
+	return progStruct->getObject(primary->getDataType())->scopedTables->cmds;
 }
 
 // ----------------------------------------------------------
@@ -551,9 +551,9 @@ void DataTypingPhase::populateAllTables(ObjectStruct* obj)
 		populateAllTables(obj->getOF(objIndex));
 	}
 
-	allCommands->merge(obj->scopedCmds);
-	allFunctions->merge(obj->scopedFuncts);
-	allSymbols->merge(obj->scopedSymbols);
+	allCommands->merge(obj->scopedTables->cmds);
+	allFunctions->merge(obj->scopedTables->functs);
+	allSymbols->merge(obj->scopedTables->syms);
 }
 
 // ----------------------------------------------------------
