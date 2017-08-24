@@ -39,15 +39,14 @@ FroggerC::FroggerC()
 // ----------------------------------------------------------
 void FroggerC::compile(string topRootDir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
 {
-	string dir = ""; 
+	string dir = (isProject) ? topRootDir + name + "\\" : topRootDir; 
+
 	if (isProject)
 	{
-		dir = topRootDir + name + "\\";
 		progStruct = p->parseProgramLevelSCF(dir, name);
 	}
 	else
 	{
-		dir = topRootDir;
 		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL, lang);
 		progStruct->PEF->visibleTables->cmds->addEndNull();
 		progStruct->scopedTables->cmds->add(progStruct->PEF);
