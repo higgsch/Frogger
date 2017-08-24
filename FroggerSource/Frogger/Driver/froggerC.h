@@ -36,13 +36,12 @@ private:
 	void compileAllContainedUDFs(string dir, ObjectStruct * obj);
 
 	void runTableVisibilityPhase();
+	void runFileExistencePhase(string dir);
 	
 	void computeRequiredSupportCode(ProgramStruct * prog);
 
 	void emitCode(string dir, string name,string outFile, bool toExe, bool cleanup, bool isProject);
 
-	void verifyFileExists(string filename);
-	string getUDFFilename(UDFRecord * udf);
 	void struct_error(string err);
 
 public:

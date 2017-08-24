@@ -37,23 +37,24 @@ FroggerC::FroggerC()
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
+void FroggerC::compile(string topRootDir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
 {
+	string dir = ""; 
 	if (isProject)
 	{
+		dir = topRootDir + name + "\\";
 		progStruct = p->parseProgramLevelSCF(dir, name);
 	}
 	else
 	{
+		dir = topRootDir;
 		progStruct->PEF = new UDFRecord(DataType::DT_NULL, name, DataType::DT_NULL, lang);
 		progStruct->PEF->visibleTables->cmds->addEndNull();
 		progStruct->scopedTables->cmds->add(progStruct->PEF);
 	}
 
 	runTableVisibilityPhase();
-
-	verifyPEFExists(dir);
-	verifyAllContainedUDFsExist(dir, progStruct);
+	runFileExistencePhase(topRootDir);
 	
 	progStruct->types = p->getTypeList();
 	funcComp = new FgrFunctionC(lang, progStruct);
@@ -69,45 +70,6 @@ void FroggerC::compile(string dir, string name, string outFile, bool toExe, bool
 }
 
 // ----------------------------------------------------------
-// This function checks that the PEF exists.
-// @dir: The folder in which the PEF should appear.
-// 
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::verifyPEFExists(string dir)
-{
-	verifyFileExists(dir + getUDFFilename(progStruct->PEF));
-}
-
-// ----------------------------------------------------------
-// This function checks that all files within the given 
-// collection exist.
-// @dir: The folder in which the udf files should appear.
-// @obj: The object.
-// 
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::verifyAllContainedUDFsExist(string dir, ObjectStruct * obj)
-{
-	int udfCount = obj->getNumberOfUDFs();
-	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
-	{
-		UDFRecord* currRec = obj->getUDF(udfIndex);
-		verifyFileExists(dir + getUDFFilename(currRec));
-	}
-
-	int objCount = obj->getNumberOfOFs();
-	for (int objIndex = 0; objIndex < objCount; objIndex++)
-	{
-		ObjectStruct* currObj = obj->getOF(objIndex);
-		if (currObj->isUserDefined)
-		{
-			verifyAllContainedUDFsExist(dir + currObj->name + "\\", currObj);
-		}
-	}
-}
-
-// ----------------------------------------------------------
 // This function compiles the PEF.
 // @dir: The folder in which the udf files should appear.
 // 
@@ -115,7 +77,7 @@ void FroggerC::verifyAllContainedUDFsExist(string dir, ObjectStruct * obj)
 // ----------------------------------------------------------
 void FroggerC::compilePEF(string dir)
 {
-	funcComp->compileFunctionToAST(dir + getUDFFilename(progStruct->PEF), progStruct->PEF);
+	funcComp->compileFunctionToAST(progStruct->PEF->filepath, progStruct->PEF);
 }
 
 // ----------------------------------------------------------
@@ -133,8 +95,7 @@ void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj)
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++ )
 	{
 		UDFRecord * currUDF = obj->getUDF(udfIndex);
-		string path = dir + getUDFFilename(currUDF);
-		funcComp->compileFunctionToAST(path, currUDF);
+		funcComp->compileFunctionToAST(currUDF->filepath, currUDF);
 	}
 
 	int objCount = obj->getNumberOfOFs();
@@ -157,6 +118,18 @@ void FroggerC::runTableVisibilityPhase()
 {
 	TableVisibilityPhase tvp;
 	tvp.process(progStruct);
+}
+
+// ----------------------------------------------------------
+// This function checks that all referenced UDF files exist.
+// @dir: The folder in which the PF should appear.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::runFileExistencePhase(string dir)
+{
+	FileExistencePhase fep(dir);
+	fep.process(progStruct);
 }
 
 // ----------------------------------------------------------
@@ -194,69 +167,6 @@ void FroggerC::emitCode(string dir, string name, string outFile, bool toExe, boo
 		cgp->cleanup(filename);
 
 	delete cgp;
-}
-
-// ----------------------------------------------------------
-// This function checks that the given file exists.
-// @filename: The path to the file.
-// 
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::verifyFileExists(string filename)
-{
-	ifstream file(filename);
-	if (!file.good())
-	{
-		struct_error(filename + " does not exist or is not accessible.");
-	}
-		
-	file.close();
-}
-
-// ----------------------------------------------------------
-// This function returns the filename corresponding to the 
-// given UDFRecord.
-// @udf: The UDFRecord in question.
-//
-// Version 5.0
-// ----------------------------------------------------------
-string FroggerC::getUDFFilename(UDFRecord * udf)
-{
-	string filename = udf->name + "(";
-
-	int argCount = udf->args->size();
-	if (argCount > 0)
-	{
-		string argType = udf->args->at(0)->type->typeString;
-		size_t scopeOpPos = argType.find_last_of(":");
-
-		if (scopeOpPos == string::npos)
-			filename += udf->args->at(0)->name + "=" + argType;
-		else
-			filename += udf->args->at(0)->name + "=" + argType.substr(scopeOpPos + 1);
-	}
-
-	for (int argIndex = 1; argIndex < argCount; argIndex++)
-	{
-		ArgPair * currArg = udf->args->at(argIndex);
-		string argType = currArg->type->typeString;
-		size_t scopeOpPos = argType.find_last_of(":");
-
-		if (scopeOpPos == string::npos)
-			filename += "," + currArg->name + "=" + argType;
-		else
-			filename += "," + currArg->name + "=" + argType.substr(scopeOpPos + 1);
-	}
-
-	string returnType = udf->returnType->typeString;
-	size_t scopeOpPos = returnType.find_last_of(":");
-
-	if (scopeOpPos == string::npos)
-		filename += ")~" + returnType;
-	else
-		filename += ")~" + returnType.substr(scopeOpPos + 1);
-
-	return filename + ".fgr";
 }
 
 // ----------------------------------------------------------
@@ -445,6 +355,7 @@ int main(int argc, char* argv[])
 	if (inProject)
 	{
 		string projectName = inPath.substr(inPath.find_last_of('\\') + 1);
+		string topRootDir = inPath.substr(0,inPath.find_last_of('\\') + 1);
 		ifstream SCF(inPath + "\\" + projectName + ".struct");
 		if (!SCF.good())
 		{
@@ -459,7 +370,7 @@ int main(int argc, char* argv[])
 				cout << "Starting Project Compilation: " << inPath << "\\ -> " << outFilePath << endl;
 	
 			FroggerC c;
-			c.compile(inPath + "\\", projectName, outFilePath, toExe, cleanup, inProject);
+			c.compile(topRootDir, projectName, outFilePath, toExe, cleanup, inProject);
 		}
 	}
 

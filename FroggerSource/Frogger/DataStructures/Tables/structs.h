@@ -21,11 +21,12 @@ class Language;
 // ----------------------------------------------------------
 struct UDFRecord : public Routine
 {
+	string filepath;
 	ProgramNode * root;
 	TableGroup * visibleTables;
 
 	UDFRecord(DataType * primary, string name, DataType * returnType, Language* lang) : Routine(primary, name, returnType, false),
-		visibleTables(new TableGroup(lang))
+		visibleTables(new TableGroup(lang)), filepath("")
 	{
 		visibleTables->cmds->addBuiltInVisibleCommands();
 		visibleTables->functs->addBuiltInVisibleFunctions();
