@@ -3,9 +3,6 @@
 // -----------------------------------------------------------------
 #pragma once
 
-//#include <string>
-//#include <iostream>
-//#include "..\..\DataStructures\Tables\structs.h"
 #include "scfPhase.h"
 using namespace std;
 
