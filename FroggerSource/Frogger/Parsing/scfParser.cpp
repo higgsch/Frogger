@@ -271,7 +271,7 @@ ObjectStruct * SCFParser::objectRecord(string objectDir, string name)
 //
 // Version 5.0
 // ----------------------------------------------------------
-DataStruct * SCFParser::dataRecord(string dataDir, string name)
+DataCollection * SCFParser::dataRecord(string dataDir, string name)
 {
 	ODFParser p(scope);
 	return p.parseODF(dataDir, name);

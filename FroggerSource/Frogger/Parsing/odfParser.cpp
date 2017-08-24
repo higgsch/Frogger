@@ -30,11 +30,11 @@ ODFParser::ODFParser(string i_scope)
 //
 // Version 5.0
 // ----------------------------------------------------------
-DataStruct * ODFParser::parseODF(string dir, string name)
+DataCollection * ODFParser::parseODF(string dir, string name)
 {
 	open(dir + name + ".data");
 
-	DataStruct * dataStruct = new DataStruct();
+	DataCollection * dataStruct = new DataCollection();
 
 	while (next_token().type != ODFTT_SCANEOF)
 	{
@@ -160,7 +160,7 @@ DataType * ODFParser::dataType()
 //
 // Version 5.0
 // ----------------------------------------------------------
-bool ODFParser::isInData(DataRecord * rec, DataStruct * data)
+bool ODFParser::isInData(DataRecord * rec, DataCollection * data)
 {
 	for (int recordIndex = 0; recordIndex < data->size(); recordIndex++)
 	{

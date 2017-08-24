@@ -32,7 +32,7 @@ private:
 	
 	UDFRecord * functRecord(string name);
 	ObjectStruct * objectRecord(string objectDir, string name);
-	DataStruct * dataRecord(string dataDir, string name);
+	DataCollection * dataRecord(string dataDir, string name);
 	ArgList * arguments();
 	ArgPair * argument();
 	string id();

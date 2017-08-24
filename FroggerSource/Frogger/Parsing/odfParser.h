@@ -35,7 +35,7 @@ private:
 
 	ODFToken next_token();
 
-	bool isInData(DataRecord * rec, DataStruct * data);
+	bool isInData(DataRecord * rec, DataCollection * data);
 
 	void open(string SCFPath);
 	void close() { scanner.close(); }
@@ -43,5 +43,5 @@ private:
 public:
 	ODFParser(string scope);
 
-	DataStruct * parseODF(string dir, string name);
+	DataCollection * parseODF(string dir, string name);
 };
