@@ -4,7 +4,7 @@
 #pragma once
 
 #include "fgrPhase.h"
-#include "..\DataStructures\Nodes\nodes.h"
+#include "..\..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
 // ----------------------------------------------------------

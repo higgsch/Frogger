@@ -6,10 +6,10 @@
 #include <iostream>
 #include <fstream>
 #include "fgrPhase.h"
-#include "..\DataStructures\Nodes\nodes.h"
-#include "..\DataStructures\Tables\tables.h"
-#include "..\Printing\printer.h"
-#include "..\Languages\language.h"
+#include "..\..\DataStructures\Nodes\nodes.h"
+#include "..\..\DataStructures\Tables\tables.h"
+#include "..\..\Printing\printer.h"
+#include "..\..\Languages\language.h"
 using namespace std;
 
 // ----------------------------------------------------------

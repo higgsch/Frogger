@@ -8,7 +8,7 @@
 #include "froggerC.h"
 #include "fgrFunctionC.h"
 #include "..\Parsing\SCFParser.h"
-#include "..\FGRPhases\fgrPhases.h"
+#include "..\Phases\FGRPhases\fgrPhases.h"
 #include <iostream>
 #include <Windows.h>
 using namespace std;

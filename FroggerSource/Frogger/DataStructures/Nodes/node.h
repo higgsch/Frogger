@@ -5,7 +5,7 @@
 
 #include <string>
 #include <iostream>
-#include "..\..\FGRPhases\fgrPhase.h"
+#include "..\..\Phases\FGRPhases\fgrPhase.h"
 #include "..\dataTyped.h"
 using namespace std;
 
