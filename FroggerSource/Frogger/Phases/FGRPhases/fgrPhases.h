@@ -8,7 +8,7 @@
 #include "summationPhase.h"
 #include "stringConversionPhase.h"
 #include "fgrDataTypingPhase.h"
-#include "supportReqsPhase.h"
+#include "fgrSupportReqsPhase.h"
 #include "codeGenerationPhase.h"
 
 #include "printingPhase.h"

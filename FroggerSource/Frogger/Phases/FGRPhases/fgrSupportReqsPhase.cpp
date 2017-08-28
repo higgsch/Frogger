@@ -4,7 +4,7 @@
 // -----------------------------------------------------------------
 // This program represents a visitor for gathering support code reqs.
 // -----------------------------------------------------------------
-#include "supportReqsPhase.h"
+#include "fgrSupportReqsPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -13,7 +13,7 @@ using namespace std;
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(IdRefNode * n)
+void FGRSupportReqsPhase::visit(IdRefNode * n)
 {
 	if (n->getLexeme() == lang->SYM_ARGS)
 		lang->argsUsed();
@@ -25,7 +25,7 @@ void SupportReqsPhase::visit(IdRefNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(FunctionCallNode * n)
+void FGRSupportReqsPhase::visit(FunctionCallNode * n)
 {
 	n->visitAllChildren(this);
 
@@ -70,7 +70,7 @@ void SupportReqsPhase::visit(FunctionCallNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(CommandCallNode * n)
+void FGRSupportReqsPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 
@@ -104,7 +104,7 @@ void SupportReqsPhase::visit(CommandCallNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(AddingNode * n)	
+void FGRSupportReqsPhase::visit(AddingNode * n)	
 { 
 	n->visitAllChildren(this); 
 
@@ -118,7 +118,7 @@ void SupportReqsPhase::visit(AddingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(ModDivingNode * n)		
+void FGRSupportReqsPhase::visit(ModDivingNode * n)		
 {	
 	n->visitAllChildren(this);
 
@@ -132,7 +132,7 @@ void SupportReqsPhase::visit(ModDivingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(IDivingNode * n)		
+void FGRSupportReqsPhase::visit(IDivingNode * n)		
 {
 	n->visitAllChildren(this);
 
@@ -146,7 +146,7 @@ void SupportReqsPhase::visit(IDivingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(RootingNode * n)		
+void FGRSupportReqsPhase::visit(RootingNode * n)		
 {
 	n->visitAllChildren(this);
 
@@ -160,7 +160,7 @@ void SupportReqsPhase::visit(RootingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void SupportReqsPhase::visit(ExpingNode * n)		
+void FGRSupportReqsPhase::visit(ExpingNode * n)		
 {
 	n->visitAllChildren(this);
 

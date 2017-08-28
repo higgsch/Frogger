@@ -47,6 +47,7 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 	runFileExistencePhase(topRootDir);
 	runTypeCollectionPhase();
 	runFGRCompilationPhase(dir);
+	runSupportRequirementsPhase();
 	runCodeGenerationPhase(dir, name, outFile, toExe, cleanup, isProject);
 
 	cout << "Program successfully compiled" << endl;
@@ -117,6 +118,17 @@ void FroggerC::runFGRCompilationPhase(string dir)
 {
 	FGRCompilationPhase cp(lang);
 	cp.process(progStruct);
+}
+
+// ----------------------------------------------------------
+// This function gathers support code requirements.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::runSupportRequirementsPhase()
+{
+	SupportReqsPhase reqs(lang);
+	reqs.process(progStruct);
 }
 
 // ----------------------------------------------------------

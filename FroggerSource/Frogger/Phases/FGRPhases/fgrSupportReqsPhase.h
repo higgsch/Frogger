@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header for the SupportReqsPhase class.
+// This is the header for the FGRSupportReqsPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
@@ -16,13 +16,13 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class SupportReqsPhase : public FGRPhase
+class FGRSupportReqsPhase : public FGRPhase
 {
 private:
 	Language * lang;
 
 public:
-	SupportReqsPhase(Language * lang) : lang(lang) {}
+	FGRSupportReqsPhase(Language * lang) : lang(lang) {}
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }
