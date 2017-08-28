@@ -39,6 +39,7 @@ private:
 	void runFileExistencePhase(string dir);
 	
 	void computeRequiredSupportCode(ProgramStruct * prog);
+	void runTypeCollectionPhase();
 
 	void emitCode(string dir, string name,string outFile, bool toExe, bool cleanup, bool isProject);
 

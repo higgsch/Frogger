@@ -6,5 +6,6 @@
 #include "scfPhase.h"
 #include "tableVisibilityPhase.h"
 #include "fileExistencePhase.h"
+#include "typeCollectionPhase.h"
 
 using namespace std;

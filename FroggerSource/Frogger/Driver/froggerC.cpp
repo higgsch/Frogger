@@ -54,8 +54,8 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 
 	runTableVisibilityPhase();
 	runFileExistencePhase(topRootDir);
+	runTypeCollectionPhase();
 	
-	progStruct->types = p->getTypeList();
 	funcComp = new FgrFunctionC(lang, progStruct);
 
 	compilePEF(dir);
@@ -129,6 +129,18 @@ void FroggerC::runFileExistencePhase(string dir)
 {
 	FileExistencePhase fep(dir);
 	fep.process(progStruct);
+}
+
+// ----------------------------------------------------------
+// This function collects all defined object types.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::runTypeCollectionPhase()
+{
+	TypeCollectionPhase tcp;
+	tcp.process(progStruct);
+	progStruct->types = tcp.getTypeList();
 }
 
 // ----------------------------------------------------------
