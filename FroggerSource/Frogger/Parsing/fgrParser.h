@@ -3,6 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
+#include "parser.h"
 #include <string>
 #include "..\Scanning\fgrScanner.h"
 #include "..\Scanning\fgrToken.h"
@@ -15,15 +16,13 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class FGRParser
+class FGRParser : Parser
 {
 private:
 	FGRScanner scanner; //the scanning object that provides a Token stream
 	FGRToken current_token; //the currently-selected Token
 	FGRToken lookahead[2]; //storage location for two lookahead Tokens
 	ProgramNode* root; //the root of the AST
-
-	string currFileName;
 
 	//Program Organization
 	void prog();
@@ -53,7 +52,7 @@ private:
 	BinaryOpNode* expop();
 
 	void match(fgr_token_type);
-	void syntax_error(string);
+	void syntax_error(string msg) { syn_error("", msg); }
 
 	FGRToken next_token();
 	FGRToken second_token();

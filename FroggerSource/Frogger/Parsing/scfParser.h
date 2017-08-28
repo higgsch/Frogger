@@ -3,10 +3,10 @@
 // -----------------------------------------------------------------
 #pragma once
 
+#include "parser.h"
 #include "..\Scanning\scfScanner.h"
 #include "..\Scanning\scfToken.h"
 #include "odfParser.h"
-#include "..\DataStructures\dataTyped.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\DataStructures\Tables\structs.h"
 #include "..\Languages\language.h"
@@ -18,12 +18,11 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class SCFParser
+class SCFParser : public Parser
 {
 private:
 	DataTypeCollection * types;
 
-	string currFilePath;
 	string scope;
 
 	SCFScanner scanner;
@@ -41,7 +40,7 @@ private:
 	Language * lang;
 
 	void match(scf_token_type);
-	void syntax_error(string);
+	void syntax_error(string msg) { syn_error("STRUCT", msg); }
 
 	SCFToken next_token();
 
@@ -56,9 +55,6 @@ private:
 
 public:
 	SCFParser(Language * lang);
-
-	void open(string SCFPath);
-	void close() { scanner.close(); }
 
 	ProgramStruct * parseProgramLevelSCF(string projectDir, string projectName);
 };

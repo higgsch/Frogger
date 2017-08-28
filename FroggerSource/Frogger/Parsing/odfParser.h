@@ -3,9 +3,9 @@
 // -----------------------------------------------------------------
 #pragma once
 
+#include "parser.h"
 #include "..\Scanning\odfScanner.h"
 #include "..\Scanning\odfToken.h"
-#include "..\DataStructures\dataTyped.h"
 #include "..\DataStructures\Tables\structs.h"
 using namespace std;
 
@@ -15,10 +15,9 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class ODFParser
+class ODFParser : public Parser
 {
 private:
-	string currFilePath;
 	string scope;
 
 	ODFScanner scanner;
@@ -31,14 +30,11 @@ private:
 	DataType * dataType();
 
 	void match(odf_token_type);
-	void syntax_error(string);
+	void syntax_error(string msg) { syn_error("STRUCT", msg); }
 
 	ODFToken next_token();
 
 	bool isInData(DataRecord * rec, DataCollection * data);
-
-	void open(string SCFPath);
-	void close() { scanner.close(); }
 
 public:
 	ODFParser(string scope);

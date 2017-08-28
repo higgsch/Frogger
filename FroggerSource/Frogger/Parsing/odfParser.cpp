@@ -7,19 +7,15 @@
 #include "ODFParser.h"
 using namespace std;
 
-extern bool quietMode;
-
 // ----------------------------------------------------------
 // This is the default constructor.
 //
 // Version 5.0
 // ----------------------------------------------------------
-ODFParser::ODFParser(string i_scope)
+ODFParser::ODFParser(string scope) : Parser(&scanner), scope(scope)
 {
 	current_token = ODFToken::NOTOK;
 	lookahead[0] = ODFToken::NOTOK;
-	currFilePath = "";
-	scope = i_scope;
 }
 
 // ----------------------------------------------------------
@@ -222,27 +218,6 @@ void ODFParser::match(odf_token_type toMatch)
 }
 
 // ----------------------------------------------------------
-// This function displays an error to the user and terminates
-// the program.
-// @err_msg: The message to display.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void ODFParser::syntax_error(string err_msg)
-{
-	int lineNo = scanner.getLineNo();
-	cout << "STRUCT SYNTAX ERROR in file " << currFilePath << " on line " << lineNo << ": " << err_msg << endl;
-	
-	if (!quietMode)
-	{
-		cout << "Press Enter to Exit" << endl;
-
-		getchar();
-	}
-	exit(0);
-}
-
-// ----------------------------------------------------------
 // This function populates and returns the lookahead token.
 //
 // Version 5.0
@@ -253,23 +228,4 @@ ODFToken ODFParser::next_token()
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];
-}
-
-// ----------------------------------------------------------
-// This function opens the ODF and checks for existance.
-// @ODFPath: The path to the ODF.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void ODFParser::open(string ODFPath)
-{
-	scanner.open(ODFPath);
-
-	if (!scanner.good())
-	{
-		scanner.close();
-		syntax_error("ODF not found: " + ODFPath);
-	}
-
-	currFilePath = ODFPath;
 }

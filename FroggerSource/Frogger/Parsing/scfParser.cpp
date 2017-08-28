@@ -7,18 +7,15 @@
 #include "SCFParser.h"
 using namespace std;
 
-extern bool quietMode;
-
 // ----------------------------------------------------------
 // This is the default constructor.
 //
 // Version 5.0
 // ----------------------------------------------------------
-SCFParser::SCFParser(Language * lang) : lang(lang)
+SCFParser::SCFParser(Language * lang) : Parser(&scanner), lang(lang)
 {
 	current_token = SCFToken::NOTOK;
 	lookahead[0] = SCFToken::NOTOK;
-	currFilePath = "";
 
 	types = new DataTypeCollection();
 }
@@ -528,27 +525,6 @@ void SCFParser::match(scf_token_type toMatch)
 }
 
 // ----------------------------------------------------------
-// This function displays an error to the user and terminates
-// the program.
-// @err_msg: The message to display.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SCFParser::syntax_error(string err_msg)
-{
-	int lineNo = scanner.getLineNo();
-	cout << "STRUCT SYNTAX ERROR in file " << currFilePath << " on line " << lineNo << ": " << err_msg << endl;
-	
-	if (!quietMode)
-	{
-		cout << "Press Enter to Exit" << endl;
-
-		getchar();
-	}
-	exit(0);
-}
-
-// ----------------------------------------------------------
 // This function populates and returns the lookahead token.
 //
 // Version 5.0
@@ -559,23 +535,4 @@ SCFToken SCFParser::next_token()
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];
-}
-
-// ----------------------------------------------------------
-// This function opens the SCF and checks for existance.
-// @SCFPath: The path to the SCF.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SCFParser::open(string SCFPath)
-{
-	scanner.open(SCFPath);
-
-	if (!scanner.good())
-	{
-		scanner.close();
-		syntax_error("SCF not found: " + SCFPath);
-	}
-
-	currFilePath = SCFPath;
 }

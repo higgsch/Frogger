@@ -8,20 +8,17 @@
 #include "fgrParser.h"
 using namespace std;
 
-extern bool quietMode;
-
 // ----------------------------------------------------------
 // This is the default constructor.
 //
 // Version 5.0
 // ----------------------------------------------------------
-FGRParser::FGRParser()
+FGRParser::FGRParser() : Parser(&scanner)
 {
 	current_token = FGRToken::NOTOK;
 	lookahead[0] = FGRToken::NOTOK;
 	lookahead[1] = FGRToken::NOTOK;
 	root = new ProgramNode();
-	currFileName = "";
 }
 
 // ----------------------------------------------------------
@@ -33,7 +30,7 @@ FGRParser::FGRParser()
 // ----------------------------------------------------------
 void FGRParser::open(string inFile)
 {
-	currFileName = inFile;
+	currFilePath = inFile;
 	scanner.openAndInitialize(inFile);
 }
 
@@ -44,7 +41,7 @@ void FGRParser::open(string inFile)
 // ----------------------------------------------------------
 void FGRParser::close()
 {
-	currFileName = "";
+	currFilePath = "";
 	scanner.closeAndTerminate();
 }
 
@@ -771,27 +768,6 @@ void FGRParser::match(fgr_token_type toMatch)
 
 		syntax_error("Expected \'" + type + "\' - Found " + lookahead[0].lexeme);
 	}
-}
-
-// ----------------------------------------------------------
-// This function displays an error to the user and terminates
-// the program.
-// @err_msg: The message to display.
-//
-// Version 4.4
-// ----------------------------------------------------------
-void FGRParser::syntax_error(string err_msg)
-{
-	int lineNo = scanner.getLineNo();
-	cout << "SYNTAX ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
-	
-	if (!quietMode)
-	{
-		cout << "Press Enter to Exit" << endl;
-
-		getchar();
-	}
-	exit(0);
 }
 
 // ----------------------------------------------------------
