@@ -7,28 +7,6 @@
 #include "scfToken.h"
 using namespace std;
 
-// ----------------------------------------------------------
-// Default constructor.
-//
-// Version 5.0
-// ----------------------------------------------------------
-SCFToken::SCFToken()
-{
-	type = SCFTT_NOTOK;
-	lexeme = "<None>";
-}
-
-// ----------------------------------------------------------
-// This is a straight-through constructor.
-//
-// Version 4.0
-// ----------------------------------------------------------
-SCFToken::SCFToken(scf_token_type i_Type, string i_Lexeme)
-{
-	type = i_Type;
-	lexeme = i_Lexeme;
-}
-
 //static "constants" used for simplified processing of language
 //static tokens
 SCFToken SCFToken::NOTOK		= SCFToken(SCFTT_NOTOK, "<None>");

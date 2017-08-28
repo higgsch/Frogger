@@ -7,28 +7,6 @@
 #include "fgrToken.h"
 using namespace std;
 
-// ----------------------------------------------------------
-// Default constructor.
-//
-// Version 5.0
-// ----------------------------------------------------------
-FGRToken::FGRToken()
-{
-	type = FGRTT_NOTOK;
-	lexeme = "<None>";
-}
-
-// ----------------------------------------------------------
-// This is a straight-through constructor.
-//
-// Version 3.0
-// ----------------------------------------------------------
-FGRToken::FGRToken(fgr_token_type i_Type, string i_Lexeme)
-{
-	type = i_Type;
-	lexeme = i_Lexeme;
-}
-
 //static "constants" used for simplified processing of language
 //static tokens
 FGRToken FGRToken::NOTOK		= FGRToken(FGRTT_NOTOK, "<None>");

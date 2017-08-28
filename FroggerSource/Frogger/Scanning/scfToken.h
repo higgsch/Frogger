@@ -21,7 +21,7 @@ typedef enum scf_token_types {
 // constructors for ease of use and static "constants" for 
 // compact use. 
 //
-// Version 4.4
+// Version 5.0
 // ----------------------------------------------------------
 class SCFToken
 { //Glorified Struct with public members and static placeholders
@@ -29,8 +29,8 @@ public:
 	scf_token_type type; //The category the token belongs to
 	string lexeme; //The textual content of the token
 
-	SCFToken();
-	SCFToken(scf_token_type, string);
+	SCFToken() : type(SCFTT_NOTOK), lexeme("<None>") {}
+	SCFToken(scf_token_type type, string lexeme) : type(type), lexeme(lexeme) {}
 
 	//static "constants" used for simplified processing of language
 	//static tokens
