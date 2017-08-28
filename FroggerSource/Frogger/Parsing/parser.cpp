@@ -19,7 +19,7 @@ extern bool quietMode;
 void Parser::syn_error(string type, string err_msg)
 {
 	int lineNo = scanner->getLineNo();
-	cout << type << " SYNTAX ERROR in file " << currFilePath << " on line " << lineNo << ": " << err_msg << endl;
+	cout << ((type == "") ? "" : type + " ") << "SYNTAX ERROR in file " << currFilePath << " on line " << lineNo << ": " << err_msg << endl;
 	
 	if (!quietMode)
 	{

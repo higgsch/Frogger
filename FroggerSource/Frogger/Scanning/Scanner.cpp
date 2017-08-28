@@ -224,9 +224,9 @@ bool Scanner::readStringToBuffer()
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void Scanner::lex_error(string type_error, string err_msg)
+void Scanner::lex_error(string type, string err_msg)
 {
-	cout << type_error << " LEXICAL ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
+	cout << ((type == "") ? "" : type + " ") << "LEXICAL ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
 	
 	if (!quietMode)
 	{
