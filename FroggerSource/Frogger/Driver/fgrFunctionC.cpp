@@ -17,9 +17,9 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FgrFunctionC::compileFunctionToAST(string inFile, UDFRecord * rec)
+void FgrFunctionC::compileFunction(UDFRecord * rec)
 {
-	buildAST(rec, inFile);
+	buildAST(rec);
 	
 	//printAST(funct, "printableAST.txt");
 
@@ -34,13 +34,13 @@ void FgrFunctionC::compileFunctionToAST(string inFile, UDFRecord * rec)
 // This function drives the parsing of the FROGGER file.
 // @inFile: The .fgr file to open (from project directory).
 //
-// Version 4.2
+// Version 5.0
 // ----------------------------------------------------------
-void FgrFunctionC::buildAST(UDFRecord * funct, string inFile)
+void FgrFunctionC::buildAST(UDFRecord * funct)
 {
 	FGRParser *p = new FGRParser();
 
-	p->open(inFile);
+	p->open(funct->filepath);
 	funct->root = p->parse();
 	p->close();
 

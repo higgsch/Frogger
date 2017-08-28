@@ -23,7 +23,7 @@ private:
 protected:
 	void processUDF(UDFRecord * udf) 
 	{
-		funcComp->compileFunctionToAST(udf->filepath, udf);
+		funcComp->compileFunction(udf);
 	}
 
 	void processOF(ObjectStruct * obj) 
@@ -39,7 +39,7 @@ public:
 	void process(ProgramStruct * prog)
 	{
 		funcComp = new FgrFunctionC(lang, prog);
-		funcComp->compileFunctionToAST(prog->PEF->filepath, prog->PEF);
+		funcComp->compileFunction(prog->PEF);
 		processOF(prog);
 		delete funcComp;
 	}

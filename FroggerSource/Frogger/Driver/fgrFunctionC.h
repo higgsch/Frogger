@@ -22,7 +22,7 @@ private:
 	Language * lang;
 	ProgramStruct * progStruct;
 
-	void buildAST(UDFRecord * funct, string inFile);
+	void buildAST(UDFRecord * funct);
 
 	void computeJumpToLineNumbers(UDFRecord * funct);
 	void convertStrings(UDFRecord * funct);
@@ -31,7 +31,7 @@ private:
 
 public:
 	FgrFunctionC(Language* lang, ProgramStruct * progStruct) : lang(lang), progStruct(progStruct) {}
-	void compileFunctionToAST(string inFile, UDFRecord * rec);
+	void compileFunction(UDFRecord * rec);
 	
 	void printAST(UDFRecord * funct, string outFile);
 };
