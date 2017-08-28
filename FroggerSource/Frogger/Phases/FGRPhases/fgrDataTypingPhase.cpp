@@ -5,6 +5,7 @@
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
 #include "fgrDataTypingPhase.h"
+#include "..\SCFPhases\dataTypingPhase.h"
 #include <string>
 using namespace std;
 
@@ -113,9 +114,9 @@ void FGRDataTypingPhase::visit(FunctionCallNode * n)
 	else
 	{
 		//try to type primary
-		if (allFunctions->getNumberOfMatches(funct) == 1)
+		if (parentPhase->allFunctions->getNumberOfMatches(funct) == 1)
 		{
-			n->setFunct(allFunctions->getFirstMatch(funct));
+			n->setFunct(parentPhase->allFunctions->getFirstMatch(funct));
 			n->getPrimary()->setDataType(n->getFunct()->primary);
 			n->visitAllChildren(this);
 		}
@@ -149,9 +150,9 @@ void FGRDataTypingPhase::visit(CommandCallNode * n)
 	else
 	{
 		//Try to type primary
-		if (allCommands->getNumberOfMatches(cmd) == 1)
+		if (parentPhase->allCommands->getNumberOfMatches(cmd) == 1)
 		{
-			n->setCmd(allCommands->getFirstMatch(cmd));
+			n->setCmd(parentPhase->allCommands->getFirstMatch(cmd));
 			n->getPrimary()->setDataType(n->getCmd()->primary);
 			n->visitAllChildren(this);
 		}
@@ -422,7 +423,7 @@ FunctionTable * FGRDataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * 
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new FunctionTable();
 
-	return progStruct->getObject(primary->getDataType())->scopedTables->functs;
+	return parentPhase->getScopedTables(primary->getDataType())->functs;
 }
 
 // ----------------------------------------------------------
@@ -444,7 +445,7 @@ CommandTable * FGRDataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new CommandTable();
 
-	return progStruct->getObject(primary->getDataType())->scopedTables->cmds;
+	return parentPhase->getScopedTables(primary->getDataType())->cmds;
 }
 
 // ----------------------------------------------------------
@@ -534,26 +535,6 @@ void FGRDataTypingPhase::unifyCommandCall(CommandCallNode * n)
 	//ensure no more args in AST
 	if (currArgListNode != NULL)
 		dataType_error("Mismatched Argument List Length for Command Call: " + n->getLexeme(), n->getLineNo());
-}
-
-// ----------------------------------------------------------
-// This function merges all scoped tables within the given
-// ObjectStruct into cumulative tables.
-// @obj: The object to accumulate.
-// 
-// Version 5.0
-// ----------------------------------------------------------
-void FGRDataTypingPhase::populateAllTables(ObjectStruct* obj)
-{
-	int objCount = obj->getNumberOfOFs();
-	for (int objIndex = 0; objIndex < objCount; objIndex++)
-	{
-		populateAllTables(obj->getOF(objIndex));
-	}
-
-	allCommands->merge(obj->scopedTables->cmds);
-	allFunctions->merge(obj->scopedTables->functs);
-	allSymbols->merge(obj->scopedTables->syms);
 }
 
 // ----------------------------------------------------------

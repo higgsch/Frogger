@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header for the DataTypingPhase class.
+// This is the header for the FGRDataTypingPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
@@ -7,6 +7,8 @@
 #include "..\..\DataStructures\Nodes\nodes.h"
 #include "..\..\DataStructures\Tables\tables.h"
 using namespace std;
+
+class DataTypingPhase;
 
 // ----------------------------------------------------------
 // This class represents a visitor for checking data types
@@ -16,12 +18,13 @@ using namespace std;
 class FGRDataTypingPhase : public FGRPhase
 {
 private:
+	DataTypingPhase * parentPhase;
+
 	Language * lang;
 	DataTypeCollection * types;
-	ProgramStruct * progStruct;
-	SymbolTable * allSymbols;
-	FunctionTable * allFunctions;
-	CommandTable * allCommands;
+	//SymbolTable * allSymbols;
+	//FunctionTable * allFunctions;
+	//CommandTable * allCommands;
 
 	SymbolTable * symbols;
 	FunctionTable * functions;
@@ -47,16 +50,13 @@ private:
 	void unifyFunctionCall(FunctionCallNode * n);
 	void unifyCommandCall(CommandCallNode * n);
 
-	void populateAllTables(ObjectStruct* obj);
-
 public:
-	FGRDataTypingPhase(Language * lang, ProgramStruct * progStruct, 
+	FGRDataTypingPhase(DataTypingPhase * parentPhase, Language * lang, DataTypeCollection * types, 
 		FunctionTable * functs, CommandTable * cmds, SymbolTable * syms, string UDFName)
-		: lang(lang), progStruct(progStruct), types(progStruct->types),
-		allSymbols(new SymbolTable()), allCommands(new CommandTable()), allFunctions(new FunctionTable()),
+		: parentPhase(parentPhase), lang(lang), types(types),
 		symbols(syms), functions(functs), commands(cmds), udfName(UDFName), 
 		changeMadeThisRound(false), setUnknownTypeNodesToDefault(false) 
-	{ populateAllTables(progStruct); }
+	{}
 
 	SymbolTable * getSymbolTable() { return symbols; }
 	FunctionTable * getFunctionTable() { return functions; }

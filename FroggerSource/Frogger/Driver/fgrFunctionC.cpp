@@ -26,8 +26,6 @@ void FgrFunctionC::compileFunction(UDFRecord * rec)
 	computeJumpToLineNumbers(rec);
 
 	convertStrings(rec);
-	checkDataTypes(rec);
-	gatherRequirements(rec);
 }
 
 // ----------------------------------------------------------
@@ -77,32 +75,6 @@ void FgrFunctionC::convertStrings(UDFRecord * funct)
 	StringConversionPhase *scp = new StringConversionPhase();
 	funct->root->accept(scp);
 	delete scp;
-}
-
-// ----------------------------------------------------------
-// This function drives data typing.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void FgrFunctionC::checkDataTypes(UDFRecord * ast)
-{
-	SymbolTable * symbols = new SymbolTable(lang, ast);
-	ast->visibleTables->syms->merge(symbols);
-	FGRDataTypingPhase *dtp = new FGRDataTypingPhase(lang, progStruct, ast->visibleTables->functs, ast->visibleTables->cmds, ast->visibleTables->syms, ast->name);
-	ast->root->accept(dtp);
-	delete dtp;
-}
-
-// ----------------------------------------------------------
-// This function drives requirements gathering.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void FgrFunctionC::gatherRequirements(UDFRecord * ast)
-{
-	SupportReqsPhase * reqs = new SupportReqsPhase(lang);
-	ast->root->accept(reqs);
-	delete reqs;
 }
 
 // ----------------------------------------------------------

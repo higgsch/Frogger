@@ -39,6 +39,7 @@ private:
 	void runFileExistencePhase(string dir);
 	void runTypeCollectionPhase();
 	void runFGRCompilationPhase(string dir);
+	void runDataTypingPhase();
 	void runSupportRequirementsPhase();
 	void runCodeGenerationPhase(string dir, string name,string outFile, bool toExe, bool cleanup, bool isProject);
 

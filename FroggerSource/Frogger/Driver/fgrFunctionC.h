@@ -26,7 +26,6 @@ private:
 
 	void computeJumpToLineNumbers(UDFRecord * funct);
 	void convertStrings(UDFRecord * funct);
-	void checkDataTypes(UDFRecord * ast);
 
 public:
 	FgrFunctionC(Language* lang, ProgramStruct * progStruct) : lang(lang), progStruct(progStruct) {}

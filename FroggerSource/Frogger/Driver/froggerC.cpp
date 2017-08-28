@@ -47,6 +47,7 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 	runFileExistencePhase(topRootDir);
 	runTypeCollectionPhase();
 	runFGRCompilationPhase(dir);
+	runDataTypingPhase();
 	runSupportRequirementsPhase();
 	runCodeGenerationPhase(dir, name, outFile, toExe, cleanup, isProject);
 
@@ -118,6 +119,17 @@ void FroggerC::runFGRCompilationPhase(string dir)
 {
 	FGRCompilationPhase cp(lang);
 	cp.process(progStruct);
+}
+
+// ----------------------------------------------------------
+// This function ensures data type rules are upheld.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::runDataTypingPhase()
+{
+	DataTypingPhase * dtp = new DataTypingPhase(lang);
+	dtp->process(progStruct);
 }
 
 // ----------------------------------------------------------
