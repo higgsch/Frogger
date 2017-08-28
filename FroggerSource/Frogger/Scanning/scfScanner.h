@@ -3,11 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-#include <string>
-#include "..\DataStructures\buffers.h"
+#include "Scanner.h"
 using namespace std;
 
 //forward declaration
@@ -19,31 +15,19 @@ class SCFToken;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class SCFScanner
+class SCFScanner : public Scanner
 {
 private:
-	Buffer token_buffer; //a buffer to build the current token
-	ifstream source; //an input stream for the .struct code file
-	string currFileName;
-	int lineNo; //a count variable for the current line number
-
-	bool readThisString(string toRead);
-
 	SCFToken readId();
 	SCFToken readPunctuation();
-
-	bool readIdCharsToBuffer();
 		
-	void lexical_error(string msg);
+	void lexical_error(string msg) { lex_error("STRUCT", msg); }
+
+protected:
+	char get() { return source.get(); }
+	void unget() { source.unget(); }
+	char peek() { return source.peek(); }
 
 public:
-	SCFScanner() : lineNo(1), currFileName("") {}
-
-	void open(string inFile);
-	void close();
-	bool good() { return source.good(); }
-
 	SCFToken scan();
-
-	int getLineNo() { return lineNo; }
 };

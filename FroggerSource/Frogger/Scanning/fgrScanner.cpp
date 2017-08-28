@@ -10,20 +10,6 @@
 #include <string>
 using namespace std;
 
-extern bool quietMode;
-
-// ----------------------------------------------------------
-// This is the default constructor.
-//
-// Version 4.0
-// ----------------------------------------------------------
-FGRScanner::FGRScanner()
-{
-	lineNo = 1; //starts on the first line
-	obfuscated = false; //defaults to non-obfuscated
-	currFileName = "";
-}
-
 // ----------------------------------------------------------
 // This function opens the input file stream and initializes
 // the obfuscator.
@@ -33,8 +19,7 @@ FGRScanner::FGRScanner()
 // ----------------------------------------------------------
 void FGRScanner::openAndInitialize(string filename)
 {
-	currFileName = filename;
-	source.open(filename);
+	open(filename);
 	checkForEmptyFile();
 	initializeObfuscator();
 }
@@ -47,8 +32,7 @@ void FGRScanner::openAndInitialize(string filename)
 // ----------------------------------------------------------
 void FGRScanner::closeAndTerminate()
 {
-	currFileName = "";
-	source.close();
+	close();
 	terminateObfuscator();
 }
 
@@ -187,89 +171,6 @@ bool FGRScanner::readEmptyComments()
 	}
 
 	return hadEmptyComment;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read the given string from the 
-// input file.
-// @toRead: The desire string to read
-// Returns whether or not the string was read
-// Note: If false is returned, the input location was untouched
-//
-// Version 3.0
-// ----------------------------------------------------------
-bool FGRScanner::readThisString(string toRead)
-{
-	bool matches = true;
-	int stringIndex = 0;
-
-	while (matches && stringIndex < toRead.length())
-	{
-		char c = get();
-		if (c != toRead[stringIndex]) //works for c == EOF
-			matches = false;
-
-		stringIndex++;
-	}
-
-	if (matches)
-		return true;
-
-	while (stringIndex > 0)
-	{
-		unget();
-
-		stringIndex--;
-	}
-
-	return false;
-}
-
-// ----------------------------------------------------------
-// This function reads the input file until the given string 
-// is read.
-// @toRead: The desire string to read until
-// Returns whether or not the string was read
-// Note: If false is returned, the input location was untouched
-//
-// Version 3.0
-// ----------------------------------------------------------
-bool FGRScanner::readUntilThisString(string toRead)
-{
-	int toReadIndex = 0;
-	int charReadCount = 0;
-	int in_char = peek();
-	bool stringRead = false;
-
-	while (in_char != EOF && !stringRead)
-	{
-		if (in_char == '\n')
-			lineNo++;
-
-		if (in_char == toRead[toReadIndex])
-		{
-			toReadIndex++;
-			if (toReadIndex == toRead.length())
-				stringRead = true;
-		}
-		else
-			toReadIndex = 0;
-
-		in_char = get();
-		charReadCount++;
-	}
-	unget();
-	charReadCount--;
-
-	if (stringRead)
-		return true;
-
-	for (; charReadCount > 0; charReadCount--)
-	{
-		unget();
-	}
-
-	return false;
 }
 
 // ----------------------------------------------------------
@@ -507,105 +408,6 @@ FGRToken FGRScanner::readPunctuation()
 }
 
 // ----------------------------------------------------------
-// This function attempts to read an identifier to the buffer
-// from the input file.
-// Returns whether or not an identifier was found
-// NOTE: The buffer is not reset
-//
-// Version 3.0
-// ----------------------------------------------------------
-bool FGRScanner::readIdCharsToBuffer()
-{
-	char c = get();
-	bool idRead = isalpha(c);
-
-	while (isalpha(c) || c == '_')
-	{
-		token_buffer.append(c);
-		c = get();
-	}
-	unget();
-
-	return idRead;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read numerical digits to the buffer
-// from the input file.
-// Returns whether or not a digits were found
-// NOTE: The buffer is not reset
-//
-// Version 3.0
-// ----------------------------------------------------------
-bool FGRScanner::readDigitsToBuffer()
-{
-	char c = get();
-	bool digitsRead = isdigit(c);
-
-	while (isdigit(c))
-	{
-		token_buffer.append(c);
-		c = get();
-	}
-	unget();
-
-	return digitsRead;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read a FROGGER string to the buffer
-// from the input file.
-// Returns whether or not a string was found
-// NOTE: The buffer is not reset
-//
-// Version 3.0
-// ----------------------------------------------------------
-bool FGRScanner::readStringToBuffer()
-{
-	char singleQuote = get();
-	if (!issinglequote(singleQuote))
-		return false;
-
-	token_buffer.append(singleQuote);
-
-	char c = get();
-	while (!issinglequote(c))
-	{
-		if (c == EOF)
-		{
-			unget();
-			lexical_error("Unclosed string literal");
-		}
-		else if (c != ' ' && isspace(c))
-		{
-			unget();
-			lexical_error("Invalid string character");
-		}
-
-		token_buffer.append(c);
-
-		if (c == '&') //escape characters
-		{
-			c = get();
-
-			if (c == 't' || c == 'n' || c == '\'' || c == '&')
-			{
-				token_buffer.append(c);
-			}
-			else
-				lexical_error("Invalid escape sequence");
-		}
-
-		c = get();
-	}
-
-	// c is closing singleQuote
-
-	token_buffer.append(singleQuote);
-	return true;
-}
-
-// ----------------------------------------------------------
 // This function gets and returns the next char from the source 
 // code dependant upon the obfuscator.
 // 
@@ -648,25 +450,4 @@ char FGRScanner::peek()
 	}
 	else
 		return source.peek();
-}
-
-// ----------------------------------------------------------
-// This function displays an error message to the user and 
-// terminates the program.
-// @lineNo: The line number that the error occurred on.
-// @err_msg: The message to display to the user.
-// 
-// Version 4.4
-// ----------------------------------------------------------
-void FGRScanner::lexical_error(string err_msg)
-{
-	cout << "LEXICAL ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
-	
-	if (!quietMode)
-	{
-		cout << "Press Enter to Exit" << endl;
-
-		getchar();
-	}
-	exit(0);
 }

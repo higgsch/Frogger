@@ -10,31 +10,6 @@
 #include <string>
 using namespace std;
 
-extern bool quietMode;
-
-// ----------------------------------------------------------
-// This function opens the input file stream.
-// @inFile: The .struct file to open.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SCFScanner::open(string inFile)
-{
-	currFileName = inFile;
-	source.open(inFile);
-}
-
-// ----------------------------------------------------------
-// This function closes the input file stream.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SCFScanner::close()
-{
-	currFileName = "";
-	source.close();
-}
-
 // ----------------------------------------------------------
 // This function scans for and returns the next token.
 //
@@ -67,42 +42,6 @@ SCFToken SCFScanner::scan()
 	}
 
 	return SCFToken::SCANEOF;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read the given string from the 
-// input file.
-// @toRead: The desire string to read
-// Returns whether or not the string was read
-// Note: If false is returned, the input location was untouched
-//
-// Version 4.0
-// ----------------------------------------------------------
-bool SCFScanner::readThisString(string toRead)
-{
-	bool matches = true;
-	int stringIndex = 0;
-
-	while (matches && stringIndex < toRead.length())
-	{
-		char c = source.get();
-		if (c != toRead[stringIndex]) //works for c == EOF
-			matches = false;
-
-		stringIndex++;
-	}
-
-	if (matches)
-		return true;
-
-	while (stringIndex > 0)
-	{
-		source.unget();
-
-		stringIndex--;
-	}
-
-	return false;
 }
 
 // ----------------------------------------------------------
@@ -152,48 +91,4 @@ SCFToken SCFScanner::readPunctuation()
 	}
 	else
 		return SCFToken::NOTOK;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read an identifier to the buffer
-// from the input file.
-// Returns whether or not an identifier was found
-// NOTE: The buffer is not reset
-//
-// Version 4.0
-// ----------------------------------------------------------
-bool SCFScanner::readIdCharsToBuffer()
-{
-	char c = source.get();
-	bool idRead = isalpha(c);
-
-	while (isalpha(c) || c == '_')
-	{
-		token_buffer.append(c);
-		c = source.get();
-	}
-	source.unget();
-
-	return idRead;
-}
-
-// ----------------------------------------------------------
-// This function displays an error message to the user and 
-// terminates the program.
-// @lineNo: The line number that the error occurred on.
-// @err_msg: The message to display to the user.
-// 
-// Version 5.0
-// ----------------------------------------------------------
-void SCFScanner::lexical_error(string err_msg)
-{
-	cout << "STRUCT LEXICAL ERROR in file " << currFileName << " on line " << lineNo << ": " << err_msg << endl;
-	
-	if (!quietMode)
-	{
-		cout << "Press Enter to Exit" << endl;
-
-		getchar();
-	}
-	exit(0);
 }
