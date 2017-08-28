@@ -7,5 +7,6 @@
 #include "tableVisibilityPhase.h"
 #include "fileExistencePhase.h"
 #include "typeCollectionPhase.h"
+#include "compilationPhase.h"
 
 using namespace std;

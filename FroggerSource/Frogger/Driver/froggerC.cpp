@@ -55,57 +55,14 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 	runTableVisibilityPhase();
 	runFileExistencePhase(topRootDir);
 	runTypeCollectionPhase();
+	runCompilationPhase(dir);
 	
-	funcComp = new FgrFunctionC(lang, progStruct);
-
-	compilePEF(dir);
-	compileAllContainedUDFs(dir, progStruct);
 
 	computeRequiredSupportCode(progStruct);
 
 	emitCode(dir, name, outFile, toExe, cleanup, isProject);
 
 	cout << "Program successfully compiled" << endl;
-}
-
-// ----------------------------------------------------------
-// This function compiles the PEF.
-// @dir: The folder in which the udf files should appear.
-// 
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::compilePEF(string dir)
-{
-	funcComp->compileFunctionToAST(progStruct->PEF->filepath, progStruct->PEF);
-}
-
-// ----------------------------------------------------------
-// This function compiles all UDFs within the given collection.
-// @dir: The folder in which the udf files should appear.
-// @udfs: The collection of UDFs.
-// @functs: The function table to use for compilation.
-// @cmds: The command table to use for compilation.
-// 
-// Version 5.0
-// ----------------------------------------------------------
-void FroggerC::compileAllContainedUDFs(string dir, ObjectStruct * obj)
-{
-	int udfCount = obj->getNumberOfUDFs();
-	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++ )
-	{
-		UDFRecord * currUDF = obj->getUDF(udfIndex);
-		funcComp->compileFunctionToAST(currUDF->filepath, currUDF);
-	}
-
-	int objCount = obj->getNumberOfOFs();
-	for (int objIndex = 0; objIndex < objCount; objIndex++)
-	{
-		ObjectStruct * currObj = obj->getOF(objIndex);
-		if (currObj->isUserDefined)
-		{
-			compileAllContainedUDFs(dir + currObj->name + "\\", currObj);
-		}
-	}
 }
 
 // ----------------------------------------------------------
@@ -141,6 +98,19 @@ void FroggerC::runTypeCollectionPhase()
 	TypeCollectionPhase tcp;
 	tcp.process(progStruct);
 	progStruct->types = tcp.getTypeList();
+}
+
+// ----------------------------------------------------------
+// This function facilitates the FGR compilation front end and 
+// middle end.
+// @dir: The PF directory.
+// 
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::runCompilationPhase(string dir)
+{
+	CompilationPhase cp(lang);
+	cp.process(progStruct);
 }
 
 // ----------------------------------------------------------
