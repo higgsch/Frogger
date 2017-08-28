@@ -30,9 +30,6 @@ private:
 	SCFParser * p;
 	FgrFunctionC * funcComp;
 
-	void verifyPEFExists(string dir);
-	void verifyAllContainedUDFsExist(string dir, ObjectStruct * obj);
-
 	void parseSCF(string name, string dir, bool isProject);
 
 	void runTableVisibilityPhase();
