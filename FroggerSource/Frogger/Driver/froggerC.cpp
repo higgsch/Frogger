@@ -69,10 +69,6 @@ void FroggerC::parseSCF(string name, string dir, bool isProject)
 		progStruct->PEF->visibleTables->cmds->addEndNull();
 		progStruct->scopedTables->cmds->add(progStruct->PEF);
 	}
-
-	runCodeGenerationPhase(dir, name, outFile, toExe, cleanup, isProject);
-
-	cout << "Program successfully compiled" << endl;
 }
 
 // ----------------------------------------------------------
