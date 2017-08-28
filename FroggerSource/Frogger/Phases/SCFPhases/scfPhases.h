@@ -7,6 +7,6 @@
 #include "tableVisibilityPhase.h"
 #include "fileExistencePhase.h"
 #include "typeCollectionPhase.h"
-#include "compilationPhase.h"
+#include "fgrCompilationPhase.h"
 
 using namespace std;

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header for the CompilationPhase class.
+// This is the header for the FGRCompilationPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
@@ -14,7 +14,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class CompilationPhase : SCFPhase
+class FGRCompilationPhase : SCFPhase
 {
 private:
 	Language * lang;
@@ -44,5 +44,5 @@ public:
 		delete funcComp;
 	}
 
-	CompilationPhase(Language * lang) : lang(lang) {}
+	FGRCompilationPhase(Language * lang) : lang(lang) {}
 };

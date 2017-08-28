@@ -115,7 +115,7 @@ void FroggerC::runTypeCollectionPhase()
 // ----------------------------------------------------------
 void FroggerC::runCompilationPhase(string dir)
 {
-	CompilationPhase cp(lang);
+	FGRCompilationPhase cp(lang);
 	cp.process(progStruct);
 }
 
