@@ -46,7 +46,7 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 	runTableVisibilityPhase();
 	runFileExistencePhase(topRootDir);
 	runTypeCollectionPhase();
-	runCompilationPhase(dir);
+	runFGRCompilationPhase(dir);
 	runCodeGenerationPhase(dir, name, outFile, toExe, cleanup, isProject);
 
 	cout << "Program successfully compiled" << endl;
@@ -113,7 +113,7 @@ void FroggerC::runTypeCollectionPhase()
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::runCompilationPhase(string dir)
+void FroggerC::runFGRCompilationPhase(string dir)
 {
 	FGRCompilationPhase cp(lang);
 	cp.process(progStruct);

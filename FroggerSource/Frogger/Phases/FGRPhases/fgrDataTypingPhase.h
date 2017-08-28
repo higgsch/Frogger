@@ -13,7 +13,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class DataTypingPhase : public FGRPhase
+class FGRDataTypingPhase : public FGRPhase
 {
 private:
 	Language * lang;
@@ -50,7 +50,7 @@ private:
 	void populateAllTables(ObjectStruct* obj);
 
 public:
-	DataTypingPhase(Language * lang, ProgramStruct * progStruct, 
+	FGRDataTypingPhase(Language * lang, ProgramStruct * progStruct, 
 		FunctionTable * functs, CommandTable * cmds, SymbolTable * syms, string UDFName)
 		: lang(lang), progStruct(progStruct), types(progStruct->types),
 		allSymbols(new SymbolTable()), allCommands(new CommandTable()), allFunctions(new FunctionTable()),

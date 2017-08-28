@@ -7,7 +7,7 @@
 #include "lineNoPhase.h"
 #include "summationPhase.h"
 #include "stringConversionPhase.h"
-#include "dataTypingPhase.h"
+#include "fgrDataTypingPhase.h"
 #include "supportReqsPhase.h"
 #include "codeGenerationPhase.h"
 

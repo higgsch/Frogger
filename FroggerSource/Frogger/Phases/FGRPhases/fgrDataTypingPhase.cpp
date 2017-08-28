@@ -4,7 +4,7 @@
 // ----------------------------------------------------------------
 // This program represents a visitor for checking data types.
 // -----------------------------------------------------------------
-#include "dataTypingPhase.h"
+#include "fgrDataTypingPhase.h"
 #include <string>
 using namespace std;
 
@@ -16,7 +16,7 @@ extern bool quietMode;
 //
 // Version 2.3
 // ----------------------------------------------------------
-void DataTypingPhase::visit(ProgramNode * n)
+void FGRDataTypingPhase::visit(ProgramNode * n)
 {
 	do
 	{
@@ -34,7 +34,7 @@ void DataTypingPhase::visit(ProgramNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::visit(IdRefNode * n)
+void FGRDataTypingPhase::visit(IdRefNode * n)
 {
 	string id = n->getLexeme();
 	DataType * type = n->getDataType();
@@ -69,7 +69,7 @@ void DataTypingPhase::visit(IdRefNode * n)
 //
 // Version 2.3
 // ----------------------------------------------------------
-void DataTypingPhase::visit(AssigningNode * n)
+void FGRDataTypingPhase::visit(AssigningNode * n)
 {
 	n->visitAllChildren(this);
 	unifyTreeDataType(n);
@@ -81,7 +81,7 @@ void DataTypingPhase::visit(AssigningNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::visit(FunctionCallNode * n)
+void FGRDataTypingPhase::visit(FunctionCallNode * n)
 {
 	DataType* oldNodeType = n->getDataType();
 
@@ -128,7 +128,7 @@ void DataTypingPhase::visit(FunctionCallNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::visit(CommandCallNode * n)
+void FGRDataTypingPhase::visit(CommandCallNode * n)
 {
 	n->visitAllChildren(this);
 	unifyCommandCall(n);
@@ -164,7 +164,7 @@ void DataTypingPhase::visit(CommandCallNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::visit(ArgListNode * n)
+void FGRDataTypingPhase::visit(ArgListNode * n)
 {
 	int argNo = n->getArgNo();
 	DataType* oldArgType = n->getRoutine()->getArg(argNo)->type;
@@ -187,7 +187,7 @@ void DataTypingPhase::visit(ArgListNode * n)
 //
 // Version 2.3
 // ----------------------------------------------------------
-void DataTypingPhase::visit(AddingNode * n)
+void FGRDataTypingPhase::visit(AddingNode * n)
 {
 	n->visitAllChildren(this);
 	unifyTreeDataType(n);
@@ -199,7 +199,7 @@ void DataTypingPhase::visit(AddingNode * n)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetNodeDataType(AsciiNode * node, DataType* type)
+void FGRDataTypingPhase::checkAndSetNodeDataType(AsciiNode * node, DataType* type)
 {
 	if (*(node->getDataType()) == *type || type == DataType::DT_NOT_DEFINED)
 		return;
@@ -220,7 +220,7 @@ void DataTypingPhase::checkAndSetNodeDataType(AsciiNode * node, DataType* type)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetTreeDataType(TerminalNode * node, DataType* type)
+void FGRDataTypingPhase::checkAndSetTreeDataType(TerminalNode * node, DataType* type)
 {
 	if (type == DataType::DT_NOT_DEFINED)
 		return;
@@ -236,7 +236,7 @@ void DataTypingPhase::checkAndSetTreeDataType(TerminalNode * node, DataType* typ
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetTreeDataType(UnaryNode * node, DataType * type)
+void FGRDataTypingPhase::checkAndSetTreeDataType(UnaryNode * node, DataType * type)
 {
 	if (type == DataType::DT_NOT_DEFINED)
 		return;
@@ -264,7 +264,7 @@ void DataTypingPhase::checkAndSetTreeDataType(UnaryNode * node, DataType * type)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetTreeDataType(BinaryNode * node, DataType* type)
+void FGRDataTypingPhase::checkAndSetTreeDataType(BinaryNode * node, DataType* type)
 {
 	if (type == DataType::DT_NOT_DEFINED)
 		return;
@@ -301,7 +301,7 @@ void DataTypingPhase::checkAndSetTreeDataType(BinaryNode * node, DataType* type)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::checkAndSetArgDataType(Routine * rout, int argNo, DataType * type, int lineNo)
+void FGRDataTypingPhase::checkAndSetArgDataType(Routine * rout, int argNo, DataType * type, int lineNo)
 {
 	DataType* oldType = rout->getArg(argNo)->type;
 	if (*oldType == *type || type == DataType::DT_NOT_DEFINED)
@@ -323,7 +323,7 @@ void DataTypingPhase::checkAndSetArgDataType(Routine * rout, int argNo, DataType
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::unifyTreeDataType(TerminalNode * node)
+void FGRDataTypingPhase::unifyTreeDataType(TerminalNode * node)
 {
 	DataType* type = node->getDataType();
 	if (type != DataType::DT_NOT_DEFINED)
@@ -344,7 +344,7 @@ void DataTypingPhase::unifyTreeDataType(TerminalNode * node)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::unifyTreeDataType(UnaryNode * node)
+void FGRDataTypingPhase::unifyTreeDataType(UnaryNode * node)
 {
 	DataType* type = node->getDataType();
 	if (type != DataType::DT_NOT_DEFINED)
@@ -373,7 +373,7 @@ void DataTypingPhase::unifyTreeDataType(UnaryNode * node)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::unifyTreeDataType(BinaryNode * node)
+void FGRDataTypingPhase::unifyTreeDataType(BinaryNode * node)
 {
 	DataType * type = node->getDataType();
 	if (type != DataType::DT_NOT_DEFINED)
@@ -409,7 +409,7 @@ void DataTypingPhase::unifyTreeDataType(BinaryNode * node)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-FunctionTable * DataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * n)
+FunctionTable * FGRDataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * n)
 {
 	AsciiNode * primary = n->getPrimary();
 	if (primary == NULL)
@@ -431,7 +431,7 @@ FunctionTable * DataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * n)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-CommandTable * DataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
+CommandTable * FGRDataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 {
 	AsciiNode * primary = n->getPrimary();
 	if (primary == NULL)
@@ -454,7 +454,7 @@ CommandTable * DataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::unifyFunctionCall(FunctionCallNode * n)
+void FGRDataTypingPhase::unifyFunctionCall(FunctionCallNode * n)
 {
 	Routine * funct = n->getFunct();
 
@@ -492,7 +492,7 @@ void DataTypingPhase::unifyFunctionCall(FunctionCallNode * n)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::unifyCommandCall(CommandCallNode * n)
+void FGRDataTypingPhase::unifyCommandCall(CommandCallNode * n)
 {
 	Routine * cmd = n->getCmd();
 
@@ -543,7 +543,7 @@ void DataTypingPhase::unifyCommandCall(CommandCallNode * n)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::populateAllTables(ObjectStruct* obj)
+void FGRDataTypingPhase::populateAllTables(ObjectStruct* obj)
 {
 	int objCount = obj->getNumberOfOFs();
 	for (int objIndex = 0; objIndex < objCount; objIndex++)
@@ -564,7 +564,7 @@ void DataTypingPhase::populateAllTables(ObjectStruct* obj)
 // 
 // Version 5.0
 // ----------------------------------------------------------
-void DataTypingPhase::dataType_error(string err_msg, int line_no)
+void FGRDataTypingPhase::dataType_error(string err_msg, int line_no)
 {
 	cout << "DATA TYPE ERROR in UDF " << udfName << " on line " << line_no << ": " << err_msg << endl;
 	
@@ -577,7 +577,7 @@ void DataTypingPhase::dataType_error(string err_msg, int line_no)
 	exit(0);
 }
 
-void DataTypingPhase::processDoubleOperator(BinaryOpNode * n)
+void FGRDataTypingPhase::processDoubleOperator(BinaryOpNode * n)
 {
 	n->visitAllChildren(this);
 	checkAndSetTreeDataType(n, DataType::DT_DOUBLE);

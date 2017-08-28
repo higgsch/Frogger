@@ -38,7 +38,7 @@ private:
 	void runTableVisibilityPhase();
 	void runFileExistencePhase(string dir);
 	void runTypeCollectionPhase();
-	void runCompilationPhase(string dir);
+	void runFGRCompilationPhase(string dir);
 	void runCodeGenerationPhase(string dir, string name,string outFile, bool toExe, bool cleanup, bool isProject);
 
 	void struct_error(string err);
