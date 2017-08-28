@@ -56,11 +56,7 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 	runFileExistencePhase(topRootDir);
 	runTypeCollectionPhase();
 	runCompilationPhase(dir);
-	
-	
-
-
-	emitCode(dir, name, outFile, toExe, cleanup, isProject);
+	runCodeGenerationPhase(dir, name, outFile, toExe, cleanup, isProject);
 
 	cout << "Program successfully compiled" << endl;
 }
@@ -119,7 +115,7 @@ void FroggerC::runCompilationPhase(string dir)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FroggerC::emitCode(string dir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
+void FroggerC::runCodeGenerationPhase(string dir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
 {
 	string filename = (toExe) ? rootDir + "bin\\" + name : outFile;
 

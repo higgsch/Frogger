@@ -37,8 +37,7 @@ private:
 	void runFileExistencePhase(string dir);
 	void runTypeCollectionPhase();
 	void runCompilationPhase(string dir);
-
-	void emitCode(string dir, string name,string outFile, bool toExe, bool cleanup, bool isProject);
+	void runCodeGenerationPhase(string dir, string name,string outFile, bool toExe, bool cleanup, bool isProject);
 
 	void struct_error(string err);
 
