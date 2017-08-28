@@ -33,6 +33,8 @@ private:
 	void verifyPEFExists(string dir);
 	void verifyAllContainedUDFsExist(string dir, ObjectStruct * obj);
 
+	void parseSCF(string name, string dir, bool isProject);
+
 	void runTableVisibilityPhase();
 	void runFileExistencePhase(string dir);
 	void runTypeCollectionPhase();

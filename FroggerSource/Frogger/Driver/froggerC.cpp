@@ -41,6 +41,24 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 {
 	string dir = (isProject) ? topRootDir + name + "\\" : topRootDir; 
 
+	parseSCF(name, dir, isProject);
+
+	runTableVisibilityPhase();
+	runFileExistencePhase(topRootDir);
+	runTypeCollectionPhase();
+	runCompilationPhase(dir);
+	runCodeGenerationPhase(dir, name, outFile, toExe, cleanup, isProject);
+
+	cout << "Program successfully compiled" << endl;
+}
+
+// ----------------------------------------------------------
+// This function merges all scoped tables into all visible tables.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void FroggerC::parseSCF(string name, string dir, bool isProject)
+{
 	if (isProject)
 	{
 		progStruct = p->parseProgramLevelSCF(dir, name);
@@ -52,10 +70,6 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 		progStruct->scopedTables->cmds->add(progStruct->PEF);
 	}
 
-	runTableVisibilityPhase();
-	runFileExistencePhase(topRootDir);
-	runTypeCollectionPhase();
-	runCompilationPhase(dir);
 	runCodeGenerationPhase(dir, name, outFile, toExe, cleanup, isProject);
 
 	cout << "Program successfully compiled" << endl;
