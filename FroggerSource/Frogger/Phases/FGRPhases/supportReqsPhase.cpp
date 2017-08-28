@@ -8,38 +8,6 @@
 using namespace std;
 
 // ----------------------------------------------------------
-// This function emits the includes and using statements.
-// @ast: The representation of the input program.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SupportReqsPhase::gatherRequirements(Language * language, ProgramStruct * prog)
-{
-	lang = language;
-
-	prog->getPEFNode()->accept(this);
-
-	gatherRequirements(prog);
-}
-
-// ----------------------------------------------------------
-// This function emits the includes and using statements.
-// @obj: The representation of the object.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SupportReqsPhase::gatherRequirements(ObjectStruct * obj)
-{
-	int UDFCount = obj->getNumberOfUDFs();
-	for (int udfIndex = 0; udfIndex < UDFCount; udfIndex++)
-		obj->getUDFNode(udfIndex)->accept(this);
-
-	int OFCount = obj->getNumberOfOFs();
-	for (int ofIndex = 0; ofIndex < OFCount; ofIndex++)
-		gatherRequirements(obj->getOF(ofIndex));
-}
-
-// ----------------------------------------------------------
 // This function processes the include for a variable reference.
 // @n: The node representing the variable.
 //

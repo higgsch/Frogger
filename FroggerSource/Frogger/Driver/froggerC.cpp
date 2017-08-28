@@ -57,8 +57,8 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 	runTypeCollectionPhase();
 	runCompilationPhase(dir);
 	
+	
 
-	computeRequiredSupportCode(progStruct);
 
 	emitCode(dir, name, outFile, toExe, cleanup, isProject);
 
@@ -111,18 +111,6 @@ void FroggerC::runCompilationPhase(string dir)
 {
 	CompilationPhase cp(lang);
 	cp.process(progStruct);
-}
-
-// ----------------------------------------------------------
-// This function drives support code requirements checking.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void FroggerC::computeRequiredSupportCode(ProgramStruct * prog)
-{
-	SupportReqsPhase * reqs = new SupportReqsPhase();
-	reqs->gatherRequirements(lang, prog);
-	delete reqs;
 }
 
 // ----------------------------------------------------------

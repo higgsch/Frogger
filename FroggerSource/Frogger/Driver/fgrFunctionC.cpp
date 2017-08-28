@@ -27,6 +27,7 @@ void FgrFunctionC::compileFunctionToAST(string inFile, UDFRecord * rec)
 
 	convertStrings(rec);
 	checkDataTypes(rec);
+	gatherRequirements(rec);
 }
 
 // ----------------------------------------------------------
@@ -90,6 +91,18 @@ void FgrFunctionC::checkDataTypes(UDFRecord * ast)
 	DataTypingPhase *dtp = new DataTypingPhase(lang, progStruct, ast->visibleTables->functs, ast->visibleTables->cmds, ast->visibleTables->syms, ast->name);
 	ast->root->accept(dtp);
 	delete dtp;
+}
+
+// ----------------------------------------------------------
+// This function drives requirements gathering.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void FgrFunctionC::gatherRequirements(UDFRecord * ast)
+{
+	SupportReqsPhase * reqs = new SupportReqsPhase(lang);
+	ast->root->accept(reqs);
+	delete reqs;
 }
 
 // ----------------------------------------------------------

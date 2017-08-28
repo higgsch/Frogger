@@ -21,10 +21,8 @@ class SupportReqsPhase : public FGRPhase
 private:
 	Language * lang;
 
-	void gatherRequirements(ObjectStruct * obj);
-
 public:
-	void gatherRequirements(Language * language, ProgramStruct * prog);
+	SupportReqsPhase(Language * lang) : lang(lang) {}
 
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }

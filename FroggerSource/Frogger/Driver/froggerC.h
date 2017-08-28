@@ -35,8 +35,6 @@ private:
 
 	void runTableVisibilityPhase();
 	void runFileExistencePhase(string dir);
-	
-	void computeRequiredSupportCode(ProgramStruct * prog);
 	void runTypeCollectionPhase();
 	void runCompilationPhase(string dir);
 
