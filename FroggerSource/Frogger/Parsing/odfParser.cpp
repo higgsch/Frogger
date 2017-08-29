@@ -8,17 +8,6 @@
 using namespace std;
 
 // ----------------------------------------------------------
-// This is the default constructor.
-//
-// Version 5.0
-// ----------------------------------------------------------
-ODFParser::ODFParser(string scope) : Parser(&scanner), scope(scope)
-{
-	current_token = Token::NOTOK;
-	lookahead[0] = Token::NOTOK;
-}
-
-// ----------------------------------------------------------
 // This function initiates the parse of the ODF and returns 
 // the table of Data records.
 // @dir: The OF/PF
@@ -112,19 +101,6 @@ string ODFParser::defaultValue()
 }
 
 // ----------------------------------------------------------
-// This function processes and returns a function name.
-//
-// Version 5.0
-// ----------------------------------------------------------
-string ODFParser::id()
-{
-	Token id = next_token();
-	match(TT_ID);
-
-	return id.lexeme;
-}
-
-// ----------------------------------------------------------
 // This function processes and returns a data type.
 //
 // Version 5.0
@@ -167,65 +143,4 @@ bool ODFParser::isInData(DataRecord * rec, DataCollection * data)
 	}
 
 	return false;
-}
-
-// ----------------------------------------------------------
-// This function tests if the next token matches toMatch and
-// moves to the next token on success. It displayes an error
-// on failure.
-// @toMatch: The expected token category.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void ODFParser::match(token_type toMatch)
-{
-	Token tok = next_token();
-	if (tok.type == toMatch)
-	{
-		current_token = lookahead[0];
-		lookahead[0] = Token::NOTOK;
-	}
-	else
-	{
-		string type;
-		switch (toMatch)
-		{
-		case TT_EQUAL_SIGN:
-			type = Token::EQUAL_SIGN.lexeme;
-			break;
-		case TT_OCTOTHORPE:
-			type = Token::OCTOTHORPE.lexeme;
-			break;
-		case TT_SEMICOLON:
-			type = Token::SEMICOLON.lexeme;
-			break;
-		case TT_SCANEOF:
-			type = "<EOF>";
-			break;
-		case TT_ID:
-			type = "Identifier";
-			break;
-		case TT_EOL:
-			type = "End of Line";
-			break;
-		default:
-			type = "<type>";
-			break;
-		}
-
-		syntax_error("Expected \'" + type + "\' - Found " + lookahead[0].lexeme);
-	}
-}
-
-// ----------------------------------------------------------
-// This function populates and returns the lookahead token.
-//
-// Version 5.0
-// ----------------------------------------------------------
-Token ODFParser::next_token()
-{
-	if (lookahead[0].type == TT_NOTOK)
-		lookahead[0] = scanner.scan();
-
-	return lookahead[0];
 }

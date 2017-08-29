@@ -8,19 +8,6 @@
 using namespace std;
 
 // ----------------------------------------------------------
-// This is the default constructor.
-//
-// Version 5.0
-// ----------------------------------------------------------
-SCFParser::SCFParser(Language * lang) : Parser(&scanner), lang(lang)
-{
-	current_token = Token::NOTOK;
-	lookahead[0] = Token::NOTOK;
-
-	types = new DataTypeCollection();
-}
-
-// ----------------------------------------------------------
 // This function initiates the parse of the SCF and returns 
 // the table of UDF records.
 // @projectDir: The PF
@@ -302,19 +289,6 @@ UDFRecord * SCFParser::functRecord(string name)
 }
 
 // ----------------------------------------------------------
-// This function processes and returns a function name.
-//
-// Version 5.0
-// ----------------------------------------------------------
-string SCFParser::id()
-{
-	Token id = next_token();
-	match(TT_ID);
-
-	return id.lexeme;
-}
-
-// ----------------------------------------------------------
 // This function processes and returns a list of arguments.
 //
 // Version 5.0
@@ -465,74 +439,4 @@ bool SCFParser::functionSignatureMatches(UDFRecord * first, UDFRecord * second)
 	}
 
 	return true;
-}
-
-// ----------------------------------------------------------
-// This function tests if the next token matches toMatch and
-// moves to the next token on success. It displayes an error
-// on failure.
-// @toMatch: The expected token category.
-//
-// Version 5.0
-// ----------------------------------------------------------
-void SCFParser::match(token_type toMatch)
-{
-	Token tok = next_token();
-	if (tok.type == toMatch)
-	{
-		current_token = lookahead[0];
-		lookahead[0] = Token::NOTOK;
-	}
-	else
-	{
-		string type;
-		switch (toMatch)
-		{
-		case TT_LPAREN:
-			type = Token::LPAREN.lexeme;
-			break;
-		case TT_RPAREN:
-			type = Token::RPAREN.lexeme;
-			break;
-		case TT_EQUAL_SIGN:
-			type = Token::EQUAL_SIGN.lexeme;
-			break;
-		case TT_COMMA:
-			type = Token::COMMA.lexeme;
-			break;
-		case TT_TILDE:
-			type = Token::TILDE.lexeme;
-			break;
-		case TT_DOT:
-			type = Token::DOT.lexeme;
-			break;
-		case TT_SCANEOF:
-			type = "<EOF>";
-			break;
-		case TT_ID:
-			type = "Identifier";
-			break;
-		case TT_EOL:
-			type = "End of Line";
-			break;
-		default:
-			type = "<type>";
-			break;
-		}
-
-		syntax_error("Expected \'" + type + "\' - Found " + lookahead[0].lexeme);
-	}
-}
-
-// ----------------------------------------------------------
-// This function populates and returns the lookahead token.
-//
-// Version 5.0
-// ----------------------------------------------------------
-Token SCFParser::next_token()
-{
-	if (lookahead[0].type == TT_NOTOK)
-		lookahead[0] = scanner.scan();
-
-	return lookahead[0];
 }

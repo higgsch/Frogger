@@ -19,8 +19,6 @@ class FGRParser : Parser
 {
 private:
 	FGRScanner scanner; //the scanning object that provides a Token stream
-	Token current_token; //the currently-selected Token
-	Token lookahead[2]; //storage location for two lookahead Tokens
 	ProgramNode* root; //the root of the AST
 
 	//Program Organization
@@ -50,14 +48,10 @@ private:
 	BinaryOpNode* mulop();
 	BinaryOpNode* expop();
 
-	void match(token_type);
 	void syntax_error(string msg) { syn_error("", msg); }
 
-	Token next_token();
-	Token second_token();
-
 public:
-	FGRParser();
+	FGRParser() : Parser(&scanner), root(new ProgramNode()) {}
 
 	void open(string inFile);
 	void close();

@@ -8,6 +8,7 @@
 #include "odfParser.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\DataStructures\Tables\structs.h"
+#include "..\DataStructures\dataTyped.h"
 #include "..\Languages\language.h"
 using namespace std;
 
@@ -20,28 +21,21 @@ using namespace std;
 class SCFParser : public Parser
 {
 private:
+	string scope;
 	DataTypeCollection * types;
 
-	string scope;
-
 	SCFScanner scanner;
-	Token current_token;
-	Token lookahead[1];
 	
 	UDFRecord * functRecord(string name);
 	ObjectStruct * objectRecord(string objectDir, string name);
 	DataCollection * dataRecord(string dataDir, string name);
 	ArgList * arguments();
 	ArgPair * argument();
-	string id();
 	DataType * dataType();
 
 	Language * lang;
 
-	void match(token_type);
 	void syntax_error(string msg) { syn_error("STRUCT", msg); }
-
-	Token next_token();
 
 	bool isPEF(UDFRecord * rec, string pefName);
 	bool isInFunctions(UDFRecord * rec, UDFCollection * functions);
@@ -53,7 +47,7 @@ private:
 	void addEndCommand(UDFRecord* rec);
 
 public:
-	SCFParser(Language * lang);
+	SCFParser(Language * lang) : Parser(&scanner), lang(lang), types(new DataTypeCollection()) {}
 
 	ProgramStruct * parseProgramLevelSCF(string projectDir, string projectName);
 };

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "..\Scanning\scanner.h"
-#include "..\DataStructures\dataTyped.h"
+//#include "..\DataStructures\dataTyped.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -16,8 +16,16 @@ class Parser
 {
 protected:
 	Scanner * scanner;
+	Token current_token; //the currently-selected Token
+	Token lookahead[2]; //storage location for two lookahead Tokens
 
 	string currFilePath;
+
+	string id();
+
+	void match(token_type);
+	Token next_token();
+	Token second_token();
 
 	void syn_error(string, string);
 
@@ -25,5 +33,5 @@ protected:
 	void close() { scanner->close(); }
 
 public:
-	Parser(Scanner* scanner) : scanner(scanner), currFilePath("") {}
+	Parser(Scanner* scanner);
 };
