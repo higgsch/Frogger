@@ -14,8 +14,8 @@ using namespace std;
 // ----------------------------------------------------------
 ODFParser::ODFParser(string scope) : Parser(&scanner), scope(scope)
 {
-	current_token = ODFToken::NOTOK;
-	lookahead[0] = ODFToken::NOTOK;
+	current_token = Token::NOTOK;
+	lookahead[0] = Token::NOTOK;
 }
 
 // ----------------------------------------------------------
@@ -32,7 +32,7 @@ DataCollection * ODFParser::parseODF(string dir, string name)
 
 	DataCollection * dataStruct = new DataCollection();
 
-	while (next_token().type != ODFTT_SCANEOF)
+	while (next_token().type != TT_SCANEOF)
 	{
 		DataRecord * currRec = dataRecord();
 
@@ -45,8 +45,8 @@ DataCollection * ODFParser::parseODF(string dir, string name)
 			dataStruct->push_back(currRec);
 		}
 
-		if (next_token().type != ODFTT_SCANEOF)
-			match(ODFTT_EOL);
+		if (next_token().type != TT_SCANEOF)
+			match(TT_EOL);
 	}
 
 	close();
@@ -65,16 +65,16 @@ DataRecord * ODFParser::dataRecord()
 	DataRecord * currRec = new DataRecord();
 
 	currRec->memberName = id();
-	match(ODFTT_EQUALS);
+	match(TT_EQUAL_SIGN);
 	currRec->type = dataType();
 
-	ODFToken tok = next_token();
-	if (tok.type == ODFTT_OCTOTHORPE)
+	Token tok = next_token();
+	if (tok.type == TT_OCTOTHORPE)
 	{
 		currRec->defaultValue = defaultValue();
 	}
 
-	match(ODFTT_SEMICOLON);
+	match(TT_SEMICOLON);
 
 	return currRec;
 }
@@ -89,15 +89,15 @@ string ODFParser::defaultValue()
 {
 	string value = "";
 
-	match(ODFTT_OCTOTHORPE);
+	match(TT_OCTOTHORPE);
 
-	ODFToken tok = next_token();
-	if (tok.type == ODFTT_STRING || tok.type == ODFTT_DOUBLECONST)
+	Token tok = next_token();
+	if (tok.type == TT_STRINGCONST || tok.type == TT_DOUBLECONST)
 	{
 		value = tok.lexeme;
 		match(tok.type);
 	}
-	else if (tok.type == ODFTT_OCTOTHORPE)
+	else if (tok.type == TT_OCTOTHORPE)
 	{
 		value = "<OBJECT>";
 	}
@@ -106,7 +106,7 @@ string ODFParser::defaultValue()
 		syntax_error("Invalid default value: " + tok.lexeme);
 	}
 	
-	match(ODFTT_OCTOTHORPE);
+	match(TT_OCTOTHORPE);
 
 	return value;
 }
@@ -118,8 +118,8 @@ string ODFParser::defaultValue()
 // ----------------------------------------------------------
 string ODFParser::id()
 {
-	ODFToken id = next_token();
-	match(ODFTT_ID);
+	Token id = next_token();
+	match(TT_ID);
 
 	return id.lexeme;
 }
@@ -131,8 +131,8 @@ string ODFParser::id()
 // ----------------------------------------------------------
 DataType * ODFParser::dataType()
 {
-	ODFToken type = next_token();
-	match(ODFTT_ID);
+	Token type = next_token();
+	match(TT_ID);
 
 	if (type.lexeme == "double")
 		return DataType::DT_DOUBLE;
@@ -177,35 +177,35 @@ bool ODFParser::isInData(DataRecord * rec, DataCollection * data)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void ODFParser::match(odf_token_type toMatch)
+void ODFParser::match(token_type toMatch)
 {
-	ODFToken tok = next_token();
+	Token tok = next_token();
 	if (tok.type == toMatch)
 	{
 		current_token = lookahead[0];
-		lookahead[0] = ODFToken::NOTOK;
+		lookahead[0] = Token::NOTOK;
 	}
 	else
 	{
 		string type;
 		switch (toMatch)
 		{
-		case ODFTT_EQUALS:
-			type = ODFToken::EQUALS.lexeme;
+		case TT_EQUAL_SIGN:
+			type = Token::EQUAL_SIGN.lexeme;
 			break;
-		case ODFTT_OCTOTHORPE:
-			type = ODFToken::OCTOTHORPE.lexeme;
+		case TT_OCTOTHORPE:
+			type = Token::OCTOTHORPE.lexeme;
 			break;
-		case ODFTT_SEMICOLON:
-			type = ODFToken::SEMICOLON.lexeme;
+		case TT_SEMICOLON:
+			type = Token::SEMICOLON.lexeme;
 			break;
-		case ODFTT_SCANEOF:
+		case TT_SCANEOF:
 			type = "<EOF>";
 			break;
-		case ODFTT_ID:
+		case TT_ID:
 			type = "Identifier";
 			break;
-		case ODFTT_EOL:
+		case TT_EOL:
 			type = "End of Line";
 			break;
 		default:
@@ -222,9 +222,9 @@ void ODFParser::match(odf_token_type toMatch)
 //
 // Version 5.0
 // ----------------------------------------------------------
-ODFToken ODFParser::next_token()
+Token ODFParser::next_token()
 {
-	if (lookahead[0].type == ODFTT_NOTOK)
+	if (lookahead[0].type == TT_NOTOK)
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];

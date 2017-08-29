@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "..\Scanning\Scanner.h"
+#include "..\Scanning\scanner.h"
 #include "..\DataStructures\dataTyped.h"
 using namespace std;
 

@@ -6,7 +6,6 @@
 // chars to tokens.
 // -----------------------------------------------------------------
 #include "fgrScanner.h"
-#include "fgrToken.h"
 #include <string>
 using namespace std;
 
@@ -41,11 +40,11 @@ void FGRScanner::closeAndTerminate()
 //
 // Version 5.0
 // ----------------------------------------------------------
-FGRToken FGRScanner::scan()
+Token FGRScanner::scan()
 {
 	char in_char = peek();
 
-	FGRToken foundToken = FGRToken::NOTOK;
+	Token foundToken = Token::NOTOK;
 
 	while (in_char != EOF)
 	{
@@ -65,17 +64,17 @@ FGRToken FGRScanner::scan()
 			return readString();
 		
 
-		if (foundToken.type == FGRTT_NOTOK)
+		if (foundToken.type == TT_NOTOK)
 			foundToken = readBooleanOperator();
 
-		if (foundToken.type == FGRTT_NOTOK)
+		if (foundToken.type == TT_NOTOK)
 			foundToken = readArithmeticOperator(); //must be after readBooleanOperator
 
-		if (foundToken.type == FGRTT_NOTOK)
+		if (foundToken.type == TT_NOTOK)
 			foundToken = readPunctuation();
 
 		
-		if (foundToken.type != FGRTT_NOTOK)
+		if (foundToken.type != TT_NOTOK)
 			return foundToken;
 		else
 		{
@@ -86,7 +85,7 @@ FGRToken FGRScanner::scan()
 		}
 	}
 
-	return FGRToken::SCANEOF;
+	return Token::SCANEOF;
 }
 
 // ----------------------------------------------------------
@@ -208,203 +207,6 @@ bool FGRScanner::readIgnoredChars()
 	}
 
 	return false;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read an identifier from the 
-// input file.
-// Returns the token for the read identifier or NOTOK
-//
-// Version 5.0
-// ----------------------------------------------------------
-FGRToken FGRScanner::readId()
-{
-	token_buffer.reset();
-
-	if (!readIdCharsToBuffer())
-		return FGRToken::NOTOK;
-
-	if (token_buffer.contentsEquals("if"))
-		return FGRToken::IF;
-	else if (token_buffer.contentsEquals("then"))
-		return FGRToken::THEN;
-	else if (token_buffer.contentsEquals("else"))
-		return FGRToken::ELSE;
-	else
-		return FGRToken(FGRTT_ID, token_buffer.value());
-}
-
-// ----------------------------------------------------------
-// This function attempts to read a double from the 
-// input file.
-// Returns the token for the read double or NOTOK
-//
-// Version 5.0
-// ----------------------------------------------------------
-FGRToken FGRScanner::readDouble()
-{
-	token_buffer.reset();
-
-	if (!readDigitsToBuffer())
-		return FGRToken::NOTOK;
-
-	char c = get();
-	if (c != '.')
-	{
-		unget();
-		return FGRToken(FGRTT_DOUBLECONST, token_buffer.value());
-	}
-
-	token_buffer.append('.');
-
-	if (!readDigitsToBuffer())
-		lexical_error("Missing decimals for double");
-	
-	return FGRToken(FGRTT_DOUBLECONST, token_buffer.value());
-}
-
-// ----------------------------------------------------------
-// This function attempts to read a FROGGER string from the 
-// input file.
-// Returns the token for the read string or NOTOK
-//
-// Version 5.0
-// ----------------------------------------------------------
-FGRToken FGRScanner::readString()
-{
-	token_buffer.reset();
-
-	if (!readStringToBuffer())
-		return FGRToken::NOTOK;
-
-	return FGRToken(FGRTT_STRING, token_buffer.value());
-}
-
-// ----------------------------------------------------------
-// This function attempts to read a boolean operator from the 
-// input file.
-// Returns the token for the read operator or NOTOK
-//
-// Version 3.0
-// ----------------------------------------------------------
-FGRToken FGRScanner::readBooleanOperator()
-{
-	if (readThisString("!"))
-		return FGRToken::NOT;
-	else if (readThisString("=="))
-		return FGRToken::EQ;
-	else if (readThisString("<="))
-		return FGRToken::LTE;
-	else if (readThisString("<")) //Must be after "<="
-		return FGRToken::LT;
-	else if (readThisString(">="))
-		return FGRToken::GTE;
-	else if (readThisString(">")) //Must be after ">="
-		return FGRToken::GT;
-	else
-		return FGRToken::NOTOK;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read an arithmetic operator from 
-// the input file.
-// Returns the token for the read operator or NOTOK
-//
-// Version 3.0
-// ----------------------------------------------------------
-FGRToken FGRScanner::readArithmeticOperator()
-{
-	int in_char = peek();
-
-	if (readThisString("=")) //Must be after "=="
-		return FGRToken::ASSIGN;
-	else if (in_char == '+')
-	{
-		if (readThisOperator("++", "addition or concatenation"))
-			return FGRToken::ADD;
-	}
-	else if (in_char == '-')
-	{
-		if (readThisOperator("--", "subtraction"))
-			return FGRToken::SUB;
-	}
-	else if (in_char == '*')
-	{
-		if (readThisOperator("**", "multiplication"))
-			return FGRToken::MUL;
-	}
-	else if (in_char == '/')
-	{
-		if (readThisOperator("//", "division"))
-			return FGRToken::DIV;
-	}
-	else if (in_char == '%')
-	{
-		if (readThisOperator("%%", "modulus division"))
-			return FGRToken::MOD;
-	}
-	else if (in_char == '\\')
-	{
-		if (readThisOperator("\\\\", "integer division")) //Integer division is \\ (\\\\ in c++ string)
-			return FGRToken::IDIV;
-	}
-	else if (in_char == '#')
-	{
-		if (readThisOperator("##", "rootation"))
-			return FGRToken::ROOT;
-	}
-	else if (in_char == '^')
-	{
-		if (readThisOperator("^^", "exponentiation"))
-			return FGRToken::EXP;
-	}
-
-	return FGRToken::NOTOK;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read the given operator from the 
-// input file.
-// Returns whether or not the operator was read, throws a 
-// lexical error if the operator is incomplete
-//
-// Version 3.0
-// ----------------------------------------------------------
-bool FGRScanner::readThisOperator(string op, string opName)
-{
-	if (peek() != op[0])
-		return false;
-
-	if (readThisString(op))
-		return true;
-	else
-	{
-		lexical_error("Incomplete " + opName + " operator");
-		return false;
-	}
-}
-
-// ----------------------------------------------------------
-// This function attempts to read punctuation from the 
-// input file.
-// Returns the token for the read punctuation or NOTOK
-//
-// Version 3.0
-// ----------------------------------------------------------
-FGRToken FGRScanner::readPunctuation()
-{
-	if (readThisString("("))
-		return FGRToken::LPAREN;
-	else if (readThisString(")"))
-		return FGRToken::RPAREN;
-	else if (readThisString(","))
-		return FGRToken::COMMA;
-	else if (readThisString(":"))
-		return FGRToken::COLON;
-	else if (readThisString(";"))
-		return FGRToken::SEMICOLON;
-	else
-		return FGRToken::NOTOK;
 }
 
 // ----------------------------------------------------------

@@ -6,7 +6,6 @@
 #include "parser.h"
 #include <string>
 #include "..\Scanning\fgrScanner.h"
-#include "..\Scanning\fgrToken.h"
 #include "..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
@@ -20,8 +19,8 @@ class FGRParser : Parser
 {
 private:
 	FGRScanner scanner; //the scanning object that provides a Token stream
-	FGRToken current_token; //the currently-selected Token
-	FGRToken lookahead[2]; //storage location for two lookahead Tokens
+	Token current_token; //the currently-selected Token
+	Token lookahead[2]; //storage location for two lookahead Tokens
 	ProgramNode* root; //the root of the AST
 
 	//Program Organization
@@ -51,11 +50,11 @@ private:
 	BinaryOpNode* mulop();
 	BinaryOpNode* expop();
 
-	void match(fgr_token_type);
+	void match(token_type);
 	void syntax_error(string msg) { syn_error("", msg); }
 
-	FGRToken next_token();
-	FGRToken second_token();
+	Token next_token();
+	Token second_token();
 
 public:
 	FGRParser();

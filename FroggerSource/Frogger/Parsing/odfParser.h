@@ -5,7 +5,6 @@
 
 #include "parser.h"
 #include "..\Scanning\odfScanner.h"
-#include "..\Scanning\odfToken.h"
 #include "..\DataStructures\Tables\structs.h"
 using namespace std;
 
@@ -21,18 +20,18 @@ private:
 	string scope;
 
 	ODFScanner scanner;
-	ODFToken current_token;
-	ODFToken lookahead[1];
+	Token current_token;
+	Token lookahead[1];
 	
 	DataRecord * dataRecord();
 	string defaultValue();
 	string id();
 	DataType * dataType();
 
-	void match(odf_token_type);
+	void match(token_type);
 	void syntax_error(string msg) { syn_error("STRUCT", msg); }
 
-	ODFToken next_token();
+	Token next_token();
 
 	bool isInData(DataRecord * rec, DataCollection * data);
 

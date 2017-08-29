@@ -14,8 +14,8 @@ using namespace std;
 // ----------------------------------------------------------
 SCFParser::SCFParser(Language * lang) : Parser(&scanner), lang(lang)
 {
-	current_token = SCFToken::NOTOK;
-	lookahead[0] = SCFToken::NOTOK;
+	current_token = Token::NOTOK;
+	lookahead[0] = Token::NOTOK;
 
 	types = new DataTypeCollection();
 }
@@ -38,11 +38,11 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 	progStruct->name = projectName;
 	progStruct->PEF = NULL;
 
-	while (next_token().type != SCFTT_SCANEOF)
+	while (next_token().type != TT_SCANEOF)
 	{
 		string name = id();
 
-		if (next_token().type == SCFTT_LPAREN)
+		if (next_token().type == TT_LPAREN)
 		{ //Function Declaration Record
 			UDFRecord * currRec = functRecord(name);
 			if (isPEF(currRec, projectName))
@@ -75,12 +75,12 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				}
 			}
 		}
-		else if (next_token().type == SCFTT_DOT)
+		else if (next_token().type == TT_DOT)
 		{ //Object Declaration Record or Data Declaration Record
-			match(SCFTT_DOT);
+			match(TT_DOT);
 
-			SCFToken ext = next_token();
-			match(SCFTT_ID);
+			Token ext = next_token();
+			match(TT_ID);
 
 			if (ext.lexeme == "struct")
 			{
@@ -118,8 +118,8 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 			syntax_error("Incomplete SCF Record: " + name);
 		}
 
-		if (next_token().type != SCFTT_SCANEOF)
-			match(SCFTT_EOL);
+		if (next_token().type != TT_SCANEOF)
+			match(TT_EOL);
 	}
 
 	close();
@@ -146,11 +146,11 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 	ObjectStruct * objStruct = new ObjectStruct(lang);
 	objStruct->name = objectName;
 
-	while (next_token().type != SCFTT_SCANEOF)
+	while (next_token().type != TT_SCANEOF)
 	{
 		string name = id();
 
-		if (next_token().type == SCFTT_LPAREN)
+		if (next_token().type == TT_LPAREN)
 		{ //Function Declaration Record
 			UDFRecord * currRec = functRecord(name);
 			currRec->primary = types->getDT(scope.substr(0,scope.length() - 1));
@@ -171,12 +171,12 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				objStruct->scopedTables->functs->add(currRec);
 			}
 		}
-		else if (next_token().type == SCFTT_DOT)
+		else if (next_token().type == TT_DOT)
 		{ //Object Declaration Record or Data Declaration Record
-			match(SCFTT_DOT);
+			match(TT_DOT);
 
-			SCFToken ext = next_token();
-			match(SCFTT_ID);
+			Token ext = next_token();
+			match(TT_ID);
 
 			if (ext.lexeme == "struct")
 			{
@@ -213,8 +213,8 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			syntax_error("Incomplete SCF Record: " + name);
 		}
 
-		if (next_token().type != SCFTT_SCANEOF)
-			match(SCFTT_EOL);
+		if (next_token().type != TT_SCANEOF)
+			match(TT_EOL);
 	}
 
 	close();
@@ -283,15 +283,15 @@ DataCollection * SCFParser::dataRecord(string dataDir, string name)
 // ----------------------------------------------------------
 UDFRecord * SCFParser::functRecord(string name)
 {
-	match(SCFTT_LPAREN);
+	match(TT_LPAREN);
 	ArgList * args = arguments();
-	match(SCFTT_RPAREN);
-	match(SCFTT_TILDE);
+	match(TT_RPAREN);
+	match(TT_TILDE);
 	DataType * returnType = dataType();
 
-	match(SCFTT_DOT);
-	SCFToken ext = next_token();
-	match(SCFTT_ID);
+	match(TT_DOT);
+	Token ext = next_token();
+	match(TT_ID);
 
 	if (ext.lexeme != "fgr")
 		syntax_error("Found ." + ext.lexeme + " -- Expected .fgr");
@@ -308,8 +308,8 @@ UDFRecord * SCFParser::functRecord(string name)
 // ----------------------------------------------------------
 string SCFParser::id()
 {
-	SCFToken id = next_token();
-	match(SCFTT_ID);
+	Token id = next_token();
+	match(TT_ID);
 
 	return id.lexeme;
 }
@@ -323,14 +323,14 @@ ArgList * SCFParser::arguments()
 {
 	ArgList * args = new ArgList();
 
-	if (next_token().type != SCFTT_RPAREN)
+	if (next_token().type != TT_RPAREN)
 	{
 		args->push_back(argument());
 	}
 
-	while (next_token().type == SCFTT_COMMA)
+	while (next_token().type == TT_COMMA)
 	{
-		match(SCFTT_COMMA);
+		match(TT_COMMA);
 		args->push_back(argument());
 	}
 
@@ -345,8 +345,8 @@ ArgList * SCFParser::arguments()
 ArgPair * SCFParser::argument()
 {
 	string name = next_token().lexeme;
-	match(SCFTT_ID);
-	match(SCFTT_EQUALS);
+	match(TT_ID);
+	match(TT_EQUAL_SIGN);
 	DataType * dt = dataType();
 
 	return new ArgPair(name, dt);
@@ -359,8 +359,8 @@ ArgPair * SCFParser::argument()
 // ----------------------------------------------------------
 DataType * SCFParser::dataType()
 {
-	SCFToken type = next_token();
-	match(SCFTT_ID);
+	Token type = next_token();
+	match(TT_ID);
 
 	if (type.lexeme == "double")
 		return DataType::DT_DOUBLE;
@@ -475,44 +475,44 @@ bool SCFParser::functionSignatureMatches(UDFRecord * first, UDFRecord * second)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void SCFParser::match(scf_token_type toMatch)
+void SCFParser::match(token_type toMatch)
 {
-	SCFToken tok = next_token();
+	Token tok = next_token();
 	if (tok.type == toMatch)
 	{
 		current_token = lookahead[0];
-		lookahead[0] = SCFToken::NOTOK;
+		lookahead[0] = Token::NOTOK;
 	}
 	else
 	{
 		string type;
 		switch (toMatch)
 		{
-		case SCFTT_LPAREN:
-			type = SCFToken::LPAREN.lexeme;
+		case TT_LPAREN:
+			type = Token::LPAREN.lexeme;
 			break;
-		case SCFTT_RPAREN:
-			type = SCFToken::RPAREN.lexeme;
+		case TT_RPAREN:
+			type = Token::RPAREN.lexeme;
 			break;
-		case SCFTT_EQUALS:
-			type = SCFToken::EQUALS.lexeme;
+		case TT_EQUAL_SIGN:
+			type = Token::EQUAL_SIGN.lexeme;
 			break;
-		case SCFTT_COMMA:
-			type = SCFToken::COMMA.lexeme;
+		case TT_COMMA:
+			type = Token::COMMA.lexeme;
 			break;
-		case SCFTT_TILDE:
-			type = SCFToken::TILDE.lexeme;
+		case TT_TILDE:
+			type = Token::TILDE.lexeme;
 			break;
-		case SCFTT_DOT:
-			type = SCFToken::DOT.lexeme;
+		case TT_DOT:
+			type = Token::DOT.lexeme;
 			break;
-		case SCFTT_SCANEOF:
+		case TT_SCANEOF:
 			type = "<EOF>";
 			break;
-		case SCFTT_ID:
+		case TT_ID:
 			type = "Identifier";
 			break;
-		case SCFTT_EOL:
+		case TT_EOL:
 			type = "End of Line";
 			break;
 		default:
@@ -529,9 +529,9 @@ void SCFParser::match(scf_token_type toMatch)
 //
 // Version 5.0
 // ----------------------------------------------------------
-SCFToken SCFParser::next_token()
+Token SCFParser::next_token()
 {
-	if (lookahead[0].type == SCFTT_NOTOK)
+	if (lookahead[0].type == TT_NOTOK)
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];

@@ -3,11 +3,8 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "Scanner.h"
+#include "scanner.h"
 using namespace std;
-
-//forward declaration
-class ODFToken;
 
 // ----------------------------------------------------------
 // This class reads through a .data file and converts 
@@ -19,10 +16,6 @@ class ODFScanner : public Scanner
 {
 private:
 	bool readIgnoredChars();
-	ODFToken readId();
-	ODFToken readDouble();
-	ODFToken readString();
-	ODFToken readPunctuation();
 		
 	void lexical_error(string msg) { lex_error("DATA", msg); }
 
@@ -32,5 +25,5 @@ protected:
 	char peek() { return source.peek(); }
 
 public:
-	ODFToken scan();
+	Token scan();
 };

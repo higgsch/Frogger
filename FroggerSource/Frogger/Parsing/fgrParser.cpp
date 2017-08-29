@@ -15,9 +15,9 @@ using namespace std;
 // ----------------------------------------------------------
 FGRParser::FGRParser() : Parser(&scanner)
 {
-	current_token = FGRToken::NOTOK;
-	lookahead[0] = FGRToken::NOTOK;
-	lookahead[1] = FGRToken::NOTOK;
+	current_token = Token::NOTOK;
+	lookahead[0] = Token::NOTOK;
+	lookahead[1] = Token::NOTOK;
 	root = new ProgramNode();
 }
 
@@ -65,8 +65,8 @@ ProgramNode* FGRParser::parse()
 // ----------------------------------------------------------
 void FGRParser::prog()
 {
-	FGRToken tok = next_token();
-	if (tok.type == FGRTT_SCANEOF)
+	Token tok = next_token();
+	if (tok.type == TT_SCANEOF)
 		syntax_error("A program must have at least one statement");
 
 	ControlFlowNode* first = flowstmt(); 
@@ -83,14 +83,14 @@ void FGRParser::prog()
 // ----------------------------------------------------------
 ControlFlowNode* FGRParser::flowstmts()
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch(tok.type)
 	{
-	case FGRTT_SCANEOF:
+	case TT_SCANEOF:
 		//lambda
 		return NULL;
 		break;
-	case FGRTT_IF:
+	case TT_IF:
 	default:
 		ControlFlowNode* thisStmt = flowstmt(); 
 		thisStmt->addNextStmt(flowstmts());
@@ -108,10 +108,10 @@ ControlFlowNode* FGRParser::flowstmts()
 // ----------------------------------------------------------
 ControlFlowNode* FGRParser::flowstmt()
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch(tok.type)
 	{
-	case FGRTT_IF:
+	case TT_IF:
 		return ifstmt();
 		break;
 	default:
@@ -131,10 +131,10 @@ ControlFlowNode* FGRParser::nestedflowstmt()
 {
 	ControlFlowNode* stmt;
 
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_IF:
+	case TT_IF:
 		stmt = ifstmt();
 		break;
 	default:
@@ -154,11 +154,11 @@ ControlFlowNode* FGRParser::nestedflowstmt()
 // ----------------------------------------------------------
 IfNode* FGRParser::ifstmt()
 {
-	match(FGRTT_IF); match(FGRTT_LPAREN);
+	match(TT_IF); match(TT_LPAREN);
 	AsciiNode* toCompare = boolexp();
-	match(FGRTT_RPAREN); match(FGRTT_THEN);
+	match(TT_RPAREN); match(TT_THEN);
 	ControlFlowNode* trueStmt = nestedflowstmt();
-	match(FGRTT_ELSE);
+	match(TT_ELSE);
 	ControlFlowNode* falseStmt = nestedflowstmt();
 
 	IfNode* stmt = new IfNode();
@@ -179,12 +179,12 @@ AsciiNode* FGRParser::boolexp()
 {
 	AsciiNode* left = expr(); 
 
-	FGRToken tok = next_token();
+	Token tok = next_token();
 
 	NotingNode* not = NULL;
-	if (tok.type == FGRTT_NOT)
+	if (tok.type == TT_NOT)
 	{
-		match(FGRTT_NOT); 
+		match(TT_NOT); 
 		not = new NotingNode(scanner.getLineNo());
 	}
 
@@ -216,27 +216,27 @@ AsciiNode* FGRParser::boolexp()
 // ----------------------------------------------------------
 BinaryOpNode* FGRParser::boolop()
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_LT:
-		match(FGRTT_LT);
+	case TT_LT:
+		match(TT_LT);
 		return new LTingNode(scanner.getLineNo());
 		break;
-	case FGRTT_GT:
-		match(FGRTT_GT);
+	case TT_GT:
+		match(TT_GT);
 		return new GTingNode(scanner.getLineNo());
 		break;
-	case FGRTT_EQ:
-		match(FGRTT_EQ);
+	case TT_DUAL_EQUAL_SIGN:
+		match(TT_DUAL_EQUAL_SIGN);
 		return new EQingNode(scanner.getLineNo());
 		break;
-	case FGRTT_LTE:
-		match(FGRTT_LTE);
+	case TT_LTE:
+		match(TT_LTE);
 		return new LTEingNode(scanner.getLineNo());
 		break;
-	case FGRTT_GTE:
-		match(FGRTT_GTE);
+	case TT_GTE:
+		match(TT_GTE);
 		return new GTEingNode(scanner.getLineNo());
 		break;
 	default:
@@ -259,45 +259,45 @@ JmpStmtNode* FGRParser::jmpstmt()
 {
 	JmpStmtNode* stmt = new JmpStmtNode();
 
-	FGRToken idTok = next_token();
-	FGRToken tok = second_token();
+	Token idTok = next_token();
+	Token tok = second_token();
 
 	switch (tok.type)
 	{
-	case FGRTT_COLON:
+	case TT_COLON:
 		{
 			AsciiNode * cmd = typedterm(false);
-			match(FGRTT_SEMICOLON);
+			match(TT_SEMICOLON);
 
 			stmt->setStmt(cmd);
 			break;
 		}
-	case FGRTT_LPAREN:
+	case TT_LPAREN:
 		{
-			match(FGRTT_ID);
-			match(FGRTT_LPAREN);
+			match(TT_ID);
+			match(TT_LPAREN);
 			CommandCallNode* cmd = new CommandCallNode(DataType::DT_NULL, idTok.lexeme, scanner.getLineNo());
 
-			FGRToken argTok = next_token();
-			if (argTok.type != FGRTT_RPAREN)
+			Token argTok = next_token();
+			if (argTok.type != TT_RPAREN)
 			{
 				cmd->addArgList(arglist(0, cmd->getCmd()));
 			}
 
-			match(FGRTT_RPAREN);
-			match(FGRTT_SEMICOLON);
+			match(TT_RPAREN);
+			match(TT_SEMICOLON);
 
 			stmt->setStmt(cmd);
 			break;
 		}
-	case FGRTT_ASSIGN:
+	case TT_EQUAL_SIGN:
 		{
-			match(FGRTT_ID);
+			match(TT_ID);
 			IdRefNode* id = new IdRefNode(idTok.lexeme, scanner.getLineNo());
-			match(FGRTT_ASSIGN);
+			match(TT_EQUAL_SIGN);
 
 			AsciiNode* toAssign = expr();
-			match(FGRTT_SEMICOLON);
+			match(TT_SEMICOLON);
 
 			stmt->setStmt(new AssigningNode(id, toAssign, scanner.getLineNo()));
 			break;
@@ -331,9 +331,9 @@ AsciiNode* FGRParser::arglist(int argNo, Routine* rout)
 	rout->addArg("", DataType::DT_NOT_DEFINED);
 	argNo++;
 
-	if (next_token().type == FGRTT_COMMA)
+	if (next_token().type == TT_COMMA)
 	{
-		match(FGRTT_COMMA);
+		match(TT_COMMA);
 		nextArg = arglist(argNo, rout);
 	}
 
@@ -354,11 +354,11 @@ AsciiNode* FGRParser::expr()
 {
 	AsciiNode* left = addterm();
 
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch(tok.type)
 	{
-	case FGRTT_ADD: //fall through
-	case FGRTT_SUB:
+	case TT_DUAL_ADD: //fall through
+	case TT_DUAL_SUB:
 		{
 			BinaryOpNode* op = addop();
 			AsciiNode* right = expr();
@@ -386,13 +386,13 @@ AsciiNode* FGRParser::addterm()
 {
 	AsciiNode* left = multerm();
 
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_MUL: //fall through
-	case FGRTT_DIV: //fall through
-	case FGRTT_MOD: //fall through
-	case FGRTT_IDIV:
+	case TT_DUAL_MUL: //fall through
+	case TT_DUAL_DIV: //fall through
+	case TT_DUAL_MOD: //fall through
+	case TT_DUAL_IDIV:
 		{
 			BinaryOpNode* op = mulop();
 			AsciiNode* right = addterm();
@@ -420,11 +420,11 @@ AsciiNode* FGRParser::multerm()
 {
 	AsciiNode* left = typedterm(true);
 
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_ROOT: //fall through
-	case FGRTT_EXP: 
+	case TT_DUAL_ROOT: //fall through
+	case TT_DUAL_EXP: 
 		{
 			BinaryOpNode* op = expop();
 			AsciiNode* right = multerm();
@@ -459,24 +459,24 @@ AsciiNode* FGRParser::typedterm(bool isEndFunction)
 
 	do
 	{
-		FGRToken tok = next_token();
-		if (tok.type == FGRTT_COLON)
+		Token tok = next_token();
+		if (tok.type == TT_COLON)
 		{
-			match(FGRTT_COLON);
+			match(TT_COLON);
 
-			FGRToken idTok = next_token();
-			match(FGRTT_ID);
+			Token idTok = next_token();
+			match(TT_ID);
 			FunctionCallNode * funct = new FunctionCallNode(idTok.lexeme, scanner.getLineNo());
-			match(FGRTT_LPAREN);
+			match(TT_LPAREN);
 
-			FGRToken firstArg = next_token();
+			Token firstArg = next_token();
 
-			if (firstArg.type != FGRTT_RPAREN)
+			if (firstArg.type != TT_RPAREN)
 			{
 				funct->addArgList(arglist(0,funct->getFunct()));
 			}
 
-			match(FGRTT_RPAREN);
+			match(TT_RPAREN);
 
 			funct->addPrimary(curr);
 			curr = funct;
@@ -517,45 +517,45 @@ AsciiNode* FGRParser::typedterm(bool isEndFunction)
 // ----------------------------------------------------------
 AsciiNode* FGRParser::primary()
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_DOUBLECONST:
-		match(FGRTT_DOUBLECONST);
+	case TT_DOUBLECONST:
+		match(TT_DOUBLECONST);
 		return new DoubleConstingNode(tok.lexeme, scanner.getLineNo());
 		break;
-	case FGRTT_ID:
+	case TT_ID:
 		{
-			match(FGRTT_ID);
+			match(TT_ID);
 		
-			FGRToken nextTok = next_token();
-			if (nextTok.type != FGRTT_LPAREN)
+			Token nextTok = next_token();
+			if (nextTok.type != TT_LPAREN)
 				return new IdRefNode(tok.lexeme, scanner.getLineNo());
 
 			//Function call
 			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme, scanner.getLineNo());
 			funct->getFunct()->primary = DataType::DT_NULL;
-			match(FGRTT_LPAREN);
+			match(TT_LPAREN);
 
-			FGRToken firstArg = next_token();
-			if (firstArg.type != FGRTT_RPAREN)
+			Token firstArg = next_token();
+			if (firstArg.type != TT_RPAREN)
 			{
 				funct->addArgList(arglist(0, funct->getFunct()));
 			}
 
-			match(FGRTT_RPAREN);
+			match(TT_RPAREN);
 			return funct;
 			break;
 		}
-	case FGRTT_STRING:
-		match(FGRTT_STRING);
+	case TT_STRINGCONST:
+		match(TT_STRINGCONST);
 		return new StringConstingNode(tok.lexeme, scanner.getLineNo());
 		break;
-	case FGRTT_LPAREN:
+	case TT_LPAREN:
 		{
-			match(FGRTT_LPAREN); 
+			match(TT_LPAREN); 
 			AsciiNode* val = expr(); 
-			match(FGRTT_RPAREN);
+			match(TT_RPAREN);
 			val->addParenNesting();
 			return val;
 			break;
@@ -577,14 +577,14 @@ AsciiNode* FGRParser::primary()
 // ----------------------------------------------------------
 BinaryOpNode* FGRParser::addop()
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_ADD:
+	case TT_DUAL_ADD:
 		match(tok.type);
 		return new AddingNode(scanner.getLineNo());
 		break;
-	case FGRTT_SUB:
+	case TT_DUAL_SUB:
 		match(tok.type);
 		return new SubingNode(scanner.getLineNo());
 		break;
@@ -607,23 +607,23 @@ BinaryOpNode* FGRParser::addop()
 // ----------------------------------------------------------
 BinaryOpNode* FGRParser::mulop()
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_MUL:
-		match(FGRTT_MUL);
+	case TT_DUAL_MUL:
+		match(TT_DUAL_MUL);
 		return new MulingNode(scanner.getLineNo());
 		break;
-	case FGRTT_DIV:
-		match(FGRTT_DIV);
+	case TT_DUAL_DIV:
+		match(TT_DUAL_DIV);
 		return new DivingNode(scanner.getLineNo());
 		break;
-	case FGRTT_MOD:
-		match(FGRTT_MOD);
+	case TT_DUAL_MOD:
+		match(TT_DUAL_MOD);
 		return new ModDivingNode(scanner.getLineNo());
 		break;
-	case FGRTT_IDIV:
-		match(FGRTT_IDIV);
+	case TT_DUAL_IDIV:
+		match(TT_DUAL_IDIV);
 		return new IDivingNode(scanner.getLineNo());
 		break;
 	default:
@@ -643,15 +643,15 @@ BinaryOpNode* FGRParser::mulop()
 // ----------------------------------------------------------
 BinaryOpNode* FGRParser::expop()
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	switch (tok.type)
 	{
-	case FGRTT_ROOT:
-		match(FGRTT_ROOT);
+	case TT_DUAL_ROOT:
+		match(TT_DUAL_ROOT);
 		return new RootingNode(scanner.getLineNo());
 		break;
-	case FGRTT_EXP:
-		match(FGRTT_EXP);
+	case TT_DUAL_EXP:
+		match(TT_DUAL_EXP);
 		return new ExpingNode(scanner.getLineNo());
 		break;
 	default:
@@ -669,96 +669,96 @@ BinaryOpNode* FGRParser::expop()
 //
 // Version 5.0
 // ----------------------------------------------------------
-void FGRParser::match(fgr_token_type toMatch)
+void FGRParser::match(token_type toMatch)
 {
-	FGRToken tok = next_token();
+	Token tok = next_token();
 	if (tok.type == toMatch)
 	{
 		current_token = lookahead[0];
 		lookahead[0] = lookahead[1];
-		lookahead[1] = FGRToken::NOTOK;
+		lookahead[1] = Token::NOTOK;
 	}
 	else
 	{
 		string type;
 		switch (toMatch)
 		{
-		case FGRTT_ASSIGN:
+		case TT_EQUAL_SIGN:
 			type = "=";
 			break;
-		case FGRTT_ADD:
+		case TT_DUAL_ADD:
 			type = "++";
 			break;
-		case FGRTT_SUB:
+		case TT_DUAL_SUB:
 			type = "--";
 			break;
-		case FGRTT_MUL:
+		case TT_DUAL_MUL:
 			type = "**";
 			break;
-		case FGRTT_DIV:
+		case TT_DUAL_DIV:
 			type = "//";
 			break;
-		case FGRTT_MOD:
+		case TT_DUAL_MOD:
 			type = "%%";
 			break;
-		case FGRTT_IDIV:
+		case TT_DUAL_IDIV:
 			type = "\\\\";
 			break;
-		case FGRTT_ROOT:
+		case TT_DUAL_ROOT:
 			type = "##";
 			break;
-		case FGRTT_EXP:
+		case TT_DUAL_EXP:
 			type = "^^";
 			break;
-		case FGRTT_NOT:
+		case TT_NOT:
 			type = "!";
 			break;
-		case FGRTT_LT: 
+		case TT_LT: 
 			type = "<";
 			break;
-		case FGRTT_GT:
+		case TT_GT:
 			type = ">";
 			break;
-		case FGRTT_EQ:
+		case TT_DUAL_EQUAL_SIGN:
 			type = "==";
 			break;
-		case FGRTT_LTE:
+		case TT_LTE:
 			type = "<=";
 			break;
-		case FGRTT_GTE:
+		case TT_GTE:
 			type = ">=";
 			break;
-		case FGRTT_IF:
+		case TT_IF:
 			type = "if";
 			break;
-		case FGRTT_THEN:
+		case TT_THEN:
 			type = "then";
 			break;
-		case FGRTT_ELSE:
+		case TT_ELSE:
 			type = "else";
 			break;
-		case FGRTT_COLON:
+		case TT_COLON:
 			type = ":";
 			break;
-		case FGRTT_SEMICOLON:
+		case TT_SEMICOLON:
 			type = ";";
 			break;
-		case FGRTT_LPAREN:
+		case TT_LPAREN:
 			type = "(";
 			break;
-		case FGRTT_RPAREN:
+		case TT_RPAREN:
 			type = ")";
 			break;
-		case FGRTT_SCANEOF:
+		case TT_SCANEOF:
 			type = "<EOF>";
 			break;
-		case FGRTT_STRING:
+		case TT_STRINGCONST:
 			type = "String Literal";
 			break;
-		case FGRTT_ID:
+		case TT_ID:
 			type = "Identifier";
 			break;
-		case FGRTT_DOUBLECONST:
+		case TT_DOUBLECONST:
 			type = "Double Literal";
 			break;
 		default:
@@ -775,9 +775,9 @@ void FGRParser::match(fgr_token_type toMatch)
 //
 // Version 5.0
 // ----------------------------------------------------------
-FGRToken FGRParser::next_token()
+Token FGRParser::next_token()
 {
-	if (lookahead[0].type == FGRTT_NOTOK)
+	if (lookahead[0].type == TT_NOTOK)
 		lookahead[0] = scanner.scan();
 
 	return lookahead[0];
@@ -789,9 +789,9 @@ FGRToken FGRParser::next_token()
 //
 // Version 5.0
 // ----------------------------------------------------------
-FGRToken FGRParser::second_token()
+Token FGRParser::second_token()
 {
-	if (lookahead[1].type == FGRTT_NOTOK)
+	if (lookahead[1].type == TT_NOTOK)
 	{
 		lookahead[0] = next_token();
 		lookahead[1] = scanner.scan();

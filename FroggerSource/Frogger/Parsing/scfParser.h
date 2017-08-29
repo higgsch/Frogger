@@ -5,7 +5,6 @@
 
 #include "parser.h"
 #include "..\Scanning\scfScanner.h"
-#include "..\Scanning\scfToken.h"
 #include "odfParser.h"
 #include "..\DataStructures\Tables\tables.h"
 #include "..\DataStructures\Tables\structs.h"
@@ -26,8 +25,8 @@ private:
 	string scope;
 
 	SCFScanner scanner;
-	SCFToken current_token;
-	SCFToken lookahead[1];
+	Token current_token;
+	Token lookahead[1];
 	
 	UDFRecord * functRecord(string name);
 	ObjectStruct * objectRecord(string objectDir, string name);
@@ -39,10 +38,10 @@ private:
 
 	Language * lang;
 
-	void match(scf_token_type);
+	void match(token_type);
 	void syntax_error(string msg) { syn_error("STRUCT", msg); }
 
-	SCFToken next_token();
+	Token next_token();
 
 	bool isPEF(UDFRecord * rec, string pefName);
 	bool isInFunctions(UDFRecord * rec, UDFCollection * functions);

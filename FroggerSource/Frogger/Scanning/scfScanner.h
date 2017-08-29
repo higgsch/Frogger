@@ -3,11 +3,8 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "Scanner.h"
+#include "scanner.h"
 using namespace std;
-
-//forward declaration
-class SCFToken;
 
 // ----------------------------------------------------------
 // This class reads through a .struct file and converts 
@@ -18,9 +15,6 @@ class SCFToken;
 class SCFScanner : public Scanner
 {
 private:
-	SCFToken readId();
-	SCFToken readPunctuation();
-		
 	void lexical_error(string msg) { lex_error("STRUCT", msg); }
 
 protected:
@@ -29,5 +23,5 @@ protected:
 	char peek() { return source.peek(); }
 
 public:
-	SCFToken scan();
+	Token scan();
 };

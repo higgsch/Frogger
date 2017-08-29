@@ -3,12 +3,9 @@
 // -----------------------------------------------------------------
 #pragma once
 
-#include "Scanner.h"
+#include "scanner.h"
 #include "obfuscator.h"
 using namespace std;
-
-//forward declaration
-class FGRToken;
 
 // ----------------------------------------------------------
 // This class reads through a .fgr file and converts strings
@@ -30,13 +27,6 @@ private:
 
 	bool readEmptyComments();
 	bool readIgnoredChars();
-	FGRToken readId();
-	FGRToken readDouble();
-	FGRToken readString();
-	FGRToken readBooleanOperator();
-	FGRToken readArithmeticOperator();
-	bool readThisOperator(string op, string opName);
-	FGRToken readPunctuation();
 
 	char get();
 	void unget();
@@ -50,5 +40,5 @@ public:
 	void openAndInitialize(string inFile);
 	void closeAndTerminate();
 
-	FGRToken scan();
+	Token scan();
 };

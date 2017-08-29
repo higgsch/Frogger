@@ -6,7 +6,6 @@
 // chars to tokens.
 // -----------------------------------------------------------------
 #include "odfScanner.h"
-#include "odfToken.h"
 #include <string>
 using namespace std;
 
@@ -15,11 +14,11 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-ODFToken ODFScanner::scan()
+Token ODFScanner::scan()
 {
 	char in_char = source.peek();
 
-	ODFToken foundToken = ODFToken::NOTOK;
+	Token foundToken = Token::NOTOK;
 
 	while (in_char != EOF)
 	{
@@ -40,7 +39,7 @@ ODFToken ODFScanner::scan()
 
 		foundToken = readPunctuation();
 		
-		if (foundToken.type != ODFTT_NOTOK)
+		if (foundToken.type != TT_NOTOK)
 			return foundToken;
 		else
 		{
@@ -51,7 +50,7 @@ ODFToken ODFScanner::scan()
 		}
 	}
 
-	return ODFToken::SCANEOF;
+	return Token::SCANEOF;
 }
 
 // ----------------------------------------------------------
@@ -75,93 +74,4 @@ bool ODFScanner::readIgnoredChars()
 	}
 
 	return false;
-}
-
-// ----------------------------------------------------------
-// This function attempts to read an identifier from the 
-// input file.
-// Returns the token for the read identifier or NOTOK
-//
-// Version 5.0
-// ----------------------------------------------------------
-ODFToken ODFScanner::readId()
-{
-	token_buffer.reset();
-
-	if (!readIdCharsToBuffer())
-		return ODFToken::NOTOK;
-
-	return ODFToken(ODFTT_ID, token_buffer.value());
-}
-
-// ----------------------------------------------------------
-// This function attempts to read a double from the 
-// input file.
-// Returns the token for the read double or NOTOK
-//
-// Version 5.0
-// ----------------------------------------------------------
-ODFToken ODFScanner::readDouble()
-{
-	token_buffer.reset();
-
-	if (!readDigitsToBuffer())
-		return ODFToken::NOTOK;
-
-	char c = source.get();
-	if (c != '.')
-	{
-		source.unget();
-		return ODFToken(ODFTT_DOUBLECONST, token_buffer.value());
-	}
-
-	token_buffer.append('.');
-
-	if (!readDigitsToBuffer())
-		lexical_error("Missing decimals for double");
-	
-	return ODFToken(ODFTT_DOUBLECONST, token_buffer.value());
-}
-
-// ----------------------------------------------------------
-// This function attempts to read a FROGGER string from the 
-// input file.
-// Returns the token for the read string or NOTOK
-//
-// Version 5.0
-// ----------------------------------------------------------
-ODFToken ODFScanner::readString()
-{
-	token_buffer.reset();
-
-	if (!readStringToBuffer())
-		return ODFToken::NOTOK;
-
-	return ODFToken(ODFTT_STRING, token_buffer.value());
-}
-
-// ----------------------------------------------------------
-// This function attempts to read punctuation from the 
-// input file.
-// Returns the token for the read punctuation or NOTOK
-//
-// Version 5.0
-// ----------------------------------------------------------
-ODFToken ODFScanner::readPunctuation()
-{
-	if (readThisString(ODFToken::EQUALS.lexeme))
-		return ODFToken::EQUALS;
-	else if (readThisString(ODFToken::OCTOTHORPE.lexeme))
-		return ODFToken::OCTOTHORPE;
-	else if (readThisString(ODFToken::SEMICOLON.lexeme))
-		return ODFToken::SEMICOLON;
-	//Windows text files contain '\n' as part of the end of line sequence.
-	//Other representations may require a '\r' instead to count lines properly.
-	else if (readThisString("\n"))
-	{
-		lineNo++;
-		return ODFToken::EOL;
-	}
-	else
-		return ODFToken::NOTOK;
 }
