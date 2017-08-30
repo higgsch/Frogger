@@ -1,14 +1,11 @@
 // -----------------------------------------------------------------
-// This is the header for the CodeGeneratingPhase class.
+// This is the header for the FGRCodeGeneratingPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
-#include <iostream>
-#include <fstream>
 #include "fgrPhase.h"
 #include "..\..\DataStructures\Nodes\nodes.h"
 #include "..\..\DataStructures\Tables\tables.h"
-#include "..\..\Printing\printer.h"
 #include "..\..\Languages\language.h"
 using namespace std;
 
@@ -21,17 +18,8 @@ using namespace std;
 class FGRCodeGenerationPhase : public FGRPhase
 {
 private:
-	Printer * p;
 	Language * lang;
-
 	string currUDFName;
-
-	void printMetaCode(ProgramStruct * progStruct);
-	void printPEFCode(ProgramStruct * progStruct);
-	void printAllContainedOFsCode(ObjectStruct * obj);
-
-	void printUDFCode(UDFRecord * rec);
-	void printAllContainedUDFsCode(ObjectStruct * obj);
 
 	void visitBinaryOpNode(BinaryOpNode * n);
 
@@ -42,15 +30,9 @@ private:
 	bool validBuiltInFunctionName(string name);
 	bool validBuiltInCommandName(string name);
 public:
-	FGRCodeGenerationPhase(Language * lang) : p(new Printer()), lang(lang), currUDFName("<META>") {}
+	FGRCodeGenerationPhase(Language * lang) : lang(lang), currUDFName("<META>") {}
 
-	void open(string filename) { p->open(filename); }
-	void close() { p->close(); }
-
-	void printCode(ProgramStruct * progStruct);
-
-	void outputToExe(string outFilename, string exeFilename) { lang->outputToExe(outFilename, exeFilename); }
-	void cleanup(string filename) { lang->cleanup(filename); }
+	void updateCurrentUDFName(string newUDFName) { currUDFName = newUDFName; }
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n);

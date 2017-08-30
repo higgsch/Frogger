@@ -153,10 +153,10 @@ void FroggerC::runCodeGenerationPhase(string dir, string name, string outFile, b
 {
 	string filename = (toExe) ? rootDir + "bin\\" + name : outFile;
 
-	FGRCodeGenerationPhase *cgp = new FGRCodeGenerationPhase(lang);
+	CodeGenerationPhase *cgp = new CodeGenerationPhase(lang);
 
 	cgp->open(filename + ".cpp");
-	cgp->printCode(progStruct);
+	cgp->process(progStruct);
 	cgp->close();
 
 	if (toExe)

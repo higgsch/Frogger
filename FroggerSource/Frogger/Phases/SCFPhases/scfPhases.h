@@ -10,5 +10,6 @@
 #include "dataTypingPhase.h"
 #include "supportReqsPhase.h"
 #include "fgrCompilationPhase.h"
+#include "codeGenerationPhase.h"
 
 using namespace std;
