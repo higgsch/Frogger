@@ -5,7 +5,7 @@
 // This program represents a visitor for generating output code
 // that reflects the current AST.
 // -----------------------------------------------------------------
-#include "codeGenerationPhase.h"
+#include "fgrCodeGenerationPhase.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -14,7 +14,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::printCode(ProgramStruct * progStruct)
+void FGRCodeGenerationPhase::printCode(ProgramStruct * progStruct)
 {
 	printMetaCode(progStruct);
 	printPEFCode(progStruct);
@@ -27,7 +27,7 @@ void CodeGenerationPhase::printCode(ProgramStruct * progStruct)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::printMetaCode(ProgramStruct * progStruct)
+void FGRCodeGenerationPhase::printMetaCode(ProgramStruct * progStruct)
 {
 	p->printString(lang->getMetaCode(progStruct));
 }
@@ -39,7 +39,7 @@ void CodeGenerationPhase::printMetaCode(ProgramStruct * progStruct)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::printPEFCode(ProgramStruct * progStruct)
+void FGRCodeGenerationPhase::printPEFCode(ProgramStruct * progStruct)
 {
 	UDFRecord * PEF = progStruct->PEF;
 	currUDFName = PEF->name;
@@ -56,7 +56,7 @@ void CodeGenerationPhase::printPEFCode(ProgramStruct * progStruct)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
+void FGRCodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
 {
 	int udfCount = obj->getNumberOfUDFs();
 	for (int udfIndex = 0; udfIndex < udfCount; udfIndex++)
@@ -72,7 +72,7 @@ void CodeGenerationPhase::printAllContainedUDFsCode(ObjectStruct * obj)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::printAllContainedOFsCode(ObjectStruct * obj)
+void FGRCodeGenerationPhase::printAllContainedOFsCode(ObjectStruct * obj)
 {
 	printAllContainedUDFsCode(obj);
 
@@ -93,7 +93,7 @@ void CodeGenerationPhase::printAllContainedOFsCode(ObjectStruct * obj)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::printUDFCode(UDFRecord * UDF) 
+void FGRCodeGenerationPhase::printUDFCode(UDFRecord * UDF) 
 {
 	currUDFName = UDF->name;
 
@@ -108,7 +108,7 @@ void CodeGenerationPhase::printUDFCode(UDFRecord * UDF)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(ProgramNode* n)
+void FGRCodeGenerationPhase::visit(ProgramNode* n)
 {
 	n->visitAllChildren(this); 
 	n->outputText = n->getFirstStmt()->outputText;
@@ -120,7 +120,7 @@ void CodeGenerationPhase::visit(ProgramNode* n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(JmpStmtNode * n)
+void FGRCodeGenerationPhase::visit(JmpStmtNode * n)
 {
 	n->visitThisStmt(this);
 	string thisStmtText = n->getStmt()->outputText;
@@ -144,7 +144,7 @@ void CodeGenerationPhase::visit(JmpStmtNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(IfNode * n)
+void FGRCodeGenerationPhase::visit(IfNode * n)
 {
 	n->visitBoolExp(this);
 	n->visitTrueStmt(this);
@@ -172,7 +172,7 @@ void CodeGenerationPhase::visit(IfNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(IdRefNode * n)
+void FGRCodeGenerationPhase::visit(IdRefNode * n)
 {
 	bool nested = n->getParenNesting() > 0;
 	string id = n->getLexeme();
@@ -186,7 +186,7 @@ void CodeGenerationPhase::visit(IdRefNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(AssigningNode * n)
+void FGRCodeGenerationPhase::visit(AssigningNode * n)
 {
 	n->visitAssignee(this);
 	n->visitAssignor(this);
@@ -202,7 +202,7 @@ void CodeGenerationPhase::visit(AssigningNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(FunctionCallNode * n)
+void FGRCodeGenerationPhase::visit(FunctionCallNode * n)
 {
 	Routine* funct = n->getFunct();
 
@@ -231,7 +231,7 @@ void CodeGenerationPhase::visit(FunctionCallNode * n)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(CommandCallNode * n)
+void FGRCodeGenerationPhase::visit(CommandCallNode * n)
 {
 	Routine* cmd = n->getCmd();
 
@@ -257,7 +257,7 @@ void CodeGenerationPhase::visit(CommandCallNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(ArgListNode * n)
+void FGRCodeGenerationPhase::visit(ArgListNode * n)
 {
 	n->visitThisArg(this);
 	AsciiNode* thisArg = n->getThisArg();
@@ -276,7 +276,7 @@ void CodeGenerationPhase::visit(ArgListNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(DoubleConstingNode * n)
+void FGRCodeGenerationPhase::visit(DoubleConstingNode * n)
 {
 	bool isNested = n->getParenNesting() > 0;
 	string dbl = n->getLexeme();
@@ -290,7 +290,7 @@ void CodeGenerationPhase::visit(DoubleConstingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-void CodeGenerationPhase::visit(NotingNode * n) 
+void FGRCodeGenerationPhase::visit(NotingNode * n) 
 {
 	n->visitOperand(this);
 	string notText = n->getOperand()->outputText;
@@ -305,7 +305,7 @@ void CodeGenerationPhase::visit(NotingNode * n)
 //
 // Version 4.2
 // ----------------------------------------------------------
-bool CodeGenerationPhase::validBuiltInFunctionName(string name)
+bool FGRCodeGenerationPhase::validBuiltInFunctionName(string name)
 {
 	return name == lang->FUNCTNAME_TO_STRING ||
 		   name == lang->FUNCTNAME_TO_ASCII ||
@@ -327,7 +327,7 @@ bool CodeGenerationPhase::validBuiltInFunctionName(string name)
 //
 // Version 4.2
 // ----------------------------------------------------------
-bool CodeGenerationPhase::validBuiltInCommandName(string name)
+bool FGRCodeGenerationPhase::validBuiltInCommandName(string name)
 {
 	return name == lang->CMDNAME_END_NULL ||
 		   name == lang->CMDNAME_DISPLAY_STR ||
@@ -344,7 +344,7 @@ bool CodeGenerationPhase::validBuiltInCommandName(string name)
 //
 // Version 5.0
 // ----------------------------------------------------------
-void CodeGenerationPhase::visitBinaryOpNode(BinaryOpNode * n)
+void FGRCodeGenerationPhase::visitBinaryOpNode(BinaryOpNode * n)
 {
 	n->visitAllChildren(this);
 	bool isString = n->getDataType() == DataType::DT_STRING;

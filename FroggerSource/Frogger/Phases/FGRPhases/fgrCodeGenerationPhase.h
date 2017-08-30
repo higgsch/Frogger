@@ -18,7 +18,7 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-class CodeGenerationPhase : public FGRPhase
+class FGRCodeGenerationPhase : public FGRPhase
 {
 private:
 	Printer * p;
@@ -42,7 +42,7 @@ private:
 	bool validBuiltInFunctionName(string name);
 	bool validBuiltInCommandName(string name);
 public:
-	CodeGenerationPhase(Language * lang) : p(new Printer()), lang(lang), currUDFName("<META>") {}
+	FGRCodeGenerationPhase(Language * lang) : p(new Printer()), lang(lang), currUDFName("<META>") {}
 
 	void open(string filename) { p->open(filename); }
 	void close() { p->close(); }

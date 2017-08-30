@@ -9,7 +9,7 @@
 #include "stringConversionPhase.h"
 #include "fgrDataTypingPhase.h"
 #include "fgrSupportReqsPhase.h"
-#include "codeGenerationPhase.h"
+#include "fgrCodeGenerationPhase.h"
 
 #include "printingPhase.h"
 using namespace std;
