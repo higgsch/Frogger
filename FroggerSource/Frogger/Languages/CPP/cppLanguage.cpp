@@ -737,9 +737,11 @@ string CPPLanguage::getLabelText(string udfName, int labelIndex)
 // ----------------------------------------------------------
 string CPPLanguage::getConstructor(ObjectStruct * obj)
 {
-	string result = "_" + obj->name + "() : ";
+	string result = "_" + obj->name + "() ";
 	
 	int dataCount = obj->data->size();
+	if (dataCount > 0)
+		result += ": ";
 	for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
 	{
 		DataRecord * currData = obj->data->at(dataIndex);
@@ -750,9 +752,7 @@ string CPPLanguage::getConstructor(ObjectStruct * obj)
 
 	//Remove fencepost comma
 	if (dataCount > 0)
-	{
 		result = result.substr(0, result.length() - 2) + " ";
-	}
 
 	result += "{}";
 	return result;
