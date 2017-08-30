@@ -55,7 +55,7 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 }
 
 // ----------------------------------------------------------
-// This function merges all scoped tables into all visible tables.
+// This function runs the SCFParser.
 //
 // Version 5.0
 // ----------------------------------------------------------
@@ -74,7 +74,7 @@ void FroggerC::parseSCF(string name, string dir, bool isProject)
 }
 
 // ----------------------------------------------------------
-// This function merges all scoped tables into all visible tables.
+// This function runs the TableVisibilityPhase
 //
 // Version 5.0
 // ----------------------------------------------------------
