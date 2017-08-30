@@ -22,7 +22,5 @@ void DataTypingPhase::populateAllTables(ObjectStruct* obj)
 		populateAllTables(obj->getOF(objIndex));
 	}
 
-	allCommands->merge(obj->scopedTables->cmds);
-	allFunctions->merge(obj->scopedTables->functs);
-	allSymbols->merge(obj->scopedTables->syms);
+	allTables->merge(obj->scopedTables);
 }

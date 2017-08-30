@@ -43,23 +43,23 @@ void FGRDataTypingPhase::visit(IdRefNode * n)
 
 	if (type == DataType::DT_NOT_DEFINED)
 	{
-		if (symbols->isDefined(&sym))
+		if (tables->syms->isDefined(&sym))
 		{
-			n->setDataType(symbols->symbolType(id));
+			n->setDataType(tables->syms->symbolType(id));
 			return;
 		}
 
 		if (setUnknownTypeNodesToDefault)
-			symbols->add(new SymbolRecord(id, DataType::DT_DOUBLE, true));
+			tables->syms->add(new SymbolRecord(id, DataType::DT_DOUBLE, true));
 
 		return;
 	}
 	
-	if (!symbols->isDefined(&sym))
-		symbols->add(new SymbolRecord(id, type, true));
+	if (!tables->syms->isDefined(&sym))
+		tables->syms->add(new SymbolRecord(id, type, true));
 	else
 	{
-		if (*(symbols->symbolType(id)) != *type)
+		if (*(tables->syms->symbolType(id)) != *type)
 			dataType_error("Variable " + id + " used as multiple type", n->getLineNo());
 	}
 }
@@ -114,9 +114,9 @@ void FGRDataTypingPhase::visit(FunctionCallNode * n)
 	else
 	{
 		//try to type primary
-		if (parentPhase->allFunctions->getNumberOfMatches(funct) == 1)
+		if (parentPhase->allTables->functs->getNumberOfMatches(funct) == 1)
 		{
-			n->setFunct(parentPhase->allFunctions->getFirstMatch(funct));
+			n->setFunct(parentPhase->allTables->functs->getFirstMatch(funct));
 			n->getPrimary()->setDataType(n->getFunct()->primary);
 			n->visitAllChildren(this);
 		}
@@ -150,9 +150,9 @@ void FGRDataTypingPhase::visit(CommandCallNode * n)
 	else
 	{
 		//Try to type primary
-		if (parentPhase->allCommands->getNumberOfMatches(cmd) == 1)
+		if (parentPhase->allTables->cmds->getNumberOfMatches(cmd) == 1)
 		{
-			n->setCmd(parentPhase->allCommands->getFirstMatch(cmd));
+			n->setCmd(parentPhase->allTables->cmds->getFirstMatch(cmd));
 			n->getPrimary()->setDataType(n->getCmd()->primary);
 			n->visitAllChildren(this);
 		}
@@ -414,11 +414,11 @@ FunctionTable * FGRDataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * 
 {
 	AsciiNode * primary = n->getPrimary();
 	if (primary == NULL)
-		return functions;
+		return tables->functs;
 
 	DataType * primaryType = primary->getDataType();
 	if (primaryType == DataType::DT_NULL)
-		return functions;
+		return tables->functs;
 
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new FunctionTable();
@@ -436,11 +436,11 @@ CommandTable * FGRDataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 {
 	AsciiNode * primary = n->getPrimary();
 	if (primary == NULL)
-		return commands;
+		return tables->cmds;
 
 	DataType * primaryType = primary->getDataType();
 	if (primaryType == DataType::DT_NULL)
-		return commands;
+		return tables->cmds;
 
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new CommandTable();

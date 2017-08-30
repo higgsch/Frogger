@@ -29,7 +29,7 @@ protected:
 	{
 		SymbolTable * symbols = new SymbolTable(lang, udf);
 		udf->visibleTables->syms->merge(symbols);
-		FGRDataTypingPhase dtp(this, lang, types, udf->visibleTables->functs, udf->visibleTables->cmds, udf->visibleTables->syms, udf->name);
+		FGRDataTypingPhase dtp(this, lang, types, udf->visibleTables, udf->name);
 		udf->root->accept(&dtp);
 	}
 
@@ -43,9 +43,7 @@ protected:
 	}
 
 public:
-	SymbolTable * allSymbols;
-	FunctionTable * allFunctions;
-	CommandTable * allCommands;
+	TableGroup * allTables;
 
 	void process(ProgramStruct * prog)
 	{
@@ -63,6 +61,5 @@ public:
 		return progStruct->getObject(primary)->scopedTables;
 	}
 
-	DataTypingPhase(Language * lang) : lang(lang),
-		allSymbols(new SymbolTable()), allCommands(new CommandTable()), allFunctions(new FunctionTable()) {}
+	DataTypingPhase(Language * lang) : lang(lang), allTables(new TableGroup()) {}
 };

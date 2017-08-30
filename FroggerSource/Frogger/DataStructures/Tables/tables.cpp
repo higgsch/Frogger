@@ -253,3 +253,17 @@ DataType* FunctionTable::getFunctionReturnType(Routine* funct)
 
 	return DataType::DT_NOT_DEFINED;
 }
+
+// ----------------------------------------------------------
+// This function merges all three tables of the given group 
+// into the calling group.
+// @other: The group of tables to merge into this.
+//
+// Version 5.0
+// ----------------------------------------------------------
+void TableGroup::merge(TableGroup * other)
+{
+	cmds->merge(other->cmds);
+	functs->merge(other->functs);
+	syms->merge(other->syms);
+}

@@ -22,13 +22,8 @@ private:
 
 	Language * lang;
 	DataTypeCollection * types;
-	//SymbolTable * allSymbols;
-	//FunctionTable * allFunctions;
-	//CommandTable * allCommands;
 
-	SymbolTable * symbols;
-	FunctionTable * functions;
-	CommandTable * commands;
+	TableGroup * tables;
 	string udfName;
 	bool changeMadeThisRound;
 	bool setUnknownTypeNodesToDefault;
@@ -52,15 +47,11 @@ private:
 
 public:
 	FGRDataTypingPhase(DataTypingPhase * parentPhase, Language * lang, DataTypeCollection * types, 
-		FunctionTable * functs, CommandTable * cmds, SymbolTable * syms, string UDFName)
+		TableGroup * tables, string UDFName)
 		: parentPhase(parentPhase), lang(lang), types(types),
-		symbols(syms), functions(functs), commands(cmds), udfName(UDFName), 
+		tables(tables), udfName(UDFName), 
 		changeMadeThisRound(false), setUnknownTypeNodesToDefault(false) 
 	{}
-
-	SymbolTable * getSymbolTable() { return symbols; }
-	FunctionTable * getFunctionTable() { return functions; }
-	CommandTable * getCommandTable() { return commands; }
 
 	void visit(ProgramNode * n);
 	void visit(JmpStmtNode * n) { n->visitAllChildren(this); }

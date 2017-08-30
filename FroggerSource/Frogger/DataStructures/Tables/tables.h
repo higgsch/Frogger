@@ -154,4 +154,6 @@ struct TableGroup
 
 	TableGroup() : syms(new SymbolTable()), cmds(new CommandTable()), functs(new FunctionTable()) {}
 	TableGroup(Language* lang) : syms(new SymbolTable()), cmds(new CommandTable(lang)), functs(new FunctionTable(lang)) {}
+
+	void merge(TableGroup * other);
 };

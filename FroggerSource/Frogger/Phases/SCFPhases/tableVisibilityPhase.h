@@ -19,9 +19,7 @@ private:
 protected:
 	void processUDF(UDFRecord * udf) 
 	{
-		udf->visibleTables->cmds->merge(scopedTables->cmds);
-		udf->visibleTables->functs->merge(scopedTables->functs);
-		udf->visibleTables->syms->merge(scopedTables->syms);
+		udf->visibleTables->merge(scopedTables);
 	}
 
 	void processOF(ObjectStruct * obj)
