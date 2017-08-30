@@ -188,6 +188,19 @@ private:
 	string getBinaryOperationText(bool nested, string pretext, string midtext, string posttext, 
 										   string leftOperandText, string rightOperandText);
 
+	void cpp_error(string msg)
+	{
+		cout << "Compiler Error - CPP Language Error: " << msg << endl;
+	
+		if (!quietMode)
+		{
+			cout << "Press Enter to Exit" << endl;
+
+			getchar();
+		}
+		exit(0);
+	}
+
 protected:
 	void initOutputTexts();
 	void initDependencies();

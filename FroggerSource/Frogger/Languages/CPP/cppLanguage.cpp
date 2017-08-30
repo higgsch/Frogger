@@ -109,7 +109,10 @@ extern string rootDir;
 // ----------------------------------------------------------
 void CPPLanguage::outputToExe(string outFilename, string exeFilename)
 {
-	system(("call " + rootDir + "Languages\\CPP\\MSCL.bat " + outFilename + " " + exeFilename + ">nul").c_str());
+	int status = system(("call " + rootDir + "Languages\\CPP\\MSCL.bat " + outFilename + " " + exeFilename + ">nul").c_str());
+	
+	if (status != 0)
+		cpp_error("12-0014");
 }
 
 // ----------------------------------------------------------
