@@ -21,7 +21,6 @@ private:
 	DataTypingPhase * parentPhase;
 
 	Language * lang;
-	DataTypeCollection * types;
 
 	TableGroup * tables;
 	string udfName;
@@ -46,9 +45,9 @@ private:
 	void unifyCommandCall(CommandCallNode * n);
 
 public:
-	FGRDataTypingPhase(DataTypingPhase * parentPhase, Language * lang, DataTypeCollection * types, 
+	FGRDataTypingPhase(DataTypingPhase * parentPhase, Language * lang, 
 		TableGroup * tables, string UDFName)
-		: parentPhase(parentPhase), lang(lang), types(types),
+		: parentPhase(parentPhase), lang(lang),
 		tables(tables), udfName(UDFName), 
 		changeMadeThisRound(false), setUnknownTypeNodesToDefault(false) 
 	{}

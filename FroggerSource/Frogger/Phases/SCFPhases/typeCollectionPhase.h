@@ -15,6 +15,7 @@ using namespace std;
 class TypeCollectionPhase : SCFPhase
 {
 private:
+	bool isProcessingProgramObject;
 	DataTypeCollection * types;
 	string scope;
 
@@ -25,12 +26,20 @@ protected:
 	{
 		if (obj->isUserDefined)
 		{
-			types->add(scope + obj->name);
+			if (isProcessingProgramObject)
+			{
+				isProcessingProgramObject = false;
+				runForLocalOFs(obj);
+			}
+			else
+			{
+				types->add(scope + obj->name);
 		
-			string oldScope = scope;
-			scope = scope + obj->name + ":";
-			runForLocalOFs(obj);
-			scope = oldScope;
+				string oldScope = scope;
+				scope = scope + obj->name + ":";
+				runForLocalOFs(obj);
+				scope = oldScope;
+			}
 		}
 	}
 
@@ -41,6 +50,7 @@ public:
 		types->add("double");
 		types->add("string");
 		types->add("stringList");
+		isProcessingProgramObject = true;
 		processOF(prog);
 	}
 
@@ -49,5 +59,5 @@ public:
 		return types;
 	}
 
-	TypeCollectionPhase() : types(new DataTypeCollection()) {}
+	TypeCollectionPhase() : types(new DataTypeCollection()), isProcessingProgramObject(false) {}
 };
