@@ -23,6 +23,11 @@ private:
 	Language * lang;
 
 	void populateAllTables(ObjectStruct* obj);
+	bool typeExists(DataType * dt)
+	{
+		DataType * type = types->getDT(dt->typeString);
+		return type->isDefined();
+	}
 
 protected:
 	void processODF(DataCollection * data)
@@ -31,16 +36,29 @@ protected:
 		for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
 		{
 			DataRecord* rec = data->at(dataIndex);
-			DataType* type = types->getDT(rec->type->typeString);
-			if (!type->isDefined())
-			{
+			if (!typeExists(rec->type))
 				struct_error("ODF uses undefined type - " + rec->type->typeString);
-			}
+		}
+	}
+
+	void processArgs(ArgList* args)
+	{
+		int argCount = args->size();
+		for (int argIndex = 0; argIndex < argCount; argIndex++)
+		{
+			ArgPair * arg = args->at(argIndex);
+			if (!typeExists(arg->type))
+				struct_error("UDF uses undefined argument type - " + arg->type->typeString);
 		}
 	}
 
 	void processUDF(UDFRecord * udf) 
 	{
+		if (udf->returnType->typeString != "null" && !typeExists(udf->returnType))
+			struct_error("UDF has undefined return type - " + udf->returnType->typeString);
+
+		processArgs(udf->args);
+
 		SymbolTable * symbols = new SymbolTable(lang, udf);
 		udf->visibleTables->syms->merge(symbols);
 		FGRDataTypingPhase dtp(this, lang, udf->visibleTables, udf->name);
