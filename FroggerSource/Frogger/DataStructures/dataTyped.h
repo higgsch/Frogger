@@ -24,8 +24,10 @@ struct DataType
 {
 	DataTypeEnum type;
 	string typeString; //The string representation of the datatype including full scope
+	string defaultValue; //The string representation of the default value
 
-	DataType(DataTypeEnum type, string typeString) : type(type), typeString(typeString) {}
+	DataType(DataTypeEnum type, string typeString, string defaultValue) : type(type), typeString(typeString), defaultValue(defaultValue) {}
+	DataType(DataTypeEnum type, string typeString) : type(type), typeString(typeString), defaultValue("<UNKNOWN>") {}
 	DataType() { type = DTE_NOT_DEFINED; typeString = ""; }
 
 	bool operator==(const DataType& rhs) { return (type == rhs.type && typeString == typeString); }

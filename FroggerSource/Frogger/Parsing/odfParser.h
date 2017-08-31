@@ -23,7 +23,9 @@ private:
 	ODFScanner scanner;
 	
 	DataRecord * dataRecord();
-	string defaultValue();
+	string userDefinedObjectDefaultValue();
+	string stringDefaultValue();
+	string doubleDefaultValue();
 	DataType * dataType();
 
 	void syntax_error(string msg) { syn_error("STRUCT", msg); }

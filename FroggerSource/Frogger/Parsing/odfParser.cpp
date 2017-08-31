@@ -60,7 +60,19 @@ DataRecord * ODFParser::dataRecord()
 	Token tok = next_token();
 	if (tok.type == TT_OCTOTHORPE)
 	{
-		currRec->defaultValue = defaultValue();
+		if (currRec->type->isUserDefined())
+			currRec->defaultValue = userDefinedObjectDefaultValue();
+		else if (currRec->type->isString())
+			currRec->defaultValue = stringDefaultValue();
+		else if (currRec->type->isDouble())
+			currRec->defaultValue = doubleDefaultValue();
+	}
+	else 
+	{
+		if (currRec->type->isString() || currRec->type->isDouble())
+			currRec->defaultValue = currRec->type->defaultValue;
+		else
+			syntax_error("Missing default value");
 	}
 
 	match(TT_SEMICOLON);
@@ -74,30 +86,45 @@ DataRecord * ODFParser::dataRecord()
 //
 // Version 5.0
 // ----------------------------------------------------------
-string ODFParser::defaultValue()
+string ODFParser::userDefinedObjectDefaultValue()
 {
-	string value = "";
+	match(TT_OCTOTHORPE);
+	match(TT_OCTOTHORPE);
+	return DataType::DT_STRINGLIST->defaultValue;
+}
 
+// ----------------------------------------------------------
+// This function processes the default value section of a 
+// data declaration record.
+//
+// Version 5.0
+// ----------------------------------------------------------
+string ODFParser::stringDefaultValue()
+{
 	match(TT_OCTOTHORPE);
 
-	Token tok = next_token();
-	if (tok.type == TT_STRINGCONST || tok.type == TT_DOUBLECONST)
-	{
-		value = tok.lexeme;
-		match(tok.type);
-	}
-	else if (tok.type == TT_OCTOTHORPE)
-	{
-		value = "<OBJECT>";
-	}
-	else 
-	{
-		syntax_error("Invalid default value: " + tok.lexeme);
-	}
-	
+	Token defaultVal = next_token();
+	match(TT_STRINGCONST);
 	match(TT_OCTOTHORPE);
 
-	return value;
+	return defaultVal.lexeme;
+}
+
+// ----------------------------------------------------------
+// This function processes the default value section of a 
+// data declaration record.
+//
+// Version 5.0
+// ----------------------------------------------------------
+string ODFParser::doubleDefaultValue()
+{
+	match(TT_OCTOTHORPE);
+
+	Token defaultVal = next_token();
+	match(TT_DOUBLECONST);
+	match(TT_OCTOTHORPE);
+
+	return defaultVal.lexeme;
 }
 
 // ----------------------------------------------------------
