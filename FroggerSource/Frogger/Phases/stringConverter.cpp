@@ -1,11 +1,11 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 3.0
+//                      Version: 5.0
 // -----------------------------------------------------------------
-// This program represents a visitor for converting string literals
-// from frogger syntax to c++ syntax.
+// This program facilitates converting string literals from frogger 
+// syntax to c++ syntax.
 // -----------------------------------------------------------------
-#include "stringConversionPhase.h"
+#include "stringConverter.h"
 using namespace std;
 
 // ----------------------------------------------------------
@@ -15,7 +15,7 @@ using namespace std;
 //
 // Version 1.0
 // ----------------------------------------------------------
-string StringConversionPhase::convertString(string s)
+string StringConverter::convertString(string s)
 {
 	string result = "\"";
 	for (unsigned int i = 1; i < s.length() - 1; i++) //First and final char is "\'"
@@ -35,15 +35,4 @@ string StringConversionPhase::convertString(string s)
 	}
 	result += "\"";
 	return result;
-}
-
-// ----------------------------------------------------------
-// This function processes a string literal.
-// @n: The node representing the string.
-//
-// Version 1.0
-// ----------------------------------------------------------
-void StringConversionPhase::visit(StringConstingNode * n)
-{
-	n->setLexeme(convertString(n->getLexeme()));
 }

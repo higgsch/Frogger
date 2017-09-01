@@ -4,6 +4,7 @@
 #pragma once
 
 #include "fgrPhase.h"
+#include "..\stringConverter.h"
 #include "..\..\DataStructures\Nodes\nodes.h"
 using namespace std;
 
@@ -11,12 +12,12 @@ using namespace std;
 // This class represents a visitor for converting string
 // literals from frogger syntax to c++ syntax.
 //
-// Version 4.0
+// Version 5.0
 // ----------------------------------------------------------
-class StringConversionPhase : public FGRPhase
+class FGRStringConversionPhase : public FGRPhase
 {
 private:
-	string convertString(string);
+	StringConverter converter;
 
 public:
 	void visit(ProgramNode * n) { n->visitAllChildren(this); }
@@ -27,7 +28,7 @@ public:
 	void visit(FunctionCallNode * n) { n->visitAllChildren(this); }
 	void visit(CommandCallNode * n) { n->visitAllChildren(this); }
 	void visit(ArgListNode * n) { n->visitAllChildren(this); }
-	void visit(StringConstingNode * n);
+	void visit(StringConstingNode * n) { n->setLexeme(converter.convertString(n->getLexeme())); }
 	void visit(DoubleConstingNode * n){}
 	void visit(AddingNode * n) { n->visitAllChildren(this); }
 	void visit(SubingNode * n){ n->visitAllChildren(this); }

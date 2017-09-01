@@ -72,7 +72,7 @@ void FgrFunctionC::computeJumpToLineNumbers(UDFRecord * funct)
 // ----------------------------------------------------------
 void FgrFunctionC::convertStrings(UDFRecord * funct)
 {
-	StringConversionPhase *scp = new StringConversionPhase();
+	FGRStringConversionPhase *scp = new FGRStringConversionPhase();
 	funct->root->accept(scp);
 	delete scp;
 }

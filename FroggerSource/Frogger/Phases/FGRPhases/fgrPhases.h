@@ -6,7 +6,7 @@
 #include "fgrPhase.h"
 #include "lineNoPhase.h"
 #include "summationPhase.h"
-#include "stringConversionPhase.h"
+#include "fgrStringConversionPhase.h"
 #include "fgrDataTypingPhase.h"
 #include "fgrSupportReqsPhase.h"
 #include "fgrCodeGenerationPhase.h"
