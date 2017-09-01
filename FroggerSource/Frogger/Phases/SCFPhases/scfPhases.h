@@ -7,6 +7,7 @@
 #include "tableVisibilityPhase.h"
 #include "fileExistencePhase.h"
 #include "typeCollectionPhase.h"
+#include "stringConversionPhase.h"
 #include "dataTypingPhase.h"
 #include "supportReqsPhase.h"
 #include "fgrCompilationPhase.h"

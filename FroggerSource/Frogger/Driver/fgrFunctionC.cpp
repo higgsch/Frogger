@@ -24,8 +24,6 @@ void FgrFunctionC::compileFunction(UDFRecord * rec)
 	//printAST(funct, "printableAST.txt");
 
 	computeJumpToLineNumbers(rec);
-
-	convertStrings(rec);
 }
 
 // ----------------------------------------------------------
@@ -62,19 +60,6 @@ void FgrFunctionC::computeJumpToLineNumbers(UDFRecord * funct)
 	SummationPhase *sp = new SummationPhase();
 	funct->root->accept(sp);
 	delete sp;
-}
-
-// ----------------------------------------------------------
-// This function drives string conversion from FROGGER strings
-// to C++ strings.
-//
-// Version 4.2
-// ----------------------------------------------------------
-void FgrFunctionC::convertStrings(UDFRecord * funct)
-{
-	FGRStringConversionPhase *scp = new FGRStringConversionPhase();
-	funct->root->accept(scp);
-	delete scp;
 }
 
 // ----------------------------------------------------------

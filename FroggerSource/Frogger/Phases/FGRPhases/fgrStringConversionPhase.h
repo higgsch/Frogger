@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------
-// This is the header for the StringConversionPhase class.
+// This is the header for the FGRStringConversionPhase class.
 // -----------------------------------------------------------------
 #pragma once
 
