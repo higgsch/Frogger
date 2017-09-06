@@ -71,107 +71,107 @@ void Parser::match(token_type toMatch)
 	}
 	else
 	{
-		string type;
+		Token type;
 		switch (toMatch)
 		{
 		case TT_EQUAL_SIGN:
-			type = Token::EQUAL_SIGN.lexeme;
+			type = Token::EQUAL_SIGN;
 			break;
 		case TT_DUAL_ADD:
-			type = "++";
+			type = Token::DUAL_ADD;
 			break;
 		case TT_DUAL_SUB:
-			type = "--";
+			type = Token::DUAL_SUB;
 			break;
 		case TT_DUAL_MUL:
-			type = "**";
+			type = Token::DUAL_MUL;
 			break;
 		case TT_DUAL_DIV:
-			type = "//";
+			type = Token::DUAL_DIV;
 			break;
 		case TT_DUAL_MOD:
-			type = "%%";
+			type = Token::DUAL_MOD;
 			break;
 		case TT_DUAL_IDIV:
-			type = "\\\\";
+			type = Token::DUAL_IDIV;
 			break;
 		case TT_DUAL_ROOT:
-			type = "##";
+			type = Token::DUAL_ROOT;
 			break;
 		case TT_DUAL_EXP:
-			type = "^^";
+			type = Token::DUAL_EXP;
 			break;
 		case TT_NOT:
-			type = "!";
+			type = Token::NOT;
 			break;
 		case TT_LT: 
-			type = "<";
+			type = Token::LT;
 			break;
 		case TT_GT:
-			type = ">";
+			type = Token::GT;
 			break;
 		case TT_DUAL_EQUAL_SIGN:
-			type = "==";
+			type = Token::DUAL_EQUAL_SIGN;
 			break;
 		case TT_LTE:
-			type = "<=";
+			type = Token::LTE;
 			break;
 		case TT_GTE:
-			type = ">=";
+			type = Token::GTE;
 			break;
 		case TT_IF:
-			type = "if";
+			type = Token::IF;
 			break;
 		case TT_THEN:
-			type = "then";
+			type = Token::THEN;
 			break;
 		case TT_ELSE:
-			type = "else";
+			type = Token::ELSE;
 			break;
 		case TT_DOT:
-			type = Token::DOT.lexeme;
+			type = Token::DOT;
 			break;
 		case TT_COMMA:
-			type = Token::COMMA.lexeme;
+			type = Token::COMMA;
 			break;
 		case TT_COLON:
-			type = ":";
+			type = Token::COLON;
 			break;
 		case TT_SEMICOLON:
-			type = Token::SEMICOLON.lexeme;
+			type = Token::SEMICOLON;
 			break;
 		case TT_LPAREN:
-			type = Token::LPAREN.lexeme;
+			type = Token::LPAREN;
 			break;
 		case TT_RPAREN:
-			type = Token::RPAREN.lexeme;
+			type = Token::RPAREN;
 			break;
 		case TT_TILDE:
-			type = Token::TILDE.lexeme;
+			type = Token::TILDE;
 			break;
 		case TT_OCTOTHORPE:
-			type = Token::OCTOTHORPE.lexeme;
+			type = Token::OCTOTHORPE;
 			break;
 		case TT_EOL:
-			type = Token::EOL.lexeme;
+			type = Token::EOL;
 		case TT_SCANEOF:
-			type = "<EOF>";
+			type = Token::SCANEOF;
 			break;
 		case TT_STRINGCONST:
-			type = "String Literal";
+			type = Token(TT_STRINGCONST,"String Literal");
 			break;
 		case TT_ID:
-			type = "Identifier";
+			type = Token(TT_ID,"Identifier");
 			break;
 		case TT_DOUBLECONST:
-			type = "Double Literal";
+			type = Token(TT_DOUBLECONST,"Double Literal");
 			break;
 		default:
-			type = "<type>";
+			type = Token(TT_NOTOK,"<type>");
 			break;
 		}
 
-		syn_error("", "Expected \'" + type + "\' - Found " + lookahead[0].lexeme);
+		syn_error("", "Expected \'" + type.lexeme + "\' - Found " + lookahead[0].lexeme);
 	}
 }
 
