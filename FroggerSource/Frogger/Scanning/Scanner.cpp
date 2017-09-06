@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program reads through a file and converts strings of 
 // chars to tokens.
@@ -271,7 +271,7 @@ bool Scanner::readThisOperator(Token op, string opName)
 // input file.
 // Returns the token for the read punctuation or NOTOK
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 Token Scanner::readPunctuation()
 {
@@ -293,6 +293,8 @@ Token Scanner::readPunctuation()
 		return Token::SEMICOLON;
 	else if (readThisToken(Token::OCTOTHORPE))
 		return Token::OCTOTHORPE;
+	else if (readThisToken(Token::PERCENT))
+		return Token::PERCENT;
 	//Windows text files contain '\n' as part of the end of line sequence.
 	//Other representations may require a '\r' instead to count lines properly.
 	else if (readThisString("\n"))
