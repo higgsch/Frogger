@@ -78,11 +78,12 @@ struct OFCollection : vector<ObjectStruct *> {};
 // This class represents the data known about a Frogger
 // Object. Generated from the .struct file.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 struct ObjectStruct
 {
 	string name;
+	string parentName;
 	UDFCollection * UDFs;
 	OFCollection * OFs;
 	DataCollection * data;
@@ -93,7 +94,7 @@ struct ObjectStruct
 
 	ObjectStruct(Language * lang) : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()),
-		scopedTables(new TableGroup()), isUserDefined(true) {}
+		scopedTables(new TableGroup()), isUserDefined(true), parentName("") {}
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }

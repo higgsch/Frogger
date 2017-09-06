@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program provides the functionality to interpret a SCF file
 // -----------------------------------------------------------------
@@ -13,7 +13,7 @@ using namespace std;
 // @projectDir: The PF
 // @projectName: The name of the project
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projectName)
 {
@@ -27,11 +27,17 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 
 	while (next_token().type != TT_SCANEOF)
 	{
-		string name = id();
+		if (next_token().type == TT_PERCENT)
+		{ //Compiler Directives
+			match(TT_PERCENT);
+			string compilerDirective = id();
+			match(TT_PERCENT);
 
-		if (next_token().type == TT_LPAREN)
+			syntax_error("Invalid Compiler Directive: " + compilerDirective);
+		}
+		else if (second_token().type == TT_LPAREN)
 		{ //Function Declaration Record
-			UDFRecord * currRec = functRecord(name);
+			UDFRecord * currRec = functRecord();
 			if (isPEF(currRec, projectName))
 			{
 				currRec->visibleTables->cmds->addEndNull();
@@ -45,48 +51,37 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 			else
 			{
 				if (isInFunctions(currRec, progStruct->UDFs))
-				{
 					syntax_error("" + currRec->name + " function is duplicated.");
-				}
 				
 				progStruct->UDFs->push_back(currRec);
 
 				addEndCommand(currRec);
 				if (currRec->returnType->isNull())
-				{
 					progStruct->scopedTables->cmds->add(currRec);
-				}
 				else
-				{
 					progStruct->scopedTables->functs->add(currRec);
-				}
 			}
 		}
-		else if (next_token().type == TT_DOT)
+		else if (second_token().type == TT_DOT)
 		{ //Object Declaration Record or Data Declaration Record
+			string name = id();
 			match(TT_DOT);
+			string ext = id();
 
-			Token ext = next_token();
-			match(TT_ID);
-
-			if (ext.lexeme == "struct")
-			{
+			if (ext == "struct")
+			{ //Object Declaration Record
 				ObjectStruct * currRec = objectRecord(projectDir + name + "\\", name);
 			
 				if (isInObjects(currRec, progStruct->OFs))
-				{
 					syntax_error(currRec->name + " object is duplicated.");
-				}
 				
 				progStruct->OFs->push_back(currRec);
 
 			}
-			else if (ext.lexeme == "data")
-			{
+			else if (ext == "data")
+			{ //Data Declaration Record
 				if (name != projectName)
-				{
 					syntax_error("Invalid ODF: " + name + ".data -- Expected " + projectName + ".data");
-				}
 				
 				progStruct->data = dataRecord(projectDir, projectName);
 
@@ -98,12 +93,10 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 				}
 			}
 			else
-				syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct or " + projectName + ".data");
+				syntax_error("Found " + name + "." + ext + " -- Expected " + name + ".struct or " + projectName + ".data");
 		}
 		else
-		{
-			syntax_error("Incomplete SCF Record: " + name);
-		}
+			syntax_error("Invalid SCF Record");
 
 		if (next_token().type != TT_SCANEOF)
 			match(TT_EOL);
@@ -120,7 +113,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 // @objectDir: The OF
 // @objectName: The name of the object
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectName, string newScope)
 {
@@ -135,11 +128,27 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 
 	while (next_token().type != TT_SCANEOF)
 	{
-		string name = id();
+		if (next_token().type == TT_PERCENT)
+		{ //Compiler Directives
+			match(TT_PERCENT);
+			string compilerDirective = id();
+			match(TT_PERCENT);
 
-		if (next_token().type == TT_LPAREN)
+			if (compilerDirective == "parent")
+			{
+				if (objStruct->parentName != "")
+					syntax_error("Too Many %parent% Directives");
+
+				size_t lastScopeOpPos = scope.find_last_of(":", scope.length() - 2);
+				string parentScope = (lastScopeOpPos != string::npos) ? scope.substr(0, lastScopeOpPos) : "" ;
+				objStruct->parentName = parentScope + inheritanceRecord();
+			}
+			else
+				syntax_error("Invalid Compiler Directive: " + compilerDirective);
+		}
+		else if (second_token().type == TT_LPAREN)
 		{ //Function Declaration Record
-			UDFRecord * currRec = functRecord(name);
+			UDFRecord * currRec = functRecord();
 			currRec->primary = types->getDT(scope.substr(0,scope.length() - 1));
 			if (isInFunctions(currRec, objStruct->UDFs))
 			{
@@ -158,15 +167,14 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				objStruct->scopedTables->functs->add(currRec);
 			}
 		}
-		else if (next_token().type == TT_DOT)
+		else if (second_token().type == TT_DOT)
 		{ //Object Declaration Record or Data Declaration Record
+			string name = id();
 			match(TT_DOT);
+			string ext = id();
 
-			Token ext = next_token();
-			match(TT_ID);
-
-			if (ext.lexeme == "struct")
-			{
+			if (ext == "struct")
+			{ //Object Declaration Record
 				ObjectStruct * currRec = objectRecord(objectDir + name + "\\", name);
 			
 				if (isInObjects(currRec, objStruct->OFs))
@@ -176,8 +184,8 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				
 				objStruct->OFs->push_back(currRec);
 			}
-			else if (ext.lexeme == "data")
-			{
+			else if (ext == "data")
+			{ //Data Declaration Record
 				if (name != objectName)
 				{
 					syntax_error("Invalid ODF: " + name + ".data -- Expected " + objectName + ".data");
@@ -193,12 +201,10 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				}
 			}
 			else
-				syntax_error("Found " + name + "." + ext.lexeme + " -- Expected " + name + ".struct or " + objectName + ".data");
+				syntax_error("Found " + name + "." + ext + " -- Expected " + name + ".struct or " + objectName + ".data");
 		}
 		else
-		{
-			syntax_error("Incomplete SCF Record: " + name);
-		}
+			syntax_error("Incomplete SCF Record");
 
 		if (next_token().type != TT_SCANEOF)
 			match(TT_EOL);
@@ -234,6 +240,24 @@ void SCFParser::addEndCommand(UDFRecord* rec)
 }
 
 // ----------------------------------------------------------
+// This function processes an inheritance record and 
+// returns the parent's name.
+//
+// Version 5.1
+// ----------------------------------------------------------
+string SCFParser::inheritanceRecord() 
+{
+	string parentName = id();
+	match(TT_DOT);
+	string ext = id();
+
+	if (ext != "struct")
+		syntax_error("Invalid Parent Statement: ." + ext + " found, expected .struct"); 
+
+	return parentName;
+}
+
+// ----------------------------------------------------------
 // This function processes an object declaration record and 
 // returns a single Object Structure.
 // @objectDir: The OF including trailing slash
@@ -266,10 +290,11 @@ DataCollection * SCFParser::dataRecord(string dataDir, string name)
 // returns a single UDF record.
 // @name: The UDFName
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
-UDFRecord * SCFParser::functRecord(string name)
+UDFRecord * SCFParser::functRecord()
 {
+	string name = id();
 	match(TT_LPAREN);
 	ArgList * args = arguments();
 	match(TT_RPAREN);

@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program provides the functionality to interpret a file
 // -----------------------------------------------------------------
@@ -58,7 +58,7 @@ string Parser::id()
 // on failure.
 // @toMatch: The expected token category.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 void Parser::match(token_type toMatch)
 {
@@ -130,6 +130,9 @@ void Parser::match(token_type toMatch)
 			break;
 		case TT_DOT:
 			type = Token::DOT;
+			break;
+		case TT_PERCENT:
+			type = Token::PERCENT;
 			break;
 		case TT_COMMA:
 			type = Token::COMMA;
