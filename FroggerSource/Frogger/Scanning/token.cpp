@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program provides a compact interface for tokens.
 // -----------------------------------------------------------------
@@ -9,19 +9,20 @@ using namespace std;
 
 //static "constants" used for simplified processing of language
 //static tokens
-Token Token::NOTOK			 = Token(TT_NOTOK,"<None>");
-Token Token::IF				 = Token(TT_IF,"if");
-Token Token::THEN			 = Token(TT_THEN,"then");
-Token Token::ELSE			 = Token(TT_ELSE,"else");
-Token Token::LPAREN			 = Token(TT_LPAREN,"(");
+Token Token::NOTOK			 = Token(TT_NOTOK, "<None>");
+Token Token::IF				 = Token(TT_IF, "if");
+Token Token::THEN			 = Token(TT_THEN, "then");
+Token Token::ELSE			 = Token(TT_ELSE, "else");
+Token Token::LPAREN			 = Token(TT_LPAREN, "(");
 Token Token::RPAREN			 = Token(TT_RPAREN, ")");
 Token Token::EQUAL_SIGN		 = Token(TT_EQUAL_SIGN, "=");
 Token Token::COLON			 = Token(TT_COLON, ":");
 Token Token::SEMICOLON		 = Token(TT_SEMICOLON, ";");
 Token Token::COMMA			 = Token(TT_COMMA, ",");
-Token Token::OCTOTHORPE		 = Token(TT_OCTOTHORPE,"#");
-Token Token::TILDE			 = Token(TT_TILDE,"~");
-Token Token::DOT			 = Token(TT_DOT,".");
+Token Token::OCTOTHORPE		 = Token(TT_OCTOTHORPE, "#");
+Token Token::TILDE			 = Token(TT_TILDE, "~");
+Token Token::DOT			 = Token(TT_DOT, ".");
+Token Token::PERCENT		 = Token(TT_PERCENT, "%");
 Token Token::DUAL_ADD		 = Token(TT_DUAL_ADD, "++");
 Token Token::DUAL_SUB		 = Token(TT_DUAL_SUB, "--");
 Token Token::DUAL_MUL		 = Token(TT_DUAL_MUL, "**");

@@ -10,9 +10,10 @@ using namespace std;
 // set of scf token categories
 typedef enum token_types {
 	TT_NOTOK = -1, 
-	TT_ID, TT_STRINGCONST, TT_DOUBLECONST, TT_IF, TT_THEN, TT_ELSE,
+	TT_ID, TT_STRINGCONST, TT_DOUBLECONST, 
+	TT_IF, TT_THEN, TT_ELSE,
 	TT_LPAREN, TT_RPAREN, TT_EQUAL_SIGN, TT_COLON, TT_SEMICOLON,
-	TT_COMMA, TT_OCTOTHORPE, TT_TILDE, TT_DOT, 
+	TT_COMMA, TT_OCTOTHORPE, TT_TILDE, TT_DOT, TT_PERCENT,
 	TT_DUAL_ADD, TT_DUAL_SUB, TT_DUAL_MUL, TT_DUAL_DIV, 
 	TT_DUAL_MOD, TT_DUAL_IDIV, TT_DUAL_ROOT, TT_DUAL_EXP,
 	TT_NOT, TT_LT, TT_GT, TT_DUAL_EQUAL_SIGN, TT_LTE, TT_GTE, 
@@ -23,7 +24,7 @@ typedef enum token_types {
 // This class acts as a struct for tokens but includes 
 // constructors for ease of use
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 class Token
 { //Glorified Struct with public members and static placeholders
@@ -48,6 +49,7 @@ public:
 	static Token OCTOTHORPE;
 	static Token TILDE;
 	static Token DOT;
+	static Token PERCENT;
 	static Token DUAL_ADD;
 	static Token DUAL_SUB;
 	static Token DUAL_MUL;
