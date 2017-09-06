@@ -16,25 +16,49 @@ v4.1: Added Test Framework.
 v4.2: Refactored with cleaner code.
 v4.3: Included cl inline.
 v4.4: Added function overloading.
+v5.0: Added simple object orientation (folder modulation).
 
-v5: Add object orientation (folder modulation).
+v5.1: Add inheritence.
+v5.2: Add templates.
+v5.3: Add built-in List type and refactor stringList as an array of strings
+v5.4: Add library references to allow for external paths (Point Object for both Line and Triangle)
 v6: Add asciiFunction config file functionality.
 v7: Add MASM32 and/or Irvine's MASM as a target language
 v8: Write a Frogger compiler in Frogger. (Silently screams in agony...)
 
 Notes---
-add security checks for functions
+test for stringList and null misuse
+test for user defined objects matching string and double
+stress test object/class dependencies in cpp output (i.e. declaration/definition order)
+Verify matching nested Classes within different Objs doesn't conflict
+Handle Ambiguous routine calls, data typing, &c
 
-refactor compiler-driver.
+review Language::builtIn<C,F,S> is needed?
+Move allTables to ProgStruct?
 
 refactor: Line or Stmt, Number -> Index or Count
 refactor: obfuscator inheret from ifstream and use polymorphism in scanner
+Refactor ifstream source and obfuscator out of Scanner and pass in?
+Ensure lineNo is updated within scanner
 refactor: check use of "Magic Numbers"
+
+refactor ASTNodes (specifically CommandCallNode::getArgList()~ArgListNode* instead of AsciiNode*
+refactor DataTypingPhase
+Refactor DataType string functions into DT.
+Refactor errors
+
+consider refactoring Table and Collection into a generic Collection class
 
 test polymorphism, delete, and destructor
 pull out null checks into a function, pair new and delete keywords, check for data management
-
 Add printing for cmd and funct
 change tabs to spaces in accept()
-
+refactor compiler-driver.
 check asciiSummation phase.
+add security checks for functions
+
+Lessons Learned:
+Always check for proper values for loops (start and finish)
+Refactor each and every iteration to stay clean
+For loops with xCount and xIndex variables
+Conditional Breakpoint for string value: strcmp(<string>._Bx._Ptr, "<stringVal>")==0
