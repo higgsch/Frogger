@@ -24,7 +24,7 @@ template <class T> struct Record
 // ----------------------------------------------------------
 // This class represents a collection of records.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 template <class T> class Table : protected vector<Record<T>*>
 {
@@ -47,17 +47,20 @@ public:
 	}
 	
 	// ----------------------------------------------------------
-	// This function adds records from other to itself.
+	// This function adds records from other to itself skipping 
+	// matching records.
 	// @other: The table to append to this.
 	//
-	// Version 5.0
+	// Version 5.1
 	// ----------------------------------------------------------
 	void merge(Table<T>* other)
 	{
 		int recordCount = other->size();
 		for (int recordIndex = 0; recordIndex < recordCount; recordIndex++)
 		{
-			add(((super*)other)->at(recordIndex));
+			Record<T>* currRec = ((super*)other)->at(recordIndex);
+			if (!matchExists(currRec->rec))
+				add(currRec);
 		}
 	}
 

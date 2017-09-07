@@ -20,7 +20,7 @@ bool quietMode;
 // It can be used to compile a Frogger Program Entry Function 
 // File or Frogger Project Folder to c++ output.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 class FroggerC
 {
@@ -32,6 +32,7 @@ private:
 
 	void parseSCF(string name, string dir, bool isProject);
 
+	void runInheritancePhase();
 	void runTableVisibilityPhase();
 	void runFileExistencePhase(string dir);
 	void runTypeCollectionPhase();

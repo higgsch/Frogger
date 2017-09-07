@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program compiles a Frogger source to c++ output.
 // -----------------------------------------------------------------
@@ -35,7 +35,7 @@ FroggerC::FroggerC()
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 void FroggerC::compile(string topRootDir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
 {
@@ -43,6 +43,7 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 
 	parseSCF(name, dir, isProject);
 
+	runInheritancePhase();
 	runTableVisibilityPhase();
 	runFileExistencePhase(topRootDir);
 	runTypeCollectionPhase();
@@ -72,6 +73,17 @@ void FroggerC::parseSCF(string name, string dir, bool isProject)
 		progStruct->PEF->visibleTables->cmds->addEndNull();
 		progStruct->scopedTables->cmds->add(progStruct->PEF);
 	}
+}
+
+// ----------------------------------------------------------
+// This function runs the InheritancePhase
+//
+// Version 5.1
+// ----------------------------------------------------------
+void FroggerC::runInheritancePhase()
+{
+	InheritancePhase ip;
+	ip.process(progStruct);
 }
 
 // ----------------------------------------------------------

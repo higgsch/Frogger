@@ -4,6 +4,7 @@
 #pragma once
 
 #include "scfPhase.h"
+#include "inheritancePhase.h"
 #include "tableVisibilityPhase.h"
 #include "fileExistencePhase.h"
 #include "typeCollectionPhase.h"

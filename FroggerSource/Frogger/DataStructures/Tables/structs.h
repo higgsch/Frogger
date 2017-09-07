@@ -84,6 +84,7 @@ struct ObjectStruct
 {
 	string name;
 	string parentName;
+	ObjectStruct * parent;
 	UDFCollection * UDFs;
 	OFCollection * OFs;
 	DataCollection * data;
@@ -94,7 +95,8 @@ struct ObjectStruct
 
 	ObjectStruct(Language * lang) : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()),
-		scopedTables(new TableGroup()), isUserDefined(true), parentName("") {}
+		scopedTables(new TableGroup()), isUserDefined(true), 
+		parentName(""), parent(NULL) {}
 
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }
@@ -134,7 +136,7 @@ struct ObjectStruct
 // This class represents the data known about a Frogger
 // Program. Generated from the .struct file.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 struct ProgramStruct : public ObjectStruct
 {
@@ -148,6 +150,11 @@ struct ProgramStruct : public ObjectStruct
 	ObjectStruct * getObject(DataType * dt)
 	{
 		string objectName = dt->typeString;
+		return getObject(objectName);
+	}
+
+	ObjectStruct * getObject(string objectName)
+	{
 		return ((ObjectStruct*)this)->getObject(objectName);
 	}
 
