@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program parses a stream of tokens to determine validity in 
 // the frogger language and builds an AST for the input source code. 
@@ -235,23 +235,49 @@ BinaryOpNode* FGRParser::boolop()
 
 // ----------------------------------------------------------
 // This function represents production rules:
-// <jmpstmt> => <typedterm> ;       // NOTE: <typedterm> contains ': <commandname> ( [<arglist>] )'
+// <jmpstmt> => <typedterm> ;       // NOTE: <typedterm> contains [':' and '::' + ' <commandname> ( [<arglist>] )']
 // <jmpstmt> => <commandname> ( [<arglist>] ) ;
+// <jmpstmt> => :: <commandname> ( [<arglist>] ) ;
 // <jmpstmt> => id assign <expr> ;
 // Returns: A pointer to the node representing this jmpstmt.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 JmpStmtNode* FGRParser::jmpstmt()
 {
 	JmpStmtNode* stmt = new JmpStmtNode();
 
-	Token idTok = next_token();
-	Token tok = second_token();
+	Token firstTok = next_token();
 
-	switch (tok.type)
+	if (firstTok.type == TT_DUAL_COLON)
 	{
-	case TT_COLON:
+		match(TT_DUAL_COLON);
+		firstTok = next_token();
+
+		match(TT_ID);
+		match(TT_LPAREN);
+		CommandCallNode* cmd = new CommandCallNode(DataType::DT_NULL, firstTok.lexeme, scanner.getLineNo());
+
+		Token argTok = next_token();
+		if (argTok.type != TT_RPAREN)
+		{
+			cmd->addArgList(arglist(0, cmd->getCmd()));
+		}
+
+		match(TT_RPAREN);
+		match(TT_SEMICOLON);
+
+		cmd->addParentScope();
+		stmt->setStmt(cmd);
+		return stmt;
+	}
+
+	Token secondTok = second_token();
+
+	switch (secondTok.type)
+	{
+	case TT_COLON: //fall through
+	case TT_DUAL_COLON:
 		{
 			AsciiNode * cmd = typedterm(false);
 			match(TT_SEMICOLON);
@@ -263,7 +289,7 @@ JmpStmtNode* FGRParser::jmpstmt()
 		{
 			match(TT_ID);
 			match(TT_LPAREN);
-			CommandCallNode* cmd = new CommandCallNode(DataType::DT_NULL, idTok.lexeme, scanner.getLineNo());
+			CommandCallNode* cmd = new CommandCallNode(DataType::DT_NULL, firstTok.lexeme, scanner.getLineNo());
 
 			Token argTok = next_token();
 			if (argTok.type != TT_RPAREN)
@@ -280,7 +306,7 @@ JmpStmtNode* FGRParser::jmpstmt()
 	case TT_EQUAL_SIGN:
 		{
 			match(TT_ID);
-			IdRefNode* id = new IdRefNode(idTok.lexeme, scanner.getLineNo());
+			IdRefNode* id = new IdRefNode(firstTok.lexeme, scanner.getLineNo());
 			match(TT_EQUAL_SIGN);
 
 			AsciiNode* toAssign = expr();
@@ -290,7 +316,7 @@ JmpStmtNode* FGRParser::jmpstmt()
 			break;
 		}
 	default:
-		syntax_error("Invalid start of stmt - " + tok.lexeme);
+		syntax_error("Invalid start of stmt - " + secondTok.lexeme);
 		return NULL;
 		break;
 	}
@@ -430,12 +456,14 @@ AsciiNode* FGRParser::multerm()
 // This function represents production rules:
 // <typedterm> => <primary> <typedterm.1>
 // <typedterm.1> => : id ( <arglist> ) <typedterm.1>
+// <typedterm.1> => :: id ( <arglist> ) <typedterm.1>
 // <typedterm.1> => : id ( ) <typedterm.1>
+// <typedterm.1> => :: id ( ) <typedterm.1>
 // <typedterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 // @isEndFunction: Triggers the final tail as function or command
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 AsciiNode* FGRParser::typedterm(bool isEndFunction)
 {
@@ -469,6 +497,29 @@ AsciiNode* FGRParser::typedterm(bool isEndFunction)
 			curr = funct;
 			endRoutine = funct;
 		}
+		else if (tok.type == TT_DUAL_COLON)
+		{
+			match(TT_DUAL_COLON);
+
+			Token idTok = next_token();
+			match(TT_ID);
+			FunctionCallNode * funct = new FunctionCallNode(idTok.lexeme, scanner.getLineNo());
+			match(TT_LPAREN);
+
+			Token firstArg = next_token();
+
+			if (firstArg.type != TT_RPAREN)
+			{
+				funct->addArgList(arglist(0,funct->getFunct()));
+			}
+
+			match(TT_RPAREN);
+
+			funct->addParentScope();
+			funct->addPrimary(curr);
+			curr = funct;
+			endRoutine = funct;
+		}
 		else
 		{
 			if (!isEndFunction)
@@ -478,6 +529,8 @@ AsciiNode* FGRParser::typedterm(bool isEndFunction)
 				cmd->addPrimary(endRoutine->getPrimary());
 				cmd->setCmd(endRoutine->getFunct());
 				cmd->getCmd()->returnType = DataType::DT_NULL;
+				if (endRoutine->hasParentScope())
+					cmd->addParentScope();
 				curr = cmd;
 
 				//TODO

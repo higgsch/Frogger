@@ -44,16 +44,20 @@ public:
 // ----------------------------------------------------------
 // This class provides a node representation for a command call.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 class CommandCallNode : public BinaryNode
 {
 private:
 	Routine * cmd;
+	bool isParentScope;
 
 public:
 	CommandCallNode(DataType * primary, string name, int lineNo);
 	~CommandCallNode();
+
+	void addParentScope() { isParentScope = true; }
+	bool hasParentScope() { return isParentScope; }
 
 	Routine* getCmd() { return cmd; }
 	//Don't just change pointer because ArgListNodes use the old pointer

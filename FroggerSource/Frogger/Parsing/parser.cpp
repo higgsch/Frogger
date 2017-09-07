@@ -140,6 +140,9 @@ void Parser::match(token_type toMatch)
 		case TT_COLON:
 			type = Token::COLON;
 			break;
+		case TT_DUAL_COLON:
+			type = Token::DUAL_COLON;
+			break;
 		case TT_SEMICOLON:
 			type = Token::SEMICOLON;
 			break;
