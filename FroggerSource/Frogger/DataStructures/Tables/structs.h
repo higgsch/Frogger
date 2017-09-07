@@ -98,6 +98,7 @@ struct ObjectStruct
 		scopedTables(new TableGroup()), isUserDefined(true), 
 		parentName(""), parent(NULL) {}
 
+	bool hasParent() { return parent != NULL; }
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }
 	UDFRecord * getUDF(int udfIndex) { return (*UDFs)[udfIndex]; }

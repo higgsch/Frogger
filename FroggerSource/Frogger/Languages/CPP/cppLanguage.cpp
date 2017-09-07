@@ -1,11 +1,41 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program represents the CPPLanguage package.
 // -----------------------------------------------------------------
 #include "cppLanguage.h"
 using namespace std;
+
+extern string rootDir;
+
+// ----------------------------------------------------------
+// This function calls a Windows module to compile the temp
+// C++ code to .exe.
+// @outFilename: The name of the .cpp file
+// @exeFilename: The name of the desired .exe output file.
+//
+// Version 4.3
+// ----------------------------------------------------------
+void CPPLanguage::outputToExe(string outFilename, string exeFilename)
+{
+	int status = system(("call " + rootDir + "Languages\\CPP\\MSCL.bat " + outFilename + " " + exeFilename + ">nul").c_str());
+	
+	if (status != 0)
+		cpp_error("12-0014");
+}
+
+// ----------------------------------------------------------
+// This function calls a Windows module to clean up all temp
+// files created from compilation.
+// @filename: The name of the temporary .cpp file
+//
+// Version 4.3
+// ----------------------------------------------------------
+void CPPLanguage::cleanup(string filename)
+{
+	system(("call " + rootDir + "Languages\\CPP\\clean.bat " + filename + ">nul").c_str());
+}
 
 const string CPPLanguage::OPEN_BRACE = "{";
 const string CPPLanguage::CLOSE_BRACE = "}";
@@ -95,36 +125,6 @@ void CPPLanguage::initOutputTexts()
 	MAIN_DEC = STATIC_SUPPORT("int main(int argc, char* argv[])");
 
 	initDependencies();
-}
-
-extern string rootDir;
-
-// ----------------------------------------------------------
-// This function calls a Windows module to compile the temp
-// C++ code to .exe.
-// @outFilename: The name of the .cpp file
-// @exeFilename: The name of the desired .exe output file.
-//
-// Version 4.3
-// ----------------------------------------------------------
-void CPPLanguage::outputToExe(string outFilename, string exeFilename)
-{
-	int status = system(("call " + rootDir + "Languages\\CPP\\MSCL.bat " + outFilename + " " + exeFilename + ">nul").c_str());
-	
-	if (status != 0)
-		cpp_error("12-0014");
-}
-
-// ----------------------------------------------------------
-// This function calls a Windows module to clean up all temp
-// files created from compilation.
-// @filename: The name of the temporary .cpp file
-//
-// Version 4.3
-// ----------------------------------------------------------
-void CPPLanguage::cleanup(string filename)
-{
-	system(("call " + rootDir + "Languages\\CPP\\clean.bat " + filename + ">nul").c_str());
 }
 
 // ----------------------------------------------------------
@@ -588,13 +588,17 @@ string CPPLanguage::getClassDefinitionCode(ProgramStruct * prog)
 // class definitions.
 // @obj: The structure table for the class.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 {
 	string result = emptyLine();
 
-	result += line("class _" + obj->name);
+	string classDeclaration = "class _" + obj->name;
+	if (obj->hasParent())
+		classDeclaration += " : public _" + replaceAll(obj->parentName,":",":_");
+
+	result += line(classDeclaration);
 
 	result += openBraceLine();
 
