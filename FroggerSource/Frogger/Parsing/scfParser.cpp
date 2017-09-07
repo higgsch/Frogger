@@ -123,7 +123,7 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 	types->add(scope.substr(0,scope.length()-1));
 	open(objectDir + objectName + ".struct");
 
-	ObjectStruct * objStruct = new ObjectStruct(lang);
+	ObjectStruct * objStruct = new ObjectStruct();
 	objStruct->name = objectName;
 
 	while (next_token().type != TT_SCANEOF)

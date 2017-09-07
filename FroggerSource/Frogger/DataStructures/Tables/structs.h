@@ -93,7 +93,7 @@ struct ObjectStruct
 
 	bool isUserDefined;
 
-	ObjectStruct(Language * lang) : UDFs(new UDFCollection()), OFs(new OFCollection()), 
+	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()),
 		scopedTables(new TableGroup()), isUserDefined(true), 
 		parentName(""), parent(NULL) {}

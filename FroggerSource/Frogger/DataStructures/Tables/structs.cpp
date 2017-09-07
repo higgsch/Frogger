@@ -13,11 +13,11 @@ using namespace std;
 //
 // Version 5.0
 // ----------------------------------------------------------
-ProgramStruct::ProgramStruct(Language * lang) : ObjectStruct(lang) 
+ProgramStruct::ProgramStruct(Language * lang) : ObjectStruct() 
 {
-	OBJ_DOUBLE = new ObjectStruct(lang);
-	OBJ_STRING = new ObjectStruct(lang);
-	OBJ_STRING_LIST = new ObjectStruct(lang);
+	OBJ_DOUBLE = new ObjectStruct();
+	OBJ_STRING = new ObjectStruct();
+	OBJ_STRING_LIST = new ObjectStruct();
 
 	OBJ_DOUBLE->name = DataType::DT_DOUBLE->typeString;
 		OBJ_DOUBLE->isUserDefined = false;
