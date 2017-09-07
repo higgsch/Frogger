@@ -17,6 +17,7 @@ Token Token::LPAREN			 = Token(TT_LPAREN, "(");
 Token Token::RPAREN			 = Token(TT_RPAREN, ")");
 Token Token::EQUAL_SIGN		 = Token(TT_EQUAL_SIGN, "=");
 Token Token::COLON			 = Token(TT_COLON, ":");
+Token Token::DUAL_COLON		 = Token(TT_DUAL_COLON, "::");
 Token Token::SEMICOLON		 = Token(TT_SEMICOLON, ";");
 Token Token::COMMA			 = Token(TT_COMMA, ",");
 Token Token::OCTOTHORPE		 = Token(TT_OCTOTHORPE, "#");

@@ -287,6 +287,8 @@ Token Scanner::readPunctuation()
 		return Token::TILDE;
 	else if (readThisToken(Token::DOT))
 		return Token::DOT;
+	else if (readThisToken(Token::DUAL_COLON))
+		return Token::DUAL_COLON;
 	else if (readThisToken(Token::COLON))
 		return Token::COLON;
 	else if (readThisToken(Token::SEMICOLON))
