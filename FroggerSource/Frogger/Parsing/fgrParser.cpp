@@ -236,8 +236,7 @@ BinaryOpNode* FGRParser::boolop()
 // ----------------------------------------------------------
 // This function represents production rules:
 // <jmpstmt> => <typedterm> ;       // NOTE: <typedterm> contains [':' and '::' + ' <commandname> ( [<arglist>] )']
-// <jmpstmt> => <commandname> ( [<arglist>] ) ;
-// <jmpstmt> => :: <commandname> ( [<arglist>] ) ;
+// <jmpstmt> => [::] <commandname> ( [<arglist>] ) ;
 // <jmpstmt> => id assign <expr> ;
 // Returns: A pointer to the node representing this jmpstmt.
 //
@@ -455,10 +454,8 @@ AsciiNode* FGRParser::multerm()
 // ----------------------------------------------------------
 // This function represents production rules:
 // <typedterm> => <primary> <typedterm.1>
-// <typedterm.1> => : id ( <arglist> ) <typedterm.1>
-// <typedterm.1> => :: id ( <arglist> ) <typedterm.1>
-// <typedterm.1> => : id ( ) <typedterm.1>
-// <typedterm.1> => :: id ( ) <typedterm.1>
+// <typedterm.1> => : id ( [<arglist>] ) <typedterm.1>
+// <typedterm.1> => :: id ( [<arglist>] ) <typedterm.1>
 // <typedterm.1> => [lambda]
 // Returns: A pointer to the node representing this term.
 // @isEndFunction: Triggers the final tail as function or command
@@ -547,13 +544,13 @@ AsciiNode* FGRParser::typedterm(bool isEndFunction)
 // ----------------------------------------------------------
 // This function represents production rules:
 // <primary> => dbl
-// <primary> => id
-// <primary> => id ( [<arglist>] )
+// <primary> => id [( [<arglist>] )]
+// <primary> => :: id ( [<arglist>] )
 // <primary> => string
 // <primary> => ( <expr> )
 // Returns: A pointer to the node representing this term.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 AsciiNode* FGRParser::primary()
 {
@@ -564,6 +561,33 @@ AsciiNode* FGRParser::primary()
 		match(TT_DOUBLECONST);
 		return new DoubleConstingNode(tok.lexeme, scanner.getLineNo());
 		break;
+	case TT_DUAL_COLON:
+		{
+			match(TT_DUAL_COLON);
+
+			tok = next_token();
+			match(TT_ID);
+		
+			Token nextTok = next_token();
+			if (nextTok.type != TT_LPAREN)
+				return new IdRefNode(tok.lexeme, scanner.getLineNo());
+
+			//Function call
+			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme, scanner.getLineNo());
+			funct->getFunct()->primary = DataType::DT_NULL;
+			match(TT_LPAREN);
+
+			Token firstArg = next_token();
+			if (firstArg.type != TT_RPAREN)
+			{
+				funct->addArgList(arglist(0, funct->getFunct()));
+			}
+
+			match(TT_RPAREN);
+			funct->addParentScope();
+			return funct;
+			break;
+		}
 	case TT_ID:
 		{
 			match(TT_ID);
