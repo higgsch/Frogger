@@ -80,6 +80,14 @@ protected:
 		return result;
 	}
 
+	bool isParentCodeGenerated(ObjectStruct * obj)
+	{
+		if (!obj->hasParent())
+			return true;
+
+		return obj->parent->isCodeGenerated;
+	}
+
 public:
 	Language(string indentString) : 
 		INDENT_MARKER("\037"),

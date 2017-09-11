@@ -92,10 +92,11 @@ struct ObjectStruct
 	TableGroup * scopedTables; //Records accessible by scoping (e.g. <obj>:id())
 
 	bool isUserDefined;
+	bool isCodeGenerated;
 
 	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()),
-		scopedTables(new TableGroup()), isUserDefined(true), 
+		scopedTables(new TableGroup()), isUserDefined(true), isCodeGenerated(false),
 		parentName(""), parent(NULL) {}
 
 	bool hasParent() { return parent != NULL; }

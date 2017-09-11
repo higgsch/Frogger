@@ -589,21 +589,35 @@ string CPPLanguage::getForwardDeclarationCode(ProgramStruct * prog)
 // definitions within the program.
 // @prog: The structure table for the program.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 string CPPLanguage::getClassDefinitionCode(ProgramStruct * prog)
 {
 	string result = "";
+	bool hasSkipped = false;
 
 	int objCount = prog->getNumberOfOFs();
-	for (int objIndex = 0; objIndex < objCount; objIndex++)
+	do
 	{
-		ObjectStruct * currObj = prog->getOF(objIndex);
-		if (!currObj->isUserDefined)
-			continue;
+		hasSkipped = false;
+		for (int objIndex = 0; objIndex < objCount; objIndex++)
+		{
+			ObjectStruct * currObj = prog->getOF(objIndex);
+			if (!currObj->isUserDefined)
+				continue;
 
-		result += getClassDefinitionCode(prog->getOF(objIndex));
-	}
+			if (!currObj->isCodeGenerated)
+			{
+				if (isParentCodeGenerated(currObj))
+				{
+					result += getClassDefinitionCode(prog->getOF(objIndex));
+					currObj->isCodeGenerated = true;
+				}
+				else
+					hasSkipped = true;
+			}
+		}
+	} while (hasSkipped);
 
 	return result;
 }
