@@ -11,7 +11,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class ensures data typing rules are upheld.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 class DataTypingPhase : SCFPhase
 {
@@ -61,7 +61,7 @@ protected:
 
 		SymbolTable * symbols = new SymbolTable(lang, udf);
 		udf->visibleTables->syms->merge(symbols);
-		FGRDataTypingPhase dtp(this, lang, udf->visibleTables, udf->name);
+		FGRDataTypingPhase dtp(this, lang, udf->visibleTables, udf->name, udf->primary);
 		udf->root->accept(&dtp);
 	}
 
@@ -92,6 +92,19 @@ public:
 	TableGroup * getScopedTables(DataType * primary)
 	{
 		return progStruct->getObject(primary)->scopedTables;
+	}
+
+	TableGroup * getParentScopedTables(DataType * primary)
+	{
+		DataType * parentType = getParentType(primary);
+		return getScopedTables(parentType);
+	}
+
+	DataType * getParentType(DataType * type)
+	{
+		ObjectStruct * obj = progStruct->getObject(type);
+		ObjectStruct * parentObj = obj->parent;
+		return parentObj->getUDF(0)->primary;
 	}
 
 	DataTypingPhase(Language * lang) : lang(lang), allTables(new TableGroup()) {}

@@ -13,7 +13,7 @@ class DataTypingPhase;
 // ----------------------------------------------------------
 // This class represents a visitor for checking data types
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 class FGRDataTypingPhase : public FGRPhase
 {
@@ -22,6 +22,7 @@ private:
 
 	Language * lang;
 
+	DataType * currentType;
 	TableGroup * tables;
 	string udfName;
 	bool changeMadeThisRound;
@@ -41,14 +42,19 @@ private:
 
 	FunctionTable * getPrimaryScopeFunctions(FunctionCallNode * n);
 	CommandTable * getPrimaryScopeCommands(CommandCallNode * n);
+	FunctionTable * getPrimaryParentScopeFunctions(FunctionCallNode * n);
+	CommandTable * getPrimaryParentScopeCommands(CommandCallNode * n);
+
 	void unifyFunctionCall(FunctionCallNode * n);
 	void unifyCommandCall(CommandCallNode * n);
 
+	DataType * getParentType(DataType * dt);
+
 public:
 	FGRDataTypingPhase(DataTypingPhase * parentPhase, Language * lang, 
-		TableGroup * tables, string UDFName)
+		TableGroup * tables, string UDFName, DataType * currentScope)
 		: parentPhase(parentPhase), lang(lang),
-		tables(tables), udfName(UDFName), 
+		currentType(currentScope), tables(tables), udfName(UDFName), 
 		changeMadeThisRound(false), setUnknownTypeNodesToDefault(false) 
 	{}
 

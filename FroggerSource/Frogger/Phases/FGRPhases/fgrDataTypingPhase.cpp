@@ -80,7 +80,7 @@ void FGRDataTypingPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 void FGRDataTypingPhase::visit(FunctionCallNode * n)
 {
@@ -99,26 +99,54 @@ void FGRDataTypingPhase::visit(FunctionCallNode * n)
 	unifyFunctionCall(n);
 
 	Routine * funct = n->getFunct();
-	if (funct->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
+	if (!n->hasParentScope())
 	{
-		FunctionTable * functs = getPrimaryScopeFunctions(n);
-		if (!functs->matchExists(funct))
-			dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
-		else if (functs->getNumberOfMatches(funct) == 1)
+		if (funct->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
 		{
-			n->setFunct(functs->getFirstMatch(funct));
-			checkAndSetNodeDataType(n, funct->returnType);
-			n->visitAllChildren(this);
+			FunctionTable * functs = getPrimaryScopeFunctions(n);
+			if (!functs->matchExists(funct))
+				dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
+			else if (functs->getNumberOfMatches(funct) == 1)
+			{
+				n->setFunct(functs->getFirstMatch(funct));
+				checkAndSetNodeDataType(n, funct->returnType);
+				n->visitAllChildren(this);
+			}
+		}
+		else
+		{
+			//try to type primary
+			if (parentPhase->allTables->functs->getNumberOfMatches(funct) == 1)
+			{
+				n->setFunct(parentPhase->allTables->functs->getFirstMatch(funct));
+				n->getPrimary()->setDataType(n->getFunct()->primary);
+				n->visitAllChildren(this);
+			}
 		}
 	}
 	else
 	{
-		//try to type primary
-		if (parentPhase->allTables->functs->getNumberOfMatches(funct) == 1)
-		{
-			n->setFunct(parentPhase->allTables->functs->getFirstMatch(funct));
-			n->getPrimary()->setDataType(n->getFunct()->primary);
-			n->visitAllChildren(this);
+		if (funct->primary->isNull() || n->getPrimary() == NULL || (n->getPrimary()->getDataType()->isDefined()))
+		{ //parent of current scope or parent of primary scope
+			FunctionTable * functs = getPrimaryParentScopeFunctions(n);
+			if (!functs->matchExists(funct))
+				dataType_error("Function call does not match signature: " + funct->name, n->getLineNo());
+			else if (functs->getNumberOfMatches(funct) == 1)
+			{
+				n->setFunct(functs->getFirstMatch(funct));
+				checkAndSetNodeDataType(n, funct->returnType);
+				n->visitAllChildren(this);
+			}
+		}
+		else
+		{ //try to type primary
+			if (parentPhase->allTables->functs->getNumberOfMatches(funct) == 1)
+			{
+				Routine * match = parentPhase->allTables->functs->getFirstMatch(funct);
+				n->setFunct(match);
+				n->getPrimary()->setDataType(getParentType(match->primary));
+				n->visitAllChildren(this);
+			}
 		}
 	}
 }
@@ -127,7 +155,7 @@ void FGRDataTypingPhase::visit(FunctionCallNode * n)
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 void FGRDataTypingPhase::visit(CommandCallNode * n)
 {
@@ -136,25 +164,53 @@ void FGRDataTypingPhase::visit(CommandCallNode * n)
 	
 	Routine * cmd = n->getCmd();
 
-	if (cmd->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
+	if (!n->hasParentScope())
 	{
-		CommandTable * cmds = getPrimaryScopeCommands(n);
-		if (!cmds->matchExists(cmd))
-			dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
-		else if (cmds->getNumberOfMatches(cmd) == 1)
+		if (cmd->primary->isNull() || (n->getPrimary()->getDataType()->isDefined()))
 		{
-			n->setCmd(cmds->getFirstMatch(cmd));
-			n->visitAllChildren(this);
+			CommandTable * cmds = getPrimaryScopeCommands(n);
+			if (!cmds->matchExists(cmd))
+				dataType_error("Command call does not match signature: " + cmd->name, n->getLineNo());
+			else if (cmds->getNumberOfMatches(cmd) == 1)
+			{
+				n->setCmd(cmds->getFirstMatch(cmd));
+				n->visitAllChildren(this);
+			}
+		}
+		else
+		{
+			//Try to type primary
+			if (parentPhase->allTables->cmds->getNumberOfMatches(cmd) == 1)
+			{
+				n->setCmd(parentPhase->allTables->cmds->getFirstMatch(cmd));
+				n->getPrimary()->setDataType(n->getCmd()->primary);
+				n->visitAllChildren(this);
+			}
 		}
 	}
 	else
 	{
-		//Try to type primary
-		if (parentPhase->allTables->cmds->getNumberOfMatches(cmd) == 1)
-		{
-			n->setCmd(parentPhase->allTables->cmds->getFirstMatch(cmd));
-			n->getPrimary()->setDataType(n->getCmd()->primary);
-			n->visitAllChildren(this);
+		if (cmd->primary->isNull() || n->getPrimary() == NULL || (n->getPrimary()->getDataType()->isDefined()))
+		{ //parent of current scope or parent of primary scope
+			CommandTable * cmds = getPrimaryParentScopeCommands(n);
+			if (!cmds->matchExists(cmd))
+				dataType_error("Function call does not match signature: " + cmd->name, n->getLineNo());
+			else if (cmds->getNumberOfMatches(cmd) == 1)
+			{
+				n->setCmd(cmds->getFirstMatch(cmd));
+				checkAndSetNodeDataType(n, cmd->returnType);
+				n->visitAllChildren(this);
+			}
+		}
+		else
+		{ //try to type primary
+			if (parentPhase->allTables->functs->getNumberOfMatches(cmd) == 1)
+			{
+				Routine * match = parentPhase->allTables->functs->getFirstMatch(cmd);
+				n->setCmd(match);
+				n->getPrimary()->setDataType(getParentType(match->primary));
+				n->visitAllChildren(this);
+			}
 		}
 	}
 }
@@ -423,7 +479,7 @@ FunctionTable * FGRDataTypingPhase::getPrimaryScopeFunctions(FunctionCallNode * 
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new FunctionTable();
 
-	return parentPhase->getScopedTables(primary->getDataType())->functs;
+	return parentPhase->getScopedTables(primaryType)->functs;
 }
 
 // ----------------------------------------------------------
@@ -445,7 +501,65 @@ CommandTable * FGRDataTypingPhase::getPrimaryScopeCommands(CommandCallNode * n)
 	if (primaryType == DataType::DT_NOT_DEFINED)
 		return new CommandTable();
 
-	return parentPhase->getScopedTables(primary->getDataType())->cmds;
+	return parentPhase->getScopedTables(primaryType)->cmds;
+}
+
+// ----------------------------------------------------------
+// This function returns a safe function table based on the 
+// primary scope's parent scope. Handles current scope's parent 
+// as well.
+// 
+// Version 5.1
+// ----------------------------------------------------------
+FunctionTable * FGRDataTypingPhase::getPrimaryParentScopeFunctions(FunctionCallNode * n)
+{
+	AsciiNode * primary = n->getPrimary();
+	DataType * primaryType = NULL;
+
+	if (primary == NULL) //Current scope's parent scoped functions
+		primaryType = currentType;
+	else
+	{
+		primaryType = primary->getDataType();
+		if (primaryType == DataType::DT_NULL) //Current scope's parent scoped functions
+			primaryType = currentType;
+	}
+
+	if (primaryType == DataType::DT_NOT_DEFINED)
+		return new FunctionTable();
+
+	DataType * primaryParentType = parentPhase->getParentType(primaryType);
+
+	return parentPhase->getScopedTables(primaryParentType)->functs;
+}
+
+// ----------------------------------------------------------
+// This function returns a safe command table based on the 
+// primary scope's parent scope. Handles current scope's parent 
+// as well.
+// 
+// Version 5.1
+// ----------------------------------------------------------
+CommandTable * FGRDataTypingPhase::getPrimaryParentScopeCommands(CommandCallNode * n)
+{
+	AsciiNode * primary = n->getPrimary();
+	DataType * primaryType = NULL;
+
+	if (primary == NULL)
+		primaryType = currentType;
+	else
+	{
+		primaryType = primary->getDataType();
+		if (primaryType == DataType::DT_NULL)
+			primaryType = currentType;
+	}
+
+	if (primaryType == DataType::DT_NOT_DEFINED)
+		return new CommandTable();
+
+	DataType * primaryParentType = parentPhase->getParentType(primaryType);
+
+	return parentPhase->getScopedTables(primaryParentType)->cmds;
 }
 
 // ----------------------------------------------------------
@@ -491,23 +605,42 @@ void FGRDataTypingPhase::unifyFunctionCall(FunctionCallNode * n)
 // are in line with the command record.
 // @n: The CommandCallNode to check.
 // 
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 void FGRDataTypingPhase::unifyCommandCall(CommandCallNode * n)
 {
 	Routine * cmd = n->getCmd();
 
 	//ensure primary matches
-	if (!cmd->primary->isNull())
+	if (!n->hasParentScope())
 	{
-		AsciiNode * primaryNode = n->getPrimary();
-		DataType * primaryNodeType = primaryNode->getDataType();
-		if (primaryNodeType->isDefined() && !cmd->primary->isDefined())
-			cmd->primary = primaryNodeType;
-		else if (cmd->primary->isDefined() && !primaryNodeType->isDefined())
-			primaryNode->setDataType(cmd->primary);
-		else if (cmd->primary->isDefined() && primaryNodeType->isDefined() && *(cmd->primary) != *(primaryNodeType))
-			dataType_error("Mismatched Primary Type for Command Call: " + n->getLexeme(), n->getLineNo());
+		if (!cmd->primary->isNull() && n->getPrimary() != NULL)
+		{
+			AsciiNode * primaryNode = n->getPrimary();
+			DataType * primaryNodeType = primaryNode->getDataType();
+			if (primaryNodeType->isDefined() && !cmd->primary->isDefined())
+				cmd->primary = primaryNodeType;
+			else if (cmd->primary->isDefined() && !primaryNodeType->isDefined())
+				primaryNode->setDataType(cmd->primary);
+			else if (cmd->primary->isDefined() && primaryNodeType->isDefined() && *(cmd->primary) != *(primaryNodeType))
+				dataType_error("Mismatched Primary Type for Command Call: " + n->getLexeme(), n->getLineNo());
+		}
+	}
+	else
+	{
+		if (!cmd->primary->isNull() && n->getPrimary() != NULL)
+		{
+			AsciiNode * primaryNode = n->getPrimary();
+			DataType * primaryNodeType = primaryNode->getDataType();
+			//if (primaryNodeType->isDefined() && !cmd->primary->isDefined())
+			//	cmd->primary = primaryNodeType;
+			//else 
+			if (cmd->primary->isDefined() && !primaryNodeType->isDefined())
+				primaryNode->setDataType(getParentType(cmd->primary));
+			else if (cmd->primary->isDefined() && primaryNodeType->isDefined() && 
+					*(getParentType(cmd->primary)) != *(primaryNodeType))
+				dataType_error("Mismatched Primary Type for Command Call: " + n->getLexeme(), n->getLineNo());
+		}
 	}
 
 	//ensure args match
@@ -562,4 +695,9 @@ void FGRDataTypingPhase::processDoubleOperator(BinaryOpNode * n)
 {
 	n->visitAllChildren(this);
 	checkAndSetTreeDataType(n, DataType::DT_DOUBLE);
+}
+
+DataType * FGRDataTypingPhase::getParentType(DataType * dt)
+{ 
+	return parentPhase->getParentType(dt); 
 }

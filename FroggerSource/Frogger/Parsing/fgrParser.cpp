@@ -255,7 +255,7 @@ JmpStmtNode* FGRParser::jmpstmt()
 
 		match(TT_ID);
 		match(TT_LPAREN);
-		CommandCallNode* cmd = new CommandCallNode(DataType::DT_NULL, firstTok.lexeme, scanner.getLineNo());
+		CommandCallNode* cmd = new CommandCallNode(DataType::DT_NOT_DEFINED, firstTok.lexeme, scanner.getLineNo());
 
 		Token argTok = next_token();
 		if (argTok.type != TT_RPAREN)
@@ -574,7 +574,7 @@ AsciiNode* FGRParser::primary()
 
 			//Function call
 			FunctionCallNode * funct = new FunctionCallNode(tok.lexeme, scanner.getLineNo());
-			funct->getFunct()->primary = DataType::DT_NULL;
+			funct->getFunct()->primary = DataType::DT_NOT_DEFINED;
 			match(TT_LPAREN);
 
 			Token firstArg = next_token();
