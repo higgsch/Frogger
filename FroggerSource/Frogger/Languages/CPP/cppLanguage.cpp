@@ -272,13 +272,16 @@ string CPPLanguage::getAssignmentText(string assigneeText, string assignorText)
 // ----------------------------------------------------------
 // This function returns the output text for a function call.
 // @isBuiltIn: a flag for a language-defined function
+// @isParentScoped: a flag for parent scope operator usage.
+// @parentType: the data type of primary's parent
 // @primaryText: the output text from the primary object
 // @name: the function's name
 // @argListText: the output text from the call's arg list
 //
-// Version 5.0
+// Version 5.1
 // ---------------------------------------------------------
-string CPPLanguage::getFunctionCallText(bool isBuiltIn, string primaryText, string name, string argListText)
+string CPPLanguage::getFunctionCallText(bool isBuiltIn, bool isParentScoped, DataType * parentType, 
+										string primaryText, string name, string argListText)
 {
 	string result = "";
 
@@ -295,7 +298,17 @@ string CPPLanguage::getFunctionCallText(bool isBuiltIn, string primaryText, stri
 	}
 
 	//For User Defined
-	string primary = (primaryText != "") ? primaryText + "." : "";
+	string primary = "";
+	if (!isParentScoped)
+	{
+		primary = (primaryText != "") ? primaryText + "." : "";
+	}
+	else
+	{
+		primary = "((" + getTypeString(parentType) + ") ";
+		primary += (primaryText == "") ? "*this" : primaryText;
+		primary += ").";
+	}
 
 	return primary + "_" + name + nest(true, argListText);
 }
@@ -303,13 +316,16 @@ string CPPLanguage::getFunctionCallText(bool isBuiltIn, string primaryText, stri
 // ----------------------------------------------------------
 // This function returns the output text for a command call.
 // @isBuiltIn: a flag for language-defined commands
+// @isParentScoped: a flag for parent scope resolution usage
+// @parentType: the data type of primary's parent
 // @primaryText: the output text from the primary object
 // @name: the command's name
 // @argListText: the output text from the call's arg list
 //
-// Version 5.0
+// Version 5.1
 // ---------------------------------------------------------
-string CPPLanguage::getCommandCallText(bool isBuiltIn, string primaryText, string name, string argListText)
+string CPPLanguage::getCommandCallText(bool isBuiltIn, bool isParentScoped, DataType* parentType,
+									   string primaryText, string name, string argListText)
 {
 	if (isBuiltIn && name == CMDNAME_END_NULL)
 		return "return" + ((argListText != "") ? " " + argListText : "") + ";";
@@ -317,11 +333,20 @@ string CPPLanguage::getCommandCallText(bool isBuiltIn, string primaryText, strin
 	if (isBuiltIn)
 		return name + nest(true, argListText) + ";";
 
-	if (primaryText == "")
-		return "_" + name + nest(true, argListText) + ";";
+	//For User Defined
+	string primary = "";
+	if (!isParentScoped)
+	{
+		primary = (primaryText != "") ? primaryText + "." : "";
+	}
+	else
+	{
+		primary = "((" + getTypeString(parentType) + ") ";
+		primary += (primaryText == "") ? "*this" : primaryText;
+		primary += ").";
+	}
 
-	//For scoped functions
-	return primaryText + "._" + name +  nest(true, argListText) + ";"; 
+	return primary + "_" + name + nest(true, argListText) + ";";
 }
 
 // ----------------------------------------------------------

@@ -25,7 +25,7 @@ public:
 // ----------------------------------------------------------
 // This class represents a generic Language package.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 class Language
 {
@@ -111,8 +111,8 @@ public:
 	virtual string getAssignmentText(string assigneeText, string assignorText) =0;
 
 	//Routines
-	virtual string getFunctionCallText(bool isBuiltIn, string primaryText, string name, string argListText) =0;
-	virtual string getCommandCallText(bool isBuiltIn, string primaryText, string name, string argListText) =0;
+	virtual string getFunctionCallText(bool isBuiltIn, bool isParentScoped, DataType* parentType, string primaryText, string name, string argListText) =0;
+	virtual string getCommandCallText(bool isBuiltIn, bool isParentScoped, DataType* parentType, string primaryText, string name, string argListText) =0;
 	virtual string getArgumentListText(string thisArgText, string argTailText) =0;
 
 	virtual string getBinaryOpText(bool isNested, bool isString, string leftOperandText, string rightOperandText, binaryOp op) =0;

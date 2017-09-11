@@ -122,7 +122,7 @@ public:
 // ----------------------------------------------------------
 // This class represents the CPPLanguage package.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 class CPPLanguage : public Language
 {
@@ -225,8 +225,8 @@ public:
 	string getAssignmentText(string assigneeText, string assignorText);
 
 	//Routines
-	string getFunctionCallText(bool isBuiltIn, string primaryText, string name, string argListText);
-	string getCommandCallText(bool isBuiltIn, string primaryText, string name, string argListText);
+	string getFunctionCallText(bool isBuiltIn, bool isParentScoped, DataType* parentType, string primaryText, string name, string argListText);
+	string getCommandCallText(bool isBuiltIn, bool isParentScoped, DataType* parentType, string primaryText, string name, string argListText);
 	string getArgumentListText(string thisArgText, string argTailText);
 
 	string getBinaryOpText(bool isNested, bool isString, string leftOperandText, string rightOperandText, binaryOp op);

@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.1
 // -----------------------------------------------------------------
 // This program represents a visitor for generating output code
 // that reflects the current AST.
@@ -106,7 +106,7 @@ void FGRCodeGenerationPhase::visit(AssigningNode * n)
 // This function processes a function call.
 // @n: The node representing the statement.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 void FGRCodeGenerationPhase::visit(FunctionCallNode * n)
 {
@@ -128,14 +128,14 @@ void FGRCodeGenerationPhase::visit(FunctionCallNode * n)
 	string primaryText = (primary == NULL) ? "" : primary->outputText;
 	string argListText = (argList == NULL) ? "" : argList->outputText;
 
-	n->outputText = lang->getFunctionCallText(isBuiltIn, primaryText, name, argListText);
+	n->outputText = lang->getFunctionCallText(isBuiltIn, n->hasParentScope(), funct->primary, primaryText, name, argListText);
 }
 
 // ----------------------------------------------------------
 // This function processes a command call.
 // @n: The node representing the statement.
 //
-// Version 5.0
+// Version 5.1
 // ----------------------------------------------------------
 void FGRCodeGenerationPhase::visit(CommandCallNode * n)
 {
@@ -154,7 +154,7 @@ void FGRCodeGenerationPhase::visit(CommandCallNode * n)
 	string primaryText = (primary == NULL) ? "" : primary->outputText;
 	string argListText = (argList == NULL) ? "" : argList->outputText;
 
-	n->outputText = lang->getCommandCallText(isBuiltIn, primaryText, name, argListText);
+	n->outputText = lang->getCommandCallText(isBuiltIn, n->hasParentScope(), cmd->primary, primaryText, name, argListText);
 }
 
 // ----------------------------------------------------------
