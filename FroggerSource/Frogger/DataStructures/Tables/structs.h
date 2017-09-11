@@ -75,10 +75,41 @@ class Language;
 struct OFCollection : vector<ObjectStruct *> {};
 
 // ----------------------------------------------------------
+// This class represents the data known about a OF's Templatization.
+//
+// Version 5.2
+// ----------------------------------------------------------
+struct TemplatizationCollection : vector<string> 
+{
+public:
+	bool contains(string templateID)
+	{
+		int templateCount = size();
+		for (int templateIndex = 0; templateIndex < templateCount; templateIndex++)
+		{
+			if (templateID == at(templateIndex))
+				return true;
+		}
+		return false;
+	}
+
+	int getIndex(string templateID)
+	{
+		int templateCount = size();
+		for (int templateIndex = 0; templateIndex < templateCount; templateIndex++)
+		{
+			if (templateID == at(templateIndex))
+				return templateIndex;
+		}
+		return -1;
+	}
+};
+
+// ----------------------------------------------------------
 // This class represents the data known about a Frogger
 // Object. Generated from the .struct file.
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 struct ObjectStruct
 {
@@ -88,6 +119,7 @@ struct ObjectStruct
 	UDFCollection * UDFs;
 	OFCollection * OFs;
 	DataCollection * data;
+	TemplatizationCollection * templatizationList;
 
 	TableGroup * scopedTables; //Records accessible by scoping (e.g. <obj>:id())
 
@@ -95,10 +127,11 @@ struct ObjectStruct
 	bool isCodeGenerated;
 
 	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()), 
-		data(new DataCollection()),
+		data(new DataCollection()), templatizationList(new TemplatizationCollection()),
 		scopedTables(new TableGroup()), isUserDefined(true), isCodeGenerated(false),
 		parentName(""), parent(NULL) {}
 
+	bool isTemplatized() { return templatizationList->size() != 0; }
 	bool hasParent() { return parent != NULL; }
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }

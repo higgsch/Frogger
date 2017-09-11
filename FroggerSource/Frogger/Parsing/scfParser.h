@@ -16,7 +16,7 @@ using namespace std;
 // This class provides the functionality to interpret a .struct 
 // file
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 class SCFParser : public Parser
 {
@@ -27,6 +27,7 @@ private:
 	SCFScanner scanner;
 	
 	string inheritanceRecord();
+	TemplatizationCollection * templatizationRecord();
 	UDFRecord * functRecord();
 	ObjectStruct * objectRecord(string objectDir, string name);
 	DataCollection * dataRecord(string dataDir, string name);

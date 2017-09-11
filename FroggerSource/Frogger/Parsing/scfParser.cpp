@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.1
+//                      Version: 5.2
 // -----------------------------------------------------------------
 // This program provides the functionality to interpret a SCF file
 // -----------------------------------------------------------------
@@ -113,7 +113,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 // @objectDir: The OF
 // @objectName: The name of the object
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectName, string newScope)
 {
@@ -142,6 +142,13 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				size_t lastScopeOpPos = scope.find_last_of(":", scope.length() - 2);
 				string parentScope = (lastScopeOpPos != string::npos) ? scope.substr(0, lastScopeOpPos) : "" ;
 				objStruct->parentName = parentScope + inheritanceRecord();
+			}
+			else if (compilerDirective == "template")
+			{
+				if (objStruct->isTemplatized())
+					syntax_error("Too Many %template% Directives");
+
+				objStruct->templatizationList = templatizationRecord();
 			}
 			else
 				syntax_error("Invalid Compiler Directive: " + compilerDirective);
@@ -255,6 +262,34 @@ string SCFParser::inheritanceRecord()
 		syntax_error("Invalid Parent Statement: ." + ext + " found, expected .struct"); 
 
 	return parentName;
+}
+
+// ----------------------------------------------------------
+// This function processes a templatization record and 
+// returns the Templatization List.
+//
+// Version 5.2
+// ----------------------------------------------------------
+TemplatizationCollection * SCFParser::templatizationRecord()
+{
+	TemplatizationCollection * tList = new TemplatizationCollection();
+	string templateId = id();
+	tList->push_back(templateId);
+
+	Token tok = next_token();
+	while (tok.type == TT_COMMA)
+	{
+		match(TT_COMMA);
+		templateId = id();
+		if (tList->contains(templateId))
+			syntax_error("Template " + templateId + " Already Defined");
+		else
+			tList->push_back(templateId);
+
+		tok = next_token();
+	}
+
+	return tList;
 }
 
 // ----------------------------------------------------------
