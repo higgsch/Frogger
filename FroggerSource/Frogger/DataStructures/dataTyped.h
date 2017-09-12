@@ -32,6 +32,8 @@ public:
 	DataType * scopedParent;
 	DataTypeList * scopedChildren;
 
+	DataTypeList * templatizers;
+
 	DataTypeEnum type;
 	string scopeString; //The string representation full scope
 	string name; //The string representation of the datatype

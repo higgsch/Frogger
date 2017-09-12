@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.2
 // -----------------------------------------------------------------
 // This program provides the functionality to interpret a ODF file
 // -----------------------------------------------------------------
@@ -130,7 +130,7 @@ string ODFParser::doubleDefaultValue()
 // ----------------------------------------------------------
 // This function processes and returns a data type.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 DataType * ODFParser::dataType()
 {
@@ -147,7 +147,34 @@ DataType * ODFParser::dataType()
 		return DataType::DT_STRINGLIST;
 	else
 	{
-		return new DataType(DTE_USER_DEFINED, scope + type.lexeme);
+		string typeString = scope + type.lexeme;
+		DataTypeList * templatizers = new DataTypeList();
+
+		Token templateTok = next_token();
+		if (templateTok.type == TT_PERCENT)
+		{
+			match(TT_PERCENT);
+			DataType * nextTemplatizer = dataType();
+			templatizers->push_back(nextTemplatizer);
+			typeString += Token::PERCENT.lexeme + nextTemplatizer->name;
+
+			Token tok = next_token();
+			while (tok.type == TT_COMMA)
+			{
+				match(TT_COMMA);
+				nextTemplatizer = dataType();
+				templatizers->push_back(nextTemplatizer);
+				typeString += Token::COMMA.lexeme + nextTemplatizer->name;
+
+				tok = next_token();
+			}
+
+			match(TT_PERCENT);
+			typeString += Token::PERCENT.lexeme;
+		}
+		DataType * dt = new DataType(DTE_USER_DEFINED, typeString);
+		dt->templatizers = templatizers;
+		return dt;
 	}
 }
 
