@@ -86,7 +86,7 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	int argCount = udf->args->size();
 	if (argCount > 0)
 	{
-		string argType = udf->args->at(0)->type->typeString;
+		string argType = udf->args->at(0)->type->fullyScopedTypeString();
 		size_t scopeOpPos = argType.find_last_of(":");
 
 		if (scopeOpPos == string::npos)
@@ -98,7 +98,7 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	for (int argIndex = 1; argIndex < argCount; argIndex++)
 	{
 		ArgPair * currArg = udf->args->at(argIndex);
-		string argType = currArg->type->typeString;
+		string argType = currArg->type->fullyScopedTypeString();
 		size_t scopeOpPos = argType.find_last_of(":");
 
 		if (scopeOpPos == string::npos)
@@ -107,7 +107,7 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 			filename += "," + currArg->name + "=" + argType.substr(scopeOpPos + 1);
 	}
 
-	string returnType = udf->returnType->typeString;
+	string returnType = udf->returnType->fullyScopedTypeString();
 	size_t scopeOpPos = returnType.find_last_of(":");
 
 	if (scopeOpPos == string::npos)

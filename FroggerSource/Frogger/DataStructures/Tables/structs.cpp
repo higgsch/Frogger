@@ -19,19 +19,19 @@ ProgramStruct::ProgramStruct(Language * lang) : ObjectStruct()
 	OBJ_STRING = new ObjectStruct();
 	OBJ_STRING_LIST = new ObjectStruct();
 
-	OBJ_DOUBLE->name = DataType::DT_DOUBLE->typeString;
+	OBJ_DOUBLE->name = DataType::DT_DOUBLE->fullyScopedTypeString();
 		OBJ_DOUBLE->isUserDefined = false;
 		OBJ_DOUBLE->scopedTables->functs->add(lang->builtInFunctions->FUNCT_TO_STRING);
 		OBJ_DOUBLE->scopedTables->functs->add(lang->builtInFunctions->FUNCT_TO_ASCII);
 
-	OBJ_STRING->name = DataType::DT_STRING->typeString;
+	OBJ_STRING->name = DataType::DT_STRING->fullyScopedTypeString();
 		OBJ_STRING->isUserDefined = false;
 		OBJ_STRING->scopedTables->functs->add(lang->builtInFunctions->FUNCT_ASCII_AT);
 		OBJ_STRING->scopedTables->functs->add(lang->builtInFunctions->FUNCT_LENGTH);
 		OBJ_STRING->scopedTables->functs->add(lang->builtInFunctions->FUNCT_PARSE_DOUBLE);
 
 
-	OBJ_STRING_LIST->name = DataType::DT_STRINGLIST->typeString;
+	OBJ_STRING_LIST->name = DataType::DT_STRINGLIST->fullyScopedTypeString();
 		OBJ_STRING_LIST->isUserDefined = false;
 		OBJ_STRING_LIST->scopedTables->functs->add(lang->builtInFunctions->FUNCT_ELEMENT_AT);
 		OBJ_STRING_LIST->scopedTables->functs->add(lang->builtInFunctions->FUNCT_SIZE);

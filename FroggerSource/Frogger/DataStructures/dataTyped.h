@@ -15,23 +15,38 @@ enum DataTypeEnum
 	DTE_NOT_DEFINED //Used when the type is unknown
 };
 
+struct DataType;
+struct DataTypeList : vector<DataType *> {};
+
 // ----------------------------------------------------------
 // This class represents a data type.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 struct DataType
 {
+private:
+	static const string SCOPE_OPERATOR;
+
+public:
+	DataType * scopedParent;
+	DataTypeList * scopedChildren;
+
 	DataTypeEnum type;
-	string typeString; //The string representation of the datatype including full scope
+	string scopeString; //The string representation full scope
+	string name; //The string representation of the datatype
 	string defaultValue; //The string representation of the default value
 
-	DataType(DataTypeEnum type, string typeString, string defaultValue) : type(type), typeString(typeString), defaultValue(defaultValue) {}
-	DataType(DataTypeEnum type, string typeString) : type(type), typeString(typeString), defaultValue("<UNKNOWN>") {}
-	DataType() { type = DTE_NOT_DEFINED; typeString = ""; }
+	DataType(DataTypeEnum type, string scopedTypeString, string defaultValue);
+	DataType(DataTypeEnum type, string scopedTypeString);
+	DataType();
 
-	bool operator==(const DataType& rhs) { return (type == rhs.type && typeString == typeString); }
-	bool operator!=(const DataType& rhs) { return (typeString != rhs.typeString || type != rhs.type); }
+	string fullyScopedTypeString();
+
+	bool matchesScope(string scopedName) { return scopedName.find(fullyScopedTypeString()) == 0; }
+
+	bool operator==(const DataType& rhs) { return scopeString == rhs.scopeString && name == rhs.name; }
+	bool operator!=(const DataType& rhs) { return name != rhs.name || scopeString != rhs.scopeString; }
 	
 	static DataType * DT_NULL;
 	static DataType * DT_DOUBLE;
@@ -46,6 +61,15 @@ struct DataType
 	bool isBuiltIn() { return isNull() || isDouble() || isString() || isStringList(); }
 	bool isUserDefined() { return type == DTE_USER_DEFINED; }
 	bool isDefined() { return type != DTE_NOT_DEFINED; }
+
+	void add(string scopedName);
+	bool isInTree(string scopedName);
+	DataType * getDT(string scopedName);
+	DataType * getRootDT();
+
+private:
+	void build(string scopedTypeString);
+	void addRemainingTree(DataType * toAdd);
 };
 
 // ----------------------------------------------------------
@@ -69,44 +93,14 @@ public:
 // This class represents the collection of all available data 
 // types
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 struct DataTypeCollection : public vector<DataType*> 
 {
-	DataTypeCollection() 
-	{
-		//Add built in types
-		push_back(DataType::DT_DOUBLE);
-		push_back(DataType::DT_STRING);
-		push_back(DataType::DT_STRINGLIST);
-	}
+	DataTypeCollection();
 
-	void add(string typeString)
-	{
-		if (!isInList(typeString))
-			push_back(new DataType(DTE_USER_DEFINED, typeString));
-	}
+	void add(string scopedName);
 
-	bool isInList(string name)
-	{
-		int dtCount = size();
-		for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
-		{
-			if (at(dtIndex)->typeString == name)
-				return true;
-		}
-		return false;
-	}
-
-	DataType * getDT(string name)
-	{
-		int dtCount = size();
-		for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
-		{
-			DataType* currDT = at(dtIndex);
-			if (currDT->typeString == name)
-				return currDT;
-		}
-		return DataType::DT_NOT_DEFINED;
-	}
+	bool isInList(string scopedName);
+	DataType * getDT(string scopedName);
 };
