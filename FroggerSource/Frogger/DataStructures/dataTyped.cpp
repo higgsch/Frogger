@@ -187,6 +187,14 @@ DataType * DataTypeCollection::getDT(string scopedName)
 		if (currDT->fullyScopedTypeString() == scopedName)
 			return currDT;
 	}
+
+	for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
+	{
+		DataType* currDT = at(dtIndex);
+		if (currDT->scope + currDT->typeName == scopedName)
+			return currDT;
+	}
+
 	return DataType::DT_NOT_DEFINED;
 }
 

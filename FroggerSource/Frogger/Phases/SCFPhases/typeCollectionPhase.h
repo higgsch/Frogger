@@ -10,7 +10,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class collects all defined object types. 
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 class TypeCollectionPhase : SCFPhase
 {
@@ -33,7 +33,20 @@ protected:
 			}
 			else
 			{
-				types->add(scope + obj->name);
+				string typeName = scope + obj->name;
+
+				if (obj->isTemplatized())
+				{
+					typeName += "%" + obj->templatizationList->at(0);
+
+					int tCount = obj->templatizationList->size();
+					for (int tIndex = 1; tIndex < tCount; tIndex++)
+						typeName += ", " + obj->templatizationList->at(tIndex);
+
+					typeName += "%";
+				}
+
+				types->add(typeName);
 		
 				string oldScope = scope;
 				scope = scope + obj->name + ":";

@@ -38,8 +38,16 @@ private:
 			}
 		}
 
-		DataType * type = types->getDT(dt->fullyScopedTypeString());
-		return type->isDefined();
+		if (dt->templatizerList->size() > 0)
+		{
+			DataType * type = types->getDT(dt->scope + dt->typeName);
+			return dt->templatizerList->size() == type->templatizerList->size();
+		}
+		else
+		{
+			DataType * type = types->getDT(dt->fullyScopedTypeString());
+			return type->isDefined();
+		}
 	}
 
 protected:
