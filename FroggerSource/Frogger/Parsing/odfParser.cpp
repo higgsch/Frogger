@@ -147,34 +147,26 @@ DataType * ODFParser::dataType()
 		return DataType::DT_STRINGLIST;
 	else
 	{
-		string typeString = type.lexeme;
-		DataTypeCollection * templatizers = new DataTypeCollection(false);
+		DataType * dt = new DataType(DTE_USER_DEFINED, type.lexeme);
+		dt->scope = scope;
 
 		Token templateTok = next_token();
 		if (templateTok.type == TT_PERCENT)
 		{
 			match(TT_PERCENT);
-			DataType * nextTemplatizer = dataType();
-			templatizers->push_back(nextTemplatizer);
-			typeString += Token::PERCENT.lexeme + nextTemplatizer->fullyScopedTypeString();
+			dt->templatizerList->push_back(dataType());
 
 			Token tok = next_token();
 			while (tok.type == TT_COMMA)
 			{
 				match(TT_COMMA);
-				nextTemplatizer = dataType();
-				templatizers->push_back(nextTemplatizer);
-				typeString += Token::COMMA.lexeme + nextTemplatizer->fullyScopedTypeString();
+				dt->templatizerList->push_back(dataType());
 
 				tok = next_token();
 			}
 
 			match(TT_PERCENT);
-			typeString += Token::PERCENT.lexeme;
 		}
-		DataType * dt = new DataType(DTE_USER_DEFINED, typeString);
-		dt->scope = scope;
-		dt->templatizers = templatizers;
 		return dt;
 	}
 }

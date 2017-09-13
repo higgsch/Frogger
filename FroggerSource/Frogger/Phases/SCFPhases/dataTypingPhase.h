@@ -33,7 +33,7 @@ private:
 			{
 				
 				string currTName = currObj->templatizationList->at(tIndex);
-				if (currTName == dt->typeString)
+				if (currTName == dt->typeString())
 					return true;
 			}
 		}

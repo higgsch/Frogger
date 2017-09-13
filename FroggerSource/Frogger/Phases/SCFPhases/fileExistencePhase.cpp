@@ -86,33 +86,18 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	int argCount = udf->args->size();
 	if (argCount > 0)
 	{
-		string argType = udf->args->at(0)->type->typeString;
+		string argType = udf->args->at(0)->type->typeString();
 		filename += udf->args->at(0)->name + "=" + argType;
 	}
 
 	for (int argIndex = 1; argIndex < argCount; argIndex++)
 	{
 		ArgPair * currArg = udf->args->at(argIndex);
-		string argType = currArg->type->typeString;
+		string argType = currArg->type->typeString();
 		filename += "," + currArg->name + "=" + argType;
 	}
-
-	string returnType = udf->returnType->typeString;
-	DataTypeCollection * templatizers = udf->returnType->templatizers;
-	if (templatizers != NULL && templatizers->size() > 0)
-	{
-		returnType += "%" + templatizers->at(0)->typeString;
-
-		int tCount = templatizers->size();
-		for (int tIndex = 1; tCount < tIndex; tIndex++)
-		{
-			returnType += "," + templatizers->at(tIndex)->typeString;
-		}
-		
-		returnType += "%";
-	}
 	
-	filename += ")~" + returnType;
+	filename += ")~" + udf->returnType->typeString();
 
 	udf->filepath = dir + filename + ".fgr";
 }

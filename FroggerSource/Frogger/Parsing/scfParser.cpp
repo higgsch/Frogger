@@ -407,31 +407,27 @@ DataType * SCFParser::dataType()
 		return DataType::DT_NULL;
 	else
 	{
-		string typeString = scope + type.lexeme;
-		DataTypeCollection * templatizers = new DataTypeCollection(false);
-
+		types->add(scope + type.lexeme);
+		DataType * dt = types->getDT(scope + type.lexeme);
+		
 		Token templateTok = next_token();
 		if (templateTok.type == TT_PERCENT)
 		{
 			match(TT_PERCENT);
-			DataType * nextTemplatizer = dataType();
-			templatizers->push_back(nextTemplatizer);
+			dt->templatizerList->push_back(dataType());
 
 			Token tok = next_token();
 			while (tok.type == TT_COMMA)
 			{
 				match(TT_COMMA);
-				nextTemplatizer = dataType();
-				templatizers->push_back(nextTemplatizer);
+				dt->templatizerList->push_back(dataType());
 
 				tok = next_token();
 			}
 
 			match(TT_PERCENT);
 		}
-		types->add(typeString);
-		DataType * dt = types->getDT(typeString);
-		dt->templatizers = templatizers;
+
 		return dt;
 	}
 }

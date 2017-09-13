@@ -41,19 +41,51 @@ DataType::DataType() : type(DTE_NOT_DEFINED) { build(""); }
 // ----------------------------------------------------------
 // This function processes scope, typeString, and templatizers
 // from the given full type string.
+// @fullTypeString: The complete, scoped type string
 //
 // Version 5.2
 // ----------------------------------------------------------
 void DataType::build(string fullTypeString)
 {
 	scope = extractScope(fullTypeString);
-	typeString = fullTypeString.substr(scope.length());
-	templatizers = NULL;
+	string typeString = fullTypeString.substr(scope.length());
+	typeName = extractName(typeString);
+	buildTemplatizerList(typeString);
+}
+
+// ----------------------------------------------------------
+// This function processes templatizers from the given full 
+// type string.
+// @typeString: The complete type string without scope
+//
+// Version 5.2
+// ----------------------------------------------------------
+void DataType::buildTemplatizerList(string typeString)
+{
+	templatizerList = new DataTypeCollection(false);
+
+	size_t firstTemplateOp = typeString.find(TEMPLATE_OPERATOR);
+	size_t lastTemplateOp = typeString.find_last_of(TEMPLATE_OPERATOR);
+	if (firstTemplateOp == string::npos)
+		return;
+
+	string templateString = typeString.substr(firstTemplateOp, lastTemplateOp);
+	size_t comma = templateString.find(",");
+	while (comma != string::npos)
+	{
+		templatizerList->add(templateString.substr(0,comma));
+
+		templateString = templateString.substr(comma + 1);
+		comma = templateString.find(",");
+	}
+
+	templatizerList->add(templateString);
 }
 
 // ----------------------------------------------------------
 // This function returns the scope from the given full type string
 // including final scope operator, empty string if scope DNE.
+// @fullTypeString: The complete, scoped type string
 //
 // Version 5.2
 // ----------------------------------------------------------
@@ -69,6 +101,41 @@ string DataType::extractScope(string fullTypeString)
 		return "";
 	else
 		return fullTypeString.substr(0, lastScopeOp + 1);
+}
+
+// ----------------------------------------------------------
+// This function returns the type name from the given type string
+// without templatizer string.
+// @typeString: The type string without scope
+//
+// Version 5.2
+// ----------------------------------------------------------
+string DataType::extractName(string typeString)
+{
+	size_t firstTemplatizerOp = typeString.find(TEMPLATE_OPERATOR);
+	return typeString.substr(0, firstTemplatizerOp);
+}
+
+// ----------------------------------------------------------
+// This function returns the string version of the templatizer
+// list.
+//
+// Version 5.2
+// ----------------------------------------------------------
+string DataType::templatizerString() const
+{
+	if (templatizerList->size() == 0)
+		return "";
+
+	string result = TEMPLATE_OPERATOR + templatizerList->at(0)->fullyScopedTypeString();
+
+	int tCount = templatizerList->size();
+	for (int tIndex = 1; tIndex < tCount; tIndex++)
+	{
+		result += ", " + templatizerList->at(tIndex)->fullyScopedTypeString();
+	}
+	
+	return result + TEMPLATE_OPERATOR;
 }
 
 // ----------------------------------------------------------
@@ -145,46 +212,16 @@ bool DataType::operator==(const DataType& rhs)
 {
 	if (fullyScopedTypeString() != rhs.fullyScopedTypeString())
 		return false;
-
-	if (templatizers == NULL)
-	{
-		if (rhs.templatizers == NULL || rhs.templatizers->size() == 0)
-			return true;
-		else
-			return false;
-	}
-	else if (rhs.templatizers == NULL)
-	{
-		if (templatizers->size() == 0)
-			return true;
-		else
-			return false;
-	}
 	
-	return *(templatizers) == *(rhs.templatizers);
+	return *(templatizerList) == *(rhs.templatizerList);
 }
 
 bool DataType::operator!=(const DataType& rhs)
 {
 	if (fullyScopedTypeString() != rhs.fullyScopedTypeString())
 		return true;
-
-	if (templatizers == NULL)
-	{
-		if (rhs.templatizers == NULL || rhs.templatizers->size() == 0)
-			return false;
-		else 
-			return true;
-	}
-	else if (rhs.templatizers == NULL)
-	{
-		if (templatizers->size() == 0)
-			return false;
-		else
-			return true;
-	}
 	
-	return *(templatizers) != *(rhs.templatizers);
+	return *(templatizerList) != *(rhs.templatizerList);
 }
 
 bool DataTypeCollection::operator==(const DataTypeCollection& rhs)
