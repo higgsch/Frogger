@@ -60,9 +60,6 @@ public:
 	void process(ProgramStruct * prog)
 	{
 		scope = "";
-		types->add("double");
-		types->add("string");
-		types->add("stringList");
 		isProcessingProgramObject = true;
 		processOF(prog);
 
