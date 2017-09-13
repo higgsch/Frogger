@@ -69,7 +69,7 @@ void DataType::buildTemplatizerList(string typeString)
 	if (firstTemplateOp == string::npos)
 		return;
 
-	string templateString = typeString.substr(firstTemplateOp, lastTemplateOp);
+	string templateString = typeString.substr(firstTemplateOp + 1, lastTemplateOp - firstTemplateOp - 1);
 	size_t comma = templateString.find(",");
 	while (comma != string::npos)
 	{
