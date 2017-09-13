@@ -11,7 +11,7 @@ using namespace std;
 // ----------------------------------------------------------
 // This class ensures data typing rules are upheld.
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 class DataTypingPhase : SCFPhase
 {
@@ -19,13 +19,26 @@ private:
 	ProgramStruct * progStruct;
 
 	DataTypeCollection * types;
+	ObjectStruct * currObj;
 
 	Language * lang;
 
 	void populateAllTables(ObjectStruct* obj);
 	bool typeExists(DataType * dt)
 	{
-		DataType * type = types->getDT(dt->fullyScopedTypeString());
+		if (currObj->isTemplatized())
+		{
+			int tCount = currObj->templatizationList->size();
+			for (int tIndex = 0; tIndex < tCount; tIndex++)
+			{
+				
+				string currTName = currObj->name + ":" + currObj->templatizationList->at(tIndex);
+				if (currTName == dt->typeString)
+					return true;
+			}
+		}
+
+		DataType * type = types->getDT(dt->typeString);
 		return type->isDefined();
 	}
 
@@ -37,7 +50,7 @@ protected:
 		{
 			DataRecord* rec = data->at(dataIndex);
 			if (!typeExists(rec->type))
-				struct_error("ODF uses undefined type - " + rec->type->fullyScopedTypeString());
+				struct_error("ODF uses undefined type - " + rec->type->typeString);
 		}
 	}
 
@@ -48,14 +61,14 @@ protected:
 		{
 			ArgPair * arg = args->at(argIndex);
 			if (!typeExists(arg->type))
-				struct_error("UDF uses undefined argument type - " + arg->type->fullyScopedTypeString());
+				struct_error("UDF uses undefined argument type - " + arg->type->typeString);
 		}
 	}
 
 	void processUDF(UDFRecord * udf) 
 	{
-		if (udf->returnType->fullyScopedTypeString() != "null" && !typeExists(udf->returnType))
-			struct_error("UDF has undefined return type - " + udf->returnType->fullyScopedTypeString());
+		if (udf->returnType->typeString != "null" && !typeExists(udf->returnType))
+			struct_error("UDF has undefined return type - " + udf->returnType->typeString);
 
 		processArgs(udf->args);
 
@@ -69,8 +82,10 @@ protected:
 	{
 		if (obj->isUserDefined)
 		{
+			currObj = obj;
 			processODF(obj->data);
 			runForLocalUDFs(obj);
+
 			runForLocalOFs(obj);
 		}
 	}

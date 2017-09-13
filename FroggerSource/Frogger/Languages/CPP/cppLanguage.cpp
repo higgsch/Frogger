@@ -627,11 +627,13 @@ string CPPLanguage::getClassDefinitionCode(ProgramStruct * prog)
 // class definitions.
 // @obj: The structure table for the class.
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 {
 	string result = emptyLine();
+
+	result += templateLine(obj);
 
 	string classDeclaration = "class _" + obj->name;
 	if (obj->hasParent())
@@ -710,11 +712,12 @@ string CPPLanguage::getMainFunctionText(string PEFName)
 // This function returns the output text for an object.
 // @obj: The object to output.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 string CPPLanguage::getClassForwardDeclaration(ObjectStruct * obj)
 {
-	string result = "class _" + obj->name + ";";
+	string result = templateLine(obj);
+	result += "class _" + obj->name + ";";
 	return result;
 }
 
@@ -740,7 +743,7 @@ string CPPLanguage::getSymbolTableCode(SymbolTable * symbols)
 		else if (s->type == DataType::DT_STRING)
 			result += line(DT_STRING + " _" + s->id + " = \"\";");
 		else if (s->type->type == DTE_USER_DEFINED)
-			result += line("_" + replaceAll(s->type->fullyScopedTypeString(), ":", "::_") + " _" + s->id + ";");
+			result += line("_" + replaceAll(s->type->typeString, ":", "::_") + " _" + s->id + ";");
 		else
 			result += line("Not_Defined _" + s->id + " = NULL;");
 	}
@@ -820,13 +823,18 @@ string CPPLanguage::getFunctionDeclaration(UDFRecord * udf)
 // This function generates the function prototype of the given
 // UDFRecord with scope resolution.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 string CPPLanguage::getFunctionPrototype(UDFRecord * udf)
 {
-	return getTypeString(udf->returnType) + " " + 
+	string result = "";
+	result += templateLine(udf->containingOF);
+
+	result += getTypeString(udf->returnType) + " " + 
 		((udf->primary->isNull()) ? "" : getTypeString(udf->primary) + "::") + "_" + udf->name + 
 		nest(true, getArgsString(udf->args));
+
+	return result;
 }
 
 // ----------------------------------------------------------
@@ -846,7 +854,7 @@ string CPPLanguage::getTypeString(DataType * dt)
 	case DTE_NULL:
 		return DT_VOID;
 	case DTE_USER_DEFINED:
-		return "_" + replaceAll(dt->fullyScopedTypeString(),":","::_");
+		return "_" + replaceAll(dt->typeString,":","::_");
 	default:
 		return "UNDEFINED TYPE";
 	}
@@ -873,6 +881,30 @@ string CPPLanguage::getArgsString(ArgList * args)
 	}
 
 	return result;
+}
+
+// ----------------------------------------------------------
+// This function returns the templatization line for the given
+// object.
+//
+// Version 5.2
+// ----------------------------------------------------------
+string CPPLanguage::templateLine(ObjectStruct * obj)
+{
+	if (obj == NULL || !obj->isTemplatized())
+		return "";
+
+	string templateLine = "template <class _" + obj->templatizationList->at(0);
+
+	int tCount = obj->templatizationList->size();
+	for (int tIndex = 1; tIndex < tCount; tIndex++)
+	{
+		templateLine += ", _" + obj->templatizationList->at(tIndex);
+	}
+
+	templateLine += ">";
+
+	return line(templateLine);
 }
 
 // ----------------------------------------------------------

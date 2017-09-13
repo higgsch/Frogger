@@ -49,7 +49,7 @@ private:
 	void addEndCommand(UDFRecord* rec);
 
 public:
-	SCFParser(Language * lang) : Parser(&scanner), lang(lang), types(new DataTypeCollection()) {}
+	SCFParser(Language * lang) : Parser(&scanner), lang(lang), types(new DataTypeCollection(true)) {}
 
 	ProgramStruct * parseProgramLevelSCF(string projectDir, string projectName);
 };

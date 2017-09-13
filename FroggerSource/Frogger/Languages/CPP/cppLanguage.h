@@ -122,7 +122,7 @@ public:
 // ----------------------------------------------------------
 // This class represents the CPPLanguage package.
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 class CPPLanguage : public Language
 {
@@ -154,6 +154,8 @@ private:
 	string getFunctionPrototype(UDFRecord * udf);
 	string getTypeString(DataType *  type);
 	string getArgsString(ArgList* args);
+
+	string templateLine(ObjectStruct * obj);
 
 	// ----------------------------------------------------------
 	// This function returns a formatted line with an opening brace

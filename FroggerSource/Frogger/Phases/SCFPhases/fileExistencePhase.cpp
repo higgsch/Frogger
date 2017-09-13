@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.0
+//                      Version: 5.2
 // -----------------------------------------------------------------
 // This program checks for existence of referenced files.
 // -----------------------------------------------------------------
@@ -77,7 +77,7 @@ void FileExistencePhase::verifyFileExists(string filename)
 // given UDFRecord.
 // @udf: The UDFRecord in question.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 {
@@ -86,7 +86,7 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	int argCount = udf->args->size();
 	if (argCount > 0)
 	{
-		string argType = udf->args->at(0)->type->fullyScopedTypeString();
+		string argType = udf->args->at(0)->type->typeString;
 		size_t scopeOpPos = argType.find_last_of(":");
 
 		if (scopeOpPos == string::npos)
@@ -98,7 +98,7 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	for (int argIndex = 1; argIndex < argCount; argIndex++)
 	{
 		ArgPair * currArg = udf->args->at(argIndex);
-		string argType = currArg->type->fullyScopedTypeString();
+		string argType = currArg->type->typeString;
 		size_t scopeOpPos = argType.find_last_of(":");
 
 		if (scopeOpPos == string::npos)
@@ -107,7 +107,20 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 			filename += "," + currArg->name + "=" + argType.substr(scopeOpPos + 1);
 	}
 
-	string returnType = udf->returnType->fullyScopedTypeString();
+	string returnType = udf->returnType->typeString;
+	DataTypeCollection * templatizers = udf->returnType->templatizers;
+	if (templatizers != NULL && templatizers->size() > 0)
+	{
+		returnType += "%" + templatizers->at(0)->typeString;
+
+		int tCount = templatizers->size();
+		for (int tIndex = 1; tCount < tIndex; tIndex++)
+		{
+			returnType += "," + templatizers->at(tIndex)->typeString;
+		}
+		
+		returnType += "%";
+	}
 	size_t scopeOpPos = returnType.find_last_of(":");
 
 	if (scopeOpPos == string::npos)

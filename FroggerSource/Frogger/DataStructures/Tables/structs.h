@@ -12,21 +12,23 @@ using namespace std;
 //forward declarations
 class ProgramNode;
 class Language;
+struct ObjectStruct;
 
 // ----------------------------------------------------------
 // This class represents the data known about a User Defined 
 // Function.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 struct UDFRecord : public Routine
 {
 	string filepath;
 	ProgramNode * root;
 	TableGroup * visibleTables;
+	ObjectStruct * containingOF;
 
 	UDFRecord(DataType * primary, string name, DataType * returnType, Language* lang) : Routine(primary, name, returnType, false),
-		visibleTables(new TableGroup(lang)), filepath("")
+		visibleTables(new TableGroup(lang)), filepath(""), containingOF(NULL)
 	{
 		visibleTables->cmds->addBuiltInVisibleCommands();
 		visibleTables->functs->addBuiltInVisibleFunctions();
@@ -125,6 +127,10 @@ struct ObjectStruct
 
 	bool isUserDefined;
 	bool isCodeGenerated;
+	
+	DataTypeCollection * types;
+	DataType * type;
+	DataTypeCollection * templatizedTypes;
 
 	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()), templatizationList(new TemplatizationCollection()),
@@ -171,12 +177,11 @@ struct ObjectStruct
 // This class represents the data known about a Frogger
 // Program. Generated from the .struct file.
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 struct ProgramStruct : public ObjectStruct
 {
 	UDFRecord * PEF;
-	DataTypeCollection * types;
 
 	ProgramStruct(Language * lang);
 
@@ -184,7 +189,7 @@ struct ProgramStruct : public ObjectStruct
 
 	ObjectStruct * getObject(DataType * dt)
 	{
-		string objectName = dt->fullyScopedTypeString();
+		string objectName = dt->typeString;
 		return getObject(objectName);
 	}
 

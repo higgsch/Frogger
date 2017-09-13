@@ -13,7 +13,7 @@ using namespace std;
 // @projectDir: The PF
 // @projectName: The name of the project
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projectName)
 {
@@ -38,6 +38,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 		else if (second_token().type == TT_LPAREN)
 		{ //Function Declaration Record
 			UDFRecord * currRec = functRecord();
+			currRec->containingOF = progStruct;
 			if (isPEF(currRec, projectName))
 			{
 				currRec->visibleTables->cmds->addEndNull();
@@ -161,6 +162,8 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			{
 				syntax_error("" + currRec->name + " function is duplicated.");
 			}
+
+			currRec->containingOF = objStruct;
 			
 			objStruct->UDFs->push_back(currRec);
 
@@ -389,7 +392,7 @@ ArgPair * SCFParser::argument()
 // ----------------------------------------------------------
 // This function processes and returns a data type.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 DataType * SCFParser::dataType()
 {
@@ -404,8 +407,32 @@ DataType * SCFParser::dataType()
 		return DataType::DT_NULL;
 	else
 	{
-		types->add(scope + type.lexeme);
-		return types->getDT(scope + type.lexeme);
+		string typeString = scope + type.lexeme;
+		DataTypeCollection * templatizers = new DataTypeCollection(false);
+
+		Token templateTok = next_token();
+		if (templateTok.type == TT_PERCENT)
+		{
+			match(TT_PERCENT);
+			DataType * nextTemplatizer = dataType();
+			templatizers->push_back(nextTemplatizer);
+
+			Token tok = next_token();
+			while (tok.type == TT_COMMA)
+			{
+				match(TT_COMMA);
+				nextTemplatizer = dataType();
+				templatizers->push_back(nextTemplatizer);
+
+				tok = next_token();
+			}
+
+			match(TT_PERCENT);
+		}
+		types->add(typeString);
+		DataType * dt = types->getDT(typeString);
+		dt->templatizers = templatizers;
+		return dt;
 	}
 }
 

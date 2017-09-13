@@ -59,5 +59,5 @@ public:
 		return types;
 	}
 
-	TypeCollectionPhase() : types(new DataTypeCollection()), isProcessingProgramObject(false) {}
+	TypeCollectionPhase() : types(new DataTypeCollection(true)), isProcessingProgramObject(false) {}
 };

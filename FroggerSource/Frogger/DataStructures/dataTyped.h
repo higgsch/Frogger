@@ -15,8 +15,7 @@ enum DataTypeEnum
 	DTE_NOT_DEFINED //Used when the type is unknown
 };
 
-struct DataType;
-struct DataTypeList : vector<DataType *> {};
+struct DataTypeCollection;
 
 // ----------------------------------------------------------
 // This class represents a data type.
@@ -29,26 +28,17 @@ private:
 	static const string SCOPE_OPERATOR;
 
 public:
-	DataType * scopedParent;
-	DataTypeList * scopedChildren;
-
-	DataTypeList * templatizers;
-
 	DataTypeEnum type;
-	string scopeString; //The string representation full scope
-	string name; //The string representation of the datatype
+	string typeString; //The string representation of the datatype including full scope
 	string defaultValue; //The string representation of the default value
+	DataTypeCollection * templatizers;
 
 	DataType(DataTypeEnum type, string scopedTypeString, string defaultValue);
 	DataType(DataTypeEnum type, string scopedTypeString);
 	DataType();
 
-	string fullyScopedTypeString();
-
-	bool matchesScope(string scopedName) { return scopedName.find(fullyScopedTypeString()) == 0; }
-
-	bool operator==(const DataType& rhs) { return scopeString == rhs.scopeString && name == rhs.name; }
-	bool operator!=(const DataType& rhs) { return name != rhs.name || scopeString != rhs.scopeString; }
+	bool operator==(const DataType& rhs);
+	bool operator!=(const DataType& rhs);
 	
 	static DataType * DT_NULL;
 	static DataType * DT_DOUBLE;
@@ -63,15 +53,6 @@ public:
 	bool isBuiltIn() { return isNull() || isDouble() || isString() || isStringList(); }
 	bool isUserDefined() { return type == DTE_USER_DEFINED; }
 	bool isDefined() { return type != DTE_NOT_DEFINED; }
-
-	void add(string scopedName);
-	bool isInTree(string scopedName);
-	DataType * getDT(string scopedName);
-	DataType * getRootDT();
-
-private:
-	void build(string scopedTypeString);
-	void addRemainingTree(DataType * toAdd);
 };
 
 // ----------------------------------------------------------
@@ -99,10 +80,14 @@ public:
 // ----------------------------------------------------------
 struct DataTypeCollection : public vector<DataType*> 
 {
-	DataTypeCollection();
+	DataTypeCollection(bool addBuiltIn);
 
 	void add(string scopedName);
 
 	bool isInList(string scopedName);
 	DataType * getDT(string scopedName);
+
+	bool operator==(const DataTypeCollection& rhs);
+	bool operator!=(const DataTypeCollection& rhs);
+	
 };
