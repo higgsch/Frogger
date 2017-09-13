@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.1
+//                      Version: 5.2
 // -----------------------------------------------------------------
 // This program compiles a Frogger source to c++ output.
 // -----------------------------------------------------------------
@@ -112,13 +112,12 @@ void FroggerC::runFileExistencePhase(string dir)
 // ----------------------------------------------------------
 // This function collects all defined object types.
 // 
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 void FroggerC::runTypeCollectionPhase()
 {
 	TypeCollectionPhase tcp;
 	tcp.process(progStruct);
-	progStruct->types = tcp.getTypeList();
 }
 
 // ----------------------------------------------------------

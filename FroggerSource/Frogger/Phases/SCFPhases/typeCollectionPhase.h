@@ -65,11 +65,8 @@ public:
 		types->add("stringList");
 		isProcessingProgramObject = true;
 		processOF(prog);
-	}
 
-	DataTypeCollection * getTypeList()
-	{
-		return types;
+		prog->types = types;
 	}
 
 	TypeCollectionPhase() : types(new DataTypeCollection(true)), isProcessingProgramObject(false) {}
