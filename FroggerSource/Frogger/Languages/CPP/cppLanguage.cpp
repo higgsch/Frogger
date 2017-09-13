@@ -743,7 +743,7 @@ string CPPLanguage::getSymbolTableCode(SymbolTable * symbols)
 		else if (s->type == DataType::DT_STRING)
 			result += line(DT_STRING + " _" + s->id + " = \"\";");
 		else if (s->type->type == DTE_USER_DEFINED)
-			result += line("_" + replaceAll(s->type->typeString, ":", "::_") + " _" + s->id + ";");
+			result += line("_" + replaceAll(s->type->fullyScopedTypeString(), ":", "::_") + " _" + s->id + ";");
 		else
 			result += line("Not_Defined _" + s->id + " = NULL;");
 	}
@@ -854,7 +854,7 @@ string CPPLanguage::getTypeString(DataType * dt)
 	case DTE_NULL:
 		return DT_VOID;
 	case DTE_USER_DEFINED:
-		return "_" + replaceAll(dt->typeString,":","::_");
+		return "_" + replaceAll(dt->fullyScopedTypeString(),":","::_");
 	default:
 		return "UNDEFINED TYPE";
 	}

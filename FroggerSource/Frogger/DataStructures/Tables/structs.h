@@ -189,7 +189,7 @@ struct ProgramStruct : public ObjectStruct
 
 	ObjectStruct * getObject(DataType * dt)
 	{
-		string objectName = dt->typeString;
+		string objectName = dt->fullyScopedTypeString();
 		return getObject(objectName);
 	}
 

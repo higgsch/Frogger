@@ -147,7 +147,7 @@ DataType * ODFParser::dataType()
 		return DataType::DT_STRINGLIST;
 	else
 	{
-		string typeString = scope + type.lexeme;
+		string typeString = type.lexeme;
 		DataTypeCollection * templatizers = new DataTypeCollection(false);
 
 		Token templateTok = next_token();
@@ -156,7 +156,7 @@ DataType * ODFParser::dataType()
 			match(TT_PERCENT);
 			DataType * nextTemplatizer = dataType();
 			templatizers->push_back(nextTemplatizer);
-			typeString += Token::PERCENT.lexeme + nextTemplatizer->typeString;
+			typeString += Token::PERCENT.lexeme + nextTemplatizer->fullyScopedTypeString();
 
 			Token tok = next_token();
 			while (tok.type == TT_COMMA)
@@ -164,7 +164,7 @@ DataType * ODFParser::dataType()
 				match(TT_COMMA);
 				nextTemplatizer = dataType();
 				templatizers->push_back(nextTemplatizer);
-				typeString += Token::COMMA.lexeme + nextTemplatizer->typeString;
+				typeString += Token::COMMA.lexeme + nextTemplatizer->fullyScopedTypeString();
 
 				tok = next_token();
 			}
@@ -173,6 +173,7 @@ DataType * ODFParser::dataType()
 			typeString += Token::PERCENT.lexeme;
 		}
 		DataType * dt = new DataType(DTE_USER_DEFINED, typeString);
+		dt->scope = scope;
 		dt->templatizers = templatizers;
 		return dt;
 	}

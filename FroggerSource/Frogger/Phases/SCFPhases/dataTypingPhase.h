@@ -32,13 +32,13 @@ private:
 			for (int tIndex = 0; tIndex < tCount; tIndex++)
 			{
 				
-				string currTName = currObj->name + ":" + currObj->templatizationList->at(tIndex);
+				string currTName = currObj->templatizationList->at(tIndex);
 				if (currTName == dt->typeString)
 					return true;
 			}
 		}
 
-		DataType * type = types->getDT(dt->typeString);
+		DataType * type = types->getDT(dt->fullyScopedTypeString());
 		return type->isDefined();
 	}
 
@@ -50,7 +50,7 @@ protected:
 		{
 			DataRecord* rec = data->at(dataIndex);
 			if (!typeExists(rec->type))
-				struct_error("ODF uses undefined type - " + rec->type->typeString);
+				struct_error("ODF uses undefined type - " + rec->type->fullyScopedTypeString());
 		}
 	}
 
@@ -61,14 +61,14 @@ protected:
 		{
 			ArgPair * arg = args->at(argIndex);
 			if (!typeExists(arg->type))
-				struct_error("UDF uses undefined argument type - " + arg->type->typeString);
+				struct_error("UDF uses undefined argument type - " + arg->type->fullyScopedTypeString());
 		}
 	}
 
 	void processUDF(UDFRecord * udf) 
 	{
-		if (udf->returnType->typeString != "null" && !typeExists(udf->returnType))
-			struct_error("UDF has undefined return type - " + udf->returnType->typeString);
+		if (!udf->returnType->isNull() && !typeExists(udf->returnType))
+			struct_error("UDF has undefined return type - " + udf->returnType->fullyScopedTypeString());
 
 		processArgs(udf->args);
 

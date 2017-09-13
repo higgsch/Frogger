@@ -87,24 +87,14 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	if (argCount > 0)
 	{
 		string argType = udf->args->at(0)->type->typeString;
-		size_t scopeOpPos = argType.find_last_of(":");
-
-		if (scopeOpPos == string::npos)
-			filename += udf->args->at(0)->name + "=" + argType;
-		else
-			filename += udf->args->at(0)->name + "=" + argType.substr(scopeOpPos + 1);
+		filename += udf->args->at(0)->name + "=" + argType;
 	}
 
 	for (int argIndex = 1; argIndex < argCount; argIndex++)
 	{
 		ArgPair * currArg = udf->args->at(argIndex);
 		string argType = currArg->type->typeString;
-		size_t scopeOpPos = argType.find_last_of(":");
-
-		if (scopeOpPos == string::npos)
-			filename += "," + currArg->name + "=" + argType;
-		else
-			filename += "," + currArg->name + "=" + argType.substr(scopeOpPos + 1);
+		filename += "," + currArg->name + "=" + argType;
 	}
 
 	string returnType = udf->returnType->typeString;
@@ -121,12 +111,8 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 		
 		returnType += "%";
 	}
-	size_t scopeOpPos = returnType.find_last_of(":");
-
-	if (scopeOpPos == string::npos)
-		filename += ")~" + returnType;
-	else
-		filename += ")~" + returnType.substr(scopeOpPos + 1);
+	
+	filename += ")~" + returnType;
 
 	udf->filepath = dir + filename + ".fgr";
 }

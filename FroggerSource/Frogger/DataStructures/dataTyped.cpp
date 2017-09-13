@@ -8,6 +8,7 @@
 using namespace std;
 
 const string DataType::SCOPE_OPERATOR = ":";
+const string DataType::TEMPLATE_OPERATOR = "%";
 DataType* DataType::DT_NULL = new DataType(DTE_NULL, "null");
 DataType* DataType::DT_DOUBLE = new DataType(DTE_DOUBLE, "double", "0");
 DataType* DataType::DT_STRING = new DataType(DTE_STRING, "string", "''");
@@ -19,23 +20,56 @@ DataType* DataType::DT_NOT_DEFINED = new DataType(DTE_NOT_DEFINED, "<Not Defined
 //
 // Version 5.2
 // ----------------------------------------------------------
-DataType::DataType(DataTypeEnum type, string scopedTypeString, string defaultValue) 
-	: type(type), defaultValue(defaultValue), typeString(scopedTypeString), templatizers(NULL) {}
+DataType::DataType(DataTypeEnum type, string fullTypeString, string defaultValue) 
+	: type(type), defaultValue(defaultValue) { build(fullTypeString); }
 
 // ----------------------------------------------------------
 // This constructor builds a well-defined DataType
 //
 // Version 5.2
 // ----------------------------------------------------------
-DataType::DataType(DataTypeEnum type, string scopedTypeString) 
-	: type(type), defaultValue("<UNKNOWN>"), typeString(scopedTypeString), templatizers(NULL) {}
+DataType::DataType(DataTypeEnum type, string fullTypeString) 
+	: type(type), defaultValue("<UNKNOWN>"){ build(fullTypeString); }
 
 // ----------------------------------------------------------
 // This constructor builds an undefined DataType placeholder
 //
 // Version 5.2
 // ----------------------------------------------------------
-DataType::DataType() : type(DTE_NOT_DEFINED), typeString(""), templatizers(NULL) {}
+DataType::DataType() : type(DTE_NOT_DEFINED) { build(""); }
+
+// ----------------------------------------------------------
+// This function processes scope, typeString, and templatizers
+// from the given full type string.
+//
+// Version 5.2
+// ----------------------------------------------------------
+void DataType::build(string fullTypeString)
+{
+	scope = extractScope(fullTypeString);
+	typeString = fullTypeString.substr(scope.length());
+	templatizers = NULL;
+}
+
+// ----------------------------------------------------------
+// This function returns the scope from the given full type string
+// including final scope operator, empty string if scope DNE.
+//
+// Version 5.2
+// ----------------------------------------------------------
+string DataType::extractScope(string fullTypeString)
+{
+	//Strip off templatization - no change if not templatized
+	size_t lastTemplateOp = fullTypeString.find_last_of(TEMPLATE_OPERATOR);
+	size_t secondToLastTemplateOp = fullTypeString.substr(0, lastTemplateOp).find_last_of(TEMPLATE_OPERATOR);
+	fullTypeString = fullTypeString.substr(0, secondToLastTemplateOp);
+	
+	size_t lastScopeOp = fullTypeString.find_last_of(SCOPE_OPERATOR);
+	if (lastScopeOp == string::npos)
+		return "";
+	else
+		return fullTypeString.substr(0, lastScopeOp + 1);
+}
 
 // ----------------------------------------------------------
 // This constructor populates the collection with built-in 
@@ -65,7 +99,7 @@ bool DataTypeCollection::isInList(string scopedName)
 	for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
 	{
 		DataType* currDT = at(dtIndex);
-		if (currDT->typeString == scopedName)
+		if (currDT->fullyScopedTypeString() == scopedName)
 			return true;
 	}
 	return false;
@@ -83,7 +117,7 @@ DataType * DataTypeCollection::getDT(string scopedName)
 	for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
 	{
 		DataType* currDT = at(dtIndex);
-		if (currDT->typeString == scopedName)
+		if (currDT->fullyScopedTypeString() == scopedName)
 			return currDT;
 	}
 	return DataType::DT_NOT_DEFINED;
@@ -100,7 +134,7 @@ void DataTypeCollection::add(string scopedName)
 	for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
 	{
 		DataType * currDT = at(dtIndex);
-		if (currDT->typeString == scopedName)
+		if (currDT->fullyScopedTypeString() == scopedName)
 			return;
 	}
 	
@@ -109,7 +143,7 @@ void DataTypeCollection::add(string scopedName)
 
 bool DataType::operator==(const DataType& rhs)
 {
-	if (typeString != rhs.typeString)
+	if (fullyScopedTypeString() != rhs.fullyScopedTypeString())
 		return false;
 
 	if (templatizers == NULL)
@@ -132,7 +166,7 @@ bool DataType::operator==(const DataType& rhs)
 
 bool DataType::operator!=(const DataType& rhs)
 {
-	if (typeString != rhs.typeString)
+	if (fullyScopedTypeString() != rhs.fullyScopedTypeString())
 		return true;
 
 	if (templatizers == NULL)

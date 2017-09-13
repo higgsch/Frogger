@@ -26,16 +26,23 @@ struct DataType
 {
 private:
 	static const string SCOPE_OPERATOR;
+	static const string TEMPLATE_OPERATOR;
+
+	void build(string fullTypeString);
+	string extractScope(string fullTypeString);
 
 public:
 	DataTypeEnum type;
-	string typeString; //The string representation of the datatype including full scope
+	string scope; //The scope of the DataType
+	string typeString; //The string representation of the datatype no scope
 	string defaultValue; //The string representation of the default value
 	DataTypeCollection * templatizers;
 
-	DataType(DataTypeEnum type, string scopedTypeString, string defaultValue);
-	DataType(DataTypeEnum type, string scopedTypeString);
+	DataType(DataTypeEnum type, string fullTypeString, string defaultValue);
+	DataType(DataTypeEnum type, string fullTypeString);
 	DataType();
+
+	string fullyScopedTypeString() const { return scope + typeString; }
 
 	bool operator==(const DataType& rhs);
 	bool operator!=(const DataType& rhs);

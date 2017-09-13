@@ -290,7 +290,7 @@ void PrintingPhase::printDataTypeInfo(Node* n)
 	{
 		printLine("isTreeTyped = " + trueOrFalse(n->isTreeTyped()));
 		printLine("isTyped = " + trueOrFalse(n->isTyped()));
-		printLine("dataType = " + n->getDataType()->typeString);
+		printLine("dataType = " + n->getDataType()->fullyScopedTypeString());
 	}
 }
 
