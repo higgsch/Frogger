@@ -17,7 +17,7 @@ class ScopingPhase : SCFPhase
 private:
 	void processDT(ObjectStruct * containingObj, DataType * dt)
 	{
-		if (containingObj->isTemplatized())
+		if (containingObj != NULL && containingObj->isTemplatized())
 		{
 			if (containingObj->templatizationList->contains(dt->typeName))
 			{
