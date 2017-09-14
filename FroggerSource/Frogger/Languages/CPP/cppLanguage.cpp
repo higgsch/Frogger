@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.1
+//                      Version: 5.2
 // -----------------------------------------------------------------
 // This program represents the CPPLanguage package.
 // -----------------------------------------------------------------
@@ -841,7 +841,7 @@ string CPPLanguage::getFunctionPrototype(UDFRecord * udf)
 // This function returns the output text corresponding to
 // the given DataType.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 string CPPLanguage::getTypeString(DataType * dt)
 {
@@ -854,7 +854,20 @@ string CPPLanguage::getTypeString(DataType * dt)
 	case DTE_NULL:
 		return DT_VOID;
 	case DTE_USER_DEFINED:
-		return "_" + replaceAll(dt->fullyScopedTypeString(),":","::_");
+		{
+			string typeString = dt->typeName;
+			int tCount = dt->templatizerList->size();
+			if (tCount > 0)
+			{
+				typeString += "<" + getTypeString(dt->templatizerList->at(0));
+
+				for (int tIndex = 1; tIndex < tCount; tIndex++)
+					typeString += ", " + getTypeString(dt->templatizerList->at(tIndex));
+
+				typeString += ">";
+			}
+			return "_" + replaceAll(dt->scope,":","::_") + typeString;
+		}
 	default:
 		return "UNDEFINED TYPE";
 	}
