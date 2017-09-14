@@ -85,6 +85,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 					syntax_error("Invalid ODF: " + name + ".data -- Expected " + projectName + ".data");
 				
 				progStruct->data = dataRecord(projectDir, projectName);
+				progStruct->data->containingOF = progStruct;
 
 				int dataCount = progStruct->data->size();
 				for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)
@@ -202,6 +203,7 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 				}
 				
 				objStruct->data = dataRecord(objectDir, objectName);
+				objStruct->data->containingOF = objStruct;
 
 				int dataCount = objStruct->data->size();
 				for (int dataIndex = 0; dataIndex < dataCount; dataIndex++)

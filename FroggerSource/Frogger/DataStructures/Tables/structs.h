@@ -56,17 +56,20 @@ struct DataRecord
 	string defaultValue;
 };
 
+//Forward declaration
+struct ObjectStruct;
+class Language;
+
 // ----------------------------------------------------------
 // This class represents the data known about an Object's 
 // data collection.
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
-struct DataCollection : vector<DataRecord *> {};
-
-//Forward declaration
-struct ObjectStruct;
-class Language;
+struct DataCollection : vector<DataRecord *> 
+{
+	ObjectStruct * containingOF;
+};
 
 // ----------------------------------------------------------
 // This class represents the data known about an Object File

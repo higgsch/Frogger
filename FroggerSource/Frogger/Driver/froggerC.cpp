@@ -35,7 +35,7 @@ FroggerC::FroggerC()
 // @inFile: The .fgr file to open (from project directory).
 // @outFile: The file that output source is sent to.
 //
-// Version 5.1
+// Version 5.2
 // ----------------------------------------------------------
 void FroggerC::compile(string topRootDir, string name, string outFile, bool toExe, bool cleanup, bool isProject)
 {
@@ -43,6 +43,7 @@ void FroggerC::compile(string topRootDir, string name, string outFile, bool toEx
 
 	parseSCF(name, dir, isProject);
 
+	runScopingPhase();
 	runInheritancePhase();
 	runTableVisibilityPhase();
 	runFileExistencePhase(topRootDir);
@@ -73,6 +74,17 @@ void FroggerC::parseSCF(string name, string dir, bool isProject)
 		progStruct->PEF->visibleTables->cmds->addEndNull();
 		progStruct->scopedTables->cmds->add(progStruct->PEF);
 	}
+}
+
+// ----------------------------------------------------------
+// This function runs the ScopingPhase
+//
+// Version 5.2
+// ----------------------------------------------------------
+void FroggerC::runScopingPhase()
+{
+	ScopingPhase sp;
+	sp.process(progStruct);
 }
 
 // ----------------------------------------------------------
