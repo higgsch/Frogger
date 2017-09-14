@@ -26,7 +26,8 @@ struct DataType
 {
 private:
 	static const string SCOPE_OPERATOR;
-	static const string TEMPLATE_OPERATOR;
+	static const string OPEN_TEMPLATE_OPERATOR;
+	static const string CLOSE_TEMPLATE_OPERATOR;
 
 	void build(string fullTypeString);
 	string extractScope(string fullTypeString);

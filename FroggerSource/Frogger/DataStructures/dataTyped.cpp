@@ -8,12 +8,13 @@
 using namespace std;
 
 const string DataType::SCOPE_OPERATOR = ":";
-const string DataType::TEMPLATE_OPERATOR = "%";
+const string DataType::OPEN_TEMPLATE_OPERATOR = "<";
+const string DataType::CLOSE_TEMPLATE_OPERATOR = ">";
 DataType* DataType::DT_NULL = new DataType(DTE_NULL, "null");
 DataType* DataType::DT_DOUBLE = new DataType(DTE_DOUBLE, "double", "0");
 DataType* DataType::DT_STRING = new DataType(DTE_STRING, "string", "''");
 DataType* DataType::DT_STRINGLIST = new DataType(DTE_STRINGLIST, "stringList", "<OBJECT>");
-DataType* DataType::DT_NOT_DEFINED = new DataType(DTE_NOT_DEFINED, "<Not Defined>");
+DataType* DataType::DT_NOT_DEFINED = new DataType(DTE_NOT_DEFINED, "#Not Defined#");
 
 // ----------------------------------------------------------
 // This constructor sets the default value of the new DataType
@@ -64,12 +65,12 @@ void DataType::buildTemplatizerList(string typeString)
 {
 	templatizerList = new DataTypeCollection(false);
 
-	size_t firstTemplateOp = typeString.find(TEMPLATE_OPERATOR);
-	size_t lastTemplateOp = typeString.find_last_of(TEMPLATE_OPERATOR);
-	if (firstTemplateOp == string::npos)
+	size_t openTemplateOp = typeString.find(OPEN_TEMPLATE_OPERATOR);
+	size_t closeTemplateOp = typeString.find_last_of(CLOSE_TEMPLATE_OPERATOR);
+	if (openTemplateOp == string::npos)
 		return;
 
-	string templateString = typeString.substr(firstTemplateOp + 1, lastTemplateOp - firstTemplateOp - 1);
+	string templateString = typeString.substr(openTemplateOp + 1, closeTemplateOp - openTemplateOp - 1);
 	size_t comma = templateString.find(",");
 	while (comma != string::npos)
 	{
@@ -91,10 +92,13 @@ void DataType::buildTemplatizerList(string typeString)
 // ----------------------------------------------------------
 string DataType::extractScope(string fullTypeString)
 {
-	//Strip off templatization - no change if not templatized
-	size_t lastTemplateOp = fullTypeString.find_last_of(TEMPLATE_OPERATOR);
-	size_t secondToLastTemplateOp = fullTypeString.substr(0, lastTemplateOp).find_last_of(TEMPLATE_OPERATOR);
-	fullTypeString = fullTypeString.substr(0, secondToLastTemplateOp);
+	size_t closeTemplateOp = fullTypeString.find_last_of(CLOSE_TEMPLATE_OPERATOR);
+	if (closeTemplateOp == fullTypeString.length() - 1)
+	{
+		//Strip off templatization
+		size_t openTemplateOp = fullTypeString.find_last_of(OPEN_TEMPLATE_OPERATOR);
+		fullTypeString = fullTypeString.substr(0, openTemplateOp);
+	}
 	
 	size_t lastScopeOp = fullTypeString.find_last_of(SCOPE_OPERATOR);
 	if (lastScopeOp == string::npos)
@@ -112,8 +116,8 @@ string DataType::extractScope(string fullTypeString)
 // ----------------------------------------------------------
 string DataType::extractName(string typeString)
 {
-	size_t firstTemplatizerOp = typeString.find(TEMPLATE_OPERATOR);
-	return typeString.substr(0, firstTemplatizerOp);
+	size_t openTemplatizerOp = typeString.find(OPEN_TEMPLATE_OPERATOR);
+	return typeString.substr(0, openTemplatizerOp);
 }
 
 // ----------------------------------------------------------
@@ -127,7 +131,7 @@ string DataType::templatizerString() const
 	if (templatizerList->size() == 0)
 		return "";
 
-	string result = TEMPLATE_OPERATOR + templatizerList->at(0)->fullyScopedTypeString();
+	string result = OPEN_TEMPLATE_OPERATOR + templatizerList->at(0)->fullyScopedTypeString();
 
 	int tCount = templatizerList->size();
 	for (int tIndex = 1; tIndex < tCount; tIndex++)
@@ -135,7 +139,7 @@ string DataType::templatizerString() const
 		result += ", " + templatizerList->at(tIndex)->fullyScopedTypeString();
 	}
 	
-	return result + TEMPLATE_OPERATOR;
+	return result + CLOSE_TEMPLATE_OPERATOR;
 }
 
 // ----------------------------------------------------------

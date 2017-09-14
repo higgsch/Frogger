@@ -99,5 +99,8 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	
 	filename += ")~" + udf->returnType->typeString();
 
+	filename = replaceAll(filename, "<", "%");
+	filename = replaceAll(filename, ">", "%");
+
 	udf->filepath = dir + filename + ".fgr";
 }

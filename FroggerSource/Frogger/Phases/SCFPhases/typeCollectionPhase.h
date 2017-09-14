@@ -37,13 +37,13 @@ protected:
 
 				if (obj->isTemplatized())
 				{
-					typeName += "%" + obj->templatizationList->at(0);
+					typeName += "<" + obj->templatizationList->at(0);
 
 					int tCount = obj->templatizationList->size();
 					for (int tIndex = 1; tIndex < tCount; tIndex++)
 						typeName += ", " + obj->templatizationList->at(tIndex);
 
-					typeName += "%";
+					typeName += ">";
 				}
 
 				types->add(typeName);
