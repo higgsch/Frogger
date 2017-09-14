@@ -131,7 +131,7 @@ void CPPLanguage::initOutputTexts()
 // This function returns the pre-program code
 // @structure: the program's structure
 //
-// Version 5.0
+// Version 5.2
 // ----------------------------------------------------------
 string CPPLanguage::getMetaCode(ProgramStruct * structure)
 {
@@ -143,6 +143,14 @@ string CPPLanguage::getMetaCode(ProgramStruct * structure)
 
 	result += getForwardDeclarationCode(structure);
 	result += getClassDefinitionCode(structure);
+
+	result += emptyLine();
+	for (int dataIndex = 0; dataIndex < structure->data->size(); dataIndex++)
+	{
+		DataRecord * currData = structure->data->at(dataIndex);
+		result += line(getTypeString(currData->type) + " _" + currData->memberName + ";");
+	}
+
 	result += getMainFunctionText(structure->PEF->name);
 	return this->clearIndents(result);
 }
