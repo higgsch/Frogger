@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.1
+//                      Version: 5.3
 // -----------------------------------------------------------------
 // This program provides a compact interface for tokens.
 // -----------------------------------------------------------------
@@ -15,6 +15,8 @@ Token Token::THEN			 = Token(TT_THEN, "then");
 Token Token::ELSE			 = Token(TT_ELSE, "else");
 Token Token::LPAREN			 = Token(TT_LPAREN, "(");
 Token Token::RPAREN			 = Token(TT_RPAREN, ")");
+Token Token::LBRACE			 = Token(TT_LBRACE, "{");
+Token Token::RBRACE			 = Token(TT_RBRACE, "}");
 Token Token::EQUAL_SIGN		 = Token(TT_EQUAL_SIGN, "=");
 Token Token::COLON			 = Token(TT_COLON, ":");
 Token Token::DUAL_COLON		 = Token(TT_DUAL_COLON, "::");

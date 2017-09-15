@@ -12,7 +12,7 @@ typedef enum token_types {
 	TT_NOTOK = -1, 
 	TT_ID, TT_STRINGCONST, TT_DOUBLECONST, 
 	TT_IF, TT_THEN, TT_ELSE,
-	TT_LPAREN, TT_RPAREN, TT_EQUAL_SIGN, 
+	TT_LPAREN, TT_RPAREN, TT_LBRACE, TT_RBRACE, TT_EQUAL_SIGN, 
 	TT_COLON, TT_DUAL_COLON, TT_SEMICOLON,
 	TT_COMMA, TT_OCTOTHORPE, TT_TILDE, TT_DOT, TT_PERCENT,
 	TT_DUAL_ADD, TT_DUAL_SUB, TT_DUAL_MUL, TT_DUAL_DIV, 
@@ -25,7 +25,7 @@ typedef enum token_types {
 // This class acts as a struct for tokens but includes 
 // constructors for ease of use
 //
-// Version 5.1
+// Version 5.3
 // ----------------------------------------------------------
 class Token
 { //Glorified Struct with public members and static placeholders
@@ -43,6 +43,8 @@ public:
 	static Token ELSE;
 	static Token LPAREN;
 	static Token RPAREN;
+	static Token LBRACE;
+	static Token RBRACE;
 	static Token EQUAL_SIGN;
 	static Token COLON;
 	static Token DUAL_COLON;

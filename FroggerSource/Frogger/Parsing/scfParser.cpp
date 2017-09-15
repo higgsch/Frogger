@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.2
+//                      Version: 5.3
 // -----------------------------------------------------------------
 // This program provides the functionality to interpret a SCF file
 // -----------------------------------------------------------------
@@ -394,7 +394,7 @@ ArgPair * SCFParser::argument()
 // ----------------------------------------------------------
 // This function processes and returns a data type.
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 DataType * SCFParser::dataType()
 {
@@ -413,9 +413,9 @@ DataType * SCFParser::dataType()
 		DataType * dt = types->getDT(scope + type.lexeme);
 		
 		Token templateTok = next_token();
-		if (templateTok.type == TT_PERCENT)
+		if (templateTok.type == TT_LBRACE)
 		{
-			match(TT_PERCENT);
+			match(TT_LBRACE);
 			dt->templatizerList->push_back(dataType());
 
 			Token tok = next_token();
@@ -427,7 +427,7 @@ DataType * SCFParser::dataType()
 				tok = next_token();
 			}
 
-			match(TT_PERCENT);
+			match(TT_RBRACE);
 		}
 
 		return dt;

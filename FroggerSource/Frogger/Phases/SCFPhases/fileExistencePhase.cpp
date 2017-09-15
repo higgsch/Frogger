@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.2
+//                      Version: 5.3
 // -----------------------------------------------------------------
 // This program checks for existence of referenced files.
 // -----------------------------------------------------------------
@@ -77,7 +77,7 @@ void FileExistencePhase::verifyFileExists(string filename)
 // given UDFRecord.
 // @udf: The UDFRecord in question.
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 {
@@ -98,9 +98,6 @@ void FileExistencePhase::assignUDFFilename(UDFRecord * udf)
 	}
 	
 	filename += ")~" + udf->returnType->typeString();
-
-	filename = replaceAll(filename, "<", "%");
-	filename = replaceAll(filename, ">", "%");
 
 	udf->filepath = dir + filename + ".fgr";
 }
