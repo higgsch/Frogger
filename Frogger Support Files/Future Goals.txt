@@ -3,13 +3,13 @@ v1.1 & 1.2: Added retrieve() command and obfuscator.
 v2.0: Added conditional statements.
 v2.1: Added modulus and integer division, rootation, and exponentiation.
 v2.2: Added random() functionality.
-v2.3: Added string assignment and concatenation, variable typing dbl vs string
+v2.3: Added string assignment and concatenation, variable typing dbl vs string.
 v2.4: Added string indexing (<string>:asciiAt(dbl)), string parsing (<string>:parseDouble()),
-	double conversions (<double>:toString(), <double>:toAscii())
-v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble), obfuscation for function names
+	double conversions (<double>:toString(), <double>:toAscii()).
+v2.5: Consolidate S/D/A functions (retrieveString, retrieveDouble), obfuscation for function names.
 v3.0: Refactored with cleaner code.
 v3.1: Added line numbers to errors throughout.
-v3.2: Added File I/O: openI, openO, read, write, closeI, closeO routines
+v3.2: Added File I/O: openI, openO, read, write, closeI, closeO routines.
 v3.3: Added commandline argument and string length functionality.
 v4.0: Added user-defined functions (force modulation into different files).
 v4.1: Added Test Framework.
@@ -18,17 +18,16 @@ v4.3: Included cl inline.
 v4.4: Added function overloading.
 v5.0: Added simple object orientation (folder modulation).
 v5.1: Added inheritence.
+v5.2: Added templates.
 
-v5.2: Add templates.
-v5.3: Add built-in List type and refactor stringList as an array of strings
-v5.4: Add library references to allow for external paths (Point Object for both Line and Triangle)
+v5.3: Add built-in List type and refactor stringList as an array of strings.
+v5.4: Add library references to allow for external paths (Point Object for both Line and Triangle).
 v6: Add asciiFunction config file functionality.
-v7: Add MASM32 and/or Irvine's MASM as a target language
-v8: Write a Frogger compiler in Frogger. (Silently screams in agony...)
+v7: Add MASM32 and/or Irvine's MASM as a target language.
+v8: Write a Frogger compiler in Frogger. (Silently screams in agony...).
 
 Notes---
-
-
+add const function delimiters
 duplicate function definition with different arg names matching signature
 test for stringList and null misuse
 test for user defined objects matching string and double
