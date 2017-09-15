@@ -10,7 +10,8 @@ using namespace std;
 enum DataTypeEnum
 {
 	DTE_NULL, //Used when the concept of a DataType is N/A 
-	DTE_DOUBLE,DTE_STRING,DTE_STRINGLIST,
+	DTE_DOUBLE, DTE_STRING,
+	DTE_LIST, DTE_STRINGLIST,
 	DTE_USER_DEFINED,
 	DTE_NOT_DEFINED //Used when the type is unknown
 };
@@ -20,7 +21,7 @@ struct DataTypeCollection;
 // ----------------------------------------------------------
 // This class represents a data type.
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 struct DataType
 {
@@ -56,6 +57,7 @@ public:
 	static DataType * DT_NULL;
 	static DataType * DT_DOUBLE;
 	static DataType * DT_STRING;
+	static DataType * DT_LIST;
 	static DataType * DT_STRINGLIST;
 	static DataType * DT_NOT_DEFINED;
 

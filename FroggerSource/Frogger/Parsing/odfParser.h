@@ -23,7 +23,7 @@ private:
 	ODFScanner scanner;
 	
 	DataRecord * dataRecord();
-	string userDefinedObjectDefaultValue();
+	string objectDefaultValue();
 	string stringDefaultValue();
 	string doubleDefaultValue();
 	DataType * dataType();

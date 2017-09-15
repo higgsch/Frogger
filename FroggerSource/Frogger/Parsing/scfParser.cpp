@@ -407,6 +407,21 @@ DataType * SCFParser::dataType()
 		return DataType::DT_STRING;
 	else if (type.lexeme == "null")
 		return DataType::DT_NULL;
+	else if (type.lexeme == "list")
+	{
+		match(TT_LBRACE);
+		DataType * templatizer = dataType();
+		match(TT_RBRACE);
+
+		if (templatizer == DataType::DT_LIST->templatizerList->at(0))
+			return DataType::DT_LIST;
+
+		DataType * dt = new DataType(DTE_USER_DEFINED, type.lexeme);
+		dt->templatizerList->push_back(templatizer);
+		return dt;
+	}
+	else if (type.lexeme == "stringList")
+		return DataType::DT_STRINGLIST;
 	else
 	{
 		types->add(scope + type.lexeme);

@@ -13,6 +13,7 @@ const string DataType::CLOSE_TEMPLATE_OPERATOR = "}";
 DataType* DataType::DT_NULL = new DataType(DTE_NULL, "null");
 DataType* DataType::DT_DOUBLE = new DataType(DTE_DOUBLE, "double", "0");
 DataType* DataType::DT_STRING = new DataType(DTE_STRING, "string", "''");
+DataType* DataType::DT_LIST = new DataType(DTE_LIST, "list{O}", "<OBJECT>");
 DataType* DataType::DT_STRINGLIST = new DataType(DTE_STRINGLIST, "stringList", "<OBJECT>");
 DataType* DataType::DT_NOT_DEFINED = new DataType(DTE_NOT_DEFINED, "<Not Defined>");
 
@@ -146,7 +147,7 @@ string DataType::templatizerString() const
 // This constructor populates the collection with built-in 
 // DataTypes.
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 DataTypeCollection::DataTypeCollection(bool addBuiltIn)
 {
@@ -155,6 +156,7 @@ DataTypeCollection::DataTypeCollection(bool addBuiltIn)
 		push_back(DataType::DT_DOUBLE);
 		push_back(DataType::DT_STRING);
 		push_back(DataType::DT_STRINGLIST);
+		push_back(DataType::DT_LIST);
 	}
 }
 

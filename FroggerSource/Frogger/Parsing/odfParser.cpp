@@ -47,7 +47,7 @@ DataCollection * ODFParser::parseODF(string dir, string name)
 // This function processes a data declaration record and 
 // returns a single Data record.
 //
-// Version 5.0
+// Version 5.3
 // ----------------------------------------------------------
 DataRecord * ODFParser::dataRecord()
 {
@@ -61,11 +61,13 @@ DataRecord * ODFParser::dataRecord()
 	if (tok.type == TT_OCTOTHORPE)
 	{
 		if (currRec->type->isUserDefined())
-			currRec->defaultValue = userDefinedObjectDefaultValue();
+			currRec->defaultValue = objectDefaultValue();
 		else if (currRec->type->isString())
 			currRec->defaultValue = stringDefaultValue();
 		else if (currRec->type->isDouble())
 			currRec->defaultValue = doubleDefaultValue();
+		else
+			currRec->defaultValue = objectDefaultValue();
 	}
 	else 
 	{
@@ -86,7 +88,7 @@ DataRecord * ODFParser::dataRecord()
 //
 // Version 5.0
 // ----------------------------------------------------------
-string ODFParser::userDefinedObjectDefaultValue()
+string ODFParser::objectDefaultValue()
 {
 	match(TT_OCTOTHORPE);
 	match(TT_OCTOTHORPE);
@@ -143,6 +145,19 @@ DataType * ODFParser::dataType()
 		return DataType::DT_STRING;
 	else if (type.lexeme == "null")
 		return DataType::DT_NULL;
+	else if (type.lexeme == "list")
+	{
+		match(TT_LBRACE);
+		DataType * templatizer = dataType();
+		match(TT_RBRACE);
+
+		if (templatizer == DataType::DT_LIST->templatizerList->at(0))
+			return DataType::DT_LIST;
+
+		DataType * dt = new DataType(DTE_LIST, type.lexeme);
+		dt->templatizerList->push_back(templatizer);
+		return dt;
+	}
 	else if (type.lexeme == "stringList")
 		return DataType::DT_STRINGLIST;
 	else
