@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.2
+//                      Version: 5.3
 // -----------------------------------------------------------------
 // This program represents the CPPLanguage package.
 // -----------------------------------------------------------------
@@ -46,12 +46,14 @@ const string CPPLanguage::INDENT = "\t";
 // ----------------------------------------------------------
 // This function initializes the language elements.
 //
-// Version 4.2
+// Version 5.3
 // ----------------------------------------------------------
 void CPPLanguage::initOutputTexts()
 {
-	DT_DOUBLE = OUTPUT_TEXT("double");
-	DT_STRING = OUTPUT_TEXT("string");
+	DT_DOUBLE = OUTPUT_TEXT("_double");
+	DT_STRING = OUTPUT_TEXT("_string");
+	DT_LIST = OUTPUT_TEXT("_list");
+	DT_STRINGLIST = OUTPUT_TEXT("_stringList");
 	DT_VOID = OUTPUT_TEXT("void");
 
 	SYM_ARGS = OUTPUT_TEXT("args");
@@ -93,26 +95,51 @@ void CPPLanguage::initOutputTexts()
 	SYMDEF_ARGS = VAR_DEF("vector<string> " + SYM_ARGS + ";");
 	SYMDEF_I_FILE = VAR_DEF("ifstream " + SYM_I_FILE + ";");
 	SYMDEF_O_FILE = VAR_DEF("ofstream " + SYM_O_FILE + ";");
-	SYMDEF_EMPTY_STRING = VAR_DEF("const string " + SYM_EMPTY_STRING + " = \"\";");
+	SYMDEF_EMPTY_STRING = VAR_DEF("const " + DT_STRING + " " + SYM_EMPTY_STRING + " = \"\";");
 
-	FUNCTDEF_ROUND = FUNCT_DEF("double round(double num) {\n\treturn (num > 0.0) ? floor(num + 0.5) : ceil(num - 0.5);\n}");
-	FUNCTDEF_RT = FUNCT_DEF("double rt(double l, double r) {\n\t return pow(r, 1.0 / l);\n}");
-	FUNCTDEF_TO_STRING = FUNCT_DEF("string " + FUNCTNAME_TO_STRING + "(double d) { return to_string(d); }");
-	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + FUNCTNAME_TO_ASCII + "(double d) { return (char) d; }");
-	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_PARSE_DOUBLE + "(string s)\n{\n\tif (isdigit(s[0]) || s[0] == '-')\n\t{\n\t\treturn stod(s, NULL);\n\t}\n\treturn 0;\n}");
-	FUNCTDEF_ASCII_AT = FUNCT_DEF("double " + FUNCTNAME_ASCII_AT + "(string s, int loc)\n{\n\tif (loc < 0 || loc >= s.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn s.at(loc);\n}");
-	FUNCTDEF_LENGTH = FUNCT_DEF("double " + FUNCTNAME_LENGTH + "(string s) { return (emptyString + s).size(); }");
-	FUNCTDEF_RETRIEVE_DOUBLE = FUNCT_DEF("double " + FUNCTNAME_RETRIEVE_DOUBLE + "()\n{\n\tdouble d = 0;\n\tcin >> d;\n\treturn d;\n}");
-	FUNCTDEF_RETRIEVE_STRING = FUNCT_DEF("string " + FUNCTNAME_RETRIEVE_STRING + "()\n{\n\tstring s = "";\n\tcin >> s;\n\treturn s;\n}");
-	FUNCTDEF_RANDOM = FUNCT_DEF("double " + FUNCTNAME_RANDOM + "() { return ((double) rand() / (RAND_MAX)); }");
-	FUNCTDEF_READ = FUNCT_DEF("char " + FUNCTNAME_READ + "() { return (char)(in_file.get()); }");
-	FUNCTDEF_ELEMENT_AT = FUNCT_DEF("string " + FUNCTNAME_ELEMENT_AT + "(vector<string> v, int index)\n{\n\tif (index < 0 || index >= v.size())\n\t{\n\t\treturn \"\";\n\t}\n\treturn v[index];\n}");
-	FUNCTDEF_SIZE = FUNCT_DEF("double " + FUNCTNAME_SIZE + "(vector<string> v) { return v.size(); }");
-	FUNCTDEF_DISPLAY_DBL = FUNCT_DEF("void " + CMDNAME_DISPLAY_DBL + "(double d) { cout << d; }");
-	FUNCTDEF_DISPLAY_STR = FUNCT_DEF("void " + CMDNAME_DISPLAY_STR + "(string s) { cout << s; }");
-	FUNCTDEF_OPEN_I = FUNCT_DEF("void " + CMDNAME_OPEN_INPUT + "(string s) { " + SYM_I_FILE + ".open(s); }");
-	FUNCTDEF_OPEN_O = FUNCT_DEF("void " + CMDNAME_OPEN_OUTPUT + "(string s) { " + SYM_O_FILE + ".open(s); }");
-	FUNCTDEF_WRITE = FUNCT_DEF("void " + CMDNAME_WRITE + "(string s) { " + SYM_O_FILE + " << s; }");
+	string doubleDef = "struct " + DT_DOUBLE + "\n{\n";
+	doubleDef += "\tdouble val;\n";
+	doubleDef += "\t" + DT_DOUBLE + "() { val = 0; }\n";
+	doubleDef += "\t" + DT_DOUBLE + "(double d) { val = d; }\n\n";
+	doubleDef += getLocalOperatorOverloadText(DT_DOUBLE);
+	doubleDef += "\tfriend " + DT_DOUBLE + " pow(" + DT_DOUBLE + " lhs, const " + DT_DOUBLE + "& rhs){ ";
+	doubleDef += "lhs.val = pow(lhs.val, rhs.val); return lhs; }\n";
+	doubleDef += "};\n";
+	OBJDEF_DOUBLE = OBJ_DEF(doubleDef);
+
+	string stringDef = "struct " + DT_STRING + "\n{\n";
+	stringDef += "\tstring val;\n";
+	stringDef += "\t" + DT_STRING + "() { val = \"\"; }\n";
+	stringDef += "\t" + DT_STRING + "(string s) { val = s; }\n\n";
+	stringDef += getLocalOperatorOverloadText(DT_STRING);
+	stringDef += "\t" + DT_DOUBLE + " length() { return val.length(); }\n";
+	stringDef += "\t" + DT_DOUBLE + " at(int loc) { return val.at(loc); }\n";
+	stringDef += "};\n";
+	OBJDEF_STRING = OBJ_DEF(stringDef);
+
+	string listDef = "template <class _O>\nclass " + DT_LIST + "\n{\n};";
+	OBJDEF_LIST = OBJ_DEF(listDef);
+
+	OBJDEF_STRINGLIST = OBJ_DEF("class " + DT_STRINGLIST + " : public " + DT_LIST + "<" + DT_STRING + ">\n{\n};");
+
+	FUNCTDEF_ROUND = FUNCT_DEF(DT_DOUBLE + " round(" + DT_DOUBLE + " num) {\n\treturn (num > 0.0) ? floor(num.val + 0.5) : ceil(num.val - 0.5);\n}");
+	FUNCTDEF_RT = FUNCT_DEF(DT_DOUBLE + " rt(" + DT_DOUBLE + " l, " + DT_DOUBLE + " r) {\n\t return pow(r.val, 1.0 / l.val);\n}");
+	FUNCTDEF_TO_STRING = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_TO_STRING + "(" + DT_DOUBLE + " d) { return to_string(d.val); }");
+	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + FUNCTNAME_TO_ASCII + "(" + DT_DOUBLE + " d) { return (char) d.val; }");
+	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_PARSE_DOUBLE + "(" + DT_STRING + " s)\n{\n\tif (isdigit(s.val[0]) || s.val[0] == '-')\n\t{\n\t\treturn stod(s.val, NULL);\n\t}\n\treturn 0;\n}");
+	FUNCTDEF_ASCII_AT = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_ASCII_AT + "(" + DT_STRING + " s, " + DT_DOUBLE + " loc)\n{\n\tif (loc < 0 || loc >= s.val.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn s.val.at(loc.val);\n}");
+	FUNCTDEF_LENGTH = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_LENGTH + "(" + DT_STRING + " s) { return (emptyString + s).val.size(); }");
+	FUNCTDEF_RETRIEVE_DOUBLE = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_RETRIEVE_DOUBLE + "()\n{\n\tdouble d = 0;\n\tcin >> d;\n\treturn d;\n}");
+	FUNCTDEF_RETRIEVE_STRING = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_RETRIEVE_STRING + "()\n{\n\tstring s = "";\n\tcin >> s;\n\treturn s;\n}");
+	FUNCTDEF_RANDOM = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_RANDOM + "() { return ((double) rand() / (RAND_MAX)); }");
+	FUNCTDEF_READ = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_READ + "() { string result; result = (char)(in_file.get()); return result; }");
+	FUNCTDEF_ELEMENT_AT = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_ELEMENT_AT + "(vector<string> v, " + DT_DOUBLE + " index)\n{\n\tif (index < 0 || index >= v.size())\n\t{\n\t\treturn \"\";\n\t}\n\treturn v[index.val];\n}");
+	FUNCTDEF_SIZE = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_SIZE + "(vector<string> v) { return v.size(); }");
+	FUNCTDEF_DISPLAY_DBL = FUNCT_DEF("void " + CMDNAME_DISPLAY_DBL + "(" + DT_DOUBLE + " d) { cout << d.val; }");
+	FUNCTDEF_DISPLAY_STR = FUNCT_DEF("void " + CMDNAME_DISPLAY_STR + "(" + DT_STRING + " s) { cout << s.val; }");
+	FUNCTDEF_OPEN_I = FUNCT_DEF("void " + CMDNAME_OPEN_INPUT + "(" + DT_STRING + " s) { " + SYM_I_FILE + ".open(s.val); }");
+	FUNCTDEF_OPEN_O = FUNCT_DEF("void " + CMDNAME_OPEN_OUTPUT + "(" + DT_STRING + " s) { " + SYM_O_FILE + ".open(s.val); }");
+	FUNCTDEF_WRITE = FUNCT_DEF("void " + CMDNAME_WRITE + "(" + DT_STRING + " s) { " + SYM_O_FILE + " << s.val; }");
 	FUNCTDEF_CLOSE_I = FUNCT_DEF("void " + CMDNAME_CLOSE_INPUT + "() { " + SYM_I_FILE + ".close(); }");
 	FUNCTDEF_CLOSE_O = FUNCT_DEF("void " + CMDNAME_CLOSE_OUTPUT + "() { " + SYM_O_FILE + ".close(); }");
 
@@ -125,19 +152,23 @@ void CPPLanguage::initOutputTexts()
 	MAIN_DEC = STATIC_SUPPORT("int main(int argc, char* argv[])");
 
 	initDependencies();
+	
+	dt_doubleUsed();
+	dt_stringUsed();
 }
 
 // ----------------------------------------------------------
 // This function returns the pre-program code
 // @structure: the program's structure
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 string CPPLanguage::getMetaCode(ProgramStruct * structure)
 {
 	string result = getUsingStatementText();
-	result += getSupportCode();
 
+	result += getBuiltInObjectCode();
+	result += getSupportCode();
 	result += getBuiltInFunctionCode();
 	result += getBuiltInCommandCode();
 
@@ -436,11 +467,13 @@ string CPPLanguage::getIdentifierText(bool nested, string id)
 
 //Literals' Output Text
 string CPPLanguage::getStringLiteralText(string str)
-{ 	return str; }
+{ 	return DT_STRING + "(" + str + ")"; }
 string CPPLanguage::getDoubleLiteralText(bool isNested, string dbl)
 {	return nest(isNested, dbl); }
 
 //SupportReqsPhase Accessors
+void CPPLanguage::dt_doubleUsed() { OBJDEF_DOUBLE.needed(); }
+void CPPLanguage::dt_stringUsed() { OBJDEF_STRING.needed(); }
 void CPPLanguage::argsUsed() { SYMDEF_ARGS.needed(); }
 void CPPLanguage::toStringUsed() { FUNCTDEF_TO_STRING.needed(); }
 void CPPLanguage::toAsciiUsed() { FUNCTDEF_TO_ASCII.needed(); }
@@ -517,6 +550,19 @@ string CPPLanguage::getSupportCode()
 	result += emptyLine();
 	result += getSupportText(FUNCTDEF_RT);
 	result += emptyLine();
+	return result;
+}
+
+// ----------------------------------------------------------
+// This function returns the output text for the built in objects.
+//
+// Version 5.3
+// ----------------------------------------------------------
+string CPPLanguage::getBuiltInObjectCode()
+{
+	string result = "";
+	result += getSupportText(OBJDEF_DOUBLE);
+	result += getSupportText(OBJDEF_STRING);
 	return result;
 }
 
@@ -929,12 +975,68 @@ string CPPLanguage::templateLine(ObjectStruct * obj)
 }
 
 // ----------------------------------------------------------
+// This function generates the code for operator overloading
+// for the given object.
+//
+// Version 5.3
+// ----------------------------------------------------------
+string CPPLanguage::getLocalOperatorOverloadText(OUTPUT_TEXT type)
+{
+	string text = getArithmeticOperatorOverloadText(type, "+");
+	text += getComparisonOperatorOverloadText(type, "==");
+	text += getComparisonOperatorOverloadText(type, "!=");
+
+	if (type == DT_STRING)
+		return text;
+
+	text += getArithmeticOperatorOverloadText(type, "-");
+	text += getArithmeticOperatorOverloadText(type, "/");
+	text += getArithmeticOperatorOverloadText(type, "*");
+	text += getComparisonOperatorOverloadText(type, "<");
+	text += getComparisonOperatorOverloadText(type, ">");
+	text += getComparisonOperatorOverloadText(type, "<=");
+	text += getComparisonOperatorOverloadText(type, ">=");
+	return text;
+}
+
+// ----------------------------------------------------------
+// This function generates the code for arithmetic operator 
+// overloading for the given object and operator.
+//
+// Version 5.3
+// ----------------------------------------------------------
+string CPPLanguage::getArithmeticOperatorOverloadText(OUTPUT_TEXT type, string op)
+{
+	string text = "\t" + type + "& operator" + op + "=(const " + type + "& rhs){ ";
+	text += "val " + op + "= rhs.val; return *this; }\n";
+	text += "\tfriend " + type + " operator" + op + "(" + type + " lhs, const " + type + "& rhs){ ";
+	text += "lhs " + op + "= rhs; return lhs;}\n";
+	return text;
+}
+
+// ----------------------------------------------------------
+// This function generates the code for comparison operator 
+// overloading for the given object and operator.
+//
+// Version 5.3
+// ----------------------------------------------------------
+string CPPLanguage::getComparisonOperatorOverloadText(OUTPUT_TEXT type, string op)
+{
+	string text = "\tfriend bool operator" + op + "(const " + type + "& lhs, const " + type + "& rhs){ ";
+	text += "return lhs.val " + op + " rhs.val; }\n";
+	return text;
+}
+
+// ----------------------------------------------------------
 // This function initializes the language element dependencies.
 //
-// Version 4.2
+// Version 5.3
 // ----------------------------------------------------------
 void CPPLanguage::initDependencies()
 {
+	//DOUBLE has no dependencies
+
+	OBJDEF_STRING.addDependency(&IMP_STRING);
 	SYMDEF_ARGS.addDependency(&IMP_VECTOR);
 	SYMDEF_ARGS.addDependency(&IMP_STRING);
 	SYMDEF_ARGS.addDependency(&INIT_ARGS);

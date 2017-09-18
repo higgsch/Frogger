@@ -8,7 +8,7 @@ using namespace std;
 
 // set of Support Code Types
 typedef enum support_code_types {
-	SCT_IMPORT, SCT_VARIABLE, SCT_FUNCTION, SCT_INIT, SCT_STATIC,
+	SCT_IMPORT, SCT_VARIABLE, SCT_FUNCTION, SCT_OBJECT, SCT_INIT, SCT_STATIC,
 	SCT_UNINIT
 } support_code_type;
 
@@ -94,6 +94,18 @@ public:
 };
 
 // ----------------------------------------------------------
+// This class represents an object definition for output
+//
+// Version 5.3
+// ----------------------------------------------------------
+class OBJ_DEF : public SUPPORT_TEXT
+{
+public:
+	OBJ_DEF(string text) : SUPPORT_TEXT(text, SCT_OBJECT) {}
+	OBJ_DEF() {}
+};
+
+// ----------------------------------------------------------
 // This class represents an initialization statement for output
 //
 // Version 4.2
@@ -122,7 +134,7 @@ public:
 // ----------------------------------------------------------
 // This class represents the CPPLanguage package.
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 class CPPLanguage : public Language
 {
@@ -136,6 +148,7 @@ private:
 
 	string getUsingStatementText();
 	string getSupportCode();
+	string getBuiltInObjectCode();
 	string getBuiltInFunctionCode();
 	string getBuiltInCommandCode();
 	string getForwardDeclarationCode(ProgramStruct * prog);
@@ -203,6 +216,10 @@ private:
 		exit(0);
 	}
 
+	string getLocalOperatorOverloadText(OUTPUT_TEXT type);
+	string getArithmeticOperatorOverloadText(OUTPUT_TEXT type, string op);
+	string getComparisonOperatorOverloadText(OUTPUT_TEXT type, string op);
+
 protected:
 	void initOutputTexts();
 	void initDependencies();
@@ -239,6 +256,8 @@ public:
 	string getStringLiteralText(string str);
 	string getDoubleLiteralText(bool isNested, string dbl);
 
+	void dt_doubleUsed();
+	void dt_stringUsed();
 	void argsUsed();
 	void toStringUsed();
 	void toAsciiUsed();
@@ -280,6 +299,8 @@ public:
 	VAR_DEF SYMDEF_O_FILE;
 	VAR_DEF SYMDEF_EMPTY_STRING;
 
+	OBJ_DEF OBJDEF_DOUBLE;
+	OBJ_DEF OBJDEF_STRING;
 	FUNCT_DEF FUNCTDEF_ROUND;
 	FUNCT_DEF FUNCTDEF_RT;
 	FUNCT_DEF FUNCTDEF_TO_STRING;
