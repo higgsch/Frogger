@@ -72,6 +72,8 @@ void CPPLanguage::initOutputTexts()
 	FUNCTNAME_READ = OUTPUT_TEXT("read");
 	FUNCTNAME_ELEMENT_AT = OUTPUT_TEXT("elementAt");
 	FUNCTNAME_SIZE = OUTPUT_TEXT("size");
+	FUNCTNAME_ADD = OUTPUT_TEXT("add");
+	FUNCTNAME_REMOVE = OUTPUT_TEXT("remove");
 
 	CMDNAME_END_NULL = OUTPUT_TEXT("end");
 	CMDNAME_END_STR = OUTPUT_TEXT("end");
@@ -92,7 +94,7 @@ void CPPLanguage::initOutputTexts()
 	IMP_STRING = IMPORT_STMT("#include <string>");
 	IMP_VECTOR = IMPORT_STMT("#include <vector>");
 
-	SYMDEF_ARGS = VAR_DEF("vector<string> " + SYM_ARGS + ";");
+	SYMDEF_ARGS = VAR_DEF(DT_STRINGLIST + " " + SYM_ARGS + ";");
 	SYMDEF_I_FILE = VAR_DEF("ifstream " + SYM_I_FILE + ";");
 	SYMDEF_O_FILE = VAR_DEF("ofstream " + SYM_O_FILE + ";");
 	SYMDEF_EMPTY_STRING = VAR_DEF("const " + DT_STRING + " " + SYM_EMPTY_STRING + " = \"\";");
@@ -121,16 +123,26 @@ void CPPLanguage::initOutputTexts()
 	stringDef += "};\n";
 	OBJDEF_STRING = OBJ_DEF(stringDef);
 
-	string listDef = "template <class _O>\nclass " + DT_LIST + "\n{\n};";
+	string listDef = "template <class _O>\nstruct " + DT_LIST + "\n{\n";
+	listDef += "\tvector<_O> myList;\n";
+	listDef += "\t_O _" + FUNCTNAME_ELEMENT_AT + "(" + DT_DOUBLE + " index);\n";
+	listDef += "\t" + DT_DOUBLE + " _" + FUNCTNAME_SIZE + "();\n";
+	listDef += "\tvoid _" + FUNCTNAME_ADD + "(_O toAdd);\n";
+	listDef += "\tvoid _" + FUNCTNAME_REMOVE + "(" + DT_DOUBLE + " loc);\n";
+	listDef += "};\n";
 	OBJDEF_LIST = OBJ_DEF(listDef);
 
-	OBJDEF_STRINGLIST = OBJ_DEF("class " + DT_STRINGLIST + " : public " + DT_LIST + "<" + DT_STRING + ">\n{\n};");
+	OBJDEF_STRINGLIST = OBJ_DEF("struct " + DT_STRINGLIST + " : public " + DT_LIST + "<" + DT_STRING + ">{};\n");
 
 	FUNCTDEF_TO_STRING = FUNCT_DEF(DT_STRING + " " + DT_DOUBLE + "::_" + FUNCTNAME_TO_STRING + "() { return to_string(val); }");
 	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + DT_DOUBLE + "::_" + FUNCTNAME_TO_ASCII + "() { return (char) val; }");
 	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF(DT_DOUBLE + " " + DT_STRING + "::_" + FUNCTNAME_PARSE_DOUBLE + "()\n{\n\tif (isdigit(val[0]) || val[0] == '-')\n\t{\n\t\treturn stod(val, NULL);\n\t}\n\treturn 0;\n}");
-	FUNCTDEF_ASCII_AT = FUNCT_DEF(DT_DOUBLE + " " + DT_STRING + "::_" + FUNCTNAME_ASCII_AT + "(" + DT_DOUBLE + " loc)\n{\n\tif (loc < 0 || loc >= val.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn val.at(loc.val);\n}");
+	FUNCTDEF_ASCII_AT = FUNCT_DEF(DT_DOUBLE + " " + DT_STRING + "::_" + FUNCTNAME_ASCII_AT + "(" + DT_DOUBLE + " loc)\n{\n\tif (loc < 0 || loc >= val.length())\n\t\treturn 0;\n\treturn val.at(loc.val);\n}");
 	FUNCTDEF_LENGTH = FUNCT_DEF(DT_DOUBLE + " " + DT_STRING + "::_" + FUNCTNAME_LENGTH + "() { return val.length(); }");
+	FUNCTDEF_ELEMENT_AT = FUNCT_DEF("template<class _O>\n_O " + DT_LIST + "<_O>::_" + FUNCTNAME_ELEMENT_AT + "(" + DT_DOUBLE + " index)\n{\n\tif (index < 0 || index >= myList.size())\n\t\treturn \"\";\n\treturn myList[index.val];\n}");
+	FUNCTDEF_SIZE = FUNCT_DEF("template<class _O>\n" + DT_DOUBLE + " " + DT_LIST + "<_O>::_" + FUNCTNAME_SIZE + "() { return myList.size(); }");
+	FUNCTDEF_ADD = FUNCT_DEF("template<class _O>\nvoid " + DT_LIST + "<_O>::_" + FUNCTNAME_ADD + "(_O toAdd) { myList.push_back(toAdd); }");
+	FUNCTDEF_REMOVE = FUNCT_DEF("template<class _O>\nvoid " + DT_LIST + "<_O>::_" + FUNCTNAME_REMOVE + "(" + DT_DOUBLE + " loc) { myList.erase(loc.val); }");
 
 	FUNCTDEF_ROUND = FUNCT_DEF(DT_DOUBLE + " round(" + DT_DOUBLE + " num) {\n\treturn (num > 0.0) ? floor(num.val + 0.5) : ceil(num.val - 0.5);\n}");
 	FUNCTDEF_RT = FUNCT_DEF(DT_DOUBLE + " rt(" + DT_DOUBLE + " l, " + DT_DOUBLE + " r) {\n\t return pow(r.val, 1.0 / l.val);\n}");
@@ -138,8 +150,6 @@ void CPPLanguage::initOutputTexts()
 	FUNCTDEF_RETRIEVE_STRING = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_RETRIEVE_STRING + "()\n{\n\tstring s = "";\n\tcin >> s;\n\treturn s;\n}");
 	FUNCTDEF_RANDOM = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_RANDOM + "() { return ((double) rand() / (RAND_MAX)); }");
 	FUNCTDEF_READ = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_READ + "() { string result; result = (char)(in_file.get()); return result; }");
-	FUNCTDEF_ELEMENT_AT = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_ELEMENT_AT + "(vector<string> v, " + DT_DOUBLE + " index)\n{\n\tif (index < 0 || index >= v.size())\n\t{\n\t\treturn \"\";\n\t}\n\treturn v[index.val];\n}");
-	FUNCTDEF_SIZE = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_SIZE + "(vector<string> v) { return v.size(); }");
 	FUNCTDEF_DISPLAY_DBL = FUNCT_DEF("void " + CMDNAME_DISPLAY_DBL + "(" + DT_DOUBLE + " d) { cout << d.val; }");
 	FUNCTDEF_DISPLAY_STR = FUNCT_DEF("void " + CMDNAME_DISPLAY_STR + "(" + DT_STRING + " s) { cout << s.val; }");
 	FUNCTDEF_OPEN_I = FUNCT_DEF("void " + CMDNAME_OPEN_INPUT + "(" + DT_STRING + " s) { " + SYM_I_FILE + ".open(s.val); }");
@@ -148,7 +158,11 @@ void CPPLanguage::initOutputTexts()
 	FUNCTDEF_CLOSE_I = FUNCT_DEF("void " + CMDNAME_CLOSE_INPUT + "() { " + SYM_I_FILE + ".close(); }");
 	FUNCTDEF_CLOSE_O = FUNCT_DEF("void " + CMDNAME_CLOSE_OUTPUT + "() { " + SYM_O_FILE + ".close(); }");
 
-	INIT_ARGS = INIT_STMT(SYM_ARGS + " = vector<string>(argv + 1, argv + argc);");
+	string argsInit = "vector<string> argList(argv + 1, argv + argc);\n";
+	argsInit += "\tint argCount = argList.size();\n";
+	argsInit += "\tfor (int argIndex = 0; argIndex < argCount; argIndex++){\n";
+	argsInit += "\t\t" + SYM_ARGS + "._" + FUNCTNAME_ADD + "(argList[argIndex]);\n\t}\n";
+	INIT_ARGS = INIT_STMT(argsInit);
 	INIT_RANDOM = INIT_STMT("srand(time(NULL)); rand();");
 	INIT_I_FILE = INIT_STMT(SYM_I_FILE + " = ifstream();");
 	INIT_O_FILE = INIT_STMT(SYM_O_FILE + " = ofstream();");
@@ -160,6 +174,8 @@ void CPPLanguage::initOutputTexts()
 	
 	dt_doubleUsed();
 	dt_stringUsed();
+	dt_listUsed();
+	dt_stringListUsed();
 }
 
 // ----------------------------------------------------------
@@ -330,7 +346,9 @@ string CPPLanguage::getFunctionCallText(bool isBuiltIn, bool isParentScoped, Dat
 	string result = "";
 
 	if (isBuiltIn && name != FUNCTNAME_TO_STRING && name != FUNCTNAME_TO_ASCII && name != FUNCTNAME_ASCII_AT
-		&& name != FUNCTNAME_LENGTH && name != FUNCTNAME_PARSE_DOUBLE)
+		&& name != FUNCTNAME_LENGTH && name != FUNCTNAME_PARSE_DOUBLE
+		&& name != FUNCTNAME_ELEMENT_AT	&& name != FUNCTNAME_SIZE
+		&& name != FUNCTNAME_ADD && name != FUNCTNAME_REMOVE)
 	{
 		if (primaryText == "")
 			result += argListText;
@@ -478,6 +496,8 @@ string CPPLanguage::getDoubleLiteralText(bool isNested, string dbl)
 //SupportReqsPhase Accessors
 void CPPLanguage::dt_doubleUsed() { OBJDEF_DOUBLE.needed(); }
 void CPPLanguage::dt_stringUsed() { OBJDEF_STRING.needed(); }
+void CPPLanguage::dt_listUsed() { OBJDEF_LIST.needed(); }
+void CPPLanguage::dt_stringListUsed() { OBJDEF_STRINGLIST.needed(); }
 void CPPLanguage::argsUsed() { SYMDEF_ARGS.needed(); }
 void CPPLanguage::toStringUsed() { FUNCTDEF_TO_STRING.needed(); }
 void CPPLanguage::toAsciiUsed() { FUNCTDEF_TO_ASCII.needed(); }
@@ -565,17 +585,18 @@ string CPPLanguage::getSupportCode()
 string CPPLanguage::getBuiltInObjectCode()
 {
 	string result = "";
-	result += "struct " + DT_DOUBLE + ";\n";
 	result += "struct " + DT_STRING + ";\n";
 	result += getSupportText(OBJDEF_DOUBLE);
 	result += getSupportText(OBJDEF_STRING);
+	result += getSupportText(OBJDEF_LIST);
+	result += getSupportText(OBJDEF_STRINGLIST);
 	return result;
 }
 
 // ----------------------------------------------------------
 // This function returns the output text for the built in functions.
 //
-// Version 4.2
+// Version 5.3
 // ----------------------------------------------------------
 string CPPLanguage::getBuiltInFunctionCode()
 {
@@ -585,12 +606,15 @@ string CPPLanguage::getBuiltInFunctionCode()
 	result += getSupportText(FUNCTDEF_PARSE_DOUBLE);
 	result += getSupportText(FUNCTDEF_ASCII_AT);
 	result += getSupportText(FUNCTDEF_LENGTH);
+	result += getSupportText(FUNCTDEF_ELEMENT_AT);
+	result += getSupportText(FUNCTDEF_SIZE);
+	result += getSupportText(FUNCTDEF_ADD);
+	result += getSupportText(FUNCTDEF_REMOVE);
+
 	result += getSupportText(FUNCTDEF_RETRIEVE_DOUBLE);
 	result += getSupportText(FUNCTDEF_RETRIEVE_STRING);
 	result += getSupportText(FUNCTDEF_RANDOM);
 	result += getSupportText(FUNCTDEF_READ);
-	result += getSupportText(FUNCTDEF_ELEMENT_AT);
-	result += getSupportText(FUNCTDEF_SIZE);
 	return result;
 }
 
@@ -901,7 +925,7 @@ string CPPLanguage::getFunctionPrototype(UDFRecord * udf)
 // This function returns the output text corresponding to
 // the given DataType.
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 string CPPLanguage::getTypeString(DataType * dt)
 {
@@ -911,6 +935,10 @@ string CPPLanguage::getTypeString(DataType * dt)
 		return DT_DOUBLE;
 	case DTE_STRING:
 		return DT_STRING;
+	case DTE_LIST:
+		return DT_LIST + "<" + getTypeString(dt->templatizerList->at(0)) + ">";
+	case DTE_STRINGLIST:
+		return DT_STRINGLIST;
 	case DTE_NULL:
 		return DT_VOID;
 	case DTE_USER_DEFINED:
@@ -1043,6 +1071,14 @@ void CPPLanguage::initDependencies()
 	//DOUBLE has no dependencies
 
 	OBJDEF_STRING.addDependency(&IMP_STRING);
+
+	OBJDEF_LIST.addDependency(&IMP_VECTOR);
+	OBJDEF_LIST.addDependency(&FUNCTDEF_ADD);
+	OBJDEF_LIST.addDependency(&FUNCTDEF_REMOVE);
+
+	OBJDEF_STRINGLIST.addDependency(&OBJDEF_LIST);
+	OBJDEF_STRINGLIST.addDependency(&OBJDEF_STRING);
+
 	SYMDEF_ARGS.addDependency(&IMP_VECTOR);
 	SYMDEF_ARGS.addDependency(&IMP_STRING);
 	SYMDEF_ARGS.addDependency(&INIT_ARGS);

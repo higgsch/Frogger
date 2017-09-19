@@ -25,7 +25,7 @@ public:
 // ----------------------------------------------------------
 // This class represents a generic Language package.
 //
-// Version 5.1
+// Version 5.3
 // ----------------------------------------------------------
 class Language
 {
@@ -160,6 +160,8 @@ public:
 	//Output Texts
 	OUTPUT_TEXT DT_DOUBLE;
 	OUTPUT_TEXT DT_STRING;
+	OUTPUT_TEXT DT_LIST;
+	OUTPUT_TEXT DT_STRINGLIST;
 	OUTPUT_TEXT DT_VOID;
 
 	OUTPUT_TEXT SYM_ARGS;
@@ -177,6 +179,8 @@ public:
 	OUTPUT_TEXT FUNCTNAME_READ;
 	OUTPUT_TEXT FUNCTNAME_ELEMENT_AT;
 	OUTPUT_TEXT FUNCTNAME_SIZE;
+	OUTPUT_TEXT FUNCTNAME_ADD;
+	OUTPUT_TEXT FUNCTNAME_REMOVE;
 	
 	OUTPUT_TEXT CMDNAME_END_NULL;
 	OUTPUT_TEXT CMDNAME_END_STR;
