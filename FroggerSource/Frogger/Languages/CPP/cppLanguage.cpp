@@ -104,6 +104,8 @@ void CPPLanguage::initOutputTexts()
 	doubleDef += getLocalOperatorOverloadText(DT_DOUBLE);
 	doubleDef += "\tfriend " + DT_DOUBLE + " pow(" + DT_DOUBLE + " lhs, const " + DT_DOUBLE + "& rhs){ ";
 	doubleDef += "lhs.val = pow(lhs.val, rhs.val); return lhs; }\n";
+	doubleDef += "\t" + DT_STRING + " _" +  FUNCTNAME_TO_STRING + "();\n";
+	doubleDef += "\tchar _" +  FUNCTNAME_TO_ASCII + "();\n";
 	doubleDef += "};\n";
 	OBJDEF_DOUBLE = OBJ_DEF(doubleDef);
 
@@ -112,8 +114,10 @@ void CPPLanguage::initOutputTexts()
 	stringDef += "\t" + DT_STRING + "() { val = \"\"; }\n";
 	stringDef += "\t" + DT_STRING + "(string s) { val = s; }\n\n";
 	stringDef += getLocalOperatorOverloadText(DT_STRING);
-	stringDef += "\t" + DT_DOUBLE + " length() { return val.length(); }\n";
 	stringDef += "\t" + DT_DOUBLE + " at(int loc) { return val.at(loc); }\n";
+	stringDef += "\t" + DT_DOUBLE + " _" + FUNCTNAME_PARSE_DOUBLE + "();\n";
+	stringDef += "\t" + DT_DOUBLE + " _" + FUNCTNAME_ASCII_AT + "(" + DT_DOUBLE + " loc);\n";
+	stringDef += "\t" + DT_DOUBLE + " _" + FUNCTNAME_LENGTH + "();\n";
 	stringDef += "};\n";
 	OBJDEF_STRING = OBJ_DEF(stringDef);
 
@@ -122,13 +126,14 @@ void CPPLanguage::initOutputTexts()
 
 	OBJDEF_STRINGLIST = OBJ_DEF("class " + DT_STRINGLIST + " : public " + DT_LIST + "<" + DT_STRING + ">\n{\n};");
 
+	FUNCTDEF_TO_STRING = FUNCT_DEF(DT_STRING + " " + DT_DOUBLE + "::_" + FUNCTNAME_TO_STRING + "() { return to_string(val); }");
+	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + DT_DOUBLE + "::_" + FUNCTNAME_TO_ASCII + "() { return (char) val; }");
+	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF(DT_DOUBLE + " " + DT_STRING + "::_" + FUNCTNAME_PARSE_DOUBLE + "()\n{\n\tif (isdigit(val[0]) || val[0] == '-')\n\t{\n\t\treturn stod(val, NULL);\n\t}\n\treturn 0;\n}");
+	FUNCTDEF_ASCII_AT = FUNCT_DEF(DT_DOUBLE + " " + DT_STRING + "::_" + FUNCTNAME_ASCII_AT + "(" + DT_DOUBLE + " loc)\n{\n\tif (loc < 0 || loc >= val.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn val.at(loc.val);\n}");
+	FUNCTDEF_LENGTH = FUNCT_DEF(DT_DOUBLE + " " + DT_STRING + "::_" + FUNCTNAME_LENGTH + "() { return val.length(); }");
+
 	FUNCTDEF_ROUND = FUNCT_DEF(DT_DOUBLE + " round(" + DT_DOUBLE + " num) {\n\treturn (num > 0.0) ? floor(num.val + 0.5) : ceil(num.val - 0.5);\n}");
 	FUNCTDEF_RT = FUNCT_DEF(DT_DOUBLE + " rt(" + DT_DOUBLE + " l, " + DT_DOUBLE + " r) {\n\t return pow(r.val, 1.0 / l.val);\n}");
-	FUNCTDEF_TO_STRING = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_TO_STRING + "(" + DT_DOUBLE + " d) { return to_string(d.val); }");
-	FUNCTDEF_TO_ASCII = FUNCT_DEF("char " + FUNCTNAME_TO_ASCII + "(" + DT_DOUBLE + " d) { return (char) d.val; }");
-	FUNCTDEF_PARSE_DOUBLE = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_PARSE_DOUBLE + "(" + DT_STRING + " s)\n{\n\tif (isdigit(s.val[0]) || s.val[0] == '-')\n\t{\n\t\treturn stod(s.val, NULL);\n\t}\n\treturn 0;\n}");
-	FUNCTDEF_ASCII_AT = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_ASCII_AT + "(" + DT_STRING + " s, " + DT_DOUBLE + " loc)\n{\n\tif (loc < 0 || loc >= s.val.length())\n\t{\n\t\treturn 0;\n\t}\n\treturn s.val.at(loc.val);\n}");
-	FUNCTDEF_LENGTH = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_LENGTH + "(" + DT_STRING + " s) { return (emptyString + s).val.size(); }");
 	FUNCTDEF_RETRIEVE_DOUBLE = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_RETRIEVE_DOUBLE + "()\n{\n\tdouble d = 0;\n\tcin >> d;\n\treturn d;\n}");
 	FUNCTDEF_RETRIEVE_STRING = FUNCT_DEF(DT_STRING + " " + FUNCTNAME_RETRIEVE_STRING + "()\n{\n\tstring s = "";\n\tcin >> s;\n\treturn s;\n}");
 	FUNCTDEF_RANDOM = FUNCT_DEF(DT_DOUBLE + " " + FUNCTNAME_RANDOM + "() { return ((double) rand() / (RAND_MAX)); }");
@@ -317,21 +322,20 @@ string CPPLanguage::getAssignmentText(string assigneeText, string assignorText)
 // @name: the function's name
 // @argListText: the output text from the call's arg list
 //
-// Version 5.1
+// Version 5.3
 // ---------------------------------------------------------
 string CPPLanguage::getFunctionCallText(bool isBuiltIn, bool isParentScoped, DataType * parentType, 
 										string primaryText, string name, string argListText)
 {
 	string result = "";
 
-	if (isBuiltIn)
+	if (isBuiltIn && name != FUNCTNAME_TO_STRING && name != FUNCTNAME_TO_ASCII && name != FUNCTNAME_ASCII_AT
+		&& name != FUNCTNAME_LENGTH && name != FUNCTNAME_PARSE_DOUBLE)
 	{
 		if (primaryText == "")
 			result += argListText;
 		else
-		{
 			result += primaryText + ((argListText != "") ? ", " + argListText : "");
-		}
 
 		return name + nest(true, result);
 	}
@@ -561,6 +565,8 @@ string CPPLanguage::getSupportCode()
 string CPPLanguage::getBuiltInObjectCode()
 {
 	string result = "";
+	result += "struct " + DT_DOUBLE + ";\n";
+	result += "struct " + DT_STRING + ";\n";
 	result += getSupportText(OBJDEF_DOUBLE);
 	result += getSupportText(OBJDEF_STRING);
 	return result;
