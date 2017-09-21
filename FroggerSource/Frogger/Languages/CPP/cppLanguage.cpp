@@ -992,15 +992,15 @@ string CPPLanguage::getArgsString(ArgList * args)
 // ----------------------------------------------------------
 string CPPLanguage::templateLine(ObjectStruct * obj)
 {
-	if (obj == NULL || !obj->isTemplatized())
+	if (obj == NULL || !obj->isTemplated())
 		return "";
 
-	string templateLine = "template <class _" + obj->templatizationList->at(0);
+	string templateLine = "template <class _" + obj->templateList->at(0);
 
-	int tCount = obj->templatizationList->size();
+	int tCount = obj->templateList->size();
 	for (int tIndex = 1; tIndex < tCount; tIndex++)
 	{
-		templateLine += ", _" + obj->templatizationList->at(tIndex);
+		templateLine += ", _" + obj->templateList->at(tIndex);
 	}
 
 	templateLine += ">";

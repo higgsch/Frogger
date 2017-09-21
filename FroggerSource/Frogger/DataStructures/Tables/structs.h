@@ -84,7 +84,7 @@ struct OFCollection : vector<ObjectStruct *> {};
 //
 // Version 5.2
 // ----------------------------------------------------------
-struct TemplatizationCollection : vector<string> 
+struct TemplateCollection : vector<string> 
 {
 public:
 	bool contains(string templateID)
@@ -124,7 +124,7 @@ struct ObjectStruct
 	UDFCollection * UDFs;
 	OFCollection * OFs;
 	DataCollection * data;
-	TemplatizationCollection * templatizationList;
+	TemplateCollection * templateList;
 
 	TableGroup * scopedTables; //Records accessible by scoping (e.g. <obj>:id())
 
@@ -136,11 +136,12 @@ struct ObjectStruct
 	DataTypeCollection * templatizedTypes;
 
 	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()), 
-		data(new DataCollection()), templatizationList(new TemplatizationCollection()),
+		data(new DataCollection()), templateList(new TemplateCollection()),
 		scopedTables(new TableGroup()), isUserDefined(true), isCodeGenerated(false),
 		parentName(""), parent(NULL) {}
 
-	bool isTemplatized() { return templatizationList->size() != 0; }
+	//Returns whether or not the object has abstract templates
+	bool isTemplated() { return templateList->size() != 0; }
 	bool hasParent() { return parent != NULL; }
 	int getNumberOfUDFs() { return UDFs->size(); }
 	int getNumberOfOFs() { return OFs->size(); }

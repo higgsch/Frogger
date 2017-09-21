@@ -17,9 +17,9 @@ class ScopingPhase : SCFPhase
 private:
 	void processDT(ObjectStruct * containingObj, DataType * dt)
 	{
-		if (containingObj != NULL && containingObj->isTemplatized())
+		if (containingObj != NULL && containingObj->isTemplated())
 		{
-			if (containingObj->templatizationList->contains(dt->typeName))
+			if (containingObj->templateList->contains(dt->name))
 			{
 				dt->scope = "";
 				return;
@@ -27,9 +27,9 @@ private:
 
 			if (containingObj->name == dt->typeName && dt->templatizerList->size() == 0)
 			{
-				int tCount = containingObj->templatizationList->size();
+				int tCount = containingObj->templateList->size();
 				for (int tIndex = 0; tIndex < tCount; tIndex++)
-					dt->templatizerList->add(containingObj->templatizationList->at(tIndex));
+					dt->templatizerList->add(containingObj->templateList->at(tIndex));
 			}
 		}
 	}

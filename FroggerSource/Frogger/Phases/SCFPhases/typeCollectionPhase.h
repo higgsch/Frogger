@@ -35,13 +35,13 @@ protected:
 			{
 				string typeName = scope + obj->name;
 
-				if (obj->isTemplatized())
+				if (obj->isTemplated())
 				{
-					typeName += "{" + obj->templatizationList->at(0);
+					typeName += "{" + obj->templateList->at(0);
 
-					int tCount = obj->templatizationList->size();
+					int tCount = obj->templateList->size();
 					for (int tIndex = 1; tIndex < tCount; tIndex++)
-						typeName += ", " + obj->templatizationList->at(tIndex);
+						typeName += ", " + obj->templateList->at(tIndex);
 
 					typeName += "}";
 				}

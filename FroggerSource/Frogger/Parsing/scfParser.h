@@ -27,7 +27,7 @@ private:
 	SCFScanner scanner;
 	
 	string inheritanceRecord();
-	TemplatizationCollection * templatizationRecord();
+	TemplateCollection * templateRecord();
 	UDFRecord * functRecord();
 	ObjectStruct * objectRecord(string objectDir, string name);
 	DataCollection * dataRecord(string dataDir, string name);

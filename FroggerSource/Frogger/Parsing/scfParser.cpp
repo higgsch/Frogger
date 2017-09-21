@@ -147,10 +147,10 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 			}
 			else if (compilerDirective == "template")
 			{
-				if (objStruct->isTemplatized())
+				if (objStruct->isTemplated())
 					syntax_error("Too Many %template% Directives");
 
-				objStruct->templatizationList = templatizationRecord();
+				objStruct->templateList = templateRecord();
 			}
 			else
 				syntax_error("Invalid Compiler Directive: " + compilerDirective);
@@ -275,9 +275,9 @@ string SCFParser::inheritanceRecord()
 //
 // Version 5.2
 // ----------------------------------------------------------
-TemplatizationCollection * SCFParser::templatizationRecord()
+TemplateCollection * SCFParser::templateRecord()
 {
-	TemplatizationCollection * tList = new TemplatizationCollection();
+	TemplateCollection * tList = new TemplateCollection();
 	string templateId = id();
 	tList->push_back(templateId);
 

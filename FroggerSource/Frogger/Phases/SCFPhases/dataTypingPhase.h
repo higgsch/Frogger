@@ -26,13 +26,13 @@ private:
 	void populateAllTables(ObjectStruct* obj);
 	bool typeExists(DataType * dt)
 	{
-		if (currObj->isTemplatized())
+		if (currObj->isTemplated())
 		{
-			int tCount = currObj->templatizationList->size();
+			int tCount = currObj->templateList->size();
 			for (int tIndex = 0; tIndex < tCount; tIndex++)
 			{
 				
-				string currTName = currObj->templatizationList->at(tIndex);
+				string currTName = currObj->templateList->at(tIndex);
 				if (currTName == dt->typeString())
 					return true;
 			}
