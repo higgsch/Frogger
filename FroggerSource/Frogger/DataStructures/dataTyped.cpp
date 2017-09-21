@@ -51,7 +51,7 @@ void DataType::build(string fullTypeString)
 {
 	scope = extractScope(fullTypeString);
 	string typeString = fullTypeString.substr(scope.length());
-	typeName = extractName(typeString);
+	name = extractName(typeString);
 	buildTemplatizerList(typeString);
 }
 
@@ -197,7 +197,7 @@ DataType * DataTypeCollection::getDT(string scopedName)
 	for (int dtIndex = 0; dtIndex < dtCount; dtIndex++)
 	{
 		DataType* currDT = at(dtIndex);
-		if (currDT->scope + currDT->typeName == scopedName)
+		if (currDT->scope + currDT->name == scopedName)
 			return currDT;
 	}
 

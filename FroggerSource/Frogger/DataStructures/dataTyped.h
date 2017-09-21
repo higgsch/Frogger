@@ -40,7 +40,7 @@ private:
 public:
 	DataTypeEnum type;
 	string scope; //The scope of the DataType
-	string typeName; //The string representation of the datatype no scope
+	string name; //The name of the datatype no scope and no template
 	string defaultValue; //The string representation of the default value
 	DataTypeCollection * templatizerList;
 
@@ -48,8 +48,8 @@ public:
 	DataType(DataTypeEnum type, string fullTypeString);
 	DataType();
 
-	string fullyScopedTypeString() const { return scope + typeName + templatizerString(); }
-	string typeString() { return typeName + templatizerString(); }
+	string fullyScopedTypeString() const { return scope + name + templatizerString(); }
+	string typeString() { return name + templatizerString(); }
 	bool isTemplatized() { return templatizerList->size() > 0; }
 
 	bool operator==(const DataType& rhs);

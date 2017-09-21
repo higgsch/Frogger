@@ -943,7 +943,7 @@ string CPPLanguage::getTypeString(DataType * dt)
 		return DT_VOID;
 	case DTE_USER_DEFINED:
 		{
-			string typeString = dt->typeName;
+			string typeString = dt->name;
 			if (dt->isTemplatized())
 			{
 				typeString += "<" + getTypeString(dt->templatizerList->at(0));

@@ -40,7 +40,7 @@ private:
 
 		if (dt->isTemplatized())
 		{
-			DataType * type = types->getDT(dt->scope + dt->typeName);
+			DataType * type = types->getDT(dt->scope + dt->name);
 			return dt->templatizerList->size() == type->templatizerList->size();
 		}
 		else
