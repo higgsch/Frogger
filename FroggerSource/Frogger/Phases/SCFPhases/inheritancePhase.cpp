@@ -1,6 +1,6 @@
 //                      Christopher Higgs
 //                      FROGGER Compiler
-//                      Version: 5.1
+//                      Version: 5.3
 // -----------------------------------------------------------------
 // This program facilitates inheritance checks.
 // -----------------------------------------------------------------
@@ -22,22 +22,19 @@ void InheritancePhase::process(ProgramStruct * prog)
 // ----------------------------------------------------------
 // This function processes the given Object.
 // 
-// Version 5.1
+// Version 5.3
 // ----------------------------------------------------------
 void InheritancePhase::processOF(ObjectStruct * obj)
 {
-	if (obj->isUserDefined)
+	if (obj->parentType != NULL)
 	{
-		if (obj->parentName != "")
-		{
-			ObjectStruct * parent = root->getObject(obj->parentName);
-			if (parent == NULL)
-				struct_error("Parent: '" + obj->parentName + "' is not defined");
+		ObjectStruct * parent = root->getObject(obj->parentType->name);
+		if (parent == NULL)
+			struct_error("Parent: '" + obj->parentType->name + "' is not defined");
 
-			obj->parent = parent;
-			obj->scopedTables->merge(parent->scopedTables);
-		}
-
-		runForLocalOFs(obj);
+		obj->parent = parent;
+		obj->scopedTables->merge(parent->scopedTables);
 	}
+
+	runForLocalOFs(obj);
 }

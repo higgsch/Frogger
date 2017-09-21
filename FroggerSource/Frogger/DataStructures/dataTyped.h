@@ -16,7 +16,27 @@ enum DataTypeEnum
 	DTE_NOT_DEFINED //Used when the type is unknown
 };
 
-struct DataTypeCollection;
+struct DataType;
+
+// ----------------------------------------------------------
+// This class represents the collection of all available data 
+// types
+//
+// Version 5.2
+// ----------------------------------------------------------
+struct DataTypeCollection : public vector<DataType*> 
+{
+	DataTypeCollection(bool addBuiltIn);
+
+	void add(string scopedName);
+
+	bool isInList(string scopedName);
+	DataType * getDT(string scopedName);
+
+	bool operator==(const DataTypeCollection& rhs);
+	bool operator!=(const DataTypeCollection& rhs);
+	
+};
 
 // ----------------------------------------------------------
 // This class represents a data type.
@@ -86,24 +106,4 @@ public:
 	DataType * getDataType() { return dataType; }
 	void setDataType(DataType * i_dataType) { dataType = i_dataType; }
 	bool isTyped() { return dataType != DataType::DT_NOT_DEFINED; }
-};
-
-// ----------------------------------------------------------
-// This class represents the collection of all available data 
-// types
-//
-// Version 5.2
-// ----------------------------------------------------------
-struct DataTypeCollection : public vector<DataType*> 
-{
-	DataTypeCollection(bool addBuiltIn);
-
-	void add(string scopedName);
-
-	bool isInList(string scopedName);
-	DataType * getDT(string scopedName);
-
-	bool operator==(const DataTypeCollection& rhs);
-	bool operator!=(const DataTypeCollection& rhs);
-	
 };

@@ -115,7 +115,7 @@ ProgramStruct * SCFParser::parseProgramLevelSCF(string projectDir, string projec
 // @objectDir: The OF
 // @objectName: The name of the object
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectName, string newScope)
 {
@@ -138,12 +138,12 @@ ObjectStruct * SCFParser::parseObjectLevelSCF(string objectDir, string objectNam
 
 			if (compilerDirective == "parent")
 			{
-				if (objStruct->parentName != "")
+				if (objStruct->parentType != NULL)
 					syntax_error("Too Many %parent% Directives");
 
 				size_t lastScopeOpPos = scope.find_last_of(":", scope.length() - 2);
 				string parentScope = (lastScopeOpPos != string::npos) ? scope.substr(0, lastScopeOpPos) : "" ;
-				objStruct->parentName = parentScope + inheritanceRecord();
+				objStruct->parentType = inheritanceRecord(parentScope);
 			}
 			else if (compilerDirective == "template")
 			{
@@ -255,18 +255,11 @@ void SCFParser::addEndCommand(UDFRecord* rec)
 // This function processes an inheritance record and 
 // returns the parent's name.
 //
-// Version 5.1
+// Version 5.3
 // ----------------------------------------------------------
-string SCFParser::inheritanceRecord() 
+DataType * SCFParser::inheritanceRecord(string parentScope) 
 {
-	string parentName = id();
-	match(TT_DOT);
-	string ext = id();
-
-	if (ext != "struct")
-		syntax_error("Invalid Parent Statement: ." + ext + " found, expected .struct"); 
-
-	return parentName;
+	return dataType(parentScope);
 }
 
 // ----------------------------------------------------------
@@ -339,7 +332,7 @@ UDFRecord * SCFParser::functRecord()
 	ArgList * args = arguments();
 	match(TT_RPAREN);
 	match(TT_TILDE);
-	DataType * returnType = dataType();
+	DataType * returnType = dataType(scope);
 
 	match(TT_DOT);
 	Token ext = next_token();
@@ -386,7 +379,7 @@ ArgPair * SCFParser::argument()
 	string name = next_token().lexeme;
 	match(TT_ID);
 	match(TT_EQUAL_SIGN);
-	DataType * dt = dataType();
+	DataType * dt = dataType(scope);
 
 	return new ArgPair(name, dt);
 }
@@ -396,48 +389,48 @@ ArgPair * SCFParser::argument()
 //
 // Version 5.3
 // ----------------------------------------------------------
-DataType * SCFParser::dataType()
+DataType * SCFParser::dataType(string parentScope)
 {
-	Token type = next_token();
-	match(TT_ID);
+	string type = id();
 
-	if (type.lexeme == "double")
+	if (type == "double")
 		return DataType::DT_DOUBLE;
-	else if (type.lexeme == "string")
+	else if (type == "string")
 		return DataType::DT_STRING;
-	else if (type.lexeme == "null")
+	else if (type == "null")
 		return DataType::DT_NULL;
-	else if (type.lexeme == "list")
+	else if (type == "list")
 	{
 		match(TT_LBRACE);
-		DataType * templatizer = dataType();
+		DataType * templatizer = dataType(parentScope);
 		match(TT_RBRACE);
 
 		if (templatizer == DataType::DT_LIST->templatizerList->at(0))
 			return DataType::DT_LIST;
 
-		DataType * dt = new DataType(DTE_USER_DEFINED, type.lexeme);
+		DataType * dt = new DataType(DTE_USER_DEFINED, type);
 		dt->templatizerList->push_back(templatizer);
 		return dt;
 	}
-	else if (type.lexeme == "stringList")
+	else if (type == "stringList")
 		return DataType::DT_STRINGLIST;
 	else
 	{
-		types->add(scope + type.lexeme);
-		DataType * dt = types->getDT(scope + type.lexeme);
+		string typeName = parentScope + type;
+		types->add(typeName);
+		DataType * dt = types->getDT(typeName);
 		
 		Token templateTok = next_token();
 		if (templateTok.type == TT_LBRACE)
 		{
 			match(TT_LBRACE);
-			dt->templatizerList->push_back(dataType());
+			dt->templatizerList->push_back(dataType(parentScope));
 
 			Token tok = next_token();
 			while (tok.type == TT_COMMA)
 			{
 				match(TT_COMMA);
-				dt->templatizerList->push_back(dataType());
+				dt->templatizerList->push_back(dataType(parentScope));
 
 				tok = next_token();
 			}

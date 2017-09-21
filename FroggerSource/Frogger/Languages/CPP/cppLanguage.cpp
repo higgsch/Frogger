@@ -721,7 +721,7 @@ string CPPLanguage::getClassDefinitionCode(ObjectStruct * obj)
 
 	string classDeclaration = "class _" + obj->name;
 	if (obj->hasParent())
-		classDeclaration += " : public _" + replaceAll(obj->parentName,":",":_");
+		classDeclaration += " : public _" + replaceAll(obj->parentType->name,":",":_");
 
 	result += line(classDeclaration);
 

@@ -114,12 +114,12 @@ public:
 // This class represents the data known about a Frogger
 // Object. Generated from the .struct file.
 //
-// Version 5.2
+// Version 5.3
 // ----------------------------------------------------------
 struct ObjectStruct
 {
 	string name;
-	string parentName;
+	DataType * parentType;
 	ObjectStruct * parent;
 	UDFCollection * UDFs;
 	OFCollection * OFs;
@@ -137,7 +137,7 @@ struct ObjectStruct
 	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()), templateList(new TemplateCollection()),
 		scopedTables(new TableGroup()), isUserDefined(true), isCodeGenerated(false),
-		parentName(""), parent(NULL) {}
+		parentType(NULL), parent(NULL) {}
 
 	//Returns whether or not the object has abstract templates
 	bool isTemplated() { return templateList->size() != 0; }
