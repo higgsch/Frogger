@@ -25,7 +25,7 @@ private:
 				return;
 			}
 
-			if (containingObj->name == dt->typeName && dt->templatizerList->size() == 0)
+			if (containingObj->name == dt->name && dt->isTemplatized())
 			{
 				int tCount = containingObj->templateList->size();
 				for (int tIndex = 0; tIndex < tCount; tIndex++)

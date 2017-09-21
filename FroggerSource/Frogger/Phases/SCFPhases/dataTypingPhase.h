@@ -38,7 +38,7 @@ private:
 			}
 		}
 
-		if (dt->templatizerList->size() > 0)
+		if (dt->isTemplatized())
 		{
 			DataType * type = types->getDT(dt->scope + dt->typeName);
 			return dt->templatizerList->size() == type->templatizerList->size();

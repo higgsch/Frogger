@@ -944,11 +944,11 @@ string CPPLanguage::getTypeString(DataType * dt)
 	case DTE_USER_DEFINED:
 		{
 			string typeString = dt->typeName;
-			int tCount = dt->templatizerList->size();
-			if (tCount > 0)
+			if (dt->isTemplatized())
 			{
 				typeString += "<" + getTypeString(dt->templatizerList->at(0));
 
+				int tCount = dt->templatizerList->size();
 				for (int tIndex = 1; tIndex < tCount; tIndex++)
 					typeString += ", " + getTypeString(dt->templatizerList->at(tIndex));
 

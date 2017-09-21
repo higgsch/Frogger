@@ -124,7 +124,7 @@ struct ObjectStruct
 	UDFCollection * UDFs;
 	OFCollection * OFs;
 	DataCollection * data;
-	TemplateCollection * templateList;
+	TemplateCollection * templateList; //A collection of abstract templates
 
 	TableGroup * scopedTables; //Records accessible by scoping (e.g. <obj>:id())
 
@@ -133,7 +133,6 @@ struct ObjectStruct
 	
 	DataTypeCollection * types;
 	DataType * type;
-	DataTypeCollection * templatizedTypes;
 
 	ObjectStruct() : UDFs(new UDFCollection()), OFs(new OFCollection()), 
 		data(new DataCollection()), templateList(new TemplateCollection()),

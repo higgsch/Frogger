@@ -50,6 +50,7 @@ public:
 
 	string fullyScopedTypeString() const { return scope + typeName + templatizerString(); }
 	string typeString() { return typeName + templatizerString(); }
+	bool isTemplatized() { return templatizerList->size() > 0; }
 
 	bool operator==(const DataType& rhs);
 	bool operator!=(const DataType& rhs);
